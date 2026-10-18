@@ -23,7 +23,7 @@ For a container launch, configure MindrianOS to invoke the repository's `scripts
 - `scout_evaluation_report()`: descriptive judgment aggregates separated by method and task snapshot/objective.
 - `scout_delete_job(job_id)` / `scout_clear_embedding_cache()`: user/host requested data cleanup.
 
-Input is bounded at 2,000 artifacts and 20 MiB of UTF-8 artifact text. Each artifact needs a unique ID, source reference, non-empty text, and `room` or `external` corpus. A host should split exceptionally large rooms into explicit snapshots rather than silently truncate them.
+Input is bounded at 2,500 artifacts and 20 MiB of UTF-8 artifact text. Each artifact needs a unique ID, source reference, non-empty text, and `room` or `external` corpus. A host should split exceptionally large rooms into explicit snapshots rather than silently truncate them.
 
 ## External research and confidentiality
 

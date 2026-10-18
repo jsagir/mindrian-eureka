@@ -242,8 +242,8 @@ def validate_document(data: dict[str, Any]) -> None:
             raise ValueError(f"Duplicate artifact id: {item['id']}")
         seen.add(item["id"])
         text_bytes += len(item["text"].encode("utf-8"))
-    if len(data["artifacts"]) > 2000:
-        raise ValueError("Artifact limit is 2,000 per run")
+    if len(data["artifacts"]) > 2500:
+        raise ValueError("Artifact limit is 2,500 per run")
     if text_bytes > 20 * 1024 * 1024:
         raise ValueError("Input text limit is 20 MiB per run")
     mode = data.get("mode", "local")

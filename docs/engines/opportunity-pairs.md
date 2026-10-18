@@ -54,7 +54,7 @@ The engine never searches the web or calls a provider. For external/hybrid runs 
 }
 ```
 
-Input limit: 2,000 artifacts and 20 MiB of UTF-8 text per run. The reference SVD configuration uses up to 80 topics; smaller collections use the largest valid topic count and report that adaptation. Corpus size, duplicate material, empty vocabulary, and similarity variance can change or prevent ranking, and are not silently reported as an empty discovery result.
+Input limit: 2,500 artifacts and 20 MiB of UTF-8 text per run. The reference SVD configuration uses up to 80 topics; smaller collections use the largest valid topic count and report that adaptation. Corpus size, duplicate material, empty vocabulary, and similarity variance can change or prevent ranking, and are not silently reported as an empty discovery result.
 
 ## Install and run locally
 

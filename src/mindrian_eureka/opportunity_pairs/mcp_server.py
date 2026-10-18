@@ -46,7 +46,7 @@ class ScoutRunInput(BaseModel):
     mode: Literal["local", "external", "hybrid"] = "local"
     scope_id: str = Field(min_length=1, max_length=256)
     research_grant_id: str | None = Field(default=None, max_length=256)
-    artifacts: list[ArtifactInput] = Field(min_length=2, max_length=2000)
+    artifacts: list[ArtifactInput] = Field(min_length=2, max_length=2500)
     top_k: int = Field(default=20, ge=1, le=100)
 
 
