@@ -1,8 +1,8 @@
 # MindrianOS Eureka: standalone repository architecture
 
-**Status:** architecture proposal for review  
+**Status:** architecture proposal with first capability prototype underway
 **Purpose:** define an independently buildable repository that MindrianOS can call for opportunity discovery across local room material and explicitly approved research.  
-**Scope:** system and repository architecture. No repository has been initialized and no engine code has been migrated.
+**Scope:** system architecture and initial local cross-domain-pair capability. The complete MCP service, durable job runtime, MindrianOS adapter, and engine migration are not implemented.
 
 ## 1. Decision summary
 
@@ -74,7 +74,7 @@ The registry exposes jobs by user need, not by historical folder names. Names be
 |---|---|---|---|
 | `bottleneck.diagnose` | **Find the Bottleneck** | Find which subsystem or missing input most constrains a stated objective. | Existing MindrianOS RS route; compare contract before reuse. |
 | `coverage.find_gaps` | **Find Portfolio Gaps** | Locate under-covered themes or evidence areas in a scoped corpus. | Experimental; HSI implementation/reducer behavior needs resolution. |
-| `opportunity.find_pairs` | **Find Breakthrough Pairs** | Produce a bounded candidate set of potentially valuable item pairs. | Current Eureka perspective differs from retired legacy runner; use current route as baseline. |
+| `opportunity.find_cross_domain_pairs` | **Find Cross-Domain Opportunity Pairs** | When a user has a scoped research collection and wants unexpected connections, rank pairs where semantic and structural signals disagree, with source links for human review. | First capability prototype; faithful RS baseline and a clearly labeled modern encoder variant. |
 | `analogy.find_mechanisms` | **Find Mechanisms from Other Fields** | Retrieve or recall candidate mechanisms relevant to a problem. | Experimental; distinguish local recall from approved external retrieval. |
 | `analogy.map_structure` | **Test a Structural Analogy** | Map a selected source mechanism to a target problem and expose candidate inferences. | SME mapping prototype; candidate inference is not validation. |
 | `claims.compare` | **Compare Competing Explanations** | Compare two explicit explanations/claims using defined criteria. | Jason prototype; calibration and contract required. |
@@ -389,11 +389,11 @@ Keep usability and discovery quality as separate experiments. Define the baselin
 
 **Exit:** a user can inspect scope, start a job, recover its status after restart, and review a proposed result without manual filesystem or command-line handling.
 
-### Phase 3 — First real capability
+### Phase 3 — First real capability: cross-domain opportunity pairs
 
-Choose one capability only after comparing current MindrianOS implementation with package source. Strong candidates are local bottleneck diagnosis or gap finding, depending on which has the cleanest contract and least hidden egress. Keep the method's known limitations visible.
+Implement the local RS pair-ranking method behind the capability manifest. Keep the PPTX-derived signal calculation as a reference path and make the modern sentence-transformer path an explicit variant. No network access occurs unless a user explicitly opts into model download; candidate scores remain leads for review, not validated opportunities. Connect each result to a bounded, evidence-linked review context for Theo or the user.
 
-**Exit:** capability passes contract/isolation evaluations and improves completion or decision usefulness over a documented baseline without reducing provenance.
+**Exit:** fixed-corpus comparisons establish reproducible pair rankings, source refs survive the result contract, the method's limits are visible, and a human can judge usefulness without a developer operating the pipeline.
 
 ### Phase 4 — Selected engine migration
 

@@ -2,7 +2,7 @@
 
 **MindrianOS entrypoint:** `/m:os:eureka`  
 **Repository:** `mindrian-eureka`  
-**Status:** architecture bootstrap; implementation and engine migration have not started.
+**Status:** architecture plus first local capability prototype; MCP orchestration and MindrianOS integration remain future work.
 
 MindrianOS Eureka is the standalone opportunity-discovery runtime MindrianOS will use to find, assess, and accumulate promising opportunity candidates from authorized material. It is designed to support local analysis first, controlled outside research, and a growing portfolio of evidence-linked candidates.
 
@@ -31,7 +31,7 @@ The proposed MindrianOS call is a workflow, not a raw “run every engine” com
 
 ## Current state
 
-This repository currently contains the architecture proposal and initial contracts only. No research engine source has been copied here. Source provenance, licensing, and current-vs-package behavior must be resolved before migration.
+The first capability prototype is `opportunity.find_cross_domain_pairs` (user-facing: **Find Cross-Domain Opportunity Pairs**). It implements the documented structural/semantic disagreement method and exposes a separately named modern encoder option. It is a local CLI capability, not yet an MCP service. No original engine source code or model weights have been copied. The PPTX/package source license and exact reproduction status remain unresolved; see [the method and source note](docs/engines/opportunity-pairs.md).
 
 ## Naming
 

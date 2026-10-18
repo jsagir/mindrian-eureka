@@ -57,6 +57,18 @@
         "estimated_cost": { "type": ["number", "null"], "minimum": 0 }
       }
     },
-    "failure": { "type": ["object", "null"] }
+    "failure": { "type": ["object", "null"] },
+    "method_details": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["encoder", "structural_signal", "semantic_signal", "selection", "input_objective"],
+      "properties": {
+        "encoder": { "type": "object" },
+        "structural_signal": { "type": "object" },
+        "semantic_signal": { "type": "object" },
+        "selection": { "type": "string" },
+        "input_objective": { "type": "string" }
+      }
+    }
   }
 }
