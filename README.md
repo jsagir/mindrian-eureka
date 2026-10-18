@@ -18,6 +18,8 @@ The user asks MindrianOS to scout or deepen an opportunity. MindrianOS frames th
 
 See [the architecture proposal](docs/architecture.md). The first deployment is one local MCP server with internal capability modules and bounded Node/Python workers. Engine isolation and deployment can be split later when a real dependency or trust boundary warrants it.
 
+The [Harness² design review](docs/inspirations/harness2-analysis.md) records a possible later workflow-evaluation layer. It is a design reference, not an adopted dependency or a claim that Eureka already learns from runs.
+
 The proposed MindrianOS call is a workflow, not a raw “run every engine” command:
 
 1. Define objective and authorized scope.

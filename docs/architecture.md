@@ -344,6 +344,14 @@ Threat-model review must include malicious input documents, path traversal, syml
 
 ## 12. Evaluation strategy
 
+### Workflow recipe evaluation (later phase)
+
+Harness² provides a useful design reference for evaluating and improving the harness around an agent. For Eureka, that means comparing versioned workflow recipes for a defined user job after capability contracts and reproducible run records exist. It does not mean engines rewrite themselves or production routing changes without review. See the [Harness² analysis](inspirations/harness2-analysis.md) for source-grounded details and limits.
+
+Keep workflow variants in evaluation/shadow mode first. Hold input snapshot, capability versions, model/provider, permission policy, budget, and rubric constant against a baseline. Record output quality separately from execution success; if a judge fails, mark the evaluation unscored. A human explicitly adopts a recipe. The evaluation layer cannot expand scope, grant network access, modify engine code, or promote candidates into the canonical portfolio.
+
+Do not build this recursive layer before the first local run can be replayed, audited, and evaluated with stable contracts. The build sequence should establish those prerequisites first.
+
 Every capability needs its own contract evaluation and the system needs end-to-end evaluation.
 
 - **Contract evaluation:** valid/invalid inputs, status semantics, schema, provenance completeness, determinism where promised, and failure behavior.
