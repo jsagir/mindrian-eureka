@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian.dev/schemas/eureka/capability-manifest.v1.schema.json",
+  "title": "Mindrian Eureka Capability Manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "name", "jtbd", "status", "input_schema", "output_schema", "runtime", "network", "side_effects", "limitations"],
+  "properties": {
+    "schema_version": { "const": "eureka.capability.v1" },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9_-]*)+$" },
+    "name": { "type": "string", "minLength": 3 },
+    "jtbd": { "type": "string", "minLength": 10 },
+    "status": { "enum": ["enabled", "experimental", "blocked", "retired"] },
+    "input_schema": { "type": "string" },
+    "output_schema": { "type": "string" },
+    "runtime": { "type": "string", "minLength": 1 },
+    "network": { "enum": ["denied", "brokered", "restricted"] },
+    "data_classes": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "requires": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "side_effects": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "limitations": { "type": "array", "items": { "type": "string" } },
+    "version": { "type": "string" },
+    "source_revision": { "type": "string" },
+    "license_status": { "enum": ["cleared", "restricted", "unknown"] },
+    "dependency_lock_digest": { "type": "string" },
+    "max_runtime_seconds": { "type": "integer", "minimum": 1 },
+    "max_input_bytes": { "type": "integer", "minimum": 1 },
+    "max_candidates": { "type": "integer", "minimum": 1 }
+  }
+}
