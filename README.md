@@ -2,7 +2,7 @@
 
 **MindrianOS entrypoint:** `/m:os:eureka`  
 **Repository:** `mindrian-eureka`  
-**Status:** architecture plus first local capability prototype; MCP orchestration and MindrianOS integration remain future work.
+**Status:** runnable local RS capability with CLI, stdio MCP, durable jobs, and human evaluation records. Empirical validation, host integration, and source/license review remain open.
 
 MindrianOS Eureka is the standalone opportunity-discovery runtime MindrianOS will use to find, assess, and accumulate promising opportunity candidates from authorized material. It is designed to support local analysis first, controlled outside research, and a growing portfolio of evidence-linked candidates.
 
@@ -16,7 +16,7 @@ The user asks MindrianOS to scout or deepen an opportunity. MindrianOS frames th
 
 ## Architecture
 
-See [the architecture proposal](docs/architecture.md). The first deployment is one local MCP server with internal capability modules and bounded Node/Python workers. Engine isolation and deployment can be split later when a real dependency or trust boundary warrants it.
+See [the architecture proposal](docs/architecture.md). The first deployment is one local MCP server with internal capability modules. The RS capability includes a constrained container launcher; other engine families are not yet migrated.
 
 The [Harness² design review](docs/inspirations/harness2-analysis.md) records a possible later workflow-evaluation layer. It is a design reference, not an adopted dependency or a claim that Eureka already learns from runs.
 
@@ -31,7 +31,27 @@ The proposed MindrianOS call is a workflow, not a raw “run every engine” com
 
 ## Current state
 
-The first capability prototype is `opportunity.find_cross_domain_pairs` (user-facing: **Find Cross-Domain Opportunity Pairs**). It implements the documented structural/semantic disagreement method and exposes a separately named modern encoder option. It is a local CLI capability, not yet an MCP service. No original engine source code or model weights have been copied. The PPTX/package source license and exact reproduction status remain unresolved; see [the method and source note](docs/engines/opportunity-pairs.md).
+The first implemented capability is `opportunity.find_cross_domain_pairs` (user-facing: **Find Cross-Domain Opportunity Pairs**). It has a CLI and job-oriented stdio MCP interface, SQLite job persistence, embedding cache, local/external-bundle/hybrid run modes, provenance-bearing results, cancellation, deletion, and human review records. It runs only on the artifact bundle MindrianOS supplies; external research retrieval and grant authorization stay with the host. No original engine source or weights have been copied. The source deck/archive, license, and exact reproduction status remain unresolved, and the capability stays experimental until evaluated; see [the method and source note](docs/engines/opportunity-pairs.md).
+
+## Run the local MCP capability
+
+Use Python 3.11 or newer and provide a local semantic model. The model is not downloaded by the MCP server.
+
+```bash
+uv sync --extra mcp-server --extra modern-encoder
+MINDRIAN_EUREKA_RS_MODEL_PATH=/absolute/path/to/local-model uv run eureka-mcp
+```
+
+For a containerized local MCP process, build once and launch the stdio wrapper:
+
+```bash
+docker build -t mindrian-eureka:local .
+export MINDRIAN_EUREKA_RS_MODEL_PATH=/absolute/path/to/local-model
+export MINDRIAN_EUREKA_DATA_DIR=/absolute/path/to/eureka-data
+scripts/run-mcp-container
+```
+
+The wrapper disables network access, mounts the model read-only, makes the container root filesystem read-only, and applies configurable CPU/memory limits. MindrianOS can launch the wrapper as its stdio MCP command. The direct Python command is useful for development and does not provide OS/container isolation. The engine does not itself validate scope or grant IDs; MindrianOS must do that before sending material. See the [capability guide](docs/engines/opportunity-pairs.md) and [MindrianOS host integration contract](docs/integrations/mindrianos.md) for the full user journey and boundaries.
 
 ## Naming
 

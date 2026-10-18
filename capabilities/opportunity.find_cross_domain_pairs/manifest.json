@@ -6,7 +6,7 @@
   "status": "experimental",
   "input_schema": "schemas/opportunity-pairs-input.v1.schema.json",
   "output_schema": "schemas/run-result.v1.schema.json",
-  "runtime": "Python >=3.11; local CLI prototype",
+  "runtime": "Python >=3.11; local CLI and stdio MCP server",
   "network": "restricted",
   "data_classes": ["user-provided-research-text", "source-identifiers"],
   "requires": ["at least two artifacts with id, source_ref, and text", "locally available semantic model"],
@@ -16,7 +16,9 @@
     "The user objective is included in review context but does not affect pair scoring.",
     "Reference mode is based on source-analysis notes and has not been proven bit-for-bit equivalent to the original package.",
     "Modern sentence-transformer mode is an experimental variant.",
-    "Model download is disabled by default; local execution does not itself enforce an OS sandbox."
+    "Model download is disabled by default; local execution does not itself enforce an OS sandbox.",
+    "The MCP server requires MindrianOS to validate room scope and research grant IDs; the IDs are audit references, not authorization on their own.",
+    "Human review ratings are recorded for evaluation and do not automatically change ranking behavior."
   ],
   "version": "0.1.0",
   "source_revision": "independent implementation based on docs/engines/opportunity-pairs.md; original PPTX/package provenance pending",

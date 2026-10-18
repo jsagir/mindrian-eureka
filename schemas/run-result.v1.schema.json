@@ -31,6 +31,8 @@
       "additionalProperties": false,
       "required": ["snapshot_id", "read_artifact_ids"],
       "properties": {
+        "scope_id": { "type": ["string", "null"] },
+        "grant_id": { "type": ["string", "null"] },
         "snapshot_id": { "type": "string" },
         "read_artifact_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
       }
@@ -61,12 +63,14 @@
     "method_details": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["encoder", "structural_signal", "semantic_signal", "selection", "input_objective"],
+      "required": ["encoder", "structural_signal", "semantic_signal", "selection", "mode", "input_objective"],
       "properties": {
         "encoder": { "type": "object" },
         "structural_signal": { "type": "object" },
         "semantic_signal": { "type": "object" },
         "selection": { "type": "string" },
+        "mode": { "enum": ["local", "external", "hybrid"] },
+        "research_grant_id": { "type": ["string", "null"] },
         "input_objective": { "type": "string" }
       }
     }

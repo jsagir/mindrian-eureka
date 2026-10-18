@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Sequence
+from typing import Callable, Sequence
 
 import numpy as np
 
@@ -20,21 +20,28 @@ class SentenceTransformerEncoder:
             model_path, local_files_only=not allow_download, revision=revision
         )
 
-    def encode(self, texts: Sequence[str]) -> np.ndarray:
+    def encode(self, texts: Sequence[str], cancel_check: Callable[[], bool] | None = None) -> np.ndarray:
         tokenizer = self._model.tokenizer
         limit = max(8, int(self._model.max_seq_length) - 2)
         chunks: list[str] = []
         owners: list[int] = []
         for owner, text in enumerate(texts):
+            if cancel_check and cancel_check():
+                raise RuntimeError("Run cancelled during semantic chunking")
             token_ids = tokenizer.encode(text, add_special_tokens=False)
             segments = [token_ids[i:i + limit] for i in range(0, len(token_ids), limit)] or [[]]
             for segment in segments:
                 chunks.append(tokenizer.decode(segment, skip_special_tokens=True))
                 owners.append(owner)
-        vectors = self._model.encode(
-            chunks, convert_to_numpy=True, normalize_embeddings=True,
-            show_progress_bar=False, batch_size=16,
-        )
+        vector_batches = []
+        for start in range(0, len(chunks), 16):
+            if cancel_check and cancel_check():
+                raise RuntimeError("Run cancelled during semantic embedding")
+            vector_batches.append(self._model.encode(
+                chunks[start:start + 16], convert_to_numpy=True, normalize_embeddings=True,
+                show_progress_bar=False, batch_size=16,
+            ))
+        vectors = np.concatenate(vector_batches, axis=0)
         grouped = [[] for _ in texts]
         for owner, vector in zip(owners, vectors):
             grouped[owner].append(vector)
@@ -61,15 +68,19 @@ class ReferenceBertEncoder:
         )
         self._model.eval()
 
-    def encode_segments(self, texts: Sequence[str]) -> list[np.ndarray]:
+    def encode_segments(self, texts: Sequence[str], cancel_check: Callable[[], bool] | None = None) -> list[np.ndarray]:
         output: list[np.ndarray] = []
         torch = self._torch
         for text in texts:
+            if cancel_check and cancel_check():
+                raise RuntimeError("Run cancelled during reference BERT encoding")
             encoded = self._tokenizer(text, add_special_tokens=False, return_attention_mask=False)["input_ids"]
             chunks = [encoded[i:i + 510] for i in range(0, len(encoded), 510)] or [[]]
             rows: list[np.ndarray] = []
             with torch.inference_mode():
                 for chunk in chunks:
+                    if cancel_check and cancel_check():
+                        raise RuntimeError("Run cancelled during reference BERT encoding")
                     ids = [self._tokenizer.cls_token_id, *chunk, self._tokenizer.sep_token_id]
                     tensor = torch.tensor([ids], dtype=torch.long)
                     result = self._model(input_ids=tensor)

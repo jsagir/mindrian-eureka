@@ -1,8 +1,8 @@
 # MindrianOS Eureka: standalone repository architecture
 
-**Status:** architecture proposal with first capability prototype underway
+**Status:** architecture baseline with one runnable local MCP capability
 **Purpose:** define an independently buildable repository that MindrianOS can call for opportunity discovery across local room material and explicitly approved research.  
-**Scope:** system architecture and initial local cross-domain-pair capability. The complete MCP service, durable job runtime, MindrianOS adapter, and engine migration are not implemented.
+**Scope:** architecture for the opportunity-discovery runtime. The cross-domain-pair capability has CLI/MCP entrypoints and a local durable job runtime; the MindrianOS adapter, OS-level worker sandbox, external research broker, and other engine migrations remain unimplemented.
 
 ## 1. Decision summary
 
@@ -17,7 +17,7 @@ The standalone repo should provide:
 5. Shared **input, result, provenance, and failure contracts** so MindrianOS can present results consistently.
 6. Optional remote worker support only after the local contract and permission path are established.
 
-Start as **one local MCP server with internal capability modules and bounded worker processes**. Keep module boundaries strong enough that an engine can later become a separate MCP server without changing MindrianOS's user-level workflow. Do not launch one MCP server per engine merely because there are multiple engine folders.
+Start as **one local MCP server with internal capability modules**. The RS container launcher supplies process/filesystem/network/resource boundaries; direct Python development runs only use the bounded thread pool. Keep module boundaries strong enough that an engine can later become a separate MCP server without changing MindrianOS's user-level workflow. Do not launch one MCP server per engine merely because there are multiple engine folders.
 
 ## 2. System boundary and ownership
 
@@ -26,7 +26,7 @@ Start as **one local MCP server with internal capability modules and bounded wor
 | User conversation, room/session binding | Owns | No direct ownership |
 | User objective, scope, exclusions | Presents and records user choices | Validates the scoped request and identifies missing inputs |
 | Room access and permissions | Owns authorization; supplies a bounded input manifest/bundle | Reads only the supplied/authorized inputs; cannot guess a room or expand scope |
-| External research approval | Owns user gate and grants | Executes only through the approved research broker; no engine-owned credentials or unrestricted fetch |
+| External research approval | Owns user gate and grants | Accepts only a host-supplied, approved bundle; no engine-owned credentials or unrestricted fetch |
 | Framework guidance / Theo | Host obtains guidance and supplies authorized case context | Executes only the selected bounded method; returns monitorable stage artifacts |
 | Engine methods and environments | Calls capabilities | Owns capability metadata, adapters, runtimes, job status, logs, results |
 | Portfolio source of truth | Owns portfolio record, cross-room policy, review/disposition | Returns candidate proposals; never confirms or commits them |
@@ -47,8 +47,8 @@ flowchart LR
   ORCH --> LOCAL[Local diagnostic capabilities]
   ORCH --> PY[Python worker processes / pinned envs]
   ORCH --> NODE[Node capability modules]
-  ORCH --> BROKER[Approved research broker]
-  BROKER --> SOURCES[Approved external sources]
+  MOS --> BROKER[Host-approved research broker]
+  BROKER --> BUNDLE
   LOCAL --> RESULT[Versioned result envelope]
   PY --> RESULT
   NODE --> RESULT
@@ -74,7 +74,7 @@ The registry exposes jobs by user need, not by historical folder names. Names be
 |---|---|---|---|
 | `bottleneck.diagnose` | **Find the Bottleneck** | Find which subsystem or missing input most constrains a stated objective. | Existing MindrianOS RS route; compare contract before reuse. |
 | `coverage.find_gaps` | **Find Portfolio Gaps** | Locate under-covered themes or evidence areas in a scoped corpus. | Experimental; HSI implementation/reducer behavior needs resolution. |
-| `opportunity.find_cross_domain_pairs` | **Find Cross-Domain Opportunity Pairs** | When a user has a scoped research collection and wants unexpected connections, rank pairs where semantic and structural signals disagree, with source links for human review. | First capability prototype; faithful RS baseline and a clearly labeled modern encoder variant. |
+| `opportunity.find_cross_domain_pairs` | **Find Cross-Domain Opportunity Pairs** | When a user has a scoped research collection and wants unexpected connections, rank pairs where semantic and structural signals disagree, with source links for human review. | Implemented local CLI/MCP capability; experimental until source and method evaluation. |
 | `analogy.find_mechanisms` | **Find Mechanisms from Other Fields** | Retrieve or recall candidate mechanisms relevant to a problem. | Experimental; distinguish local recall from approved external retrieval. |
 | `analogy.map_structure` | **Test a Structural Analogy** | Map a selected source mechanism to a target problem and expose candidate inferences. | SME mapping prototype; candidate inference is not validation. |
 | `claims.compare` | **Compare Competing Explanations** | Compare two explicit explanations/claims using defined criteria. | Jason prototype; calibration and contract required. |
@@ -102,9 +102,10 @@ Worker protocol is versioned JSON over stdin/stdout initially. Stdout carries on
 ### Runtime policy
 
 - TypeScript/Node control plane because MindrianOS is Node-based and existing MOS adapters are CommonJS. Keep protocol boundaries language-neutral.
-- Python methods use separately pinned virtual environments; build a container only when native dependencies, trust isolation, reproducibility, or resource quotas justify it. Python virtual environments isolate project dependencies; containers add another isolation boundary but do not guarantee data confinement. [Python packaging guide](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) · [Docker Engine security](https://docs.docker.com/engine/security/)
-- The process environment is allowlisted; no broad inheritance of API keys or home-directory access.
-- Local analysis defaults to network-denied. External research is a separate capability that receives only an approved query grant.
+- The current RS MCP capability runs Python work in a small bounded thread pool. The included Docker launcher adds no-network, read-only root/model mounts, dropped capabilities, no-new-privileges, and CPU/memory limits. The direct Python development command has no OS-level isolation.
+- The MCP capability accepts text bundles, not paths, and does not fetch external sources. The host controls access to source data and validates grants before bundle transfer.
+- The container launch passes only the configuration variables it needs; the direct development command inherits the user's process environment. Do not place unrelated secrets in the container's environment.
+- Local analysis defaults to no model download. External material is supplied by the host's approved research broker.
 - Input is read-only by default. Workers receive only the files or records listed in the run manifest.
 - Return `failed`, `partial`, `blocked`, `cancelled`, and `completed_empty` distinctly. Missing models or dependency failures can never masquerade as “no opportunity.”
 - Resource limits are explicit: wall-clock timeout, memory/CPU budget, maximum input size, maximum candidate count, search budget, and retry cap.
@@ -194,7 +195,7 @@ Runner-generated records are authoritative for input hashes, runtime, egress, ex
 
 Expose a small user/workflow surface. Keep low-level engine invocation and run-control operations available to the MindrianOS orchestrator but do not force users to learn internal package names.
 
-Initial MCP tools:
+Implemented first-capability MCP tools:
 
 - `scout_capabilities` — list enabled/experimental/blocked capabilities with JTBD and prerequisites.
 - `scout_plan` — transform objective + authorized scope into a proposed sequence and explain why; no execution or egress.
@@ -202,8 +203,10 @@ Initial MCP tools:
 - `scout_status` — inspect progress, partial results, blockers, and required user action.
 - `scout_result` — retrieve a validated result envelope by job ID.
 - `scout_cancel` — cancel a running job and prevent later stages from starting.
-- `scout_evidence_plan` — prepare exact research queries for host approval; does not fetch.
-- `scout_evidence_run` — execute only with a host-issued, scoped grant.
+- `scout_record_review` / `scout_review_summary` / `scout_evaluation_report` — retain and summarize human ratings without automatic learning.
+- `scout_delete_job` / `scout_clear_embedding_cache` — delete retained run data or derived embeddings.
+
+Evidence planning and fetching are not implemented in this capability. MindrianOS's approved broker must prepare, authorize, and supply the external bundle.
 
 Potential MCP resources: `scout://capabilities`, `scout://jobs/{job_id}`, `scout://runs/{job_id}/manifest`. Potential prompts: `scout-opportunity`, `scout-bottleneck`, and `scout-deep-dive`. Prompts support user-selected entry points; MCP tools do the work; resources provide inspectable state.
 
@@ -249,7 +252,9 @@ Standalone Opportunity Scout runtime
    └─ durable run artifacts; no canonical portfolio writes
 ```
 
-## 10. Repository layout
+## 10. Proposed long-term repository layout
+
+This is the architecture target for later capability families. The current repository implements the RS package, contracts, schemas, and docs; the other listed directories are not yet present.
 
 ```text
 mindrian-eureka/
@@ -371,7 +376,7 @@ Keep usability and discovery quality as separate experiments. Define the baselin
 - Resolve source provenance and redistribution rights for each candidate engine.
 - Freeze the first supported runtime and host protocol versions.
 
-**Exit:** repo builds an empty MCP service; source/licensing ledger exists; no engine code imported without provenance.
+**Exit:** repo builds an empty MCP service; source/licensing ledger exists; no engine code imported without provenance. (Repository scaffold completed; RS source rights remain open.)
 
 ### Phase 1 — Contracts and local runtime shell
 
@@ -379,7 +384,7 @@ Keep usability and discovery quality as separate experiments. Define the baselin
 - Implement `scout_capabilities`, `scout_plan`, `scout_start`, `scout_status`, `scout_result`, and `scout_cancel` with a synthetic capability.
 - Enforce local scope and default-deny network.
 
-**Exit:** synthetic jobs persist across restart, are idempotent/cancellable, return clear failure states, and cannot access undeclared inputs or network.
+**Exit:** contracts, SQLite jobs, idempotency, bounded queue, cancellation, and status history are implemented. Runtime recovery and isolation still need verification; execution is in-process and does not enforce OS-level network/filesystem confinement.
 
 ### Phase 2 — MindrianOS adapter
 
@@ -393,7 +398,7 @@ Keep usability and discovery quality as separate experiments. Define the baselin
 
 Implement the local RS pair-ranking method behind the capability manifest. Keep the PPTX-derived signal calculation as a reference path and make the modern sentence-transformer path an explicit variant. No network access occurs unless a user explicitly opts into model download; candidate scores remain leads for review, not validated opportunities. Connect each result to a bounded, evidence-linked review context for Theo or the user.
 
-**Exit:** fixed-corpus comparisons establish reproducible pair rankings, source refs survive the result contract, the method's limits are visible, and a human can judge usefulness without a developer operating the pipeline.
+**Implementation:** CLI/MCP paths, source-linked result contract, local model loading, bounded input, cache, review capture, and evaluation summaries are present. **Exit remains open:** fixed-corpus and human usefulness evaluation, runtime behavior verification, source provenance/license resolution, and MindrianOS host integration.
 
 ### Phase 4 — Selected engine migration
 

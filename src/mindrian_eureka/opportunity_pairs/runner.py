@@ -14,8 +14,10 @@ from typing import Any
 import numpy as np
 
 from . import CAPABILITY_ID, CAPABILITY_VERSION
+from .cache import EmbeddingCache, cached_encode, default_cache_path
 from .algorithm import (
     Artifact,
+    RunCancelled,
     modern_semantic_similarity,
     rank_pairs,
     reference_semantic_similarity,
@@ -26,31 +28,62 @@ from .encoders import ReferenceBertEncoder, SentenceTransformerEncoder
 
 def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str,
                  allow_model_download: bool = False, top_k: int = 20,
-                 job_id: str = "local-rs-run", model_revision: str | None = None) -> dict[str, Any]:
+                 job_id: str = "local-rs-run", model_revision: str | None = None,
+                 cache_path: str | Path | None = None, cancel_check=None,
+                 stage_callback=None) -> dict[str, Any]:
     if top_k < 0 or top_k > 100:
         raise ValueError("top_k must be between 0 and 100")
     if allow_model_download and not (model_revision and re.fullmatch(r"[0-9a-fA-F]{40}", model_revision)):
         raise ValueError("Model downloads require a 40-character immutable commit hash via --model-revision")
     started = datetime.now(timezone.utc)
     start_clock = time.monotonic()
-    raw = json.dumps(document, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    snapshot_id = "sha256:" + hashlib.sha256(raw).hexdigest()
+    snapshot_id = task_snapshot_id(document)
+    mode = document.get("mode", "local")
+    if mode not in ("local", "external", "hybrid"):
+        raise ValueError("mode must be local, external, or hybrid")
     artifacts = [Artifact(
         id=item["id"], title=item.get("title", ""), text=item["text"],
-        source_ref=item.get("source_ref"),
+        source_ref=item.get("source_ref"), corpus=item.get("corpus", "room"),
     ) for item in document["artifacts"]]
+    corpus_names = {item.corpus for item in artifacts}
+    expected = {"local": {"room"}, "external": {"external"}, "hybrid": {"room", "external"}}
+    if mode == "hybrid" and corpus_names != expected[mode]:
+        raise ValueError("hybrid mode requires at least one room and one external artifact")
+    if mode != "hybrid" and not corpus_names.issubset(expected[mode]):
+        raise ValueError(f"{mode} mode received artifacts from the wrong corpus")
     texts = [artifact.model_text for artifact in artifacts]
     warnings: list[str] = []
-    structural, structural_meta = structural_similarity(texts)
+    check_cancelled(cancel_check)
+    report_stage(stage_callback, "structural-scoring")
+    structural, structural_meta = structural_similarity(texts, cancel_check=cancel_check)
 
+    cache = EmbeddingCache(cache_path or default_cache_path())
+    report_stage(stage_callback, "semantic-scoring")
     if encoder_name == "reference-bert":
-        encoder = ReferenceBertEncoder(model_path, allow_download=allow_model_download, revision=model_revision)
-        segment_vectors = encoder.encode_segments(texts)
+        def encode_missing(missing_texts, cancel_check=None):
+            check_cancelled(cancel_check)
+            encoder = ReferenceBertEncoder(model_path, allow_download=allow_model_download, revision=model_revision)
+            return encoder.encode_segments(missing_texts, cancel_check=cancel_check)
+
+        segment_vectors, cache_meta = cached_encode(
+            texts, cache=cache, encoder_name=encoder_name, model_path=model_path,
+            model_revision=model_revision, method_version="bert-cls-510-plus-specials-v1",
+            encode_missing=encode_missing, cancel_check=cancel_check,
+        )
         semantic, semantic_meta = reference_semantic_similarity(texts, segment_vectors)
         semantic_meta["method"] = "bert_cls_segment_pair_mean"
     elif encoder_name == "sentence-transformers":
-        encoder = SentenceTransformerEncoder(model_path, allow_download=allow_model_download, revision=model_revision)
-        vectors = encoder.encode(texts)
+        def encode_missing(missing_texts, cancel_check=None):
+            check_cancelled(cancel_check)
+            encoder = SentenceTransformerEncoder(model_path, allow_download=allow_model_download, revision=model_revision)
+            return list(encoder.encode(missing_texts, cancel_check=cancel_check))
+
+        vectors, cache_meta = cached_encode(
+            texts, cache=cache, encoder_name=encoder_name, model_path=model_path,
+            model_revision=model_revision, method_version="sentence-transformer-chunk-mean-v1",
+            encode_missing=encode_missing, cancel_check=cancel_check,
+        )
+        vectors = np.stack([item.reshape(-1) for item in vectors])
         semantic, semantic_meta = modern_semantic_similarity(vectors)
         semantic_meta["method"] = "sentence_transformer_chunk_mean_cosine"
     else:
@@ -65,14 +98,21 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
     if not model_revision and not allow_model_download:
         warnings.append("Model identity is recorded as the supplied local path; pin and record model-file digests for controlled comparisons.")
 
-    pairs = rank_pairs(artifacts, structural, semantic, top_k=top_k)
+    check_cancelled(cancel_check)
+    report_stage(stage_callback, "pair-ranking")
+    pairs = rank_pairs(
+        artifacts, structural, semantic, top_k=top_k,
+        cross_corpus_only=(mode == "hybrid"),
+    )
     outputs = []
     objective = document.get("objective", "")
     for rank, pair in enumerate(pairs, start=1):
+        pair_ids = sorted((pair.left.id, pair.right.id))
+        stable_pair_key = hashlib.sha256("\0".join(pair_ids).encode("utf-8")).hexdigest()[:20]
         left_text = pair.left.text[:1600]
         right_text = pair.right.text[:1600]
         outputs.append({
-            "id": f"rs-pair-{rank:04d}",
+            "id": f"rs-pair-{stable_pair_key}",
             "kind": "cross_domain_opportunity_pair",
             "rank": rank,
             "payload": {
@@ -82,6 +122,8 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
                 "semantic_similarity": pair.semantic_similarity,
                 "signed_difference": pair.signed_difference,
                 "disagreement": pair.disagreement,
+                "direction": pair.direction,
+                "direction_meaning": "same meaning in different words" if pair.direction == "structural_transfer" else "same words with different meaning",
                 "interpretation_to_review": pair.interpretation,
                 "hypothesis_status": "candidate_for_human_investigation",
             },
@@ -96,11 +138,13 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
                     "semantic_similarity": pair.semantic_similarity,
                     "signed_difference": pair.signed_difference,
                     "disagreement": pair.disagreement,
+                    "direction": pair.direction,
                 },
             },
         })
 
     finished = datetime.now(timezone.utc)
+    report_stage(stage_callback, "complete")
     duration = int((time.monotonic() - start_clock) * 1000)
     return {
         "schema_version": "eureka.result.v1",
@@ -112,13 +156,18 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
             "artifact_digest": None,
             "runtime": f"Python {platform.python_version()}",
             "dependency_lock_digest": None,
-            "model_provider": f"local:{encoder.name}:{encoder.version}",
+            "model_provider": f"local:{encoder_name}:{model_path}" + (f"@{model_revision}" if model_revision else ""),
             "started_at": started.isoformat(),
             "finished_at": finished.isoformat(),
             "exit_code": 0,
             "termination_reason": None,
         },
-        "scope": {"snapshot_id": snapshot_id, "read_artifact_ids": [item.id for item in artifacts]},
+        "scope": {
+            "scope_id": document.get("scope_id"),
+            "grant_id": document.get("research_grant_id"),
+            "snapshot_id": snapshot_id,
+            "read_artifact_ids": [item.id for item in artifacts],
+        },
         "egress": {"events": [], "authoritative_source": "runner"},
         "outputs": outputs,
         "limitations": [
@@ -131,13 +180,36 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
         "resource_use": {"duration_ms": duration, "tokens": None, "estimated_cost": None},
         "failure": None,
         "method_details": {
-            "encoder": {"name": encoder.name, "version": encoder.version},
+            "encoder": {"name": encoder_name, "model": model_path, "revision": model_revision},
             "structural_signal": structural_meta,
-            "semantic_signal": semantic_meta,
+            "semantic_signal": {**semantic_meta, "cache": cache_meta},
             "selection": "top_k_unique_unordered_pairs_by_absolute_semantic_structural_difference",
+            "mode": mode,
+            "research_grant_id": document.get("research_grant_id"),
             "input_objective": objective,
         },
     }
+
+
+def check_cancelled(cancel_check) -> None:
+    if cancel_check and cancel_check():
+        raise RunCancelled("Run cancelled by user or host")
+
+
+def report_stage(stage_callback, stage: str) -> None:
+    if stage_callback:
+        stage_callback(stage)
+
+
+def task_snapshot_id(document: dict[str, Any]) -> str:
+    """Hash the exact task material, independent of encoder and run settings."""
+    snapshot = {
+        key: document.get(key)
+        for key in ("objective", "mode", "scope_id", "research_grant_id", "artifacts")
+        if key in document
+    }
+    raw = json.dumps(snapshot, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return "sha256:" + hashlib.sha256(raw).hexdigest()
 
 
 def load_input(path: str | Path) -> dict[str, Any]:
@@ -145,6 +217,11 @@ def load_input(path: str | Path) -> dict[str, Any]:
     if input_path.stat().st_size > 25 * 1024 * 1024:
         raise ValueError("Input bundle limit is 25 MiB")
     data = json.loads(input_path.read_text(encoding="utf-8"))
+    validate_document(data)
+    return data
+
+
+def validate_document(data: dict[str, Any]) -> None:
     if not isinstance(data, dict) or not isinstance(data.get("artifacts"), list):
         raise ValueError("Input must be a JSON object with an artifacts array")
     if len(data["artifacts"]) < 2:
@@ -159,12 +236,27 @@ def load_input(path: str | Path) -> dict[str, Any]:
             raise ValueError("Each artifact needs string id, text, and source_ref fields")
         if not item["id"].strip() or not item["text"].strip() or not item["source_ref"].strip():
             raise ValueError("Artifact id, text, and source_ref cannot be blank")
+        if item.get("corpus", "room") not in ("room", "external"):
+            raise ValueError("artifact corpus must be 'room' or 'external'")
         if item["id"] in seen:
             raise ValueError(f"Duplicate artifact id: {item['id']}")
         seen.add(item["id"])
         text_bytes += len(item["text"].encode("utf-8"))
     if len(data["artifacts"]) > 2000:
-        raise ValueError("Local prototype limit is 2,000 artifacts per run")
+        raise ValueError("Artifact limit is 2,000 per run")
     if text_bytes > 20 * 1024 * 1024:
-        raise ValueError("Local prototype input text limit is 20 MiB per run")
-    return data
+        raise ValueError("Input text limit is 20 MiB per run")
+    mode = data.get("mode", "local")
+    if mode not in ("local", "external", "hybrid"):
+        raise ValueError("mode must be local, external, or hybrid")
+    corpus_names = {item.get("corpus", "room") for item in data["artifacts"]}
+    if mode == "hybrid" and corpus_names != {"room", "external"}:
+        raise ValueError("hybrid mode requires room and externally researched artifacts")
+    if mode == "local" and corpus_names != {"room"}:
+        raise ValueError("local mode accepts only room artifacts")
+    if mode == "external" and corpus_names != {"external"}:
+        raise ValueError("external mode accepts only approved external research artifacts")
+    if mode in ("external", "hybrid") and not str(data.get("research_grant_id", "")).strip():
+        raise ValueError("external and hybrid modes require a research_grant_id from the approving host")
+    if data.get("scope_id") is not None and not isinstance(data.get("scope_id"), str):
+        raise ValueError("scope_id must be a string")

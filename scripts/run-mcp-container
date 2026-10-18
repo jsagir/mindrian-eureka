@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+image_name="${MINDRIAN_EUREKA_IMAGE:-mindrian-eureka:local}"
+model_dir="${MINDRIAN_EUREKA_RS_MODEL_PATH:?Set MINDRIAN_EUREKA_RS_MODEL_PATH to a local model directory}"
+data_dir="${MINDRIAN_EUREKA_DATA_DIR:?Set MINDRIAN_EUREKA_DATA_DIR to a writable local data directory}"
+encoder_name="${MINDRIAN_EUREKA_RS_ENCODER:-sentence-transformers}"
+container_memory="${MINDRIAN_EUREKA_CONTAINER_MEMORY:-8g}"
+container_cpus="${MINDRIAN_EUREKA_CONTAINER_CPUS:-4}"
+
+if [[ ! -d "$model_dir" ]]; then
+  printf 'Model directory does not exist: %s\n' "$model_dir" >&2
+  exit 2
+fi
+model_dir="$(cd "$model_dir" && pwd -P)"
+mkdir -p "$data_dir"
+data_dir="$(cd "$data_dir" && pwd -P)"
+exec docker run --rm -i \
+  --network none \
+  --read-only \
+  --cap-drop ALL \
+  --security-opt no-new-privileges \
+  --cpus "$container_cpus" \
+  --memory "$container_memory" \
+  --pids-limit 256 \
+  --tmpfs /tmp:rw,noexec,nosuid,size=1g \
+  --user "$(id -u):$(id -g)" \
+  --mount "type=bind,src=$model_dir,dst=/models/model,readonly" \
+  --mount "type=bind,src=$data_dir,dst=/data" \
+  --env MINDRIAN_EUREKA_RS_MODEL_PATH=/models/model \
+  --env MINDRIAN_EUREKA_DATA_DIR=/data \
+  --env MINDRIAN_EUREKA_RS_ENCODER="$encoder_name" \
+  --env HF_HUB_OFFLINE=1 \
+  --env TRANSFORMERS_OFFLINE=1 \
+  "$image_name"

@@ -2,7 +2,7 @@
 
 **Capability ID:** `opportunity.find_cross_domain_pairs`  
 **Method name:** Algorithmic Reverse Salient (RS)  
-**Status:** experimental local CLI prototype; not yet exposed through MCP or MindrianOS.
+**Status:** full local capability implementation with CLI and stdio MCP interface; empirical validation and MindrianOS host integration remain outstanding.
 
 This is the PPTX's **similarity-disagreement opportunity method**, not the separate Hughes-style use of “reverse salient” to mean a lagging system component or bottleneck.
 
@@ -10,9 +10,9 @@ This is the PPTX's **similarity-disagreement opportunity method**, not the separ
 
 You have a scoped collection of research artifacts and want a shortlist of pairs whose **semantic similarity** and **structural/topic similarity** disagree. The disagreement is a search signal: it can point to related ideas expressed through different technical vocabularies, or shared vocabulary used with different meanings. A person still has to decide whether a useful mechanism transfers.
 
-## What the prototype does
+## What the engine does
 
-1. Accepts a user objective and a bounded list of artifacts with stable IDs, source references, and text.
+1. Accepts a user objective and a bounded list of artifacts with stable IDs, source references, text, and corpus origin.
 2. Computes the PPTX-described structural signal: TF-IDF, truncated SVD, top seven terms per topic, topic-keyword membership counts, and pairwise L1 distance transformed into similarity.
 3. Computes one of two explicit semantic variants:
    - `reference-bert`: CLS embeddings for 512-token segments; pair scores average cosine similarity over segment pairs. Uses a local `bert-large-cased` model if supplied.
@@ -20,7 +20,15 @@ You have a scoped collection of research artifacts and want a shortlist of pairs
 4. Applies the source-described global centering/scaling to each similarity matrix, ranks unique unordered pairs by `abs(semantic - structural)`, and returns the signed difference and both source references.
 5. Builds a bounded review context per result. It includes the objective, score signals, and up to 1,600 characters from each source. The fixed instruction asks a later human or Theo review to explain a mechanism and mismatch, distinguish hypotheses from evidence, and treat source text as untrusted material.
 
-The objective guides later review but **does not change the pair ranking** in version 0.1.0. There is no LLM synthesis, remote research, portfolio write, or automatic learning in this capability.
+The objective guides later review but **does not change the pair ranking**. There is no LLM synthesis, research fetching, portfolio write, or automatic learning in this capability.
+
+## Supported run modes
+
+- **Local:** compare room artifacts supplied by MindrianOS. The engine reads no room directory and has no room credentials.
+- **External:** compare an approved external research bundle supplied by the MindrianOS research broker.
+- **Hybrid:** compare room artifacts against broker-provided external research and return only room-to-external pairs.
+
+The engine never searches the web or calls a provider. For external/hybrid runs it requires a `research_grant_id` as provenance metadata, but that identifier is not authorization by itself. MindrianOS must validate the grant before sending external material. The engine's outbound network policy remains denied.
 
 ## Input contract
 
@@ -31,12 +39,14 @@ The objective guides later review but **does not change the pair ranking** in ve
     {
       "id": "room-artifact-001",
       "source_ref": "room://research/item/001",
+      "corpus": "room",
       "title": "Example source title",
       "text": "The source text or abstract used for similarity analysis."
     },
     {
       "id": "room-artifact-002",
       "source_ref": "room://research/item/002",
+      "corpus": "room",
       "title": "Another example source title",
       "text": "Another source text or abstract used for similarity analysis."
     }
@@ -62,17 +72,42 @@ python -m pip install -e '.[modern-encoder]'
 eureka-rs input.json --encoder sentence-transformers --model-path /path/to/local-model --output result.json
 ```
 
-Model loading is local-only by default. If downloading is approved, pass both `--allow-model-download` and an immutable `--model-revision`; mutable model names are rejected for downloads. The engine itself does not fetch papers or call external APIs. Run it inside the host's intended worker sandbox before processing confidential room material; this CLI alone is not a filesystem/network sandbox.
+The local MCP process uses one configured encoder/model for its lifetime. Install and start it with:
+
+```bash
+python -m pip install -e '.[mcp-server,modern-encoder]'
+MINDRIAN_EUREKA_RS_MODEL_PATH=/path/to/local-model eureka-mcp
+```
+
+The host calls `scout_capabilities`, `scout_plan`, `scout_start`, `scout_status`, `scout_result`, `scout_cancel`, `scout_record_review`, `scout_review_summary`, `scout_evaluation_report`, `scout_delete_job`, or `scout_clear_embedding_cache`. Jobs run in a bounded local queue and return durable IDs. The host sends the approved artifact bundle; the server does not accept filesystem paths.
+
+Model loading is local-only by default. If downloading is approved for a CLI run, pass both `--allow-model-download` and an immutable 40-character commit hash with `--model-revision`; mutable model names are rejected for downloads. The MCP server does not enable model downloads. The engine itself does not fetch papers or call external APIs.
+
+Semantic embeddings are cached in a content-addressed SQLite cache. Cache keys include artifact text digest, encoder, model, revision, and method version. CLI runs default to `~/.cache/mindrian-eureka/embeddings.sqlite3`; MCP runs use `<MINDRIAN_EUREKA_DATA_DIR>/embeddings.sqlite3`. It stores embeddings, not source text, is bounded to 1 GiB, and evicts least recently used entries when full. Embeddings remain derived sensitive data. Set `MINDRIAN_EUREKA_CACHE_DIR` for CLI or `MINDRIAN_EUREKA_DATA_DIR` for MCP, and use `eureka-rs-cache-clear` or `scout_clear_embedding_cache` to purge them.
+
+MCP job records and results are stored under `~/.local/share/mindrian-eureka` by default, or `MINDRIAN_EUREKA_DATA_DIR`. The directory is created with owner-only permissions where supported. Requests/results expire after 30 days; terminal jobs clear their saved input bundle, while completed results retain bounded excerpts and source references. `scout_delete_job` removes an individual terminal job and its ratings. SQLite deletion is best-effort file cleanup; it is not a cryptographic erasure guarantee. Configure an encrypted local volume when required by room policy.
 
 ## Context engineering and harness boundary
 
-The engine receives only the approved corpus bundle. Its method is a deterministic ranking stage, not the whole user workflow. The harness around it should eventually:
+The engine receives only the host-supplied corpus bundle. Its method is a deterministic ranking stage, not the whole user workflow. The harness and host:
 
 - preserve room/objective/snapshot identity and source provenance;
 - construct the bounded review packet for Theo or the user;
-- record model and algorithm versions, runtime, failures, and budget;
+- record model and algorithm versions, runtime, failures, cache use, and budget;
 - let the user inspect, dismiss, deepen, or save a candidate;
 - keep any next-stage external research behind MindrianOS approval.
+
+Human labels (`useful`, `direction_correct`, and `already_known`) are stored and summarized by run configuration, objective, and exact task snapshot. They are descriptive evaluation data; they do not automatically update prompts, weights, thresholds, or future rankings.
+
+### Evaluate a method variant
+
+1. Freeze a representative bundle and objective; record its `snapshot_id`. The task snapshot hash covers objective, mode, scope/grant IDs, and ordered artifact records; it excludes encoder/model and ranking settings so method variants on identical task material share a snapshot ID.
+2. Run the same bundle and objective with each encoder/model variant, with the same `top_k` and scope.
+3. Have reviewers rate candidates using one shared rubric. Record every candidate shown, including unhelpful ones, to avoid selection bias.
+4. Use `scout_evaluation_report` to inspect useful rate, direction accuracy, already-known rate, and useful-at-10. It keeps task snapshots and objectives separate. Compare variants only within the same snapshot/objective and review protocol.
+5. Repeat on a held-out bundle before choosing a default. Report reviewer count and uncertainty; these descriptive rates are not proof of general performance.
+
+No benchmark corpus or human ratings are bundled yet. The interface is ready to collect them, but default-model selection and claims of improved opportunity discovery remain pending empirical evaluation.
 
 Do not send every artifact to a generative model. First use the similarity signals to create a bounded shortlist; only then supply the objective, pair evidence, and source references for review. Candidate ranking quality must be measured separately from the quality of the later explanation.
 

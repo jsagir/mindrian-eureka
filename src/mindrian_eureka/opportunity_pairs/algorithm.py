@@ -16,12 +16,17 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 
+class RunCancelled(Exception):
+    """Raised when the host/user cancels a running capability job."""
+
+
 @dataclass(frozen=True)
 class Artifact:
     id: str
     title: str
     text: str
     source_ref: str | None = None
+    corpus: str = "room"
 
     @property
     def model_text(self) -> str:
@@ -37,6 +42,7 @@ class PairCandidate:
     signed_difference: float
     disagreement: float
     interpretation: str
+    direction: str
 
 
 class SemanticEncoder(Protocol):
@@ -47,7 +53,7 @@ class SemanticEncoder(Protocol):
         """Return one finite, non-zero vector per input text."""
 
 
-def structural_similarity(texts: Sequence[str], *, topics: int = 80) -> tuple[np.ndarray, dict]:
+def structural_similarity(texts: Sequence[str], *, topics: int = 80, cancel_check=None) -> tuple[np.ndarray, dict]:
     """Reproduce source LSA topic-keyword membership and L1-distance signal.
 
     Small corpora use the largest valid topic count (a documented robustness
@@ -77,9 +83,12 @@ def structural_similarity(texts: Sequence[str], *, topics: int = 80) -> tuple[np
         topic_terms.append({str(terms[i]) for i in top})
 
     membership = np.zeros((len(texts), len(topic_terms)), dtype=np.float64)
-    analyzer = vectorizer.build_analyzer()
     for row, text in enumerate(texts):
-        for token in analyzer(text):
+        if cancel_check and cancel_check():
+            raise RunCancelled("Run cancelled during structural profile construction")
+        # The reference pipeline counts raw whitespace tokens. Punctuation is
+        # intentionally not stripped before membership matching.
+        for token in text.split():
             for column, vocabulary in enumerate(topic_terms):
                 if token in vocabulary:
                     membership[row, column] += 1.0
@@ -91,6 +100,8 @@ def structural_similarity(texts: Sequence[str], *, topics: int = 80) -> tuple[np
     normalized = np.divide(membership, totals, out=np.zeros_like(membership), where=totals != 0)
     distances = np.zeros((len(texts), len(texts)), dtype=np.float64)
     for i in range(len(texts) - 1):
+        if cancel_check and cancel_check():
+            raise RunCancelled("Run cancelled during structural pair scoring")
         row = np.abs(normalized[i + 1:] - normalized[i]).sum(axis=1)
         distances[i, i + 1:] = row
         distances[i + 1:, i] = row
@@ -151,7 +162,8 @@ def modern_semantic_similarity(embeddings: np.ndarray) -> tuple[np.ndarray, dict
 
 
 def rank_pairs(
-    artifacts: Sequence[Artifact], structural: np.ndarray, semantic: np.ndarray, *, top_k: int = 20
+    artifacts: Sequence[Artifact], structural: np.ndarray, semantic: np.ndarray, *,
+    top_k: int = 20, cross_corpus_only: bool = False,
 ) -> list[PairCandidate]:
     """Rank unique unordered pairs by absolute signal disagreement."""
     if structural.shape != semantic.shape or structural.shape != (len(artifacts), len(artifacts)):
@@ -160,6 +172,12 @@ def rank_pairs(
         raise ValueError("top_k cannot be negative")
     n = len(artifacts)
     upper_i, upper_j = np.triu_indices(n, k=1)
+    if cross_corpus_only:
+        cross = np.fromiter(
+            (artifacts[i].corpus != artifacts[j].corpus for i, j in zip(upper_i, upper_j)),
+            dtype=bool, count=len(upper_i),
+        )
+        upper_i, upper_j = upper_i[cross], upper_j[cross]
     disagreements = np.abs(semantic[upper_i, upper_j] - structural[upper_i, upper_j])
     if len(disagreements) > top_k:
         selected = np.argpartition(disagreements, -top_k)[-top_k:] if top_k else np.array([], dtype=int)
@@ -183,6 +201,7 @@ def rank_pairs(
             signed_difference=delta,
             disagreement=abs(delta),
             interpretation=interpretation,
+            direction="structural_transfer" if delta > 0 else "semantic_implementation",
         ))
     return candidates
 

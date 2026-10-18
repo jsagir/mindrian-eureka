@@ -15,9 +15,12 @@ dependencies = [
 [project.optional-dependencies]
 modern-encoder = ["sentence-transformers>=5.0,<6"]
 reference-encoder = ["torch>=2.6,<3", "transformers>=4.50,<6"]
+mcp-server = ["mcp>=2.0,<3"]
 
 [project.scripts]
 eureka-rs = "mindrian_eureka.opportunity_pairs.cli:main"
+eureka-mcp = "mindrian_eureka.opportunity_pairs.mcp_server:main"
+eureka-rs-cache-clear = "mindrian_eureka.opportunity_pairs.cli:clear_cache_main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

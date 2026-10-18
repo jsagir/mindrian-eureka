@@ -7,6 +7,9 @@
   "required": ["objective", "artifacts"],
   "properties": {
     "objective": { "type": "string", "maxLength": 5000 },
+    "mode": { "enum": ["local", "external", "hybrid"], "default": "local" },
+    "scope_id": { "type": "string", "maxLength": 256 },
+    "research_grant_id": { "type": "string", "maxLength": 256 },
     "artifacts": {
       "type": "array",
       "minItems": 2,
@@ -20,10 +23,17 @@
           "source_ref": { "type": "string", "minLength": 1, "maxLength": 2048 },
           "title": { "type": "string", "maxLength": 2000 },
           "text": { "type": "string", "minLength": 1 },
+          "corpus": { "enum": ["room", "external"], "default": "room" },
           "media_type": { "type": "string", "maxLength": 128 },
           "sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" }
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "mode": { "enum": ["external", "hybrid"] } }, "required": ["mode"] },
+      "then": { "properties": { "research_grant_id": { "type": "string", "minLength": 1 } }, "required": ["research_grant_id"] }
+    }
+  ]
 }
