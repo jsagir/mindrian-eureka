@@ -47,7 +47,9 @@ The packaged catalog (`eureka capabilities` or MCP `scout_capabilities`) is auth
 Install the package in the repo's locked environment, then pass a JSON file to the named stage:
 
 ```bash
-eureka capabilities
+eureka capabilities --summary
+eureka capabilities --summary --search wicked
+eureka capabilities --summary --status experimental
 eureka capability graph.explore_local_relationships
 eureka schema graph.explore_local_relationships
 eureka-signal-scout input.json --output result.json
@@ -77,7 +79,7 @@ eureka-workflow graph.compare_bidirectional_topics corpus-pair.json --output top
 eureka-workflow graph.rank_evidence_paths paths.json --output ranked-paths.json
 ```
 
-The CLI reads only the explicit input file and writes only the requested result path. For HSI, supply `dense_vectors` in the request or set `MINDRIAN_EUREKA_HSI_MODEL_PATH` to a local model. Jason accepts `MINDRIAN_EUREKA_JASON_MODEL_PATH`; without one, its text similarity field is explicitly a character n-gram proxy.
+The compact catalog returns names, JTBDs, readiness, and route names without schemas. Filter it with `--status` or case-insensitive `--search`; bare `eureka capabilities` remains the full catalog JSON. Inspect one selected ID before invocation to get its exact schemas, requirements, and limitations. The CLI reads only the explicit input file and writes only the requested result path. For HSI, supply `dense_vectors` in the request or set `MINDRIAN_EUREKA_HSI_MODEL_PATH` to a local model. Jason accepts `MINDRIAN_EUREKA_JASON_MODEL_PATH`; without one, its text similarity field is explicitly a character n-gram proxy.
 
 ## MCP
 

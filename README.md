@@ -70,12 +70,13 @@ Install the package and inspect the available job contracts:
 
 ```bash
 uv sync
-uv run eureka capabilities
+uv run eureka capabilities --summary
+uv run eureka capabilities --summary --search wicked
 uv run eureka capability opportunity.find_cross_domain_pairs
 uv run eureka schema graph.explore_local_relationships
 ```
 
-`eureka capability <id>` reports the exact CLI executable and MCP tool for each runnable capability, along with its input and output schemas. Planned and blocked catalog entries have no invocation route.
+`eureka capabilities --summary` returns the plain-language name and JTBD, readiness, and CLI/MCP route names without embedding every schema. Add `--status experimental|host_brokered|blocked|planned` or `--search <text>` to narrow discovery. Bare `eureka capabilities` retains the full catalog JSON. `eureka capability <id>` reports the exact CLI executable and MCP tool for a runnable capability, with its schemas, prerequisites, and limitations. Planned and blocked catalog entries have no invocation route.
 
 For local MCP use, install the MCP and local encoder extras. Point Eureka at an already available model; the server does not download one:
 
@@ -110,11 +111,11 @@ uv run eureka-workflow research.extract_experts_from_papers approved-papers.json
 uv run eureka-workflow analogy.cross_domain_research stage-request.json --output stage-result.json
 ```
 
-Runnable catalog entries with CLI/MCP surfaces publish input and output JSON schemas. The generic `eureka-workflow` and `scout_run_workflow` routes enforce the published schemas, as do dedicated capability routes. The earlier MindrianOS adapter review exercised 53 then-current contracts; this repo now has 58 runnable catalog entries after the five graph algorithms were split into standalone services, and those five now pass source-suite, installed-wheel CLI, and installed-wheel stdio MCP checks. Real-user room evaluation remains outstanding. The host adapter is not yet merged or released, and its end-to-end live-session authorization remains unverified. The Genesis planner, weak-signal tail, critic, RS domain analyzer, RS classifier, breakthrough scorer, commercial assessor, preprocessor, and expert extraction workers require Node.js 22 or newer; the MCP container includes this runtime. The critic asks MindrianOS to supply locally computed embeddings and graph neighbors; it never opens the room graph. Its two rubric prompts must stay inside MindrianOS's approved local judge path. RS expert extraction processes only papers supplied by MindrianOS; it does not search, resolve the expert directory, or write to a room. `analogy.cross_domain_research` is called one stage at a time; MindrianOS performs approved research between local stages.
+Runnable catalog entries with CLI/MCP surfaces publish input and output JSON schemas. The generic `eureka-workflow` and `scout_run_workflow` routes enforce the published schemas, as do dedicated capability routes. All 58 runnable entries now have CLI routes, advertised MCP routes, and retrievable input/output contracts; live catalog verification covers all 58, while direct live execution covers representative shared and dedicated routes. The MindrianOS integration branch has a passing real bound-room authorization and graph-analysis test using the production session resolver and a live Eureka stdio MCP process; the room database remains unchanged. This adapter is committed on a feature branch but has not been merged or released. Real-user room evaluation remains outstanding. The Genesis planner, weak-signal tail, critic, RS domain analyzer, RS classifier, breakthrough scorer, commercial assessor, preprocessor, and expert extraction workers require Node.js 22 or newer; the MCP container includes this runtime. The critic asks MindrianOS to supply locally computed embeddings and graph neighbors; it never opens the room graph. Its two rubric prompts must stay inside MindrianOS's approved local judge path. RS expert extraction processes only papers supplied by MindrianOS; it does not search, resolve the expert directory, or write to a room. `analogy.cross_domain_research` is called one stage at a time; MindrianOS performs approved research between local stages.
 
 ### Connect Eureka engines to the MindrianOS graph
 
-The local graph is part of MindrianOS and remains its canonical knowledge layer at `<room>/.mindrian/room.db`. MindrianOS's `/mos:eureka` research-planner perspective and catalogued engine calls are separate, independently usable surfaces. Eureka engines interact with the local graph through an authorized, bounded snapshot supplied by MindrianOS over CLI or MCP; engines return traceable signals and stable graph references, while MindrianOS resolves evidence, routes review, and performs graph writes. The isolated MindrianOS adapter review worktree implements this projection path; it is not yet merged or released. The existing visualization export omits the content and source references engines need and is not the adapter. Snapshot JSON is the handoff contract, not a parallel graph. See the [MindrianOS graph integration contract](docs/integrations/mindrianos.md#mindrianos-graph-as-the-shared-knowledge-layer).
+The local graph is part of MindrianOS and remains its canonical knowledge layer at `<room>/.mindrian/room.db`. MindrianOS's `/mos:eureka` research-planner perspective and catalogued engine calls are separate, independently usable surfaces. Eureka engines interact with the local graph through an authorized, bounded snapshot supplied by MindrianOS over CLI or MCP; engines return traceable signals and stable graph references, while MindrianOS resolves evidence, routes review, and performs graph writes. The committed MindrianOS integration branch implements this projection path and has passed live bound-session verification; it is not yet merged or released. The existing visualization export omits the content and source references engines need and is not the adapter. Snapshot JSON is the handoff contract, not a parallel graph. See the [MindrianOS graph integration contract](docs/integrations/mindrianos.md#mindrianos-graph-as-the-shared-knowledge-layer).
 
 The optional direct Neo4j CLI connection below targets a separately configured Neo4j store. It does not read the room-local SQLite graph and has no MindrianOS room authorization broker, so it is only for development, replay, and controlled operator analysis.
 
@@ -180,7 +181,7 @@ sequenceDiagram
 
 **MindrianOS owns** the user conversation, room access, scope, approval gates, Theo calls, external research, human decisions, and portfolio or graph writes. **Eureka owns** the capability catalog, bounded computations, local job state, validation, and result provenance. Eureka does not read room paths, call Theo, fetch unapproved research, issue `/mos:*` commands, or write to the MindrianOS portfolio.
 
-The isolated adapter review worktree connects MindrianOS's authorized graph projection to this repo's capability MCP. It is not yet merged into the active plugin checkout or released, so the user-facing `/mos:eureka` research-planner flow must still be described separately from a catalogued engine call. See the [host integration contract](docs/integrations/mindrianos.md) for the boundary and handoff.
+The MindrianOS integration branch connects authorized graph projections to this repo's capability MCP, while the user-facing `/mos:eureka` research-planner flow remains a separate, independently usable surface. See the [host integration contract](docs/integrations/mindrianos.md) for the boundary and handoff.
 
 ## Run the MCP server
 
