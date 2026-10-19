@@ -1,6 +1,6 @@
 # Algorithm origins and why each service exists
 
-**Scope:** current Mindrian Eureka capability catalog, version 2026-10-19+standalone-graph-algorithm-services. This document explains the source lineage and intended use of every catalog entry. “Why” is the service's job-to-be-done, not proof that its method works.
+**Scope:** current Mindrian Eureka capability catalog, version 2026-10-20+standalone-graph-algorithm-services-host-handoff-capability-chains. This document explains the source lineage and intended use of every catalog entry. “Why” is the service's job-to-be-done, not proof that its method works.
 
 ## How to read the origins
 

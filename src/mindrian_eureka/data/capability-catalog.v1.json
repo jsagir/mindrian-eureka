@@ -1,6 +1,6 @@
 {
   "schema_version": "eureka.capability-catalog.v1",
-  "catalog_version": "2026-10-20+standalone-graph-algorithm-services-host-handoffs",
+  "catalog_version": "2026-10-20+standalone-graph-algorithm-services-host-handoff-capability-chains",
   "readiness_key": {
     "experimental": "A runnable local implementation exists; its method fidelity or decision value still requires evaluation.",
     "host_brokered": "A runnable local step exists, but MindrianOS must provide approved external research and/or review.",
@@ -581,9 +581,17 @@
       ],
       "host_handoff": {
         "type": "related_partial",
-        "mcp": "eureka_graph_opportunity_scout",
-        "cli": "/mos:eureka",
-        "limitation": "These routes surface local pair leads or run MindrianOS's current research workflow; neither implements the full critic-and-evidence capability."
+        "capabilities": [
+          "discovery.plan_opportunity_scout",
+          "opportunity.synthesize_discovery_signals",
+          "portfolio.prepare_candidate_critic",
+          "portfolio.inspect_candidate_grounding",
+          "portfolio.prepare_critic_rubric",
+          "portfolio.evaluate_critic_rubric"
+        ],
+        "mcp": "eureka_capability_run or eureka_capability_start for listed stages; eureka_graph_opportunity_scout for graph-scoped pair leads",
+        "cli": "eureka-workflow for listed stages; eureka-scout for a prepared graph artifact bundle",
+        "limitation": "These are independently callable stages, not a verified end-to-end critic, evidence, and human-review workflow. Outputs remain hypotheses and proposals."
       }
     },
     {
@@ -752,9 +760,14 @@
       ],
       "host_handoff": {
         "type": "related_partial",
-        "mcp": "research_run with op=plan",
-        "cli": "/mos:scientific-roadmap then /mos:research",
-        "limitation": "MindrianOS can plan and execute approved research, but the Eureka multidomain orchestration capability remains planned."
+        "capabilities": [
+          "research.run_genesis_local_plan",
+          "research.prepare_multidomain_plan",
+          "research.group_multidomain_findings"
+        ],
+        "mcp": "eureka_graph_genesis_plan for a bound graph projection; otherwise eureka_capability_run for each listed stage; research_run for approved external searches",
+        "cli": "eureka-workflow for each listed stage; MindrianOS /mos:research for approved search execution",
+        "limitation": "Theo or the host must review and hand off between stages. No single orchestrator verifies domain coverage, executes research, and groups results end to end."
       }
     },
     {
@@ -827,8 +840,10 @@
       ],
       "host_handoff": {
         "type": "related_partial",
-        "cli": "/mos:bono",
-        "limitation": "BONO is a separate governed MindrianOS debate workflow, not an executable route for this blocked Eureka capability."
+        "capabilities": ["deliberation.prepare_six_hat_review"],
+        "mcp": "eureka_capability_run with deliberation.prepare_six_hat_review",
+        "cli": "eureka-workflow deliberation.prepare_six_hat_review; MindrianOS /mos:bono for its separate governed debate",
+        "limitation": "The Eureka stage organizes supplied arguments but does not run a debate or issue a ruling. BONO is a separate host workflow, not this blocked Eureka capability."
       }
     },
     {
@@ -925,9 +940,11 @@
         "This is not a truth classifier and is not implemented in this repository."
       ],
       "host_handoff": {
-        "type": "no_exact_route",
-        "mcp": "claim_read and claim_verify",
-        "limitation": "These tools reopen or record checks on individual claims; they do not compare competing explanations or produce a comparative verdict."
+        "type": "related_partial",
+        "capabilities": ["analysis.compare_text_differences", "analysis.audit_claim_traceability"],
+        "mcp": "eureka_capability_run with each listed capability; claim_read and claim_verify for separate host claim checks",
+        "cli": "eureka-workflow with each listed capability",
+        "limitation": "Text differences and evidence-link completeness do not compare explanatory mechanisms, predictions, or counterevidence and do not produce a comparative verdict."
       }
     },
     {
@@ -976,8 +993,11 @@
         "No expert directory lookup or outreach is implemented here."
       ],
       "host_handoff": {
-        "type": "unavailable",
-        "limitation": "No authorized expert directory, privacy policy, or lookup transport is configured."
+        "type": "related_partial",
+        "capabilities": ["research.extract_experts_from_papers"],
+        "mcp": "eureka_capability_run with research.extract_experts_from_papers after MindrianOS has approved and supplied paper records",
+        "cli": "eureka-workflow research.extract_experts_from_papers",
+        "limitation": "This extracts author candidates only from supplied papers; it does not find experts by topic, search a directory, validate expertise, or authorize outreach."
       }
     },
     {

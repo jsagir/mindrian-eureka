@@ -48,8 +48,23 @@ def test_compact_capability_catalog_preserves_all_jobs_and_readiness(monkeypatch
         "thesis.read_prior",
     }
     assert handoffs["bottleneck.diagnose"]["type"] == "host_native"
-    assert handoffs["claims.compare"]["type"] == "no_exact_route"
-    assert handoffs["experts.find_for_topic"]["type"] == "unavailable"
+    assert handoffs["claims.compare"]["type"] == "related_partial"
+    assert handoffs["claims.compare"]["capabilities"] == [
+        "analysis.compare_text_differences", "analysis.audit_claim_traceability"
+    ]
+    assert handoffs["experts.find_for_topic"]["type"] == "related_partial"
+    assert handoffs["experts.find_for_topic"]["capabilities"] == ["research.extract_experts_from_papers"]
+    assert handoffs["research.orchestrate_multidomain"]["capabilities"] == [
+        "research.run_genesis_local_plan", "research.prepare_multidomain_plan",
+        "research.group_multidomain_findings"
+    ]
+    by_id = {item["id"]: item for item in source["capabilities"]}
+    for handoff in handoffs.values():
+        for capability_id in handoff.get("capabilities", []):
+            related = by_id[capability_id]
+            assert related["status"] in {"experimental", "host_brokered"}
+            assert related["routes"]["cli"]
+            assert related["routes"]["mcp"]
 
 
 def test_capability_catalog_can_filter_by_readiness_and_jtbd(monkeypatch, capsys):
