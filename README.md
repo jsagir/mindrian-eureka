@@ -1,21 +1,20 @@
 # MindrianOS Eureka
 
-<p align="center">
-  <img src="assets/mos-nav-wordmark.svg" alt="MindrianOS m:os" width="220" />
-</p>
-
-<p align="center"><strong>MindrianOS service · <code>/mos:eureka</code></strong></p>
 <p align="center"><strong>Extracting opportunities hidden in plain sight.</strong></p>
+<p align="center">An adjunct intelligence service for MindrianOS · <code>/mos:eureka</code></p>
 <p align="center">
-  <img src="assets/theo-face-wicked-problems.svg" alt="Theo's Wicked Problems framework face: shifting planes, contested boundaries, and open uncertainty" width="144" />
+  <img src="assets/mos-lockup-paper-v2.svg" alt="MindrianOS parent identity: Theo's face, separator slash, and m:os wordmark" width="260" />
 </p>
-<p align="center"><em>Theo's Wicked Problems face: the inquiry stays open while the context shifts.</em></p>
+<p align="center">
+  <img src="assets/theo-face-wicked-problems.svg" alt="Theo's Wicked Problems framework face, representing shifting planes, contested boundaries, and open uncertainty" width="124" />
+</p>
+<p align="center"><em>Wicked problems are the uncertain context Eureka explores, not a problem it claims to solve.</em></p>
 
-MindrianOS Eureka is an intelligence system built to search uncertainty for opportunity. Its central challenge is the **wicked problem**: an evolving, interconnected situation with unclear boundaries, competing interpretations, and no single final formulation or solution. Eureka helps people map that uncertainty, imagine futures, find opportunity hypotheses, and develop selected paths into problems that can be investigated and tested. It uses research, pattern finding, analogy, synthesis, and critical challenge to reveal where useful possibilities may lie. People decide what matters and what to do next.
+MindrianOS Eureka helps people explore uncertainty for opportunity. It supports the search across evolving, interconnected challenges with unclear boundaries, competing interpretations, and no single final formulation. Eureka helps map the challenge, imagine alternative futures, find opportunity hypotheses, and develop selected paths into problems that can be investigated and tested. It brings research, pattern finding, analogy, synthesis, and critical challenge into that work. People decide what matters and what to do next.
 
-**MindrianOS entrypoint:** `/mos:eureka` · **Repository:** `mindrian-eureka` · **Runtime:** Python 3.11+
+**Repository:** `mindrian-eureka` · **Runtime:** Python 3.11+ · **Use:** local CLI or stdio MCP, within the host's scope and approval rules
 
-**Jump to:** [The method](#explore-wicked-problems-for-opportunity) · [Capabilities](#what-this-repository-provides) · [Quick start](#quick-start) · [MindrianOS integration](#how-mindrianos-and-eureka-work-together) · [Readiness](#readiness-at-a-glance) · [Development](#development) · [Policies](#repository-policies)
+**Start here:** [Explore the method](#explore-wicked-problems-for-opportunity) · [Find a capability](#what-this-repository-provides) · [Run the CLI](#quick-start) · [Connect MindrianOS](#how-mindrianos-and-eureka-work-together) · [Check readiness](#readiness-at-a-glance) · [Contribute](#development) · [Review policies](#repository-policies)
 
 > **Theo is the outside method thinker; the intelligence agents explore the case.** Together, they help the user inquire into uncertainty: Theo guides method choice, while the agents search the authorized material for patterns, mechanisms, contradictions, and promising questions. The Theo face moves through curiosity, searching, recognition, skepticism, decision, and handover. These are inquiry states, not a claim that a wicked problem has been solved. The host keeps room context, approvals, evidence review, and decisions.
 
@@ -30,7 +29,7 @@ Wickedness is the operating context for this intelligence: a persistent, changin
 | **Ill-defined opportunity search** | What worthwhile opportunity might be emerging here? | Explore the system, field, and possible futures for needs, tensions, leverage points, and candidate problems. There may be many useful answers. |
 | **Well-defined investigation** | Can this selected path meet explicit criteria? | Bound one testable part of the challenge with constraints and success measures, then investigate or test it. This makes progress on a wicked problem; it does not mean the whole problem is solved. |
 
-The point is not to escape uncertainty as quickly as possible. Uncertainty can signal where existing explanations, technologies, and institutions have not settled the future—and where new opportunities may exist. Eureka helps the team explore that space, connect weak signals, reframe assumptions, and develop several evidence-linked possibilities. A team can make one path testable, learn from it, then return to the wider wicked challenge with better questions.
+The point is not to escape uncertainty as quickly as possible. Uncertainty can signal where existing explanations, technologies, and institutions have not settled the future, and where new opportunities may exist. Eureka helps the team explore that space, connect weak signals, reframe assumptions, and develop several evidence-linked possibilities. A team can make one path testable, learn from it, then return to the wider wicked challenge with better questions.
 
 ```mermaid
 flowchart TD
@@ -153,19 +152,19 @@ uv run eureka capabilities
 
 Useful entry points:
 
-- `eureka` — inspect capability and host-workflow contracts.
-- `eureka-mcp` — start the stdio MCP server.
-- `eureka-rs` — run RS pair discovery from a prepared request.
-- `eureka-sme` — run SME mapping and research workflow stages.
-- `eureka-omm` — run decision-sequence analysis (install the `hmm` extra).
-- `eureka-workflow` — run a named supporting capability stage.
-- `eureka-scout` — run the local RS + HSI signal scout.
+- `eureka`: inspect capability and host-workflow contracts.
+- `eureka-mcp`: start the stdio MCP server.
+- `eureka-rs`: run RS pair discovery from a prepared request.
+- `eureka-sme`: run SME mapping and research workflow stages.
+- `eureka-omm`: run decision-sequence analysis (install the `hmm` extra).
+- `eureka-workflow`: run a named supporting capability stage.
+- `eureka-scout`: run the local RS + HSI signal scout.
 
 See [Using capabilities](docs/using-capabilities.md) for CLI and MCP examples, [Architecture](docs/architecture.md) for system design, and [Engine jobs](docs/engine-jobs.md) for JTBD and method guidance.
 
 ## Repository policies
 
-[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Licensing and provenance](docs/licensing-and-provenance.md). This repo has no blanket license because some source-derived methods still need rights review.
+[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [M:OS brand application](docs/brand-application.md) · [Licensing and provenance](docs/licensing-and-provenance.md). This repo has no blanket license because some source-derived methods still need rights review.
 
 ## Theo's role and face
 
