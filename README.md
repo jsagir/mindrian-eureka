@@ -1,7 +1,7 @@
 # MindrianOS Eureka
 
 <p align="center">
-  <img src="story/mindrian-opportunity-story/assets/theo-face-rest.svg" alt="Theo, the MindrianOS method guide" width="112" />
+  <img src="assets/theo-face-wicked-problems.svg" alt="Theo's Wicked Problems framework face: shifting planes, contested boundaries, and open uncertainty" width="160" />
 </p>
 
 **Extracting opportunities hidden in plain sight.**
