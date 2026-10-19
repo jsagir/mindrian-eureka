@@ -6,4 +6,4 @@ Before publishing, redistributing, or reusing any method outside its approved lo
 
 Third-party dependencies keep their own licenses; see the package metadata and upstream notices. This document is a project status note, not a license grant or legal opinion.
 
-The `/m:os` horizontal brand mark in `assets/mos-logo-horizontal.png` is copied from the Mindrian website's `website/public/brand/mos-logo-horizontal.png` for repository identification. The Theo Wicked Problems framework face is a static rendering of the Wicked Problems face in the canonical Theo framework HTML.
+The `/m:os` header wordmark in `assets/mos-nav-wordmark.svg` reproduces the stable face-and-name lockup rendered by `MosWordmark` in the Mindrian website navigation (`website/src/components/mos/mos-wordmark.tsx` and its CSS module). Its face geometry, colors, and proportions follow that source; the wordmark uses a system sans-serif fallback so it remains self-contained in GitHub README rendering. The Theo Wicked Problems framework face is a static rendering of the Wicked Problems face in the canonical Theo framework HTML.

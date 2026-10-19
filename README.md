@@ -1,7 +1,7 @@
 # MindrianOS Eureka
 
 <p align="center">
-  <img src="assets/mos-logo-horizontal.png" alt="MindrianOS /m:os — Eureka, on purpose" width="440" />
+  <img src="assets/mos-nav-wordmark.svg" alt="MindrianOS m:os" width="220" />
 </p>
 
 <p align="center"><strong>MindrianOS service · <code>/mos:eureka</code></strong></p>
