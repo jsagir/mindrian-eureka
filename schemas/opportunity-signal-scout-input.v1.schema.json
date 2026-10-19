@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.opportunity-signal-scout-input.v1",
+  "title": "Local RS + HSI opportunity-signal scout request",
+  "type": "object",
+  "required": ["objective", "scope_id", "artifacts"],
+  "properties": {
+    "objective": {"type": "string", "minLength": 1, "maxLength": 5000},
+    "scope_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "artifacts": {"type": "array", "minItems": 2, "maxItems": 2500, "items": {"type": "object", "required": ["id", "source_ref", "text"], "properties": {"id": {"type": "string", "minLength": 1}, "source_ref": {"type": "string", "minLength": 1}, "title": {"type": "string"}, "text": {"type": "string", "minLength": 1, "maxLength": 1000000}, "corpus": {"const": "room"}, "media_type": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[A-Fa-f0-9]{64}$"}}}},
+    "top_k": {"type": "integer", "minimum": 1, "maximum": 100},
+    "dense_vectors": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "number"}}}
+  },
+  "additionalProperties": false
+}

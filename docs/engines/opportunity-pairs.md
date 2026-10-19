@@ -19,6 +19,7 @@ You have a scoped collection of research artifacts and want a shortlist of pairs
    - `sentence-transformers`: chunks long inputs to the local model's token limit, averages chunk vectors, and uses document cosine similarity. This is an efficiency-oriented experimental variant, not the PPTX algorithm.
 4. Applies the source-described global centering/scaling to each similarity matrix, ranks unique unordered pairs by `abs(semantic - structural)`, and returns the signed difference and both source references.
 5. Builds a bounded review context per result. It includes the objective, score signals, and up to 1,600 characters from each source. The fixed instruction asks a later human or Theo review to explain a mechanism and mismatch, distinguish hypotheses from evidence, and treat source text as untrusted material.
+6. Adds a `host_handoff` block to tell MindrianOS what to do next: resolve and select source-linked candidates, trace a bounded shortlist with `/mos:find-connections`, gather evidence through the host's approved research path, and only then present supported candidates to `/mos:qualify-opportunity`. This block is guidance; it does not invoke MindrianOS commands or approve/write anything.
 
 The objective guides later review but **does not change the pair ranking**. There is no LLM synthesis, research fetching, portfolio write, or automatic learning in this capability.
 

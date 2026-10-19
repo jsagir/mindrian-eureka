@@ -1,0 +1,164 @@
+{
+  "run_type": "legacy_genesis_stages_1_to_4_only",
+  "source_revision": "local working tree, not pinned",
+  "input_scope": "JHTV July 2026 RS report and selected public disclosures; full catalog absent",
+  "remote_research": "not run by legacy pipeline; public source checks conducted separately and recorded in the accompanying review",
+  "panel_and_synthesis": "not run; current synthesis is heuristic and does not meet evidence requirements",
+  "decomposition": {
+    "segments": [
+      {
+        "text": "For the July 2026 Johns Hopkins Technology Ventures room, identify which public technology disclosures warrant the next translation investigation. The available RS run report describes a 2,117-record catalog and 20 candidate pairs, but the source CSV is missing in this checkout.",
+        "char_count": 280,
+        "sentence_count": 2,
+        "index": 0
+      },
+      {
+        "text": "Leads include monoscopic endoscope 3D reconstruction paired with low-cost 3D surgical guidance, a motion-triggered retracting endoscope safety system, prosthetic liner EMG electrodes paired with an implantable muscle interface, overlapping intimate-partner-violence safety decision apps, and a nanogel paired with a local brain-treatment nanofiber hydrogel.",
+        "char_count": 357,
+        "sentence_count": 1,
+        "index": 1
+      },
+      {
+        "text": "Find opportunities by checking technical fit, clinical workflow, user needs, evidence and counterevidence, safety, regulation, licensing overlap, and falsifiable next experiments.",
+        "char_count": 179,
+        "sentence_count": 1,
+        "index": 2
+      },
+      {
+        "text": "Do not assume combinations are novel or compatible; separate verified claims from hypotheses; preserve disagreement; no minimum breakthrough count.",
+        "char_count": 147,
+        "sentence_count": 1,
+        "index": 3
+      }
+    ],
+    "elements": {
+      "concepts": [],
+      "technologies": [],
+      "methodologies": [],
+      "challenges": [],
+      "opportunities": []
+    },
+    "complexity": {
+      "level": "LOW",
+      "score": 2.96,
+      "depthRequired": "SPECIALIST",
+      "factors": {
+        "segment_count": 4,
+        "element_count": 0,
+        "avg_segment_length": 240.8
+      }
+    },
+    "metadata": {
+      "timestamp": "2026-10-18T13:45:00.691496Z",
+      "input_length": 965,
+      "segment_count": 4,
+      "total_elements": 0
+    }
+  },
+  "domains": {
+    "domains": {
+      "primary": [],
+      "technical": [],
+      "adjacent": [],
+      "methodological": []
+    },
+    "metadata": {
+      "timestamp": "2026-10-18T13:45:00.693646Z",
+      "total_domains": 0,
+      "primary_count": 0,
+      "technical_count": 0,
+      "adjacent_count": 0,
+      "complexity_input": "LOW"
+    }
+  },
+  "personas": {
+    "personas": [],
+    "hat_assignments": {},
+    "metadata": {
+      "timestamp": "2026-10-18T13:45:00.693659Z",
+      "persona_count": 0,
+      "depth_required": "SPECIALIST",
+      "bono_enriched": true,
+      "primary_domains": 0
+    }
+  },
+  "research_plan": {
+    "planId": "GENESIS-1792320300",
+    "context": "For the July 2026 Johns Hopkins Technology Ventures room, identify which public technology disclosures warrant the next translation investigation. The available RS run report describes a 2,117-record catalog and 20 candidate pairs, but the source CSV is missing in this checkout. Leads include monoscopic endoscope 3D reconstruction paired with low-cost 3D surgical guidance, a motion-triggered retracting endoscope safety system, prosthetic liner EMG electrodes paired with an implantable muscle int...",
+    "personaCount": 0,
+    "personas": [],
+    "executionPhases": [
+      {
+        "phase": 1,
+        "name": "Parallel Domain Research",
+        "duration": "10-15 minutes",
+        "parallel": true,
+        "activities": []
+      },
+      {
+        "phase": 2,
+        "name": "Cross-Reference & Hat Dialogue",
+        "duration": "10-15 minutes",
+        "parallel": false,
+        "activities": [
+          {
+            "action": "Cross-persona finding review"
+          },
+          {
+            "action": "Six Hats dialogue sessions"
+          },
+          {
+            "action": "Breakthrough validation"
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "name": "Synthesis Discussion",
+        "duration": "15-25 minutes",
+        "parallel": false,
+        "activities": [
+          {
+            "action": "Expert panel convening (4 rounds)"
+          },
+          {
+            "action": "Breakthrough prioritization"
+          },
+          {
+            "action": "Implementation design"
+          }
+        ]
+      },
+      {
+        "phase": 4,
+        "name": "Consensus & Documentation",
+        "duration": "10-15 minutes",
+        "parallel": false,
+        "activities": [
+          {
+            "action": "Consensus building"
+          },
+          {
+            "action": "Final documentation"
+          }
+        ]
+      }
+    ],
+    "collaborationMatrix": {
+      "primaryInteractions": [],
+      "hatDialogues": [],
+      "synthesisRoles": {},
+      "conflictResolution": "Evidence-based consensus with documented dissent"
+    },
+    "timeline": {
+      "minimum": "32 minutes",
+      "expected": "40 minutes",
+      "maximum": "52 minutes"
+    },
+    "metadata": {
+      "timestamp": "2026-10-18T13:45:00.693685Z",
+      "total_queries": 0,
+      "hat_enriched_count": 0
+    }
+  }
+}

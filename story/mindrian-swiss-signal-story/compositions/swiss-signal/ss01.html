@@ -1,0 +1,143 @@
+<template>
+<style>
+@font-face{font-family:Figtree;src:url(../../assets/fonts/figtree.woff2) format("woff2");font-weight:400 900;font-display:block}
+@font-face{font-family:"DM Sans";src:url(../../assets/fonts/dm-sans-latin.woff2) format("woff2");font-weight:400 1000;font-display:block}
+@font-face{font-family:"JetBrains Mono";src:url(../../assets/fonts/jetbrains-mono.ttf) format("truetype");font-weight:400 800;font-display:block}
+*{box-sizing:border-box}
+#root{--paper:#F7F5EE;--ink:#111111;--blue:#1F3FBF;--red:#D6281F;--yellow:#F2C200;--muted:#4B4943;--rule:#C9C6BC;position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;color:var(--ink);font-family:"DM Sans",Arial,sans-serif}
+.clip{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden}
+.ss01-bg{background:var(--paper)}
+.ss01-stage{isolation:isolate}
+.ss01-mast{position:absolute;left:104px;right:104px;top:50px;height:70px;display:flex;align-items:flex-start;border-bottom:2px solid var(--ink)}
+.ss01-kicker{font:900 34px/1 Figtree,Arial,sans-serif;letter-spacing:-.045em}
+.ss01-kicker b{color:var(--blue)}
+.ss01-edition{margin-left:auto;font:600 18px/1.2 "JetBrains Mono",monospace;letter-spacing:.04em;text-align:right}
+.ss01-mast-rule{position:absolute;left:104px;right:104px;top:119px;height:5px;background:var(--ink);transform-origin:0 50%}
+.ss01-chapter{position:absolute;left:104px;top:154px;height:58px;display:flex;align-items:center;border:2px solid var(--ink);background:var(--paper);font-family:Figtree,Arial,sans-serif}
+.ss01-chapter-no{align-self:stretch;width:76px;display:grid;place-items:center;background:var(--blue);color:#fff;font:900 28px/1 Figtree,Arial,sans-serif}
+.ss01-chapter-name{padding:0 22px;font:800 21px/1 Figtree,Arial,sans-serif;letter-spacing:.035em}
+.ss01-case{position:absolute;right:104px;top:164px;border-left:10px solid var(--yellow);padding:7px 0 7px 14px;font:700 18px/1 "JetBrains Mono",monospace;letter-spacing:.06em}
+.ss01-index{position:absolute;left:104px;top:252px;font:700 19px/1 "JetBrains Mono",monospace;color:var(--blue);letter-spacing:.07em}
+.ss01-sheet{position:absolute;left:104px;top:300px;width:1160px;height:424px;border-top:5px solid var(--ink);border-bottom:2px solid var(--ink);background:rgba(247,245,238,.98)}
+.ss01-sheet-head{height:78px;display:flex;align-items:center;border-bottom:2px solid var(--rule);font:700 20px/1 "JetBrains Mono",monospace;letter-spacing:.045em}
+.ss01-source-mark{width:24px;height:24px;margin-right:16px;background:var(--blue);transform-origin:50% 50%}
+.ss01-source-id{font-size:26px;color:var(--blue);margin-right:18px}
+.ss01-sheet-kind{color:var(--muted)}
+.ss01-series{margin-left:auto;color:var(--muted)}
+.ss01-quote{margin:42px 40px 0 0;max-width:1080px;font:800 55px/1.08 Figtree,Arial,sans-serif;letter-spacing:-.038em}
+.ss01-word{display:inline-block;margin-right:.22em}
+.ss01-sheet-foot{position:absolute;left:0;right:0;bottom:22px;padding-top:16px;border-top:2px solid var(--rule);display:flex;align-items:center;font:650 18px/1 "JetBrains Mono",monospace;letter-spacing:.035em}
+.ss01-sheet-foot strong{color:var(--blue)}
+.ss01-sheet-foot span:last-child{margin-left:auto}
+.ss01-focus-tick{position:absolute;left:1118px;top:498px;width:14px;height:68px;background:var(--yellow);transform-origin:50% 100%}
+.ss01-spine{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible;pointer-events:none}
+.ss01-spine path{fill:none;stroke:var(--blue);stroke-width:16;stroke-linecap:square;stroke-linejoin:miter}
+.ss01-theo{position:absolute;left:1322px;top:332px;width:470px;height:366px}
+.ss01-theo-label{position:absolute;left:42px;top:0;font:700 18px/1 "JetBrains Mono",monospace;letter-spacing:.055em;color:var(--blue)}
+.ss01-eye{position:absolute;top:72px;width:52px;height:52px;background:var(--ink);transform-origin:50% 50%}
+.ss01-eye-a{left:102px}
+.ss01-eye-b{left:196px}
+.ss01-gaze-note{position:absolute;left:42px;top:158px;width:290px;padding-top:13px;border-top:2px solid var(--ink);font:700 20px/1.15 "JetBrains Mono",monospace;letter-spacing:.035em}
+.ss01-provenance{position:absolute;left:104px;right:104px;top:814px;height:66px;border-top:2px solid var(--ink);display:flex;align-items:center;font:650 18px/1 "JetBrains Mono",monospace;letter-spacing:.045em}
+.ss01-provenance b{color:var(--blue);margin-right:22px}
+.ss01-provenance span:last-child{margin-left:auto;color:var(--muted)}
+@media(prefers-reduced-motion:reduce){.ss01-stage *{animation:none!important}}
+</style>
+<div id="root" data-composition-id="ss01" data-width="1920" data-height="1080" data-duration="7">
+  <div class="clip ss01-bg" data-start="0" data-duration="7" data-track-index="0" aria-hidden="true"></div>
+  <div class="clip ss01-stage" data-start="0" data-duration="7" data-track-index="1">
+    <header class="ss01-mast">
+      <div class="ss01-kicker">SWISS <b>SIGNAL</b></div>
+      <div class="ss01-edition">FIELD NOTE / OPPORTUNITY DISCOVERY<br>TEST SERIES 04</div>
+    </header>
+    <div class="ss01-mast-rule"></div>
+    <div class="ss01-chapter">
+      <div class="ss01-chapter-no">01</div>
+      <div class="ss01-chapter-name">START ON THE GROUND</div>
+    </div>
+    <div class="ss01-case">ILLUSTRATIVE</div>
+    <div class="ss01-index">SOURCE FRAGMENT / E-17</div>
+    <section class="ss01-sheet" aria-label="Illustrative lab note E-17">
+      <div class="ss01-sheet-head">
+        <span class="ss01-source-mark"></span>
+        <strong class="ss01-source-id">E-17</strong>
+        <span class="ss01-sheet-kind">OBSERVED</span>
+        <span class="ss01-series">TEST SERIES 04 / LAB NOTE</span>
+      </div>
+      <div class="ss01-quote">
+        <span class="ss01-word">Readings</span>
+        <span class="ss01-word">shift</span>
+        <span class="ss01-word">after</span>
+        <span class="ss01-word">the</span>
+        <span class="ss01-word">same</span>
+        <span class="ss01-word">sample</span><br>
+        <span class="ss01-word">is</span>
+        <span class="ss01-word">removed</span>
+        <span class="ss01-word">and</span>
+        <span class="ss01-word">replaced.</span>
+      </div>
+      <div class="ss01-sheet-foot">
+        <strong>FIXED PROVENANCE</strong>
+        <span>ENTRY / 17</span>
+        <span>ILLUSTRATIVE CASE DETAIL</span>
+      </div>
+    </section>
+    <div class="ss01-focus-tick" aria-hidden="true"></div>
+    <svg class="ss01-spine" viewBox="0 0 1920 1080" aria-hidden="true">
+      <path class="ss01-draw" d="M 286 646 L 1236 646 C 1324 646 1380 600 1380 526 L 1380 410"/>
+    </svg>
+    <aside class="ss01-theo" aria-label="Theo, curious, inspecting source E-17">
+      <div class="ss01-theo-label">THEO / CURIOUS</div>
+      <div class="ss01-eye ss01-eye-a"></div>
+      <div class="ss01-eye ss01-eye-b"></div>
+      <div class="ss01-gaze-note">NOTICE THE CHANGED PHRASE</div>
+    </aside>
+    <footer class="ss01-provenance">
+      <b>GROUND / 01</b>
+      <span>ONE SOURCE BEFORE ANY ABSTRACTION</span>
+      <span>E-17 / ILLUSTRATIVE</span>
+    </footer>
+  </div>
+</div>
+<script>
+(() => {
+  const scene = document.querySelector('[data-composition-id="ss01"]');
+  const q = (selector) => scene.querySelector(selector);
+  const qa = (selector) => Array.from(scene.querySelectorAll(selector));
+  qa('.ss01-draw').forEach((path) => {
+    const length = path.getTotalLength();
+    path.style.strokeDasharray = String(length);
+    path.style.strokeDashoffset = String(length);
+  });
+  const tl = gsap.timeline({ paused: true });
+  tl.fromTo(q('.ss01-sheet'), { opacity: 0, scale: 0.992 }, { opacity: 1, scale: 1, duration: 0.36, ease: 'power2.out' }, 0.12);
+  tl.fromTo(q('.ss01-mast'), { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.44, ease: 'power2.out' }, 0);
+  tl.fromTo(q('.ss01-mast-rule'), { scaleX: 0 }, { scaleX: 1, duration: 0.72, ease: 'power2.out' }, 0.06);
+  tl.fromTo(q('.ss01-chapter'), { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.42, ease: 'power2.out' }, 0.5);
+  tl.fromTo(q('.ss01-case'), { opacity: 0, x: 16 }, { opacity: 1, x: 0, duration: 0.36, ease: 'power2.out' }, 0.76);
+  tl.fromTo(q('.ss01-index'), { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power1.out' }, 0.92);
+  tl.fromTo(q('.ss01-source-mark'), { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.52, ease: 'power3.out' }, 1.08);
+  tl.fromTo(qa('.ss01-source-id, .ss01-sheet-kind, .ss01-series'), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.36, stagger: 0.07, ease: 'power2.out' }, 1.2);
+  qa('.ss01-word').forEach((word, index) => {
+    tl.fromTo(word, { opacity: 0, y: 9 }, { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out' }, 1.42 + index * 0.16);
+  });
+  tl.fromTo(q('.ss01-sheet-foot'), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.42, ease: 'power2.out' }, 2.82);
+  tl.fromTo(q('.ss01-provenance'), { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power1.out' }, 3.06);
+  tl.to(q('.ss01-draw'), { strokeDashoffset: 0, duration: 1.62, ease: 'power2.out' }, 3.4);
+  tl.fromTo(q('.ss01-theo-label'), { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.38, ease: 'power2.out' }, 4.28);
+  qa('.ss01-eye').forEach((eye, index) => {
+    tl.fromTo(eye, { scale: 0, opacity: 0, y: 12 }, { scale: 1, opacity: 1, y: 0, duration: 0.58, ease: 'power3.out' }, 4.46 + index * 0.08);
+  });
+  tl.fromTo(q('.ss01-gaze-note'), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 4.9);
+  tl.to(qa('.ss01-eye'), { x: -46, duration: 0.22, ease: 'power1.out' }, 5.3);
+  tl.fromTo(q('.ss01-focus-tick'), { scaleY: 0, opacity: 0 }, { scaleY: 1, opacity: 1, duration: 0.45, ease: 'power2.out' }, 5.34);
+  tl.to(qa('.ss01-eye'), { x: -18, y: 16, duration: 0.22, ease: 'power1.inOut' }, 5.94);
+  tl.to(qa('.ss01-eye'), { x: -34, y: 9, duration: 0.22, ease: 'power1.inOut' }, 6.46);
+  window.__timelines = window.__timelines || {};
+  window.__timelines.ss01 = tl;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    tl.progress(1).pause();
+  }
+})();
+</script>
+</template>

@@ -1,0 +1,30 @@
+{
+  "schema_version": "eureka.capability.v1",
+  "id": "portfolio.inventory_taxonomy_coverage",
+  "name": "Inventory Portfolio Taxonomy Coverage",
+  "jtbd": "When the room has a user- or host-supplied taxonomy and assigned source records, count where material is represented or thin before investigating possible gaps.",
+  "status": "experimental",
+  "input_schema": "schemas/workflow-request.v1.schema.json",
+  "output_schema": "schemas/workflow-result.v1.schema.json",
+  "runtime": "Python >=3.11; local CLI and stdio MCP",
+  "network": "denied",
+  "data_classes": [
+    "host-supplied-scoped-records",
+    "source-identifiers"
+  ],
+  "requires": [
+    "Source-linked artifacts with category_ids",
+    "Explicit taxonomy and taxonomy provenance"
+  ],
+  "side_effects": [],
+  "limitations": [
+    "Counts representation only; it does not run original HSI embedding, PCA/UMAP, or demand analysis, and does not establish market whitespace.",
+    "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+  ],
+  "version": "0.1.0",
+  "source_revision": "src/mindrian_eureka/discovery_workflows.py::portfolio_coverage",
+  "license_status": "unknown",
+  "max_runtime_seconds": 3600,
+  "max_input_bytes": 20971520,
+  "max_candidates": 50000
+}

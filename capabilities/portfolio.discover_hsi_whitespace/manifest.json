@@ -1,0 +1,21 @@
+{
+  "schema_version": "eureka.capability.v1",
+  "id": "portfolio.discover_hsi_whitespace",
+  "name": "Find HSI-Seeded Room Whitespace",
+  "jtbd": "When an HSI pair scan has surfaced a surprising relationship, check whether its connecting region is sparse in this room while near a supplied set of reference frameworks, so I can decide which connection deserves further research.",
+  "status": "experimental",
+  "input_schema": "schemas/hsi-whitespace-input.v1.schema.json",
+  "output_schema": "schemas/workflow-result.v1.schema.json",
+  "runtime": "Python >=3.11; local CLI and stdio MCP",
+  "network": "denied",
+  "data_classes": ["host-supplied-scoped-records", "source-identifiers", "host-generated-vectors"],
+  "requires": ["At least 3 artifact vectors and 1 reference framework vector", "HSI pair results from the same scoped snapshot", "All vectors produced with the same embedding model and preprocessing"],
+  "side_effects": [],
+  "limitations": ["Finds room-relative sparse regions only; no external literature, market demand, novelty, or commercial whitespace claim.", "Baseline frameworks, embedding quality, and small-corpus percentile stability affect results.", "The MindrianOS host must generate embeddings and obtain reference baselines; this capability does not access room paths or remote providers."],
+  "version": "0.1.0",
+  "source_revision": "HSI discover-hsi-whitespace.py mechanism adapted to a host-supplied vector bundle",
+  "license_status": "unknown",
+  "max_runtime_seconds": 3600,
+  "max_input_bytes": 20971520,
+  "max_candidates": 50000
+}

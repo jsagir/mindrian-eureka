@@ -1,0 +1,18 @@
+{
+  "scene": "ss09",
+  "duration_s": 21,
+  "rules": [
+    "center-outward-expansion",
+    "svg-path-draw",
+    "sine-wave-loop"
+  ],
+  "exit": {
+    "vector": "stationary, 0 px/s",
+    "still_moving": false
+  },
+  "entry": {
+    "vector": "upward, approximately 41 px/s",
+    "from_rest": false
+  }
+}
+

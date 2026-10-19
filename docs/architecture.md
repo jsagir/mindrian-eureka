@@ -1,12 +1,12 @@
 # MindrianOS Eureka: standalone repository architecture
 
-**Status:** architecture baseline with one runnable local MCP capability
-**Purpose:** define an independently buildable repository that MindrianOS can call for opportunity discovery across local room material and explicitly approved research.  
-**Scope:** architecture for the opportunity-discovery runtime. The cross-domain-pair capability has CLI/MCP entrypoints and a local durable job runtime; the MindrianOS adapter, OS-level worker sandbox, external research broker, and other engine migrations remain unimplemented.
+**Status:** architecture baseline with local RS, SME, OMM, HSI, and Jason interfaces plus supporting discovery workflow stages; only RS currently has the durable job lifecycle.
+**Purpose:** define an independently buildable repository that MindrianOS can call for opportunity discovery across local room material and explicitly approved research.
+**Scope:** the capability catalog, local engines, and host handoff contract. The adapter from the existing MindrianOS `/mos:eureka` research-planner workflow, OS-level worker sandbox for every capability, external research broker, and most engine migrations remain unimplemented.
 
 ## 1. Decision summary
 
-Create a standalone repository named **`mindrian-eureka`**. The MindrianOS user-facing workflow is **`/m:os:eureka`**. The repo owns reusable opportunity-discovery capabilities and bounded job execution. MindrianOS remains the user-facing host and the source of truth for room permissions, approval gates, room data, and opportunity decisions.
+Create a standalone repository named **`mindrian-eureka`**. Integrate it with MindrianOS's existing **`/mos:eureka`** user workflow. The repo owns reusable opportunity-discovery capabilities and bounded job execution. MindrianOS remains the user-facing host and the source of truth for room permissions, approval gates, room data, and opportunity decisions.
 
 The standalone repo should provide:
 
@@ -68,22 +68,9 @@ MCP is the host/capability interface. It is not the process sandbox, durable que
 
 ## 4. Capability model and user-facing names
 
-The registry exposes jobs by user need, not by historical folder names. Names below are working names; final JTBD copy belongs in the capability manifest.
+The user-facing names, JTBD descriptions, prerequisites, network boundaries, and maturity are maintained in the [machine-readable capability catalog](../src/mindrian_eureka/data/capability-catalog.v1.json) and summarized in the [capability catalog guide](capability-catalog.md). The catalog deliberately includes blocked and planned jobs so the host can explain what is not runnable. It is the source of truth; historical engine folder names are not user-facing capabilities.
 
-| Capability ID | User-facing name | Job | Initial status |
-|---|---|---|---|
-| `bottleneck.diagnose` | **Find the Bottleneck** | Find which subsystem or missing input most constrains a stated objective. | Existing MindrianOS RS route; compare contract before reuse. |
-| `coverage.find_gaps` | **Find Portfolio Gaps** | Locate under-covered themes or evidence areas in a scoped corpus. | Experimental; HSI implementation/reducer behavior needs resolution. |
-| `opportunity.find_cross_domain_pairs` | **Find Cross-Domain Opportunity Pairs** | When a user has a scoped research collection and wants unexpected connections, rank pairs where semantic and structural signals disagree, with source links for human review. | Implemented local CLI/MCP capability; experimental until source and method evaluation. |
-| `analogy.find_mechanisms` | **Find Mechanisms from Other Fields** | Retrieve or recall candidate mechanisms relevant to a problem. | Experimental; distinguish local recall from approved external retrieval. |
-| `analogy.map_structure` | **Test a Structural Analogy** | Map a selected source mechanism to a target problem and expose candidate inferences. | SME mapping prototype; candidate inference is not validation. |
-| `claims.compare` | **Compare Competing Explanations** | Compare two explicit explanations/claims using defined criteria. | Jason prototype; calibration and contract required. |
-| `deliberation.structure` | **Structure a Decision Debate** | Organize multiple perspectives and a human ruling for a bounded what-if. | Use existing MindrianOS BONO initially; package copy is unreviewed. |
-| `evidence.fetch_for_question` | **Gather Evidence for a Question** | Fetch evidence for an approved question or bottleneck thesis. | Must route through approved broker; package-specific fetchers disabled until audited. |
-| `experts.find_for_topic` | **Find Relevant Experts** | Identify relevant experts from available, authorized research records. | Blocked until required transport, privacy behavior, and data prerequisites are established. |
-| `thesis.read_prior` | **Read a Prior Bottleneck Thesis** | Retrieve and explain a saved RS thesis. | Readback only; not a discovery run. |
-
-The “Algorithms” folder contains three distinct concepts (Genesis, Jason, Opposable Mind HMM); they must not be advertised as one executable. Opposable Mind remains a research method until it has an executable implementation, inputs, outputs, and validation.
+The “Algorithms” folder contains separate methods: Genesis research planning, Jason pitch critique, and OMM decision-sequence analysis. They are not one executable. OMM now has a local implementation, but remains experimental and is not an opportunity finder or validated measure of reasoning ability.
 
 ## 5. Engine and worker architecture
 
@@ -195,18 +182,22 @@ Runner-generated records are authoritative for input hashes, runtime, egress, ex
 
 Expose a small user/workflow surface. Keep low-level engine invocation and run-control operations available to the MindrianOS orchestrator but do not force users to learn internal package names.
 
-Implemented first-capability MCP tools:
+Current MCP tools include:
 
-- `scout_capabilities` — list enabled/experimental/blocked capabilities with JTBD and prerequisites.
+- `scout_capabilities` / `scout_capability` — list the packaged readiness-aware catalog or inspect one JTBD, prerequisites, and limits.
 - `scout_plan` — transform objective + authorized scope into a proposed sequence and explain why; no execution or egress.
-- `scout_start` — start one approved plan; returns durable `job_id`.
+- `scout_start` — start a durable RS run; returns `job_id`.
+- `scout_start_opportunity_signal_scout` — run RS and HSI on one local bundle and return their source-linked union; returns `job_id`.
 - `scout_status` — inspect progress, partial results, blockers, and required user action.
 - `scout_result` — retrieve a validated result envelope by job ID.
 - `scout_cancel` — cancel a running job and prevent later stages from starting.
 - `scout_record_review` / `scout_review_summary` / `scout_evaluation_report` — retain and summarize human ratings without automatic learning.
 - `scout_delete_job` / `scout_clear_embedding_cache` — delete retained run data or derived embeddings.
+- `scout_find_hybrid_similarity_pairs` / `scout_compare_text_differences` — run source-bounded HSI and Jason diagnostics from host-supplied bundles.
+- `scout_assess_analogy_fitness` — compare sourced SAPPhIRE-layer structures through a local embedding model.
+- `scout_run_workflow` — run one explicit local stage: coverage inventory, mechanism-corpus recall, Genesis planning/grouping, evidence-completeness audit, Six-Hat review preparation, relationship-proposal packaging, or selective scout planning. It never means “run all engines.”
 
-Evidence planning and fetching are not implemented in this capability. MindrianOS's approved broker must prepare, authorize, and supply the external bundle.
+RS and RS+HSI signal synthesis use the durable job lifecycle. SME mapping, research-bundle stages, OMM, typed HSI and Jason analysis, and selected workflow stages are direct calls. HSI can be called separately or included in the combined local scout. Evidence fetching is not implemented in this repository; MindrianOS's approved broker must prepare, authorize, and supply the external bundle. The capability catalog identifies which full engine jobs remain blocked or planned.
 
 Potential MCP resources: `scout://capabilities`, `scout://jobs/{job_id}`, `scout://runs/{job_id}/manifest`. Potential prompts: `scout-opportunity`, `scout-bottleneck`, and `scout-deep-dive`. Prompts support user-selected entry points; MCP tools do the work; resources provide inspectable state.
 
@@ -254,7 +245,7 @@ Standalone Opportunity Scout runtime
 
 ## 10. Proposed long-term repository layout
 
-This is the architecture target for later capability families. The current repository implements the RS package, contracts, schemas, and docs; the other listed directories are not yet present.
+This is the architecture target for later capability families. The repository implements RS, SME, OMM, HSI pair scoring, Jason text-difference diagnostics, and selected workflow preparation stages. Eureka breakthrough harvesting, HSI whitespace, full Analogies recall/fitness, Genesis research execution, BONO debate, and graph discovery remain incomplete.
 
 ```text
 mindrian-eureka/

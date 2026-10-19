@@ -1,0 +1,139 @@
+<template>
+<style>
+@font-face{font-family:Figtree;src:url(../../assets/fonts/figtree.woff2) format("woff2");font-weight:400 900;font-display:block}
+@font-face{font-family:"DM Sans";src:url(../../assets/fonts/dm-sans-latin.woff2) format("woff2");font-weight:400 1000;font-display:block}
+@font-face{font-family:"JetBrains Mono";src:url(../../assets/fonts/jetbrains-mono.ttf) format("truetype");font-weight:400 800;font-display:block}
+*{box-sizing:border-box}
+#root{--paper:#F7F5EE;--ink:#111111;--blue:#1F3FBF;--red:#D6281F;--yellow:#F2C200;--muted:#4B4943;--soft:#C9C6BC;position:absolute;inset:0;width:100%;height:100%;overflow:hidden;color:var(--ink);font-family:"DM Sans",Arial,sans-serif}
+.ss06-ground{position:absolute;inset:0;background:var(--paper)}
+.ss06-scene{position:absolute;inset:0;overflow:hidden}
+.ss06-shell{position:absolute;left:104px;right:104px;top:48px;height:126px;border-bottom:5px solid var(--ink);display:flex;align-items:flex-start}
+.ss06-chapter{width:86px;height:62px;background:var(--blue);color:white;display:grid;place-items:center;font:900 34px/1 Figtree,Arial,sans-serif}
+.ss06-headline{margin:0 0 0 26px;font:900 72px/.88 Figtree,Arial,sans-serif;letter-spacing:-.055em}
+.ss06-headline span{display:block;color:var(--blue)}
+.ss06-case{margin-left:auto;text-align:right;font:700 18px/1.35 "JetBrains Mono",monospace;letter-spacing:.04em}
+.ss06-case strong{display:block;color:var(--red);font-size:22px}
+.ss06-stage{position:absolute;left:104px;top:210px;width:1712px;height:650px;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);overflow:hidden}
+.ss06-stage-label{position:absolute;left:0;top:18px;font:800 18px/1 "JetBrains Mono",monospace;letter-spacing:.07em;color:var(--blue)}
+.ss06-map-svg{position:absolute;inset:0;width:1712px;height:650px;overflow:visible;pointer-events:none}
+.ss06-history-link{fill:none;stroke:var(--muted);stroke-width:3;stroke-dasharray:12 12;opacity:.52}
+.ss06-active-spine{fill:none;stroke:var(--blue);stroke-width:7;stroke-linecap:square}
+.ss06-proposed-path{fill:none;stroke:var(--muted);stroke-width:4;stroke-dasharray:13 13}
+.ss06-mask-path{fill:none;stroke:white;stroke-width:20}
+.ss06-evidence{position:absolute;left:70px;top:158px;width:340px;height:132px;border:3px solid var(--red);background:var(--paper);padding:17px 20px}
+.ss06-evidence small{display:block;font:800 16px/1 "JetBrains Mono",monospace;color:var(--red);letter-spacing:.06em}
+.ss06-evidence strong{display:block;margin-top:13px;font:900 30px/1 Figtree,Arial,sans-serif;letter-spacing:-.025em}
+.ss06-evidence span{display:block;margin-top:10px;font:700 16px/1 "JetBrains Mono",monospace;color:var(--muted)}
+.ss06-history{position:absolute;inset:0;color:var(--muted)}
+.ss06-history-tag{position:absolute;left:688px;top:105px;font:800 17px/1 "JetBrains Mono",monospace;letter-spacing:.055em}
+.ss06-history-tag strong{color:var(--red);margin-left:18px}
+.ss06-history-card{position:absolute;left:688px;top:184px;width:520px;height:150px;border:3px dashed var(--muted);background:transparent;padding:22px 26px}
+.ss06-history-card small{font:800 15px/1 "JetBrains Mono",monospace;letter-spacing:.06em}
+.ss06-history-card b{display:block;margin-top:17px;font:900 37px/1 Figtree,Arial,sans-serif;letter-spacing:-.03em}
+.ss06-swap{position:absolute;left:650px;top:150px;width:520px;height:150px;z-index:3}
+.ss06-model-card{position:absolute;inset:0;border:4px solid var(--ink);background:var(--paper);padding:20px 24px;transform-origin:50% 50%}
+.ss06-model-card small{display:block;font:800 15px/1 "JetBrains Mono",monospace;letter-spacing:.06em;color:var(--blue)}
+.ss06-model-card strong{display:block;margin-top:16px;max-width:375px;font:900 38px/.93 Figtree,Arial,sans-serif;letter-spacing:-.04em}
+.ss06-outgoing{z-index:2;border-color:var(--muted)}
+.ss06-incoming{z-index:3;border-color:var(--blue)}
+.ss06-incoming-sub{position:absolute;left:24px;bottom:14px;font:800 14px/1 "JetBrains Mono",monospace;color:var(--blue);letter-spacing:.045em}
+.ss06-theo-inline{position:absolute;right:18px;top:16px;width:106px;height:108px;border-left:2px solid var(--blue);padding-left:14px}
+.ss06-theo-inline svg{width:90px;height:90px;overflow:visible}
+.ss06-burst{position:absolute;left:0;top:30px;width:1712px;height:420px}
+.ss06-branch{position:absolute;left:50%;top:50%;width:322px;height:124px;border:3px dashed var(--muted);background:var(--paper);padding:16px 18px;will-change:transform}
+.ss06-branch small{display:block;font:800 15px/1 "JetBrains Mono",monospace;color:var(--blue);letter-spacing:.06em}
+.ss06-branch strong{display:block;margin-top:12px;font:900 28px/.98 Figtree,Arial,sans-serif;letter-spacing:-.025em}
+.ss06-branch span{display:block;margin-top:9px;font:700 15px/1 "JetBrains Mono",monospace;color:var(--muted)}
+.ss06-reason{position:absolute;left:0;right:0;top:574px;height:62px;border-top:5px solid var(--ink);display:flex;align-items:center;font:800 17px/1 "JetBrains Mono",monospace;letter-spacing:.045em}
+.ss06-reason strong{color:var(--red);margin-right:18px}
+.ss06-reason .ss06-provenance{margin-left:auto;color:var(--blue)}
+.ss06-reason-rule{position:absolute;left:0;top:-5px;width:620px;height:5px;background:var(--blue);transform-origin:left center}
+.ss06-foot{position:absolute;left:104px;right:104px;top:874px;height:24px;display:flex;font:800 18px/1 "JetBrains Mono",monospace;letter-spacing:.04em}
+.ss06-foot .ss06-illustrative{color:var(--red)}
+.ss06-foot .ss06-version{margin-left:auto;color:var(--blue)}
+@media(prefers-reduced-motion:reduce){.ss06-branch{will-change:auto}}
+</style>
+<div id="root" data-composition-id="ss06" data-width="1920" data-height="1080" data-duration="15">
+  <div class="clip ss06-ground" data-start="0" data-duration="15" data-track-index="0"></div>
+  <section class="clip ss06-scene" data-start="0" data-duration="15" data-track-index="1">
+    <header class="ss06-shell">
+      <div class="ss06-chapter">06</div>
+      <h1 class="ss06-headline">REVISE THE MODEL <span>KEEP THE HISTORY</span></h1>
+      <div class="ss06-case">CASE 04â€“17<strong>ILLUSTRATIVE</strong></div>
+    </header>
+    <div class="ss06-stage">
+      <div class="ss06-stage-label">MODEL HISTORY / ACTIVE REVISION / PROPOSED BRANCHES</div>
+      <svg class="ss06-map-svg" viewBox="0 0 1712 650" aria-hidden="true">
+        <defs>
+          <mask id="ss06-mask-adapt" maskUnits="userSpaceOnUse" x="0" y="0" width="1712" height="650"><path id="ss06-mask-path-adapt" class="ss06-mask-path" d="M910 300 C800 370 560 400 336 468"/></mask>
+          <mask id="ss06-mask-alternate" maskUnits="userSpaceOnUse" x="0" y="0" width="1712" height="650"><path id="ss06-mask-path-alternate" class="ss06-mask-path" d="M910 300 C910 370 856 405 856 468"/></mask>
+          <mask id="ss06-mask-revisit" maskUnits="userSpaceOnUse" x="0" y="0" width="1712" height="650"><path id="ss06-mask-path-revisit" class="ss06-mask-path" d="M910 300 C1030 370 1180 405 1376 468"/></mask>
+        </defs>
+        <path class="ss06-history-link" d="M410 258 C520 258 592 258 688 258"/>
+        <path id="ss06-active-spine" class="ss06-active-spine" d="M410 222 C520 222 536 126 650 224"/>
+        <path class="ss06-proposed-path" mask="url(#ss06-mask-adapt)" d="M910 300 C800 370 560 400 336 468"/>
+        <path class="ss06-proposed-path" mask="url(#ss06-mask-alternate)" d="M910 300 C910 370 856 405 856 468"/>
+        <path class="ss06-proposed-path" mask="url(#ss06-mask-revisit)" d="M910 300 C1030 370 1180 405 1376 468"/>
+      </svg>
+      <div class="ss06-evidence"><small>C-04 / COUNTERCHECK</small><strong>FIXED-MOUNT RESULT</strong><span>NEW EVIDENCE / SOURCE OPEN</span></div>
+      <div class="ss06-history">
+        <div class="ss06-history-tag">MODEL V1 / RETAINED <strong>REVISED</strong></div>
+        <div class="ss06-history-card"><small>FORMER MODEL</small><b>SAMPLE VARIABILITY</b></div>
+      </div>
+      <div class="ss06-swap">
+        <div class="ss06-model-card ss06-outgoing"><small>ACTIVE / MODEL V1</small><strong>SAMPLE VARIABILITY</strong></div>
+        <div class="ss06-model-card ss06-incoming">
+          <small>ACTIVE / MODEL V2</small><strong>PLACEMENT-DEPENDENT MEASUREMENT</strong>
+          <div class="ss06-incoming-sub">REVISED, NOT ERASED</div>
+          <div class="ss06-theo-inline">
+            <svg viewBox="0 0 90 90" role="img" aria-label="Theo navigating revised branches">
+              <rect class="ss06-theo-eye" x="8" y="8" width="16" height="16" fill="#111111"/>
+              <rect class="ss06-theo-eye" x="44" y="8" width="16" height="16" fill="#111111"/>
+              <g id="ss06-theo-bar" transform="rotate(0 44 56)"><rect x="37" y="30" width="14" height="52" fill="#1F3FBF"/></g>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="ss06-burst">
+        <div class="ss06-branch" data-target-x="-520" data-target-y="290"><small>PROPOSED / ADAPT</small><strong>SELF-REGISTERING HOLDER</strong><span>BRANCH A / HOLDER</span></div>
+        <div class="ss06-branch" data-target-x="0" data-target-y="290"><small>PROPOSED / ALTERNATE</small><strong>ALIGNMENT INSERT</strong><span>BRANCH B / INSERT</span></div>
+        <div class="ss06-branch" data-target-x="520" data-target-y="290"><small>PROPOSED / REVISIT</small><strong>THE NEED</strong><span>BRANCH C / OPEN</span></div>
+      </div>
+      <div class="ss06-reason"><i class="ss06-reason-rule"></i><strong>REASON FOR CHANGE</strong>FIXED-MOUNT COUNTERCHECK DID NOT REPEAT THE SHIFT<span class="ss06-provenance">E-17 Â· C-04 Â· MODEL V2</span></div>
+    </div>
+    <footer class="ss06-foot"><span class="ss06-illustrative">ILLUSTRATIVE CASE</span><span class="ss06-version">FORMER MODEL RETAINED / PROPOSED LINKS DOTTED</span></footer>
+  </section>
+</div>
+<script>
+(()=>{
+  const root=document.querySelector('[data-composition-id="ss06"]');
+  const tl=gsap.timeline({paused:true});
+  const draw=(selector)=>{const path=root.querySelector(selector);const length=path.getTotalLength();path.style.strokeDasharray=String(length);path.style.strokeDashoffset=String(length);return path;};
+  const spine=draw('#ss06-active-spine');
+  const branchMasks=['#ss06-mask-path-adapt','#ss06-mask-path-alternate','#ss06-mask-path-revisit'].map(draw);
+  tl.fromTo(root.querySelector('.ss06-shell'),{opacity:0,y:-18},{opacity:1,y:0,duration:.58,ease:'power2.out'},0);
+  tl.fromTo(root.querySelector('.ss06-history'),{opacity:0,x:24},{opacity:.48,x:0,duration:1.05,ease:'power2.out'},.12);
+  tl.fromTo(root.querySelector('.ss06-evidence'),{opacity:0,x:-38},{opacity:1,x:0,duration:.72,ease:'power3.out'},.32);
+  tl.fromTo(root.querySelector('.ss06-history-tag'),{opacity:0,y:-14},{opacity:1,y:0,duration:.62,ease:'power2.out'},1.45);
+  tl.to(spine,{strokeDashoffset:0,duration:.82,ease:'power2.out'},3.08);
+  tl.fromTo(root.querySelector('.ss06-swap'),{x:-18},{x:0,duration:.45,ease:'power2.out'},3.48);
+  tl.to(root.querySelector('.ss06-outgoing'),{scale:.72,opacity:0,duration:.42,ease:'power2.in'},4.18);
+  tl.fromTo(root.querySelector('.ss06-incoming'),{scale:.72,opacity:0},{scale:1,opacity:1,duration:.62,ease:'back.out(1.4)'},4.46);
+  tl.fromTo(root.querySelector('.ss06-incoming-sub'),{opacity:0,y:13},{opacity:1,y:0,duration:.48,ease:'power3.out'},5.18);
+  const starts=[6.15,7.72,9.28];
+  root.querySelectorAll('.ss06-branch').forEach((el,i)=>{
+    tl.to(branchMasks[i],{strokeDashoffset:0,duration:.8,ease:'power2.out'},starts[i]);
+    tl.fromTo(el,{xPercent:-50,yPercent:-50,x:0,y:0,scale:.64,opacity:0},{x:Number(el.dataset.targetX),y:Number(el.dataset.targetY),scale:1,opacity:1,duration:1.25,ease:'power3.out'},starts[i]+.16);
+  });
+  tl.fromTo(root.querySelector('.ss06-reason'),{opacity:0,y:20},{opacity:1,y:0,duration:.72,ease:'power2.out'},11.5);
+  tl.fromTo(root.querySelector('.ss06-reason-rule'),{scaleX:0,transformOrigin:'0% 50%'},{scaleX:1,duration:.75,ease:'power2.out'},11.72);
+  tl.to(root.querySelectorAll('.ss06-theo-eye'),{x:-5,duration:.22,stagger:.05,ease:'power1.out'},12.18);
+  tl.fromTo(root.querySelector('#ss06-theo-bar'),{attr:{transform:'rotate(0 44 56)'}},{attr:{transform:'rotate(24 44 56)'},duration:.38,ease:'power2.inOut'},12.52);
+  const branches=root.querySelectorAll('.ss06-branch');
+  tl.to(branches,{borderColor:'#1F3FBF',duration:.24,stagger:.4,ease:'power1.out'},13.02);
+  tl.to(branches,{borderColor:'#4B4943',duration:.24,stagger:.4,ease:'power1.out'},13.36);
+  tl.to(root.querySelectorAll('.ss06-theo-eye'),{x:4,duration:.22,stagger:.05,ease:'power1.out'},14.18);
+  window.__timelines['ss06']=tl;
+})();
+</script>
+</template>

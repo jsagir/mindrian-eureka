@@ -1,0 +1,32 @@
+{
+  "schema_version": "eureka.capability.v1",
+  "id": "portfolio.find_hybrid_similarity_pairs",
+  "name": "Find Hybrid-Similarity Pair Leads",
+  "jtbd": "When I have a scoped collection of source-linked records, compare lexical structure with semantic similarity and rank unusual pairs for investigation.",
+  "status": "experimental",
+  "input_schema": "schemas/hsi-pair-input.v1.schema.json",
+  "output_schema": "schemas/workflow-result.v1.schema.json",
+  "runtime": "Python >=3.11; local CLI and stdio MCP",
+  "network": "denied",
+  "data_classes": [
+    "host-supplied-scoped-records",
+    "source-identifiers"
+  ],
+  "requires": [
+    "Two or more source-linked artifacts",
+    "Optional local model or precomputed dense vectors for a dense semantic leg; otherwise explicitly labeled lexical-only degradation"
+  ],
+  "side_effects": [],
+  "limitations": [
+    "HSI and spectral outputs are exploratory portfolio-relative signals, not probability, quality, market, or novelty estimates.",
+    "Without a configured local encoder or supplied vectors, the engine explicitly falls back to a lexical-only comparison.",
+    "The copied HSI reference source has unresolved redistribution rights and is local-evaluation only.",
+    "The whitespace-to-taxonomy workflow is not included in this capability."
+  ],
+  "version": "0.1.0",
+  "source_revision": "src/mindrian_eureka/hsi_engine.py and src/mindrian_eureka/hsi_reference.py",
+  "license_status": "unknown",
+  "max_runtime_seconds": 3600,
+  "max_input_bytes": 20971520,
+  "max_candidates": 50000
+}

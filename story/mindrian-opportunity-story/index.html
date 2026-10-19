@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+
+<meta name="viewport" content="width=1920, height=1080" />
+<title>MindrianOS — Opportunity Discovery</title>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>*{margin:0;padding:0;box-sizing:border-box}html,body{width:1920px;height:1080px;overflow:hidden;background:#F7F5EE}#root{position:relative;width:100%;height:100%;overflow:hidden;background:#F7F5EE}.clip{position:absolute;inset:0;opacity:0}</style>
+</head><body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="59.097" data-width="1920" data-height="1080">
+<div id="s01-host" class="clip" data-composition-id="s01" data-composition-src="compositions/frames/01-hidden-opportunity.html" data-start="0.000" data-duration="5.264" data-track-index="0" data-width="1920" data-height="1080"></div>
+<div id="s02-host" class="clip" data-composition-id="s02" data-composition-src="compositions/frames/02-scattered-room.html" data-start="5.264" data-duration="7.693" data-track-index="1" data-width="1920" data-height="1080"></div>
+<div id="s03-host" class="clip" data-composition-id="s03" data-composition-src="compositions/frames/03-room-to-portfolio.html" data-start="12.957" data-duration="5.264" data-track-index="2" data-width="1920" data-height="1080"></div>
+<div id="s04-host" class="clip" data-composition-id="s04" data-composition-src="compositions/frames/04-frame-question.html" data-start="18.221" data-duration="4.859" data-track-index="3" data-width="1920" data-height="1080"></div>
+<div id="s05-host" class="clip" data-composition-id="s05" data-composition-src="compositions/frames/05-methods-fit.html" data-start="23.080" data-duration="8.503" data-track-index="4" data-width="1920" data-height="1080"></div>
+<div id="s06-host" class="clip" data-composition-id="s06" data-composition-src="compositions/frames/06-inspect-the-lead.html" data-start="31.583" data-duration="10.527" data-track-index="5" data-width="1920" data-height="1080"></div>
+<div id="s07-host" class="clip" data-composition-id="s07" data-composition-src="compositions/frames/07-compounding-portfolio.html" data-start="42.110" data-duration="5.669" data-track-index="6" data-width="1920" data-height="1080"></div>
+<div id="s08-host" class="clip" data-composition-id="s08" data-composition-src="compositions/frames/08-next-question.html" data-start="47.779" data-duration="11.318" data-track-index="7" data-width="1920" data-height="1080"></div>
+<audio id="narration" src="assets/audio/narration.mp3" data-start="0" data-duration="57.496" data-track-index="8" data-audio-group="voiceover"></audio>
+</div><script>
+const tl=gsap.timeline({paused:true});
+tl.fromTo("#s01-host",{opacity:0},{opacity:1,duration:.22,ease:"power1.out"},0.000);
+tl.fromTo("#s02-host",{opacity:0},{opacity:1,duration:.22,ease:"power1.out"},5.264);
+tl.fromTo("#s03-host",{opacity:0},{opacity:1,duration:.22,ease:"power1.out"},12.957);
+tl.fromTo("#s04-host",{opacity:0},{opacity:1,duration:.22,ease:"power1.out"},18.221);
+tl.fromTo("#s05-host",{opacity:0},{opacity:1,duration:.22,ease:"power1.out"},23.080);
+tl.fromTo("#s06-host",{opacity:0},{opacity:1,duration:.22,ease:"power1.out"},31.583);
+tl.fromTo("#s07-host",{opacity:0},{opacity:1,duration:.22,ease:"power1.out"},42.110);
+tl.fromTo("#s08-host",{opacity:0},{opacity:1,duration:.22,ease:"power1.out"},47.779);
+window.__timelines["main"]=tl;
+</script></body></html>

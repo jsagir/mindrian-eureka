@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian.dev/schemas/eureka/cross-domain-research-result.v1.schema.json",
+  "title": "Cross-Domain Reframing Research Result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "scope_id", "verification_grant_id", "status", "inferences", "decision_boundary", "filing_authority"],
+  "properties": {
+    "schema_version": { "const": "eureka.cross-domain-research-result.v1" },
+    "run_id": { "type": "string" },
+    "scope_id": { "type": "string" },
+    "mapping_result_id": { "type": ["string", "null"] },
+    "verification_grant_id": { "type": "string" },
+    "status": { "const": "completed" },
+    "inferences": {
+      "type": "array", "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["inference_id", "hypothesis", "base_claim_ids", "target_context_claim_ids", "required_checks", "status", "assessment", "evidence_claim_ids", "analogy_mismatch", "falsifier", "reviewed_by", "reviewed_at"],
+        "properties": {
+          "inference_id": { "type": "string" },
+          "hypothesis": { "type": "string" },
+          "base_claim_ids": { "type": "array", "items": { "type": "string" } },
+          "target_context_claim_ids": { "type": "array", "items": { "type": "string" } },
+          "required_checks": { "type": "array", "items": { "type": "string" } },
+          "status": { "enum": ["supported", "contradicted", "untested"] },
+          "assessment": { "type": "string" },
+          "evidence_claim_ids": { "type": "array", "items": { "type": "string" } },
+          "analogy_mismatch": { "type": "string" },
+          "falsifier": { "type": ["string", "null"] },
+          "reviewed_by": { "type": "string" },
+          "reviewed_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "decision_boundary": { "type": "string" },
+    "filing_authority": { "const": "MindrianOS host and user only" }
+  }
+}

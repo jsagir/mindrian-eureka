@@ -371,13 +371,21 @@ class JobManager:
             request = self.store.request(job_id)
             self.store.transition(job_id, "running", progress="validating-input")
             self.store.clear_cancel(job_id)
-            result = run_document(
-                request, encoder_name=request["encoder"], model_path=request["model_path"],
-                model_revision=request.get("model_revision"), top_k=request.get("top_k", 20),
-                job_id=job_id, cache_path=self.store.data_dir / "embeddings.sqlite3",
-                cancel_check=cancel_event.is_set,
-                stage_callback=lambda stage: self.store.transition(job_id, "running", progress=stage),
-            )
+            stage = lambda name: self.store.transition(job_id, "running", progress=name)
+            if request.get("capability_id") == "opportunity.synthesize_discovery_signals":
+                from ..opportunity_discovery import run_signal_synthesis
+
+                result = run_signal_synthesis(
+                    request, data_dir=self.store.data_dir, job_id=job_id,
+                    cancel_check=cancel_event.is_set, stage_callback=stage,
+                )
+            else:
+                result = run_document(
+                    request, encoder_name=request["encoder"], model_path=request["model_path"],
+                    model_revision=request.get("model_revision"), top_k=request.get("top_k", 20),
+                    job_id=job_id, cache_path=self.store.data_dir / "embeddings.sqlite3",
+                    cancel_check=cancel_event.is_set, stage_callback=stage,
+                )
             if cancel_event.is_set():
                 raise RunCancelled("Run cancelled")
             status = result["status"]

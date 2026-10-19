@@ -16,12 +16,30 @@ dependencies = [
 modern-encoder = ["sentence-transformers>=5.0,<6"]
 reference-encoder = ["torch>=2.6,<3", "transformers>=4.50,<6"]
 mcp-server = ["mcp>=2.0,<3"]
+hmm = ["pomegranate==1.1.2"]
 
 [project.scripts]
+eureka = "mindrian_eureka.cli:main"
 eureka-rs = "mindrian_eureka.opportunity_pairs.cli:main"
 eureka-mcp = "mindrian_eureka.opportunity_pairs.mcp_server:main"
 eureka-rs-cache-clear = "mindrian_eureka.opportunity_pairs.cli:clear_cache_main"
+eureka-sme = "mindrian_eureka.structure_mapping.cli:main"
+eureka-omm = "mindrian_eureka.decision_patterns.cli:main"
+eureka-omm-web = "mindrian_eureka.decision_patterns.web:main"
+eureka-workflow = "mindrian_eureka.workflow_cli:main"
+eureka-scout = "mindrian_eureka.scout_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+mindrian_eureka = ["data/*.json"]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
 

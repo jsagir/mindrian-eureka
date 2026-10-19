@@ -1,0 +1,20 @@
+{
+  "status": "illustrative_only_unvalidated",
+  "warning": "TECHNICAL DEMO ONLY. These fabricated values are not empirically derived and must not be used to assess people, make decisions, or describe the JHTV room.",
+  "models": [
+    {
+      "id": "toy-integrative-hypothesis",
+      "label": "Toy integrative hypothesis (not validated)",
+      "initial_distribution": [0.4, 0.3, 0.2, 0.1],
+      "transition_matrix": [[0.4, 0.3, 0.2, 0.1], [0.2, 0.3, 0.4, 0.1], [0.1, 0.2, 0.4, 0.3], [0.3, 0.2, 0.2, 0.3]],
+      "emission_probabilities": [[0.7, 0.5, 0.5, 0.2], [0.8, 0.7, 0.5, 0.3], [0.8, 0.7, 0.8, 0.5], [0.8, 0.8, 0.8, 0.8]]
+    },
+    {
+      "id": "toy-conventional-hypothesis",
+      "label": "Toy conventional hypothesis (not validated)",
+      "initial_distribution": [0.4, 0.3, 0.2, 0.1],
+      "transition_matrix": [[0.6, 0.3, 0.1, 0.0], [0.1, 0.6, 0.3, 0.0], [0.0, 0.1, 0.6, 0.3], [0.0, 0.0, 0.2, 0.8]],
+      "emission_probabilities": [[0.3, 0.2, 0.2, 0.1], [0.3, 0.2, 0.3, 0.1], [0.2, 0.2, 0.3, 0.2], [0.2, 0.1, 0.2, 0.3]]
+    }
+  ]
+}

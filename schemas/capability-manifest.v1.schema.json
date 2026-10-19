@@ -10,7 +10,7 @@
     "id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9_-]*)+$" },
     "name": { "type": "string", "minLength": 3 },
     "jtbd": { "type": "string", "minLength": 10 },
-    "status": { "enum": ["enabled", "experimental", "blocked", "retired"] },
+    "status": { "enum": ["enabled", "experimental", "host_brokered", "blocked", "planned", "retired"] },
     "input_schema": { "type": "string" },
     "output_schema": { "type": "string" },
     "runtime": { "type": "string", "minLength": 1 },

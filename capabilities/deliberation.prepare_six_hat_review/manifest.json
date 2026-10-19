@@ -1,0 +1,30 @@
+{
+  "schema_version": "eureka.capability.v1",
+  "id": "deliberation.prepare_six_hat_review",
+  "name": "Prepare a Six-Hat Decision Review",
+  "jtbd": "When a bounded what-if has source-linked arguments from competing perspectives, check perspective coverage and package unresolved questions for a human ruling.",
+  "status": "experimental",
+  "input_schema": "schemas/workflow-request.v1.schema.json",
+  "output_schema": "schemas/workflow-result.v1.schema.json",
+  "runtime": "Python >=3.11; local CLI and stdio MCP",
+  "network": "denied",
+  "data_classes": [
+    "host-supplied-scoped-records",
+    "source-identifiers"
+  ],
+  "requires": [
+    "Confirmed topic and hypothesis",
+    "Arguments with perspective labels and source references"
+  ],
+  "side_effects": [],
+  "limitations": [
+    "Does not execute BONO research fan-out or debate, does not make a ruling, and perspective labels do not create independent evidence.",
+    "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+  ],
+  "version": "0.1.0",
+  "source_revision": "src/mindrian_eureka/discovery_workflows.py::structure_debate",
+  "license_status": "unknown",
+  "max_runtime_seconds": 3600,
+  "max_input_bytes": 20971520,
+  "max_candidates": 50000
+}

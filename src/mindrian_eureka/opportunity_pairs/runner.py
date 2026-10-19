@@ -24,6 +24,7 @@ from .algorithm import (
     structural_similarity,
 )
 from .encoders import ReferenceBertEncoder, SentenceTransformerEncoder
+from .host_handoff import host_handoff
 
 
 def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str,
@@ -146,12 +147,13 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
     finished = datetime.now(timezone.utc)
     report_stage(stage_callback, "complete")
     duration = int((time.monotonic() - start_clock) * 1000)
+    status = "completed" if outputs else "completed_empty"
     return {
         "schema_version": "eureka.result.v1",
         "job_id": job_id,
         "capability_id": CAPABILITY_ID,
         "capability_version": CAPABILITY_VERSION,
-        "status": "completed" if outputs else "completed_empty",
+        "status": status,
         "runner": {
             "artifact_digest": None,
             "runtime": f"Python {platform.python_version()}",
@@ -170,6 +172,7 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
         },
         "egress": {"events": [], "authoritative_source": "runner"},
         "outputs": outputs,
+        "host_handoff": host_handoff(status, outputs),
         "limitations": [
             "Score disagreement identifies unusual pairs, not validated opportunities.",
             "The user objective is recorded in the input but is not used as a scoring signal in this method version.",

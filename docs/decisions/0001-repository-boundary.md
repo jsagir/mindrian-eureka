@@ -9,7 +9,7 @@ Opportunity discovery currently spans MindrianOS capabilities and a separate res
 
 ## Decision
 
-Create the standalone repository `mindrian-eureka`; expose its user-facing MindrianOS workflow as `/m:os:eureka`. The repo owns bounded capability execution and job/result contracts. MindrianOS owns room permissions, user approvals, canonical portfolio records, and decisions.
+Create the standalone repository `mindrian-eureka`; integrate it with MindrianOS's existing `/mos:eureka` user workflow. The repo owns bounded capability execution and job/result contracts. MindrianOS owns room permissions, user approvals, canonical portfolio records, and decisions.
 
 Start with one local MCP server and internal modular capabilities. Use child workers for distinct runtime/dependency needs. Allow future capability-specific MCP processes without requiring them in the first release.
 
@@ -19,5 +19,5 @@ Start with one local MCP server and internal modular capabilities. Use child wor
 - No engine can directly write to MindrianOS room or portfolio state.
 - Network access defaults to denied and research uses a host-approved broker.
 - The repo can be developed and evaluated independently of MindrianOS through a CLI and synthetic/public fixtures.
-- The entrypoint name `/m:os:eureka` is a product/workflow label; the host's exact command registration syntax must be verified during integration.
+- The existing host command is `/mos:eureka`; the integration must preserve its room, Theo, approval, and portfolio behavior while adding this repository's capability MCP.
 

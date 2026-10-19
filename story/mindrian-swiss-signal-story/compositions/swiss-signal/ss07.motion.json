@@ -1,0 +1,18 @@
+{
+  "scene": "ss07",
+  "duration_s": 13,
+  "rules": [
+    "viewport-change",
+    "center-outward-expansion",
+    "depth-of-field-blur"
+  ],
+  "exit": {
+    "vector": "stationary, 0 px/s",
+    "still_moving": false
+  },
+  "entry": {
+    "vector": "radial outward, approximately 37 px/s at the frame edge",
+    "from_rest": false
+  }
+}
+

@@ -47,6 +47,22 @@
       }
     },
     "outputs": { "type": "array", "items": { "type": "object" } },
+    "host_handoff": {
+      "type": "object",
+      "description": "Non-authoritative next-step guidance for MindrianOS; never a command execution or approval.",
+      "required": ["state", "owner", "next_action"],
+      "properties": {
+        "state": { "type": "string" },
+        "owner": { "const": "mindrianos" },
+        "next_action": { "type": "string" },
+        "recommended_command": { "type": "string" },
+        "recommended_tool": { "type": "string" },
+        "candidate_ids": { "type": "array", "items": { "type": "string" } },
+        "sequence": { "type": "array", "items": { "type": "object" } },
+        "warning": { "type": "string" },
+        "automatic_retry": { "type": "boolean" }
+      }
+    },
     "limitations": { "type": "array", "items": { "type": "string" } },
     "warnings": { "type": "array", "items": { "type": "string" } },
     "resource_use": {

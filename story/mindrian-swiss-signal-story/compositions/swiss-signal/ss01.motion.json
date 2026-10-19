@@ -1,0 +1,7 @@
+{
+  "scene": "ss01",
+  "duration_s": 7,
+  "rules": ["svg-path-draw", "spring-pop-entrance"],
+  "exit": { "vector": "stationary 0px/s", "still_moving": false },
+  "entry": { "vector": "stationary 0px/s", "from_rest": true }
+}

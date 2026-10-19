@@ -11,6 +11,7 @@ __pycache__/
 coverage/
 dist/
 build/
+*.egg-info/
 
 # Local job data, artifacts, and secrets
 .eureka-data/
@@ -27,3 +28,5 @@ build/
 Thumbs.db
 .idea/
 .vscode/
+**/.hyperframes/
+**/.thumbnails/

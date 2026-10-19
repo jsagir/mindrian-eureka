@@ -1,0 +1,564 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Figtree";
+      src: url("../../assets/fonts/figtree.woff2") format("woff2");
+      font-weight: 100 900;
+      font-display: block;
+    }
+    @font-face {
+      font-family: "DM Sans";
+      src: url("../../assets/fonts/dm-sans-latin.woff2") format("woff2");
+      font-weight: 100 900;
+      font-display: block;
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("../../assets/fonts/jetbrains-mono.ttf") format("truetype");
+      font-weight: 400 700;
+      font-display: block;
+    }
+
+    * { box-sizing: border-box; }
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      color: #111111;
+      font-family: "DM Sans", Arial, sans-serif;
+    }
+    .ss08-ground {
+      position: absolute;
+      inset: 0;
+      background: #F7F5EE;
+    }
+    .ss08-scene {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .ss08-mast {
+      position: absolute;
+      left: 104px;
+      right: 104px;
+      top: 54px;
+      height: 106px;
+      display: flex;
+      align-items: flex-start;
+      border-bottom: 2px solid #111111;
+    }
+    .ss08-chapter {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      background: #1F3FBF;
+      color: #FFFFFF;
+      font: 800 28px/1 "Figtree", Arial, sans-serif;
+    }
+    .ss08-heading {
+      margin-left: 22px;
+      padding-top: 2px;
+    }
+    .ss08-heading strong {
+      display: block;
+      font: 900 42px/.92 "Figtree", Arial, sans-serif;
+      letter-spacing: -0.045em;
+    }
+    .ss08-heading span,
+    .ss08-edition,
+    .ss08-kicker,
+    .ss08-source,
+    .ss08-protocol-tag,
+    .ss08-lane-label,
+    .ss08-observe-tag,
+    .ss08-threshold-tag,
+    .ss08-theo-label,
+    .ss08-your-move,
+    .ss08-provenance {
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .055em;
+    }
+    .ss08-heading span {
+      display: block;
+      margin-top: 9px;
+      color: #4B4943;
+      font-size: 18px;
+    }
+    .ss08-edition {
+      margin-left: auto;
+      padding-top: 10px;
+      color: #4B4943;
+      font-size: 18px;
+    }
+    .ss08-dependency {
+      position: absolute;
+      left: 104px;
+      top: 250px;
+      width: 350px;
+      min-height: 260px;
+      padding: 22px 28px 26px;
+      border-left: 9px solid #1F3FBF;
+      border-bottom: 2px solid #111111;
+      background: #F7F5EE;
+      transform-origin: 0 50%;
+      will-change: transform, opacity;
+    }
+    .ss08-kicker {
+      display: block;
+      color: #1F3FBF;
+      font-size: 18px;
+    }
+    .ss08-dependency strong {
+      display: block;
+      margin-top: 20px;
+      font: 900 58px/.88 "Figtree", Arial, sans-serif;
+      letter-spacing: -0.055em;
+    }
+    .ss08-source {
+      display: block;
+      margin-top: 24px;
+      color: #4B4943;
+      font-size: 18px;
+    }
+    .ss08-open-marker {
+      position: absolute;
+      right: 20px;
+      bottom: 23px;
+      width: 28px;
+      height: 28px;
+      background: #F2C200;
+    }
+    .ss08-spine {
+      position: absolute;
+      left: 454px;
+      top: 368px;
+      width: 120px;
+      height: 6px;
+      background: #1F3FBF;
+      transform-origin: 0 50%;
+      will-change: transform;
+    }
+    .ss08-stack {
+      position: absolute;
+      left: 574px;
+      top: 212px;
+      width: 824px;
+      height: 606px;
+    }
+    .ss08-expander-head {
+      position: relative;
+      z-index: 3;
+      height: 122px;
+      padding: 17px 24px 20px;
+      border: 5px solid #111111;
+      background: #F7F5EE;
+      transform-origin: 0 50%;
+      will-change: transform, opacity;
+    }
+    .ss08-protocol-tag {
+      display: block;
+      color: #4B4943;
+      font-size: 18px;
+    }
+    .ss08-expander-head strong {
+      display: block;
+      margin-top: 8px;
+      font: 900 58px/.9 "Figtree", Arial, sans-serif;
+      letter-spacing: -0.05em;
+    }
+    .ss08-expand-mask {
+      position: relative;
+      height: 202px;
+      overflow: hidden;
+      border-left: 5px solid #111111;
+      border-right: 5px solid #111111;
+    }
+    .ss08-expand-sheet {
+      height: 202px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 5px solid #111111;
+      background: #F7F5EE;
+      will-change: transform;
+    }
+    .ss08-lane {
+      padding: 28px 28px 22px;
+      border-right: 2px solid #C9C6BC;
+    }
+    .ss08-lane:last-child { border-right: 0; }
+    .ss08-lane-label {
+      display: block;
+      color: #4B4943;
+      font-size: 18px;
+    }
+    .ss08-lane strong {
+      display: block;
+      margin-top: 18px;
+      font: 900 42px/.92 "Figtree", Arial, sans-serif;
+      letter-spacing: -0.04em;
+    }
+    .ss08-lane span:last-child {
+      display: block;
+      margin-top: 15px;
+      color: #4B4943;
+      font-size: 26px;
+      font-weight: 650;
+    }
+    .ss08-below {
+      position: relative;
+      height: 270px;
+      padding-top: 20px;
+      will-change: transform;
+    }
+    .ss08-observe {
+      position: absolute;
+      left: 0;
+      top: 26px;
+      width: 244px;
+      min-height: 106px;
+      padding: 16px 18px;
+      border-left: 7px solid #1F3FBF;
+      background: #F7F5EE;
+      transform-origin: 0 50%;
+      will-change: transform, opacity;
+    }
+    .ss08-observe-tag,
+    .ss08-threshold-tag {
+      display: block;
+      color: #4B4943;
+      font-size: 17px;
+    }
+    .ss08-observe strong {
+      display: block;
+      margin-top: 10px;
+      font: 900 38px/.95 "Figtree", Arial, sans-serif;
+      letter-spacing: -0.035em;
+    }
+    .ss08-decision-paths {
+      position: absolute;
+      left: 224px;
+      top: 22px;
+      width: 172px;
+      height: 208px;
+      overflow: visible;
+    }
+    .ss08-decision-paths path {
+      fill: none;
+      stroke-width: 5;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+    }
+    .ss08-path-blue { stroke: #1F3FBF; }
+    .ss08-path-red { stroke: #D6281F; }
+    .ss08-threshold {
+      position: absolute;
+      left: 396px;
+      width: 428px;
+      min-height: 102px;
+      padding: 15px 20px 15px 24px;
+      background: #F7F5EE;
+      transform-origin: 0 50%;
+      will-change: transform, opacity;
+    }
+    .ss08-strengthen {
+      top: 10px;
+      border-top: 5px solid #1F3FBF;
+      border-bottom: 2px solid #1F3FBF;
+    }
+    .ss08-revise {
+      top: 138px;
+      border-top: 5px solid #D6281F;
+      border-bottom: 2px solid #D6281F;
+    }
+    .ss08-threshold strong {
+      display: block;
+      margin-top: 9px;
+      font: 900 34px/.95 "Figtree", Arial, sans-serif;
+      letter-spacing: -0.035em;
+    }
+    .ss08-revise .ss08-threshold-tag,
+    .ss08-revise strong { color: #D6281F; }
+    .ss08-theo {
+      position: absolute;
+      right: 104px;
+      top: 260px;
+      width: 282px;
+      height: 420px;
+    }
+    .ss08-theo-label {
+      display: block;
+      color: #4B4943;
+      font-size: 18px;
+    }
+    .ss08-theo svg {
+      display: block;
+      width: 282px;
+      height: 268px;
+      margin-top: 12px;
+      overflow: visible;
+    }
+    .ss08-theo-draw {
+      fill: none;
+      stroke: #111111;
+      stroke-width: 8;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+    }
+    .ss08-your-move {
+      display: block;
+      margin-top: 8px;
+      padding-top: 13px;
+      border-top: 5px solid #111111;
+      color: #111111;
+      font-size: 26px;
+    }
+    .ss08-human-note {
+      display: block;
+      margin-top: 9px;
+      color: #4B4943;
+      font-size: 26px;
+      font-weight: 650;
+    }
+    .ss08-provenance {
+      position: absolute;
+      left: 104px;
+      top: 852px;
+      width: 1712px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      border-top: 2px solid #111111;
+      color: #4B4943;
+      font-size: 18px;
+    }
+    .ss08-case-mark {
+      padding: 7px 10px;
+      background: #111111;
+      color: #FFFFFF;
+    }
+    .ss08-proposed {
+      color: #7A5C00;
+      background: #F2C200;
+      padding: 7px 10px;
+    }
+    .ss08-not-result { color: #D6281F; }
+
+    @media (prefers-reduced-motion: reduce) {
+      #root * { animation: none !important; transition: none !important; }
+      #root .ss08-theo-draw { stroke-dashoffset: 0 !important; }
+    }
+  </style>
+
+  <div id="root" data-composition-id="ss08" data-width="1920" data-height="1080" data-duration="12">
+    <div class="clip ss08-ground" data-start="0" data-duration="12" data-track-index="0" aria-hidden="true"></div>
+    <div class="clip ss08-scene" data-start="0" data-duration="12" data-track-index="1">
+      <header class="ss08-mast ss08-motion">
+        <div class="ss08-chapter">08</div>
+        <div class="ss08-heading">
+          <strong>MAKE IT FALSIFIABLE</strong>
+          <span>One practical test, two possible decisions</span>
+        </div>
+        <div class="ss08-edition">SWISS SIGNAL Â· LEARN</div>
+      </header>
+
+      <aside class="ss08-dependency ss08-motion" id="ss08-dependency">
+        <span class="ss08-kicker">Selected uncertainty</span>
+        <strong>POSITION DRIVES DRIFT</strong>
+        <span class="ss08-source">SOURCE E-17 Â· ILLUSTRATIVE</span>
+        <span class="ss08-open-marker" aria-hidden="true"></span>
+      </aside>
+      <div class="ss08-spine ss08-motion" id="ss08-spine" aria-hidden="true"></div>
+
+      <section class="ss08-stack" aria-label="Illustrative reseating test protocol">
+        <div class="ss08-expander-head ss08-motion" id="ss08-expander-head">
+          <span class="ss08-protocol-tag">Proposed protocol</span>
+          <strong>COMPARE 20 RESEATS</strong>
+        </div>
+        <div class="ss08-expand-mask" id="ss08-expand-mask" data-layout-allow-overflow>
+          <div class="ss08-expand-sheet" id="ss08-expand-sheet">
+            <div class="ss08-lane ss08-expand-row">
+              <span class="ss08-lane-label">10 REPEATS</span>
+              <strong>WITH INSERT</strong>
+              <span>same sample</span>
+            </div>
+            <div class="ss08-lane ss08-expand-row">
+              <span class="ss08-lane-label">10 REPEATS</span>
+              <strong>WITHOUT INSERT</strong>
+              <span>same sample</span>
+            </div>
+          </div>
+        </div>
+        <div class="ss08-below" id="ss08-below">
+          <div class="ss08-observe ss08-motion" id="ss08-observe">
+            <span class="ss08-observe-tag">Observe</span>
+            <strong>VARIANCE</strong>
+          </div>
+          <svg class="ss08-decision-paths" viewBox="0 0 172 208" aria-hidden="true">
+            <path class="ss08-path-blue ss08-draw-path" id="ss08-path-strengthen" d="M 0 58 L 88 58 L 172 42" />
+            <path class="ss08-path-red ss08-draw-path" id="ss08-path-revise" d="M 88 58 L 88 180 L 172 180" />
+          </svg>
+          <div class="ss08-threshold ss08-strengthen ss08-motion" id="ss08-strengthen">
+            <span class="ss08-threshold-tag">Decision threshold</span>
+            <strong>STRENGTHEN â‰¥ 40% REDUCTION</strong>
+          </div>
+          <div class="ss08-threshold ss08-revise ss08-motion" id="ss08-revise">
+            <span class="ss08-threshold-tag">Disconfirming threshold</span>
+            <strong>REVISE &lt; 10% REDUCTION</strong>
+          </div>
+        </div>
+      </section>
+
+      <aside class="ss08-theo" id="ss08-theo">
+        <span class="ss08-theo-label ss08-motion">THEO Â· OUTLINED HANDOFF</span>
+        <svg viewBox="0 0 282 268" role="img" aria-label="Theo your move outline pose">
+          <rect class="ss08-theo-draw" x="26" y="34" width="42" height="42" />
+          <rect class="ss08-theo-draw" x="102" y="34" width="42" height="42" />
+          <rect class="ss08-theo-draw" x="190" y="30" width="30" height="154" />
+          <path class="ss08-theo-draw" d="M 205 184 L 205 222 L 34 222" />
+        </svg>
+        <span class="ss08-your-move ss08-motion" id="ss08-your-move">YOUR MOVE</span>
+        <span class="ss08-human-note ss08-motion">You choose whether to run it.</span>
+      </aside>
+
+      <footer class="ss08-provenance ss08-motion">
+        <span class="ss08-case-mark">ILLUSTRATIVE</span>
+        <span class="ss08-proposed">PROPOSED TEST</span>
+        <span class="ss08-not-result">NOT A RESULT</span>
+        <span>SOURCE E-17</span>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const root = document.querySelector('[data-composition-id="ss08"]');
+      const tl = gsap.timeline({ paused: true });
+      const bodyHeight = 202;
+
+      const drawPaths = Array.from(root.querySelectorAll('.ss08-draw-path'));
+      drawPaths.forEach((path) => {
+        const length = path.getTotalLength();
+        path.style.strokeDasharray = `${length}`;
+        path.style.strokeDashoffset = `${length}`;
+      });
+      const theoPaths = Array.from(root.querySelectorAll('.ss08-theo-draw'));
+      theoPaths.forEach((path) => {
+        const length = path.getTotalLength();
+        path.style.strokeDasharray = `${length}`;
+        path.style.strokeDashoffset = `${length}`;
+      });
+
+      tl.fromTo(root.querySelector('.ss08-mast'),
+        { opacity: 0, y: -12 },
+        { opacity: 1, y: 0, duration: 0.52, ease: 'power2.out' },
+        0
+      );
+      tl.fromTo(root.querySelector('#ss08-dependency'),
+        { opacity: 0, x: -30, scale: 0.96 },
+        { opacity: 1, x: 0, scale: 1, duration: 0.66, ease: 'power3.out' },
+        0.04
+      );
+      tl.fromTo(root.querySelector('.ss08-provenance'),
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
+        0.35
+      );
+      tl.fromTo(root.querySelector('#ss08-spine'),
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.7, ease: 'power2.out' },
+        1.16
+      );
+
+      tl.fromTo(root.querySelector('#ss08-expander-head'),
+        { scale: 0, opacity: 0, y: 12 },
+        { scale: 1, opacity: 1, y: 0, duration: 0.62, ease: 'power3.out' },
+        1.88
+      );
+      tl.fromTo(
+        [root.querySelector('#ss08-expand-sheet'), root.querySelector('#ss08-below')],
+        { y: -bodyHeight },
+        { y: 0, duration: 0.58, ease: 'power3.out' },
+        2.48
+      );
+      const lanes = Array.from(root.querySelectorAll('.ss08-expand-row'));
+      lanes.forEach((lane, i) => {
+        tl.fromTo(lane,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.3, ease: 'power2.out' },
+          3.06 + i * 0.52
+        );
+      });
+      tl.fromTo(root.querySelector('#ss08-expander-head'),
+        { borderColor: '#111111' },
+        { borderColor: '#1F3FBF', duration: 0.45, ease: 'power1.out', immediateRender: false },
+        4.38
+      );
+
+      tl.fromTo(root.querySelector('#ss08-observe'),
+        { scale: 0, opacity: 0, y: 18 },
+        { scale: 1, opacity: 1, y: 0, duration: 0.58, ease: 'power3.out' },
+        5.02
+      );
+      tl.to(root.querySelector('#ss08-path-strengthen'),
+        { strokeDashoffset: 0, duration: 0.78, ease: 'power2.out' },
+        5.52
+      );
+      tl.fromTo(root.querySelector('#ss08-strengthen'),
+        { scale: 0, opacity: 0, x: -20 },
+        { scale: 1, opacity: 1, x: 0, duration: 0.62, ease: 'power3.out' },
+        6.28
+      );
+      tl.fromTo(root.querySelector('#ss08-strengthen'),
+        { backgroundColor: '#F7F5EE' },
+        { backgroundColor: '#E9EDFF', duration: 0.5, ease: 'power1.out', immediateRender: false },
+        7.1
+      );
+
+      tl.to(root.querySelector('#ss08-path-revise'),
+        { strokeDashoffset: 0, duration: 0.72, ease: 'power2.out' },
+        8.02
+      );
+      tl.fromTo(root.querySelector('#ss08-revise'),
+        { scale: 0, opacity: 0, x: -18 },
+        { scale: 1, opacity: 1, x: 0, duration: 0.62, ease: 'power3.out' },
+        8.54
+      );
+      tl.fromTo(root.querySelector('#ss08-revise'),
+        { backgroundColor: '#F7F5EE' },
+        { backgroundColor: '#F8E7E3', duration: 0.42, ease: 'power1.out', immediateRender: false },
+        9.32
+      );
+
+      tl.fromTo(root.querySelector('.ss08-theo-label'),
+        { opacity: 0, x: 20 },
+        { opacity: 1, x: 0, duration: 0.38, ease: 'power2.out' },
+        9.92
+      );
+      theoPaths.forEach((path, i) => {
+        tl.to(path,
+          { strokeDashoffset: 0, duration: 0.48, ease: 'power2.out' },
+          10.02 + i * 0.18
+        );
+      });
+      tl.fromTo(root.querySelector('#ss08-your-move'),
+        { opacity: 0, x: 18 },
+        { opacity: 1, x: 0, duration: 0.42, ease: 'power2.out' },
+        10.72
+      );
+      tl.fromTo(root.querySelector('.ss08-human-note'),
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.42, ease: 'power2.out' },
+        10.92
+      );
+
+      window.__timelines['ss08'] = tl;
+    })();
+  </script>
+</template>
+

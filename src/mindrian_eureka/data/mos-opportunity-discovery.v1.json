@@ -1,0 +1,134 @@
+{
+  "schema_version": "eureka.host-workflow.v1",
+  "id": "mindrianos.opportunity_discovery",
+  "name": "MindrianOS Opportunity Discovery",
+  "status": "host_integration_contract",
+  "entrypoint": "/mos:eureka",
+  "purpose": "Find and develop source-linked opportunity candidates from an authorized MindrianOS room or portfolio scope, then move selected candidates through MindrianOS evidence review and human qualification.",
+  "ownership": {
+    "mindrianos": [
+      "active room and portfolio binding",
+      "user objective, scope, exclusions, and approvals",
+      "Theo and framework guidance",
+      "/mos:status, /mos:find-connections, and /mos:qualify-opportunity execution",
+      "external research retrieval and grant validation",
+      "ICM run record, graph writes, opportunity portfolio, and truth/disposition transitions"
+    ],
+    "mindrian_eureka": [
+      "capability catalog and prerequisites",
+      "validation and execution of selected bounded capabilities",
+      "job lifecycle, engine/runtime provenance, and candidate output validation",
+      "source-linked discovery signals and proposed next-host-action metadata"
+    ]
+  },
+  "rules": [
+    "Never infer room authorization from a room name, scope_id, filesystem path, or research_grant_id.",
+    "Never run all capabilities by default; select methods for the user's objective and state why.",
+    "Never treat a retrieval score, pair, analogy, or generated claim as verified opportunity evidence.",
+    "Never let Eureka read room paths, fetch outside research, write MindrianOS graph state, or qualify a candidate.",
+    "A failed, blocked, partial, or empty run must remain distinguishable from a completed run with no useful candidates.",
+    "Preserve stable source IDs, source references, hashes, snapshot ID, method version, and uncertainty through every handoff."
+  ],
+  "theo_checkpoints": [
+    {
+      "id": "method_selection",
+      "owner": "mindrianos",
+      "when": "Before capability selection, when the task would benefit from framework or method guidance.",
+      "send": "A generic problem class or framework/concept lookup supported by Theo's current MCP contract; do not send room content unless the available Theo operation explicitly accepts it and room policy permits it.",
+      "expect": "Method, concept, or review guidance that helps frame the investigation.",
+      "record_as": "method_guidance",
+      "must_not_claim": "Theo evaluated the room or validated a candidate."
+    },
+    {
+      "id": "candidate_challenge",
+      "owner": "mindrianos",
+      "when": "After a candidate has a source trail and before human qualification, if Theo exposes a case-capable review operation for this data boundary.",
+      "send": "Only the minimum authorized candidate context accepted by that operation, with source and confidentiality policy checked.",
+      "expect": "A bounded critique, evidence gaps, alternatives, or next discriminating question.",
+      "record_as": "case_review_only_if_case_was_actually_supplied",
+      "must_not_claim": "A generic review guide or framework lookup is a case-specific Theo review."
+    }
+  ],
+  "stages": [
+    {
+      "id": "room_preflight",
+      "owner": "mindrianos",
+      "action": "Resolve the active room once; read /mos:status and inspect the user-selected material. Treat status as a summary, not a complete inventory.",
+      "output": "room_scope_proposal",
+      "approval": "Confirm scope only when room policy or ambiguity requires it.",
+      "stop_if": ["No active room", "Scope is not authorized", "Required source data cannot be read"]
+    },
+    {
+      "id": "frame_and_select",
+      "owner": "mindrianos",
+      "action": "Record objective, desired decision, constraints, exclusions, and evidence standard. Use Theo/framework guidance when it improves method selection. Read scout_capabilities and choose only suitable available capabilities.",
+      "output": "scout_charter_and_capability_selection",
+      "approval": "Ask before materially changing the objective or expanding the data boundary.",
+      "stop_if": ["Essential objective or scope is unresolved", "No suitable capability or prerequisite is unavailable"]
+    },
+    {
+      "id": "prepare_snapshot",
+      "owner": "mindrianos",
+      "action": "Build a bounded, read-only artifact bundle with stable IDs, resolvable source refs, title, text, source hash, corpus label, and snapshot identity. Do not send room paths or credentials.",
+      "output": "authorized_artifact_bundle",
+      "approval": "Approval required if scope policy requires it or if content will cross the local boundary.",
+      "limits": {"max_artifacts": 2500, "max_utf8_text_bytes": 20971520}
+    },
+    {
+      "id": "capability_plan",
+      "owner": "mindrian_eureka",
+      "action": "For durable RS jobs, call scout_plan with the objective and exact authorized bundle. For synchronous supporting stages, inspect scout_capability and use scout_run_workflow or the typed HSI/Jason tool. Return readiness, prerequisites, model/runtime, network behavior, limits, and expected output.",
+      "output": "validated_analysis_plan",
+      "approval": "MindrianOS presents the plan and obtains any required run approval.",
+      "stop_if": ["Plan is blocked", "Input validation fails", "Model/runtime is unavailable", "Required approval is absent"]
+    },
+    {
+      "id": "bounded_execution",
+      "owner": "mindrian_eureka",
+      "action": "Start approved RS jobs with scout_start or the local RS+HSI scout with scout_start_opportunity_signal_scout; MindrianOS retains job_id, polls scout_status, supports scout_cancel, then retrieves scout_result. Other current stages are synchronous and do not have durable job recovery yet.",
+      "output": "versioned_candidate_result",
+      "stop_if": ["Cancelled", "Failed", "Scope snapshot changed", "Output validation fails"]
+    },
+    {
+      "id": "connection_review",
+      "owner": "mindrianos",
+      "action": "Resolve source refs and present the candidate with its source excerpts and limitations. For selected pairs, run /mos:find-connections to trace room graph relationships and prior art. Do not run the command for every candidate when the shortlist is large; use a bounded, user-visible selection.",
+      "output": "connection_and_provenance_review",
+      "approval": "Follow MindrianOS command gates.",
+      "stop_if": ["Source refs cannot be resolved", "Candidate depends on missing provenance"]
+    },
+    {
+      "id": "evidence_development",
+      "owner": "mindrianos",
+      "action": "When outside evidence is needed, prepare exact questions with the selected research method, obtain host approval, retrieve evidence through MindrianOS's approved research service, and preserve source/claim lineage. Eureka may validate a returned bundle or map reviewed structures, but it does not fetch sources.",
+      "output": "evidence_and_counterevidence_bundle",
+      "approval": "Required before any outbound query or transfer.",
+      "optional_capability_tools": ["scout_sme_prepare_research", "scout_sme_validate_research_bundle", "scout_sme_map", "scout_sme_finalize"]
+    },
+    {
+      "id": "human_qualification",
+      "owner": "mindrianos",
+      "action": "For a candidate with a traceable evidence packet, present /mos:qualify-opportunity. The user accepts, rejects, parks, or requests more work.",
+      "output": "human_disposition_and_reason",
+      "approval": "Human decision required.",
+      "stop_if": ["Candidate lacks source trail", "Critical counterevidence unresolved", "User declines"]
+    },
+    {
+      "id": "portfolio_and_icm_record",
+      "owner": "mindrianos",
+      "action": "Write only through the host's approved graph/portfolio path. Record the source snapshot, candidate lineage, engine/method versions, evidence, uncertainty, human disposition, and rejected/parked reason. Link or deduplicate across rooms without replacing the existing portfolio.",
+      "output": "reviewable_portfolio_record_and_icm_run"
+    }
+  ],
+  "execution_surfaces": {
+    "mindrianos_cli": "The existing /mos:eureka workflow owns orchestration and native /mos command execution. It should use this capability MCP when configured. A direct engine CLI may be used as an explicit fallback only over the same prepared bundle and approval boundary.",
+    "mcp": "The host invokes scout_capabilities, scout_plan/start/status/result/cancel for RS, scout_run_workflow for a selected supporting stage, typed HSI/Jason tools, and SME/OMM tools. MCP tools execute only Eureka-owned work and return data/metadata to the host.",
+    "direct_engine_cli": "eureka-rs and other engine CLIs run a named method over an explicit input bundle; they are not substitutes for the MindrianOS workflow."
+  },
+  "catalog_scale_notes": {
+    "example": "JHTV technology catalog",
+    "unit": "One catalog technology per artifact, with stable technology ID, source URL, title, category path, description, and source hash.",
+    "discovery_output": "A bounded, source-linked shortlist of candidate pairs plus run coverage, warnings, and snapshot provenance.",
+    "downstream": "MindrianOS chooses candidates for connection tracing, external evidence development, and human qualification; it does not treat the full pair ranking as a portfolio of validated opportunities."
+  }
+}

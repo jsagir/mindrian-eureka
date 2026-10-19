@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.hsi-whitespace-input.v1",
+  "title": "HSI-seeded room-relative whitespace request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifacts", "baseline_frameworks", "hsi_pairs", "embedding_model"],
+  "properties": {
+    "scope_id": {"type": "string", "maxLength": 256},
+    "snapshot_id": {"type": "string", "maxLength": 256},
+    "embedding_model": {"type": "string", "minLength": 1, "maxLength": 500},
+    "artifacts": {"type": "array", "minItems": 3, "maxItems": 25000, "items": {"$ref": "#/$defs/vectorRecord"}},
+    "baseline_frameworks": {"type": "array", "minItems": 1, "maxItems": 5000, "items": {"$ref": "#/$defs/vectorRecord"}},
+    "hsi_pairs": {"type": "array", "minItems": 1, "maxItems": 50000, "items": {"type": "object", "required": ["left_id", "right_id", "hsi_score"], "properties": {"left_id": {"type": "string"}, "right_id": {"type": "string"}, "hsi_score": {"type": "number"}, "hsi_percentile": {"type": ["number", "null"]}}, "additionalProperties": true}}
+  },
+  "$defs": {"vectorRecord": {"type": "object", "required": ["id", "vector"], "properties": {"id": {"type": "string", "minLength": 1}, "vector": {"type": "array", "minItems": 1, "maxItems": 20000, "items": {"type": "number"}}, "label": {"type": "string"}, "title": {"type": "string"}, "source_ref": {"type": "string"}, "url": {"type": "string"}, "path": {"type": "string"}, "locator": {"type": "string"}, "sha256": {"type": "string"}}, "additionalProperties": true}}
+}

@@ -1,0 +1,129 @@
+<template>
+<style>
+@font-face{font-family:Figtree;src:url(../../assets/fonts/figtree.woff2) format("woff2");font-weight:400 900;font-display:block}
+@font-face{font-family:"DM Sans";src:url(../../assets/fonts/dm-sans-latin.woff2) format("woff2");font-weight:400 1000;font-display:block}
+@font-face{font-family:"JetBrains Mono";src:url(../../assets/fonts/jetbrains-mono.ttf) format("truetype");font-weight:400 800;font-display:block}
+*{box-sizing:border-box}
+#root{--paper:#F7F5EE;--ink:#111111;--blue:#1F3FBF;--red:#D6281F;--yellow:#F2C200;--muted:#4B4943;--soft:#C9C6BC;position:absolute;inset:0;width:100%;height:100%;overflow:hidden;color:var(--ink);font-family:"DM Sans",Arial,sans-serif}
+.ss05-ground{position:absolute;inset:0;background:var(--paper)}
+.ss05-scene{position:absolute;inset:0;overflow:hidden}
+.ss05-shell{position:absolute;left:104px;right:104px;top:48px;height:126px;border-bottom:5px solid var(--ink);display:flex;align-items:flex-start}
+.ss05-chapter{width:86px;height:62px;background:var(--blue);color:white;display:grid;place-items:center;font:900 34px/1 Figtree,Arial,sans-serif}
+.ss05-headline{margin:0 0 0 26px;font:900 72px/.88 Figtree,Arial,sans-serif;letter-spacing:-.055em}
+.ss05-headline span{display:block;color:var(--blue)}
+.ss05-case{margin-left:auto;text-align:right;font:700 18px/1.35 "JetBrains Mono",monospace;letter-spacing:.04em}
+.ss05-case strong{display:block;color:var(--red);font-size:22px}
+.ss05-viewport{position:absolute;left:104px;top:210px;width:1712px;height:650px;overflow:hidden;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+.ss05-world{position:absolute;inset:0;width:1712px;height:650px;transform-origin:50% 50%;will-change:transform}
+.ss05-pattern-context{--dof:0px;position:absolute;left:0;top:0;width:1712px;height:320px;filter:blur(var(--dof));will-change:filter}
+.ss05-level{position:absolute;left:0;top:18px;font:800 18px/1 "JetBrains Mono",monospace;color:var(--blue);letter-spacing:.08em}
+.ss05-pattern-title{position:absolute;left:0;top:62px;font:900 52px/.95 Figtree,Arial,sans-serif;letter-spacing:-.04em}
+.ss05-pattern-title span{color:var(--blue)}
+.ss05-pattern-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ss05-pattern-line{fill:none;stroke:var(--blue);stroke-width:5}
+.ss05-pattern-dot{fill:var(--blue);stroke:var(--paper);stroke-width:8}
+.ss05-selection-ring{fill:none;stroke:var(--yellow);stroke-width:8}
+.ss05-selected-label{position:absolute;left:704px;top:214px;background:var(--yellow);padding:9px 13px;font:800 17px/1 "JetBrains Mono",monospace;letter-spacing:.035em}
+.ss05-source-layer{--dof:10px;position:absolute;left:250px;top:370px;width:1120px;height:260px;filter:blur(var(--dof));opacity:.42;will-change:filter}
+.ss05-source-label{position:absolute;left:0;top:0;font:800 17px/1 "JetBrains Mono",monospace;letter-spacing:.07em;color:var(--blue)}
+.ss05-evidence{position:absolute;top:30px;width:450px;height:132px;background:var(--paper);padding:18px 22px;border:3px solid var(--blue)}
+.ss05-evidence.ss05-support{left:0}
+.ss05-evidence.ss05-counter{left:590px;border-color:var(--red)}
+.ss05-evidence small{display:block;font:800 16px/1 "JetBrains Mono",monospace;letter-spacing:.06em;color:var(--blue)}
+.ss05-counter small{color:var(--red)}
+.ss05-evidence strong{display:block;margin-top:14px;font:900 31px/1 Figtree,Arial,sans-serif;letter-spacing:-.025em}
+.ss05-evidence em{display:block;margin-top:10px;font:700 17px/1 "JetBrains Mono",monospace;color:var(--muted);font-style:normal}
+.ss05-question{position:absolute;left:190px;top:190px;width:670px;height:60px;background:var(--yellow);border-left:9px solid var(--ink);padding:15px 18px;font:900 25px/1 Figtree,Arial,sans-serif;letter-spacing:-.02em}
+.ss05-links{position:absolute;inset:0;width:1712px;height:650px;overflow:visible;pointer-events:none}
+.ss05-route{fill:none;stroke:var(--blue);stroke-width:4;stroke-linecap:square}
+.ss05-route.ss05-route-red{stroke:var(--red)}
+.ss05-proposal{position:absolute;left:1160px;top:266px;width:430px;height:112px;border:2px dashed var(--red);background:var(--paper);padding:15px 19px;color:var(--muted)}
+.ss05-proposal span{font:800 16px/1 "JetBrains Mono",monospace;color:var(--red);letter-spacing:.06em}
+.ss05-proposal strong{display:block;margin-top:12px;font:900 30px/1 Figtree,Arial,sans-serif;text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:4px}
+.ss05-theo{position:absolute;left:28px;top:374px;width:230px;height:250px}
+.ss05-theo-label{font:800 17px/1 "JetBrains Mono",monospace;color:var(--red);letter-spacing:.06em}
+.ss05-theo svg{width:210px;height:210px;margin-top:10px;overflow:visible}
+.ss05-theo-note{position:absolute;left:139px;top:117px;width:130px;border-top:4px solid var(--blue);font:800 15px/1.15 "JetBrains Mono",monospace;padding-top:8px;color:var(--blue)}
+.ss05-foot{position:absolute;left:104px;right:104px;top:874px;height:24px;display:flex;font:800 18px/1 "JetBrains Mono",monospace;letter-spacing:.04em}
+.ss05-foot .ss05-illustrative{color:var(--red)}
+.ss05-foot .ss05-scale-note{margin-left:auto;color:var(--blue)}
+@media(prefers-reduced-motion:reduce){.ss05-world,.ss05-pattern-context,.ss05-source-layer{will-change:auto}}
+</style>
+<div id="root" data-composition-id="ss05" data-width="1920" data-height="1080" data-duration="13">
+  <div class="clip ss05-ground" data-start="0" data-duration="13" data-track-index="0"></div>
+  <section class="clip ss05-scene" data-start="0" data-duration="13" data-track-index="1">
+    <header class="ss05-shell">
+      <div class="ss05-chapter">05</div>
+      <h1 class="ss05-headline">STEP BACK DOWN <span>TO THE EVIDENCE</span></h1>
+      <div class="ss05-case">CASE 04â€“17<strong>ILLUSTRATIVE</strong></div>
+    </header>
+    <div class="ss05-viewport">
+      <div id="ss05-world" class="ss05-world">
+        <div class="ss05-pattern-context" data-depth="2">
+          <div class="ss05-level">LEVEL 03 / PATTERN</div>
+          <div class="ss05-pattern-title">REPEATED <span>AFTER RESEATING</span></div>
+          <svg class="ss05-pattern-svg" viewBox="0 0 1712 320" aria-hidden="true">
+            <path class="ss05-pattern-line" d="M245 204 C420 132 570 240 760 170 S1110 214 1372 128"/>
+            <circle class="ss05-pattern-dot" cx="245" cy="204" r="15"/><circle class="ss05-pattern-dot" cx="505" cy="178" r="15"/><circle class="ss05-pattern-dot" cx="760" cy="170" r="18"/><circle class="ss05-pattern-dot" cx="1040" cy="181" r="15"/><circle class="ss05-pattern-dot" cx="1372" cy="128" r="15"/>
+            <circle id="ss05-selection-ring" class="ss05-selection-ring" cx="760" cy="170" r="38"/>
+          </svg>
+          <div class="ss05-selected-label">SELECT / E-17</div>
+        </div>
+        <svg class="ss05-links" viewBox="0 0 1712 650" aria-hidden="true">
+          <path id="ss05-route-support" class="ss05-route" d="M760 210 C742 292 620 330 475 408"/>
+          <path id="ss05-route-counter" class="ss05-route ss05-route-red" d="M760 210 C790 295 930 332 1065 408"/>
+        </svg>
+        <div class="ss05-source-layer" data-depth="0">
+          <div class="ss05-source-label">LEVEL 01 / SOURCE + COUNTERCHECK</div>
+          <div class="ss05-evidence ss05-support"><small>E-17 / SOURCE NOTE</small><strong>SHIFT AFTER RESEATING</strong><em>SUPPORTS THE PATTERN</em></div>
+          <div class="ss05-evidence ss05-counter"><small>C-04 / FIXED MOUNT</small><strong>SHIFT NOT REPEATED</strong><em>CONFLICTS WITH SAMPLE CHANGE</em></div>
+          <div class="ss05-question">UNRESOLVED / WHICH OPERATOR STEP MOVED?</div>
+        </div>
+        <div class="ss05-proposal"><span>PROPOSAL / REVISABLE</span><strong>THE SAMPLE CHANGED</strong></div>
+        <div class="ss05-theo">
+          <div class="ss05-theo-label">THEO / SKEPTICAL â†’ CONTRADICTED</div>
+          <svg viewBox="0 0 210 210" role="img" aria-label="Theo shifting from skeptical to contradicted">
+            <rect class="ss05-theo-eye" x="38" y="35" width="30" height="30" fill="#111111"/>
+            <rect class="ss05-theo-eye" x="102" y="28" width="30" height="30" fill="#111111"/>
+            <g id="ss05-theo-bar" transform="rotate(-22 105 132)"><rect x="93" y="78" width="24" height="112" fill="#111111"/></g>
+          </svg>
+          <div class="ss05-theo-note">FOLLOW THE SOURCE</div>
+        </div>
+      </div>
+    </div>
+    <footer class="ss05-foot"><span class="ss05-illustrative">ILLUSTRATIVE CASE</span><span class="ss05-scale-note">PATTERN â†“ E-17 + C-04 + OPEN QUESTION</span></footer>
+  </section>
+</div>
+<script>
+(()=>{
+  const root=document.querySelector('[data-composition-id="ss05"]');
+  const world=root.querySelector('#ss05-world');
+  const tl=gsap.timeline({paused:true});
+  const cam={scale:1,x:0,y:0};
+  const applyCamera=()=>{world.style.transform=`translate(${cam.x}px, ${cam.y}px) scale(${cam.scale})`;};
+  applyCamera();
+  const draw=(selector)=>{const path=root.querySelector(selector);const length=path.getTotalLength();path.style.strokeDasharray=String(length);path.style.strokeDashoffset=String(length);return path;};
+  const ring=draw('#ss05-selection-ring');
+  const supportRoute=draw('#ss05-route-support');
+  const counterRoute=draw('#ss05-route-counter');
+  tl.fromTo(root.querySelector('.ss05-shell'),{opacity:0,y:-18},{opacity:1,y:0,duration:.58,ease:'power2.out'},0);
+  tl.fromTo(root.querySelector('.ss05-pattern-title'),{opacity:0,x:-34},{opacity:1,x:0,duration:.65,ease:'power3.out'},.08);
+  tl.to(ring,{strokeDashoffset:0,duration:.78,ease:'power2.out'},.22);
+  tl.fromTo(root.querySelector('.ss05-selected-label'),{opacity:0,y:16},{opacity:1,y:0,duration:.52,ease:'power2.out'},.82);
+  tl.fromTo(root.querySelector('.ss05-theo'),{opacity:0,x:-26},{opacity:1,x:0,duration:.62,ease:'power2.out'},1.25);
+  tl.to(cam,{scale:1.28,x:123,y:-186,duration:3.3,ease:'power3.inOut',onUpdate:applyCamera},2);
+  tl.to(root.querySelector('.ss05-pattern-context'),{'--dof':'10px',opacity:.28,duration:3.3,ease:'power2.inOut'},2);
+  tl.to(root.querySelector('.ss05-source-layer'),{'--dof':'0px',opacity:1,duration:3.3,ease:'power2.inOut'},2);
+  tl.to(root.querySelectorAll('.ss05-theo-eye'),{x:8,duration:.22,stagger:.06,ease:'power1.out'},2.35);
+  tl.to(supportRoute,{strokeDashoffset:0,duration:.78,ease:'power2.out'},5.55);
+  tl.to(counterRoute,{strokeDashoffset:0,duration:.78,ease:'power2.out'},6.12);
+  tl.fromTo(root.querySelector('.ss05-counter'),{opacity:.35,x:28},{opacity:1,x:0,duration:.68,ease:'power3.out'},6.25);
+  tl.fromTo(root.querySelector('#ss05-theo-bar'),{attr:{transform:'rotate(-22 105 132)'}},{attr:{transform:'rotate(28 105 132)'},duration:.38,ease:'power2.inOut'},6.45);
+  tl.fromTo(root.querySelector('.ss05-question'),{opacity:0,y:28},{opacity:1,y:0,duration:.7,ease:'power3.out'},8.5);
+  tl.fromTo(root.querySelector('.ss05-proposal'),{opacity:0,x:38},{opacity:.62,x:0,duration:.72,ease:'power2.out'},11.02);
+  tl.to(root.querySelector('.ss05-pattern-context'),{'--dof':'0px',opacity:.34,duration:1.3,ease:'power2.inOut'},11.35);
+  tl.to(cam,{scale:1.31,x:128,y:-194,duration:2,ease:'none',onUpdate:applyCamera},11);
+  window.__timelines['ss05']=tl;
+})();
+</script>
+</template>

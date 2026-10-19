@@ -1,0 +1,18 @@
+{
+  "scene": "ss08",
+  "duration_s": 12,
+  "rules": [
+    "anchored-layout-expand",
+    "spring-pop-entrance",
+    "svg-path-draw"
+  ],
+  "exit": {
+    "vector": "stationary, 0 px/s",
+    "still_moving": false
+  },
+  "entry": {
+    "vector": "rightward, approximately 45 px/s",
+    "from_rest": false
+  }
+}
+

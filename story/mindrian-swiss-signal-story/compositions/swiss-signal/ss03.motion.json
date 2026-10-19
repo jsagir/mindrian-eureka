@@ -1,0 +1,7 @@
+{
+  "scene": "ss03",
+  "duration_s": 11,
+  "rules": ["center-outward-expansion", "svg-path-draw"],
+  "exit": { "vector": "stationary 0px/s", "still_moving": false },
+  "entry": { "vector": "stationary 0px/s", "from_rest": true }
+}

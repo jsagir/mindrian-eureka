@@ -1,0 +1,448 @@
+{
+  "schema_version": "eureka.hsi-whitespace-result.v1",
+  "capability_id": "portfolio.discover_hsi_whitespace",
+  "status": "completed_room_relative_scan",
+  "scope_id": "jhtv-oliver-kuntz",
+  "snapshot_id": "jhu-catalog-2026-07-06",
+  "input_counts": {
+    "artifacts": 2117,
+    "baseline_frameworks": 345,
+    "hsi_pairs": 6,
+    "zones": 6,
+    "skipped_pairs": 0
+  },
+  "zones": [
+    {
+      "zone_id": "hsi-ws-0003",
+      "seed_pair": {
+        "left_id": "C14402",
+        "right_id": "C17485",
+        "hsi_score": 0.6035,
+        "hsi_percentile": 1.0
+      },
+      "centroid_description": "Region between [Nonviral gene transfer to the suprachoroidal space] and [Conversion of retinal glia into neurons for cell replacement therapy]",
+      "nearest_baseline_frameworks": [
+        {
+          "id": "jhtv-category-195",
+          "label": "Clinical and Disease Specializations > Ophthalmology > Retinal Degeneration",
+          "cosine_similarity": 0.3087
+        },
+        {
+          "id": "jhtv-category-196",
+          "label": "Clinical and Disease Specializations > Ophthalmology > Retinal Detachment",
+          "cosine_similarity": 0.3087
+        },
+        {
+          "id": "jhtv-category-197",
+          "label": "Clinical and Disease Specializations > Ophthalmology > Retinal Ischemia",
+          "cosine_similarity": 0.3087
+        }
+      ],
+      "nearest_room_artifacts": [
+        {
+          "id": "C16626",
+          "title": "Controlling homeostatic regulatory circuitry in hypothalamus",
+          "cosine_similarity": 0.6032
+        },
+        {
+          "id": "C17375",
+          "title": "Novel Bioreducible Polymer for Nucleic Acid Delivery to Eyes and Beyond",
+          "cosine_similarity": 0.4703
+        },
+        {
+          "id": "C13254",
+          "title": "Compositions of nucleic acid-containing nanoparticles for in vivo delivery",
+          "cosine_similarity": 0.4669
+        }
+      ],
+      "baseline_density": 0.3087,
+      "room_density_excluding_seeds": 0.5135,
+      "baseline_density_percentile": 0.6509,
+      "room_density_percentile": 0.4539,
+      "gap_signal": "moderate",
+      "hypothesis": "The room may not articulate a connection between [Nonviral gene transfer to the suprachoroidal space] and [Conversion of retinal glia into neurons for cell replacement therapy]; the nearby supplied framework is [Clinical and Disease Specializations > Ophthalmology > Retinal Degeneration].",
+      "source_refs": [
+        {
+          "id": "C14402",
+          "title": "Nonviral gene transfer to the suprachoroidal space",
+          "source_ref": "https://jhu.technologypublisher.com/technology/28645"
+        },
+        {
+          "id": "C17485",
+          "title": "Conversion of retinal glia into neurons for cell replacement therapy",
+          "source_ref": "https://jhu.technologypublisher.com/technology/53418"
+        },
+        {
+          "id": "jhtv-category-195",
+          "source_ref": "categories.csv"
+        }
+      ],
+      "novelty_check": {
+        "status": "room-relative-only",
+        "external_literature": "not_checked"
+      }
+    },
+    {
+      "zone_id": "hsi-ws-0005",
+      "seed_pair": {
+        "left_id": "C12672",
+        "right_id": "C16030",
+        "hsi_score": 0.5945,
+        "hsi_percentile": 1.0
+      },
+      "centroid_description": "Region between [An Imaging Toolbox for Guiding Cardiac Resynchronization Therapy Implantation from Patient-Specific Computed Tomography and Body Surface Potential Mapping Data] and [Personalized Heart Modeling Using Intramyocardial Fat Deposition on Computed Tomography to Predict Ablation Targets]",
+      "nearest_baseline_frameworks": [
+        {
+          "id": "jhtv-category-008",
+          "label": "Clinical and Disease Specializations > Cardiovascular > Acute Heart Failure",
+          "cosine_similarity": 0.3853
+        },
+        {
+          "id": "jhtv-category-017",
+          "label": "Clinical and Disease Specializations > Cardiovascular > Congestive Heart Failure",
+          "cosine_similarity": 0.3853
+        },
+        {
+          "id": "jhtv-category-019",
+          "label": "Clinical and Disease Specializations > Cardiovascular > Heart Failure",
+          "cosine_similarity": 0.3853
+        }
+      ],
+      "nearest_room_artifacts": [
+        {
+          "id": "C12529",
+          "title": "A method for computationally predicting electrically optimal placement sites for internal defibrillators in pediatric and congenital heart disease patients",
+          "cosine_similarity": 0.5562
+        },
+        {
+          "id": "C12065",
+          "title": "Quantitative Measurement of Fractional Flow Reserve from Medical Imaging",
+          "cosine_similarity": 0.5375
+        },
+        {
+          "id": "C12046",
+          "title": "Strain Relaxation Index of Left Ventricular Diastolic Function",
+          "cosine_similarity": 0.5281
+        }
+      ],
+      "baseline_density": 0.3853,
+      "room_density_excluding_seeds": 0.5406,
+      "baseline_density_percentile": 0.88,
+      "room_density_percentile": 0.5352,
+      "gap_signal": "weak",
+      "hypothesis": "The room may not articulate a connection between [An Imaging Toolbox for Guiding Cardiac Resynchronization Therapy Implantation from Patient-Specific Computed Tomography and Body Surface Potential Mapping Data] and [Personalized Heart Modeling Using Intramyocardial Fat Deposition on Computed Tomography to Predict Ablation Targets]; the nearby supplied framework is [Clinical and Disease Specializations > Cardiovascular > Acute Heart Failure].",
+      "source_refs": [
+        {
+          "id": "C12672",
+          "title": "An Imaging Toolbox for Guiding Cardiac Resynchronization Therapy Implantation from Patient-Specific Computed Tomography and Body Surface Potential Mapping Data",
+          "source_ref": "https://jhu.technologypublisher.com/technology/24301"
+        },
+        {
+          "id": "C16030",
+          "title": "Personalized Heart Modeling Using Intramyocardial Fat Deposition on Computed Tomography to Predict Ablation Targets",
+          "source_ref": "https://jhu.technologypublisher.com/technology/42306"
+        },
+        {
+          "id": "jhtv-category-008",
+          "source_ref": "categories.csv"
+        }
+      ],
+      "novelty_check": {
+        "status": "room-relative-only",
+        "external_literature": "not_checked"
+      }
+    },
+    {
+      "zone_id": "hsi-ws-0001",
+      "seed_pair": {
+        "left_id": "C14402",
+        "right_id": "C15631",
+        "hsi_score": 0.6439,
+        "hsi_percentile": 1.0
+      },
+      "centroid_description": "Region between [Nonviral gene transfer to the suprachoroidal space] and [Compositions and methods for controlled release suprachoroidal drug delivery]",
+      "nearest_baseline_frameworks": [
+        {
+          "id": "jhtv-category-342",
+          "label": "Technology Classifications > Therapeutic Modalities > Therapeutic Delivery Platforms",
+          "cosine_similarity": 0.3435
+        },
+        {
+          "id": "jhtv-category-189",
+          "label": "Clinical and Disease Specializations > Ophthalmology > Dry Eye Syndrome",
+          "cosine_similarity": 0.3089
+        },
+        {
+          "id": "jhtv-category-337",
+          "label": "Technology Classifications > Therapeutic Modalities > Repurposed Drugs",
+          "cosine_similarity": 0.2659
+        }
+      ],
+      "nearest_room_artifacts": [
+        {
+          "id": "C16522",
+          "title": "Methods and compositions for sustained intraocular delivery of drugs in microcrystalline form",
+          "cosine_similarity": 0.6178
+        },
+        {
+          "id": "C13254",
+          "title": "Compositions of nucleic acid-containing nanoparticles for in vivo delivery",
+          "cosine_similarity": 0.501
+        },
+        {
+          "id": "C11686",
+          "title": "Nanoparticles for Topical Drug Delivery and Treatment of Hair Growth Conditions",
+          "cosine_similarity": 0.4886
+        }
+      ],
+      "baseline_density": 0.3061,
+      "room_density_excluding_seeds": 0.5358,
+      "baseline_density_percentile": 0.6405,
+      "room_density_percentile": 0.5182,
+      "gap_signal": "weak",
+      "hypothesis": "The room may not articulate a connection between [Nonviral gene transfer to the suprachoroidal space] and [Compositions and methods for controlled release suprachoroidal drug delivery]; the nearby supplied framework is [Technology Classifications > Therapeutic Modalities > Therapeutic Delivery Platforms].",
+      "source_refs": [
+        {
+          "id": "C14402",
+          "title": "Nonviral gene transfer to the suprachoroidal space",
+          "source_ref": "https://jhu.technologypublisher.com/technology/28645"
+        },
+        {
+          "id": "C15631",
+          "title": "Compositions and methods for controlled release suprachoroidal drug delivery",
+          "source_ref": "https://jhu.technologypublisher.com/technology/43809"
+        },
+        {
+          "id": "jhtv-category-342",
+          "source_ref": "categories.csv"
+        }
+      ],
+      "novelty_check": {
+        "status": "room-relative-only",
+        "external_literature": "not_checked"
+      }
+    },
+    {
+      "zone_id": "hsi-ws-0004",
+      "seed_pair": {
+        "left_id": "C10012",
+        "right_id": "C14131",
+        "hsi_score": 0.5954,
+        "hsi_percentile": 1.0
+      },
+      "centroid_description": "Region between [CD4+ T-cell Activating Agent to Enhance DNA Vaccine Efficacy] and [Converting immune inhibitory signal into immune stimulatory signal]",
+      "nearest_baseline_frameworks": [
+        {
+          "id": "jhtv-category-330",
+          "label": "Technology Classifications > Therapeutic Modalities > Cell Therapies",
+          "cosine_similarity": 0.3047
+        },
+        {
+          "id": "jhtv-category-341",
+          "label": "Technology Classifications > Therapeutic Modalities > Therapeutic Antibodies",
+          "cosine_similarity": 0.3021
+        },
+        {
+          "id": "jhtv-category-328",
+          "label": "Technology Classifications > Therapeutic Modalities > Antibodies",
+          "cosine_similarity": 0.3003
+        }
+      ],
+      "nearest_room_artifacts": [
+        {
+          "id": "C14961",
+          "title": "Albumin-Flt3L Fusion Protein to Enhance Anti-Tumor Immunity and Antigen-specific T-cell Cytotoxicity",
+          "cosine_similarity": 0.6186
+        },
+        {
+          "id": "C12570",
+          "title": "Use of Bacteria, Bacterial Products, and other Immunoregulatory Entities in Combination with Anti-CTLA-4 and/or Anti-PD-1 Antibodies to Treat Solid Tumor Malignancies",
+          "cosine_similarity": 0.5843
+        },
+        {
+          "id": "C15202",
+          "title": "Compositions and Methods for Treating Melanoma--Further Modifications",
+          "cosine_similarity": 0.569
+        }
+      ],
+      "baseline_density": 0.3024,
+      "room_density_excluding_seeds": 0.5906,
+      "baseline_density_percentile": 0.6226,
+      "room_density_percentile": 0.6632,
+      "gap_signal": "weak",
+      "hypothesis": "The room may not articulate a connection between [CD4+ T-cell Activating Agent to Enhance DNA Vaccine Efficacy] and [Converting immune inhibitory signal into immune stimulatory signal]; the nearby supplied framework is [Technology Classifications > Therapeutic Modalities > Cell Therapies].",
+      "source_refs": [
+        {
+          "id": "C10012",
+          "title": "CD4+ T-cell Activating Agent to Enhance DNA Vaccine Efficacy",
+          "source_ref": "https://jhu.technologypublisher.com/technology/37978"
+        },
+        {
+          "id": "C14131",
+          "title": "Converting immune inhibitory signal into immune stimulatory signal",
+          "source_ref": "https://jhu.technologypublisher.com/technology/24896"
+        },
+        {
+          "id": "jhtv-category-330",
+          "source_ref": "categories.csv"
+        }
+      ],
+      "novelty_check": {
+        "status": "room-relative-only",
+        "external_literature": "not_checked"
+      }
+    },
+    {
+      "zone_id": "hsi-ws-0006",
+      "seed_pair": {
+        "left_id": "C10218",
+        "right_id": "C15255",
+        "hsi_score": 0.5932,
+        "hsi_percentile": 1.0
+      },
+      "centroid_description": "Region between [Novel HPV Vaccine] and [Annexin V-HPV E7 Fusion Protein for Cancer Treatment]",
+      "nearest_baseline_frameworks": [
+        {
+          "id": "jhtv-category-340",
+          "label": "Technology Classifications > Therapeutic Modalities > Targets",
+          "cosine_similarity": 0.2972
+        },
+        {
+          "id": "jhtv-category-327",
+          "label": "Technology Classifications > Therapeutic Modalities",
+          "cosine_similarity": 0.2932
+        },
+        {
+          "id": "jhtv-category-329",
+          "label": "Technology Classifications > Therapeutic Modalities > Biologics",
+          "cosine_similarity": 0.2932
+        }
+      ],
+      "nearest_room_artifacts": [
+        {
+          "id": "C04603",
+          "title": "Unexpected Cross-neutralization of Cutaneous & Mucosal Papillomavirus Types with Anti-Sera to a Novel L2 Epitopes",
+          "cosine_similarity": 0.5473
+        },
+        {
+          "id": "C10323",
+          "title": "Manipulation of the Transcription Factor Helios to Enhance or Down-modulate Regulatory T Cell Function",
+          "cosine_similarity": 0.5333
+        },
+        {
+          "id": "C10691",
+          "title": "MART-1 Phosphopeptides Restricted by HLA-DR1 for use as Melanoma Vaccines",
+          "cosine_similarity": 0.5106
+        }
+      ],
+      "baseline_density": 0.2946,
+      "room_density_excluding_seeds": 0.5304,
+      "baseline_density_percentile": 0.5919,
+      "room_density_percentile": 0.5064,
+      "gap_signal": "weak",
+      "hypothesis": "The room may not articulate a connection between [Novel HPV Vaccine] and [Annexin V-HPV E7 Fusion Protein for Cancer Treatment]; the nearby supplied framework is [Technology Classifications > Therapeutic Modalities > Targets].",
+      "source_refs": [
+        {
+          "id": "C10218",
+          "title": "Novel HPV Vaccine",
+          "source_ref": "https://jhu.technologypublisher.com/technology/60515"
+        },
+        {
+          "id": "C15255",
+          "title": "Annexin V-HPV E7 Fusion Protein for Cancer Treatment",
+          "source_ref": "https://jhu.technologypublisher.com/technology/34446"
+        },
+        {
+          "id": "jhtv-category-340",
+          "source_ref": "categories.csv"
+        }
+      ],
+      "novelty_check": {
+        "status": "room-relative-only",
+        "external_literature": "not_checked"
+      }
+    },
+    {
+      "zone_id": "hsi-ws-0002",
+      "seed_pair": {
+        "left_id": "C12890",
+        "right_id": "C16260",
+        "hsi_score": 0.6068,
+        "hsi_percentile": 1.0
+      },
+      "centroid_description": "Region between [Electrode Assemblies for Detecting Muscle Signals in a Prosthetic Liner] and [3D Printed Neural Port]",
+      "nearest_baseline_frameworks": [
+        {
+          "id": "jhtv-category-122",
+          "label": "Clinical and Disease Specializations > Neurology",
+          "cosine_similarity": 0.1354
+        },
+        {
+          "id": "jhtv-category-124",
+          "label": "Clinical and Disease Specializations > Neurology > Amyotrophic Lateral Sclerosis",
+          "cosine_similarity": 0.1354
+        },
+        {
+          "id": "jhtv-category-125",
+          "label": "Clinical and Disease Specializations > Neurology > Cerebral Aneurysm",
+          "cosine_similarity": 0.1354
+        }
+      ],
+      "nearest_room_artifacts": [
+        {
+          "id": "C12265",
+          "title": "New Art Development of Stable Eyes Rehabilitation Device",
+          "cosine_similarity": 0.5944
+        },
+        {
+          "id": "C12135",
+          "title": "Real-time 3D and 4D Fourier Domain Doppler Optical Coherence Tomography Based on Dual Graphics Processing Units",
+          "cosine_similarity": 0.5772
+        },
+        {
+          "id": "C12139",
+          "title": "Durable Single Mode Fiber Probe with Optimized Reference Reflectivity",
+          "cosine_similarity": 0.5654
+        }
+      ],
+      "baseline_density": 0.1354,
+      "room_density_excluding_seeds": 0.579,
+      "baseline_density_percentile": 0.0109,
+      "room_density_percentile": 0.6325,
+      "gap_signal": "weak",
+      "hypothesis": "The room may not articulate a connection between [Electrode Assemblies for Detecting Muscle Signals in a Prosthetic Liner] and [3D Printed Neural Port]; the nearby supplied framework is [Clinical and Disease Specializations > Neurology].",
+      "source_refs": [
+        {
+          "id": "C12890",
+          "title": "Electrode Assemblies for Detecting Muscle Signals in a Prosthetic Liner",
+          "source_ref": "https://jhu.technologypublisher.com/technology/23325"
+        },
+        {
+          "id": "C16260",
+          "title": "3D Printed Neural Port",
+          "source_ref": "https://jhu.technologypublisher.com/technology/43245"
+        },
+        {
+          "id": "jhtv-category-122",
+          "source_ref": "categories.csv"
+        }
+      ],
+      "novelty_check": {
+        "status": "room-relative-only",
+        "external_literature": "not_checked"
+      }
+    }
+  ],
+  "skipped_pairs": [],
+  "provenance": {
+    "method": "HSI-seeded embedding centroid; top-3 cosine density; seed-excluded room density; percentile comparison against supplied room artifacts",
+    "embedding_model": "TF-IDF word/bigram, max_features=512 (lexical proxy; not a semantic sentence encoder)",
+    "computed_at": "2026-10-18T18:28:23.591596+00:00"
+  },
+  "interpretation": "A high signal is a hypothesis that a connection region is sparse in this supplied room while near supplied baseline frameworks. It is not proof of a literature gap, novelty, demand, or opportunity.",
+  "limitations": [
+    "All vectors and baseline frameworks must use the same embedding model and preprocessing.",
+    "The result depends on HSI pair quality, baseline selection, and small-corpus percentile stability.",
+    "No external literature or market search was performed; MindrianOS must broker any such research with user approval."
+  ]
+}

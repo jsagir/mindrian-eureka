@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=1920,height=1080"><title>MindrianOS — Swiss Signal</title><script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script><style>*{margin:0;padding:0;box-sizing:border-box}html,body,#root{width:1920px;height:1080px;overflow:hidden;background:#F7F5EE}.clip{position:absolute;inset:0;opacity:0;transform-origin:50% 50%;will-change:opacity,filter,transform}</style></head><body><div id="root" data-composition-id="main" data-start="0" data-duration="120" data-width="1920" data-height="1080">
+<div id="ss01-host" class="clip" data-composition-id="ss01" data-composition-src="compositions/swiss-signal/ss01.html" data-start="0" data-duration="7" data-track-index="0" data-width="1920" data-height="1080"></div>
+<div id="ss02-host" class="clip" data-composition-id="ss02" data-composition-src="compositions/swiss-signal/ss02.html" data-start="7" data-duration="13" data-track-index="1" data-width="1920" data-height="1080"></div>
+<div id="ss03-host" class="clip" data-composition-id="ss03" data-composition-src="compositions/swiss-signal/ss03.html" data-start="20" data-duration="11" data-track-index="2" data-width="1920" data-height="1080"></div>
+<div id="ss04-host" class="clip" data-composition-id="ss04" data-composition-src="compositions/swiss-signal/ss04.html" data-start="31" data-duration="15" data-track-index="3" data-width="1920" data-height="1080"></div>
+<div id="ss05-host" class="clip" data-composition-id="ss05" data-composition-src="compositions/swiss-signal/ss05.html" data-start="46" data-duration="13" data-track-index="4" data-width="1920" data-height="1080"></div>
+<div id="ss06-host" class="clip" data-composition-id="ss06" data-composition-src="compositions/swiss-signal/ss06.html" data-start="59" data-duration="15" data-track-index="5" data-width="1920" data-height="1080"></div>
+<div id="ss07-host" class="clip" data-composition-id="ss07" data-composition-src="compositions/swiss-signal/ss07.html" data-start="74" data-duration="13" data-track-index="6" data-width="1920" data-height="1080"></div>
+<div id="ss08-host" class="clip" data-composition-id="ss08" data-composition-src="compositions/swiss-signal/ss08.html" data-start="87" data-duration="12" data-track-index="7" data-width="1920" data-height="1080"></div>
+<div id="ss09-host" class="clip" data-composition-id="ss09" data-composition-src="compositions/swiss-signal/ss09.html" data-start="99" data-duration="21" data-track-index="8" data-width="1920" data-height="1080"></div>
+</div><script>const tl=gsap.timeline({paused:true});
+tl.fromTo("#ss01-host",{opacity:0},{opacity:1,duration:.45,ease:"power2.out"},0);
+const dissolve=(outgoing,incoming,at,focus=false)=>{
+  const blurOut=focus?"blur(22px)":"blur(0px)";
+  const blurIn=focus?"blur(18px)":"blur(0px)";
+  tl.to(outgoing,{opacity:0,filter:blurOut,scale:focus?1.035:1,duration:.55,ease:"power2.inOut"},at-.35);
+  tl.fromTo(incoming,{opacity:0,filter:blurIn,scale:focus ? 0.97 : 1},{opacity:1,filter:"blur(0px)",scale:1,duration:.55,ease:"power2.inOut"},at-.25);
+};
+dissolve("#ss01-host","#ss02-host",7);
+dissolve("#ss02-host","#ss03-host",20);
+dissolve("#ss03-host","#ss04-host",31);
+dissolve("#ss04-host","#ss05-host",46,true);
+dissolve("#ss05-host","#ss06-host",59);
+dissolve("#ss06-host","#ss07-host",74,true);
+dissolve("#ss07-host","#ss08-host",87);
+dissolve("#ss08-host","#ss09-host",99);
+window.__timelines["main"]=tl;</script></body></html>

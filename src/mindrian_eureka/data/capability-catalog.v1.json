@@ -1,0 +1,627 @@
+{
+  "schema_version": "eureka.capability-catalog.v1",
+  "catalog_version": "2026-10-18+workflow-stages",
+  "readiness_key": {
+    "experimental": "A runnable local implementation exists; its method fidelity or decision value still requires evaluation.",
+    "host_brokered": "A runnable local step exists, but MindrianOS must provide approved external research and/or review.",
+    "blocked": "The research package describes this job, but this repository does not yet provide a verified runnable implementation.",
+    "planned": "A design role only; do not offer it as a runnable engine."
+  },
+  "capabilities": [
+    {
+      "id": "opportunity.find_cross_domain_pairs",
+      "name": "Find Unusual Pairs Across a Research Collection",
+      "engine_family": "Cross-domain pair discovery",
+      "jtbd": "Use when a scoped, source-linked collection is ready and you want pairs whose semantic and structural signals differ, with source links for follow-up.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/opportunity_pairs",
+      "requires": [
+        "Two or more source-linked artifacts",
+        "Locally available semantic model"
+      ],
+      "network": "denied by the engine; model must be supplied locally",
+      "side_effects": [],
+      "limitations": [
+        "Pair signals are discovery leads, not evidence of novelty, value, or opportunity.",
+        "MindrianOS must resolve room references, review connections, research evidence, and file decisions.",
+        "Reference equivalence to the original RS package and model evaluation remain open."
+      ]
+    },
+    {
+      "id": "analogy.map_structure",
+      "name": "Map a Source Mechanism to a Target Problem",
+      "engine_family": "Structural analogy mapping",
+      "jtbd": "Use when you have source-linked descriptions of a mechanism and a target problem and want their relationships mapped into hypotheses for later evidence checks.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/structure_mapping",
+      "requires": [
+        "Traceable target and source structures",
+        "Claim-linked source evidence"
+      ],
+      "network": "denied",
+      "side_effects": [],
+      "limitations": [
+        "Mapping outputs are hypotheses, not evidence validation.",
+        "Imported SME source/license clearance remains unresolved."
+      ]
+    },
+    {
+      "id": "analogy.cross_domain_research",
+      "name": "Research and Test a New Problem Framing",
+      "engine_family": "Host-brokered mechanism research",
+      "jtbd": "Use when a decision is stuck in its familiar framing and Mindrian can supply approved research, source-linked findings, and reviewer assessments for mapping and inference checks.",
+      "status": "host_brokered",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/structure_mapping/workflow.py",
+      "requires": [
+        "MindrianOS-approved exact queries",
+        "Host-returned research bundle",
+        "Reviewer assessment"
+      ],
+      "network": "host broker required; this repository makes no network requests",
+      "side_effects": [],
+      "limitations": [
+        "The host owns approval, provider calls, source access, and final evidence judgment.",
+        "SME source/license clearance remains unresolved."
+      ]
+    },
+    {
+      "id": "decision.compare_sequence_patterns",
+      "name": "Compare Decision-Sequence Models",
+      "engine_family": "Decision-sequence analysis",
+      "jtbd": "Use when decision traces have been explicitly coded and at least two models are fully specified, and you want to compare their relative fit for research.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "loopback web",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/decision_patterns",
+      "requires": [
+        "Explicitly coded observations",
+        "At least two fully specified HMMs"
+      ],
+      "network": "denied",
+      "side_effects": [],
+      "limitations": [
+        "OMM interpretation and feature rubric are unvalidated.",
+        "This is not an opportunity-generation engine or a measure of user ability."
+      ]
+    },
+    {
+      "id": "opportunity.discover_breakthroughs",
+      "name": "Find and Challenge Opportunity Leads",
+      "engine_family": "Opportunity discovery and review",
+      "jtbd": "Use when you want a room or portfolio searched for candidate changes, with their evidence and assumptions prepared for human review. This full workflow is not yet runnable here.",
+      "status": "blocked",
+      "surface": [],
+      "implementation": null,
+      "requires": [
+        "Verified engine port",
+        "Room-grounded evidence contract",
+        "Critic and evaluation evidence"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "The supplied Eureka package has multiple routines, but this repo has not migrated or verified them as a single user-facing capability.",
+        "Do not equate legacy candidate grades with validated opportunity quality."
+      ]
+    },
+    {
+      "id": "portfolio.find_coverage_gaps",
+      "name": "Check Which Portfolio Themes Are Underrepresented",
+      "engine_family": "Portfolio coverage-gap discovery",
+      "jtbd": "Use when portfolio records have been normalized and a sourced taxonomy is available, and you want underrepresented themes flagged for investigation. The full gap-discovery job is not yet runnable here.",
+      "status": "blocked",
+      "surface": [],
+      "implementation": null,
+      "requires": [
+        "Verified HSI runtime",
+        "Domain taxonomy with provenance",
+        "Evaluation against a labeled portfolio"
+      ],
+      "network": "denied for local analysis",
+      "side_effects": [],
+      "limitations": [
+        "The executable HSI pair scorer is exposed separately as portfolio.find_hybrid_similarity_pairs.",
+        "The reviewed whitespace/gap discovery pipeline and its taxonomy/coverage interpretation are not ported as an end-to-end user job.",
+        "A gap in room material does not establish external demand or commercial whitespace."
+      ]
+    },
+    {
+      "id": "analogy.find_mechanisms",
+      "name": "Find Mechanisms That Could Reframe a Problem",
+      "engine_family": "Mechanism discovery",
+      "jtbd": "Use when a problem is stuck in its familiar field and you need candidate mechanisms from other fields for structural and evidence review. End-to-end retrieval is not yet runnable here.",
+      "status": "blocked",
+      "surface": [],
+      "implementation": null,
+      "requires": [
+        "Verified local recall/index path",
+        "Approved external research broker for fresh sources"
+      ],
+      "network": "host broker required for remote sources",
+      "side_effects": [],
+      "limitations": [
+        "Existing recall and fitness code still needs dependency and semantic-behavior verification.",
+        "Retrieved analogies require structural mapping and evidence review."
+      ]
+    },
+    {
+      "id": "research.orchestrate_multidomain",
+      "name": "Plan Research Across Multiple Fields",
+      "engine_family": "Multidomain research orchestration",
+      "jtbd": "Use when a question needs several disciplines and confirmed domains should be turned into bounded research tasks with clear evidence handoffs. This capability plans; the host performs the research.",
+      "status": "planned",
+      "surface": [],
+      "implementation": null,
+      "requires": [
+        "Evidence-grounded domain selection",
+        "Host research execution",
+        "Source and disagreement handoff"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "The reviewed Genesis implementation is stronger at planning/persona generation than verified execution.",
+        "Perspectives are analytical lenses, not simulated authorities.",
+        "No minimum breakthrough count is valid regardless of evidence."
+      ]
+    },
+    {
+      "id": "analysis.critique_pitch",
+      "name": "Challenge a Pitch with Evidence-Linked Questions",
+      "engine_family": "Pitch and solution critique",
+      "jtbd": "Use when a pitch or proposed solution needs a source-traceable review of its claims, assumptions, comparisons, and falsifiable next questions. The full critique workflow is not yet runnable here.",
+      "status": "blocked",
+      "surface": [],
+      "implementation": null,
+      "requires": [
+        "Verified local analysis module",
+        "Optional approved graph and research providers",
+        "Source-linked claims"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "The reviewed Jason script is a critique and diagnostic instrument, not an opportunity generator.",
+        "Percentile and similarity signals are not calibrated market or novelty scores.",
+        "The real dense-model branch and room-graph access remain unverified for that package."
+      ]
+    },
+    {
+      "id": "deliberation.structure",
+      "name": "Structure a Review of Competing Interpretations",
+      "engine_family": "Governed perspective review",
+      "jtbd": "Use when a bounded decision has credible, source-linked competing interpretations and a human needs to review the arguments and record an unresolved or final ruling. The full debate workflow is not yet runnable here.",
+      "status": "blocked",
+      "surface": [],
+      "implementation": null,
+      "requires": [
+        "Source/package audit",
+        "Verified governance and reviewer behavior",
+        "Human decision capture"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "BONO source package remains unreviewed; no production behavior is asserted.",
+        "A multi-perspective debate does not create independent evidence."
+      ]
+    },
+    {
+      "id": "graph.propose_relationships",
+      "name": "Find and Explain Relationships Between Portfolio Items",
+      "engine_family": "Portfolio relationship discovery",
+      "jtbd": "Use when an approved graph snapshot should be searched for missing or useful links, with evidence and explanations ready for review. Discovery and ranking are not yet runnable here.",
+      "status": "blocked",
+      "surface": [],
+      "implementation": null,
+      "requires": [
+        "MindrianOS-authorized graph snapshot",
+        "Relationship-level provenance",
+        "Validated ranking and approval path"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "Current package is read-only and its dated backtest did not validate top-ranked future edges.",
+        "No graph write is enabled in this repository."
+      ]
+    },
+    {
+      "id": "bottleneck.diagnose",
+      "name": "Diagnose What Is Limiting Progress",
+      "engine_family": "Bottleneck diagnosis",
+      "jtbd": "Use when progress is stalled and room evidence is available, but the limiting subsystem or next constraint to investigate is unclear. This remains a MindrianOS-host workflow.",
+      "status": "planned",
+      "surface": [
+        "MindrianOS host only"
+      ],
+      "implementation": null,
+      "requires": [
+        "MindrianOS room context",
+        "Native host workflow"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "Not implemented in this repository; the host owns room analysis and native command invocation."
+      ]
+    },
+    {
+      "id": "claims.compare",
+      "name": "Compare Competing Explanations",
+      "engine_family": "Competing-explanation review",
+      "jtbd": "Use when two explanations or mechanisms would lead to different decisions and you need their evidence, assumptions, predictions, and counterevidence compared. This review is not yet implemented here.",
+      "status": "planned",
+      "surface": [],
+      "implementation": null,
+      "requires": [
+        "Explicit competing claims",
+        "Source-linked evidence"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "This is not a truth classifier and is not implemented in this repository."
+      ]
+    },
+    {
+      "id": "evidence.fetch_for_question",
+      "name": "Gather Evidence for a Focused Question",
+      "engine_family": "Approved evidence retrieval",
+      "jtbd": "Use when a selected candidate has a specific unresolved claim and an approved host research provider can return supporting and contradictory sources with metadata. This repository does not fetch evidence.",
+      "status": "blocked",
+      "surface": [
+        "MindrianOS host only"
+      ],
+      "implementation": null,
+      "requires": [
+        "Approved exact queries",
+        "Configured host research provider",
+        "Egress and source policy checks"
+      ],
+      "network": "host broker required",
+      "side_effects": [],
+      "limitations": [
+        "This repository does not fetch sources; it can validate lineage in a host-returned bundle."
+      ]
+    },
+    {
+      "id": "experts.find_for_topic",
+      "name": "Find Experts for a Documented Knowledge Gap",
+      "engine_family": "Expert discovery",
+      "jtbd": "Use when reviewed evidence identifies a specialized knowledge gap and Mindrian has an authorized, source-grounded expert directory. Lookup is not yet implemented here.",
+      "status": "blocked",
+      "surface": [],
+      "implementation": null,
+      "requires": [
+        "Evidence-backed topic",
+        "Authorized source or directory",
+        "Privacy and outreach policy"
+      ],
+      "network": "host broker required",
+      "side_effects": [],
+      "limitations": [
+        "No expert directory lookup or outreach is implemented here."
+      ]
+    },
+    {
+      "id": "thesis.read_prior",
+      "name": "Revisit the Room's Previous Bottleneck Thesis",
+      "engine_family": "Prior-thesis retrieval",
+      "jtbd": "Use before a new discovery pass when the room may already contain a bottleneck thesis whose evidence and status should shape the next investigation. This remains a MindrianOS-host workflow.",
+      "status": "planned",
+      "surface": [
+        "MindrianOS host only"
+      ],
+      "implementation": null,
+      "requires": [
+        "Authorized room context",
+        "Existing thesis record"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "Not implemented in this repository; retrieval and status are host-owned."
+      ]
+    },
+    {
+      "id": "portfolio.inventory_taxonomy_coverage",
+      "name": "Count Coverage Across a Supplied Taxonomy",
+      "engine_family": "Portfolio taxonomy inventory",
+      "jtbd": "Use when source records already have categories from a supplied taxonomy and you need counts of well-covered and thin areas before investigating possible gaps.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::portfolio_coverage",
+      "requires": [
+        "Source-linked artifacts with category_ids",
+        "Explicit taxonomy and taxonomy provenance"
+      ],
+      "network": "denied by the engine; no external research.",
+      "side_effects": [],
+      "limitations": [
+        "Counts representation only; it does not run original HSI embedding, PCA/UMAP, or demand analysis, and does not establish market whitespace.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ]
+    },
+    {
+      "id": "portfolio.discover_hsi_whitespace",
+      "name": "Check Whether a Pair's Connecting Region Is Sparse in the Room",
+      "engine_family": "Room-relative whitespace analysis",
+      "jtbd": "Use after a pair scan when room and reference-framework vectors for the same snapshot are available and you want to compare relative density. This does not establish an external research or market gap.",
+      "status": "experimental",
+      "surface": ["CLI", "MCP"],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::discover_hsi_whitespace",
+      "requires": ["At least 3 room artifact vectors and 1 reference framework vector", "HSI pair results for the same snapshot", "Vectors generated with one shared embedding model"],
+      "network": "Denied; host supplies vectors and reference frameworks.",
+      "side_effects": [],
+      "limitations": ["Reports room-relative sparsity only, not a literature gap, novelty, demand, or commercial whitespace.", "No embedding generation or external retrieval is performed.", "Results depend on supplied baseline choice, vector quality, and corpus size; validate against labeled examples."]
+    },
+    {
+      "id": "analogy.retrieve_mechanism_candidates",
+      "name": "Retrieve Source-Linked Mechanisms from a Supplied Corpus",
+      "engine_family": "Mechanism retrieval",
+      "jtbd": "Use when the target problem is framed and a local or host-approved corpus of sourced mechanisms is available, and you need candidates for structural mapping. Retrieval is lexical, not a measure of analogy fit.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::retrieve_mechanisms",
+      "requires": [
+        "Target problem text",
+        "Mechanism records with domain, description, and source reference"
+      ],
+      "network": "denied by the engine; remote records must be supplied by MindrianOS after approval.",
+      "side_effects": [],
+      "limitations": [
+        "Lexical recall only, not the reviewed embedding recall/fitness pipeline; retrieval rank is not analogy fit.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ]
+    },
+    {
+      "id": "research.prepare_multidomain_plan",
+      "name": "Turn Confirmed Fields into Research Tasks",
+      "engine_family": "Multidomain research planning",
+      "jtbd": "Use when the user or host has confirmed which fields matter and needs bounded questions that specify evidence, counterevidence, and a possible falsifier for each task.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::plan_multidomain_research",
+      "requires": [
+        "Objective",
+        "User-confirmed domains and rationales"
+      ],
+      "network": "none; research execution is external to this planner.",
+      "side_effects": [],
+      "limitations": [
+        "Planning stage only; it does not search, generate findings, persist an ICM run, or automatically select evidence-grounded domains.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ]
+    },
+    {
+      "id": "research.group_multidomain_findings",
+      "name": "Group Repeated and Conflicting Research Findings",
+      "engine_family": "Research-finding synthesis",
+      "jtbd": "Use when parallel research has returned source-linked findings and you need identical claims grouped with their stated support or contradiction positions preserved.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::synthesize_research_findings",
+      "requires": [
+        "Source-linked findings with explicit host-provided positions"
+      ],
+      "network": "none",
+      "side_effects": [],
+      "limitations": [
+        "Groups exact normalized claim text only; it does not merge paraphrases, validate claims, or decide consensus.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ]
+    },
+    {
+      "id": "analysis.audit_claim_traceability",
+      "name": "Check Claims Against Their Evidence and Falsifiers",
+      "engine_family": "Claim traceability review",
+      "jtbd": "Use before a substantive critique when a proposal has declared claims and you need to check that each links to evidence, counterevidence review, and a falsifying observation.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::critique_proposal",
+      "requires": [
+        "Proposal, claim list, evidence records"
+      ],
+      "network": "none",
+      "side_effects": [],
+      "limitations": [
+        "Completeness audit only; this is not the reviewed Jason differential-analysis model and makes no factual or market judgment.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ]
+    },
+    {
+      "id": "deliberation.prepare_six_hat_review",
+      "name": "Prepare a Six Thinking Hats Review",
+      "engine_family": "Perspective-review preparation",
+      "jtbd": "Use when a bounded question already has source-linked arguments and you need perspective coverage and open questions organized for a human ruling. This prepares a review; it does not run a debate.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::structure_debate",
+      "requires": [
+        "Confirmed topic and hypothesis",
+        "Arguments with perspective labels and source references"
+      ],
+      "network": "none",
+      "side_effects": [],
+      "limitations": [
+        "Does not execute BONO research fan-out or debate, does not make a ruling, and perspective labels do not create independent evidence.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ]
+    },
+    {
+      "id": "graph.package_relationship_proposals",
+      "name": "Validate and Package Candidate Portfolio Links",
+      "engine_family": "Relationship proposal handoff",
+      "jtbd": "Use after a separate process has proposed links from an approved snapshot, when you need node and evidence references checked and the proposals packaged for human review before any graph write.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::propose_graph_relationships",
+      "requires": [
+        "Approved node snapshot",
+        "Candidate relations with evidence IDs and rationale"
+      ],
+      "network": "none",
+      "side_effects": [],
+      "limitations": [
+        "Packages caller-proposed links; it does not discover/rank them or write graph edges.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ]
+    },
+    {
+      "id": "discovery.plan_opportunity_scout",
+      "name": "Plan a Selective Opportunity-Discovery Run",
+      "engine_family": "Opportunity-discovery planning",
+      "jtbd": "Use when the user has stated a decision objective and scope and needs a selective method sequence with dependencies and stop points before any capability is run.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::plan_opportunity_discovery",
+      "requires": [
+        "Objective",
+        "Explicit capability selections"
+      ],
+      "network": "none",
+      "side_effects": [],
+      "limitations": [
+        "Plan only; the user and Theo still select the methods, and unavailable or unapproved dependencies remain blocked.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ]
+    },
+    {
+      "id": "portfolio.find_hybrid_similarity_pairs",
+      "name": "Rank Unusual Pairs by Wording and Meaning",
+      "engine_family": "Hybrid similarity pair screening",
+      "jtbd": "Use when a scoped, source-linked collection has vectors or a local encoder available and you want pairs whose wording and semantic similarity signals differ ranked for investigation.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/hsi_engine.py and src/mindrian_eureka/hsi_reference.py",
+      "requires": [
+        "Two or more source-linked artifacts",
+        "Optional dense vectors or a locally configured sentence-transformer model for the semantic leg; no dense leg uses explicitly labeled lexical-only degradation"
+      ],
+      "network": "denied; model loading is local-only and no embeddings are fetched",
+      "side_effects": [],
+      "limitations": [
+        "HSI and spectral outputs are exploratory portfolio-relative signals, not probability, quality, market, or novelty estimates.",
+        "Without a configured local encoder or supplied vectors, the engine explicitly falls back to a lexical-only comparison.",
+        "The copied HSI reference source has unresolved redistribution rights and is local-evaluation only.",
+        "The whitespace-to-taxonomy workflow is not included in this capability."
+      ]
+    },
+    {
+      "id": "analysis.compare_text_differences",
+      "name": "Compare Claims for Restatement and Overlap",
+      "engine_family": "Text-difference analysis",
+      "jtbd": "Use when descriptions or claim sets may repeat the same idea in different words and you need sentence pairs surfaced for human review. Similarity is a diagnostic signal, not a novelty score.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/pitch_analysis/algorithm.py",
+      "requires": [
+        "One or more text pairs with stable IDs; five or more pairs are needed for corpus percentiles"
+      ],
+      "network": "denied; optional sentence model must be provided locally; otherwise the output labels its character n-gram proxy",
+      "side_effects": [],
+      "limitations": [
+        "The semantic/text gap is a paraphrase diagnostic, not novelty, opportunity, or innovation score.",
+        "Dense sentence-transformer behavior was not run or validated on this deployment.",
+        "Source/package redistribution rights remain unresolved; local evaluation only."
+      ]
+    },
+    {
+      "id": "opportunity.synthesize_discovery_signals",
+      "name": "Screen One Local Snapshot for Opportunity Pair Leads",
+      "engine_family": "Local opportunity-pair screening",
+      "jtbd": "Use when a scoped local catalog and local semantic model are ready and you want RS and HSI pair leads from the same snapshot for Theo and human review. The result is a shortlist, not a qualification.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/opportunity_discovery.py; JobManager durable run lifecycle",
+      "requires": [
+        "2..2500 source-linked local artifacts",
+        "Configured local RS model or local model cache",
+        "Optional precomputed dense vectors or local HSI model; without these HSI uses labeled lexical-only degradation"
+      ],
+      "network": "denied; both methods use local supplied material and local models only",
+      "side_effects": [],
+      "limitations": [
+        "This combines two retrieval signals, not the full Eureka harvest/critic/qualification lifecycle.",
+        "No RS and HSI scores are fused; results are ordered by number of methods surfacing a pair and then best within-engine rank.",
+        "Pair signals do not establish technical complementarity, novelty, market value, or a breakthrough.",
+        "Theo review, graph tracing, external evidence, SME adjudication, and opportunity-bank writes are separate host actions.",
+        "HSI reference-source rights remain unresolved; local evaluation only."
+      ]
+    },
+    {
+      "id": "analogy.assess_structural_fitness",
+      "name": "Compare the Structure of a Mechanism and a Target",
+      "engine_family": "Structural analogy comparison",
+      "jtbd": "Use when a source mechanism and target problem are each encoded in seven sourced relational layers and you need to prioritize possible correspondences for SME and evidence review.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/analogy_fitness.py",
+      "requires": [
+        "One source-linked target description group",
+        "1..100 source-linked mechanism description groups",
+        "Operator-supplied local sentence-transformer model"
+      ],
+      "network": "denied; encoder model must be available locally",
+      "side_effects": [],
+      "limitations": [
+        "The layer correspondence and bands are embedding heuristics, not validated transfer or opportunity-quality scores.",
+        "Per-layer corpus thresholds are descriptive and uncalibrated; pools under five use fixed 0.5 correspondence thresholds.",
+        "A high structural band is an SME handoff hypothesis and must be reviewed against counterevidence and boundary conditions.",
+        "No external mechanism retrieval is performed in this capability."
+      ]
+    }
+  ]
+}

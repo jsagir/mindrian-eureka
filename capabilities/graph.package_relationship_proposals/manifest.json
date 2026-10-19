@@ -1,0 +1,30 @@
+{
+  "schema_version": "eureka.capability.v1",
+  "id": "graph.package_relationship_proposals",
+  "name": "Package Evidence-Linked Relationship Proposals",
+  "jtbd": "When an authorized graph snapshot has already yielded candidate links, validate node/evidence references and package them for human review before any graph write.",
+  "status": "experimental",
+  "input_schema": "schemas/workflow-request.v1.schema.json",
+  "output_schema": "schemas/workflow-result.v1.schema.json",
+  "runtime": "Python >=3.11; local CLI and stdio MCP",
+  "network": "denied",
+  "data_classes": [
+    "host-supplied-scoped-records",
+    "source-identifiers"
+  ],
+  "requires": [
+    "Approved node snapshot",
+    "Candidate relations with evidence IDs and rationale"
+  ],
+  "side_effects": [],
+  "limitations": [
+    "Packages caller-proposed links; it does not discover/rank them or write graph edges.",
+    "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+  ],
+  "version": "0.1.0",
+  "source_revision": "src/mindrian_eureka/discovery_workflows.py::propose_graph_relationships",
+  "license_status": "unknown",
+  "max_runtime_seconds": 3600,
+  "max_input_bytes": 20971520,
+  "max_candidates": 50000
+}

@@ -1,0 +1,7 @@
+{
+  "scene": "ss05",
+  "duration_s": 13,
+  "rules": ["viewport-change", "depth-of-field-blur", "svg-path-draw"],
+  "exit": { "vector": "up; 4 px/s", "still_moving": true },
+  "entry": { "vector": "clockwise draw; 0 px/s translation", "from_rest": true }
+}

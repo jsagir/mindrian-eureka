@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian.dev/schemas/eureka/decision-sequence-fit-input.v1.schema.json",
+  "title": "Exploratory Decision Sequence HMM Fit Input v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["training_mode", "seed_model", "sequences"],
+  "properties": {
+    "training_mode": { "const": "exploratory_unlabeled_baum_welch" },
+    "model_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "label": { "type": "string", "maxLength": 256 },
+    "max_iterations": { "type": "integer", "minimum": 1, "maximum": 1000, "default": 100 },
+    "tolerance": { "type": "number", "minimum": 0, "default": 0.001 },
+    "seed_model": { "$ref": "decision-sequence-input.v1.schema.json#/$defs/model" },
+    "sequences": {
+      "type": "array", "minItems": 2, "maxItems": 500,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["observations"],
+        "properties": {
+          "sequence_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+          "observations": { "$ref": "decision-sequence-input.v1.schema.json#/properties/observations" }
+        }
+      }
+    }
+  }
+}

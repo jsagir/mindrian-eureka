@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian.dev/schemas/eureka/decision-sequence-input.v1.schema.json",
+  "title": "Decision Sequence Pattern Comparison Input v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["scope_id", "sequence_id", "observations", "models"],
+  "properties": {
+    "scope_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "sequence_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "observations": {
+      "type": "array", "minItems": 1, "maxItems": 2000,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["step_id", "features"],
+        "properties": {
+          "step_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+          "features": {
+            "type": "object", "additionalProperties": false,
+            "required": ["complex_features", "multidirectional_causation", "holistic_view", "creative_synthesis"],
+            "properties": {
+              "complex_features": { "type": "boolean" },
+              "multidirectional_causation": { "type": "boolean" },
+              "holistic_view": { "type": "boolean" },
+              "creative_synthesis": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "models": {
+      "type": "array", "minItems": 2, "maxItems": 5,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "initial_distribution", "transition_matrix", "emission_probabilities"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+          "label": { "type": "string", "maxLength": 256 },
+          "initial_distribution": { "$ref": "#/$defs/probabilityVector" },
+          "transition_matrix": {
+            "type": "array", "minItems": 4, "maxItems": 4,
+            "items": { "$ref": "#/$defs/probabilityVector" }
+          },
+          "emission_probabilities": {
+            "type": "array", "minItems": 4, "maxItems": 4,
+            "items": { "$ref": "#/$defs/emissionVector" }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "model": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "initial_distribution", "transition_matrix", "emission_probabilities"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "label": { "type": "string", "maxLength": 256 },
+        "initial_distribution": { "$ref": "#/$defs/probabilityVector" },
+        "transition_matrix": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "$ref": "#/$defs/probabilityVector" } },
+        "emission_probabilities": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "$ref": "#/$defs/emissionVector" } }
+      }
+    },
+    "probabilityVector": {
+      "type": "array", "minItems": 4, "maxItems": 4,
+      "items": { "type": "number", "minimum": 0, "maximum": 1 }
+    },
+    "emissionVector": {
+      "type": "array", "minItems": 4, "maxItems": 4,
+      "items": { "type": "number", "minimum": 0, "maximum": 1 }
+    }
+  }
+}

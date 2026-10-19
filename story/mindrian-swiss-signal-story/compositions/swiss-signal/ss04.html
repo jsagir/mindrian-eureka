@@ -1,0 +1,148 @@
+<template>
+<style>
+@font-face{font-family:Figtree;src:url(../../assets/fonts/figtree.woff2) format("woff2");font-weight:400 900;font-display:block}
+@font-face{font-family:"DM Sans";src:url(../../assets/fonts/dm-sans-latin.woff2) format("woff2");font-weight:400 1000;font-display:block}
+@font-face{font-family:"JetBrains Mono";src:url(../../assets/fonts/jetbrains-mono.ttf) format("truetype");font-weight:400 800;font-display:block}
+*{box-sizing:border-box}
+#root{--paper:#F7F5EE;--ink:#111111;--blue:#1F3FBF;--red:#D6281F;--yellow:#F2C200;--muted:#4B4943;--soft:#C9C6BC;position:absolute;inset:0;width:100%;height:100%;overflow:hidden;color:var(--ink);font-family:"DM Sans",Arial,sans-serif}
+.ss04-ground{position:absolute;inset:0;background:var(--paper)}
+.ss04-scene{position:absolute;inset:0;overflow:hidden}
+.ss04-shell{position:absolute;left:104px;right:104px;top:48px;height:78px;border-bottom:5px solid var(--ink);display:flex;align-items:flex-start;padding-top:2px}
+.ss04-kicker{font:800 22px/1 "JetBrains Mono",monospace;letter-spacing:.08em;color:var(--blue)}
+.ss04-case{margin-left:auto;text-align:right;font:700 19px/1.25 "JetBrains Mono",monospace;letter-spacing:.04em}
+.ss04-case strong{display:block;color:var(--red);font-size:22px}
+.ss04-heading{position:absolute;left:104px;top:150px;right:104px;height:92px;display:flex;align-items:flex-start}
+.ss04-chapter{width:86px;height:62px;background:var(--blue);color:white;display:grid;place-items:center;font:900 34px/1 Figtree,Arial,sans-serif}
+.ss04-title{margin:0 0 0 26px;font:900 76px/.92 Figtree,Arial,sans-serif;letter-spacing:-.055em}
+.ss04-title span{display:block;color:var(--blue)}
+.ss04-scale{margin-left:auto;padding-top:8px;text-align:right;font:700 19px/1.45 "JetBrains Mono",monospace;color:var(--muted)}
+.ss04-field{position:absolute;left:104px;top:264px;width:1370px;height:588px;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);overflow:hidden}
+.ss04-axis-label{position:absolute;left:0;top:18px;font:700 19px/1 "JetBrains Mono",monospace;letter-spacing:.08em}
+.ss04-axis-end{position:absolute;right:4px;top:18px;font:700 18px/1 "JetBrains Mono",monospace;color:var(--muted)}
+.ss04-map{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.ss04-map .ss04-base{fill:none;stroke:var(--soft);stroke-width:2}
+.ss04-map .ss04-provenance{fill:none;stroke:var(--blue);stroke-width:2}
+.ss04-map .ss04-pattern{fill:none;stroke:var(--blue);stroke-width:7;stroke-linecap:square;stroke-linejoin:miter}
+.ss04-anchor{position:absolute;left:88px;top:211px;width:254px;height:272px}
+.ss04-point-head{height:72px;display:flex;align-items:center;gap:14px}
+.ss04-dot{width:28px;height:28px;background:var(--blue);border:5px solid var(--paper);outline:3px solid var(--blue);flex:0 0 auto}
+.ss04-point-copy{font:800 18px/1.1 "JetBrains Mono",monospace;color:var(--blue);letter-spacing:.02em}
+.ss04-point-copy small{display:block;margin-top:7px;font-size:16px;color:var(--ink)}
+.ss04-source{position:absolute;left:0;bottom:0;width:254px;min-height:106px;border:2px solid var(--blue);background:var(--paper);padding:16px 18px}
+.ss04-source b{display:block;font:900 29px/1 Figtree,Arial,sans-serif;letter-spacing:-.025em}
+.ss04-source span{display:block;margin-top:12px;font:700 17px/1.2 "JetBrains Mono",monospace;color:var(--muted)}
+.ss04-burst{position:absolute;left:20px;top:104px;width:1180px;height:390px}
+.ss04-observation{position:absolute;left:50%;top:50%;width:254px;height:272px;will-change:transform}
+.ss04-observation .ss04-point-head{height:72px}
+.ss04-assumption{position:absolute;right:28px;top:82px;width:382px;height:116px;border:3px solid var(--red);background:var(--paper);padding:15px 20px}
+.ss04-assumption-label{font:800 16px/1 "JetBrains Mono",monospace;color:var(--red);letter-spacing:.06em}
+.ss04-assumption strong{display:block;margin-top:13px;font:900 31px/.95 Figtree,Arial,sans-serif;letter-spacing:-.025em}
+.ss04-strike{position:absolute;left:17px;right:17px;top:75px;height:5px;background:var(--red)}
+.ss04-pattern-label{position:absolute;left:624px;top:398px;background:var(--blue);color:white;padding:10px 14px;font:800 18px/1 "JetBrains Mono",monospace;letter-spacing:.035em}
+.ss04-pattern-label:before{content:"";display:inline-block;width:12px;height:12px;background:white;margin-right:11px}
+.ss04-theo{position:absolute;left:1520px;top:278px;width:296px;height:506px;border-left:2px solid var(--ink);padding-left:30px}
+.ss04-theo-label{font:800 19px/1.2 "JetBrains Mono",monospace;color:var(--blue);letter-spacing:.045em}
+.ss04-theo-copy{margin-top:14px;font:900 42px/.96 Figtree,Arial,sans-serif;letter-spacing:-.04em}
+.ss04-theo-pulse{position:absolute;left:18px;top:128px;width:250px;height:250px;will-change:transform}
+.ss04-theo-svg{width:250px;height:250px;overflow:visible}
+.ss04-theo-route{position:absolute;left:-74px;top:369px;width:250px;height:5px;background:var(--blue);transform-origin:right center}
+.ss04-theo-meta{position:absolute;left:30px;bottom:28px;font:700 17px/1.35 "JetBrains Mono",monospace;color:var(--muted)}
+.ss04-foot{position:absolute;left:104px;right:104px;top:866px;height:30px;display:flex;align-items:flex-start;font:700 18px/1 "JetBrains Mono",monospace;letter-spacing:.045em}
+.ss04-foot .ss04-illustrative{color:var(--red)}
+.ss04-foot .ss04-provenance-note{margin-left:auto;color:var(--blue)}
+@media(prefers-reduced-motion:reduce){.ss04-observation,.ss04-theo-pulse{will-change:auto}}
+</style>
+<div id="root" data-composition-id="ss04" data-width="1920" data-height="1080" data-duration="15">
+  <div class="clip ss04-ground" data-start="0" data-duration="15" data-track-index="0"></div>
+  <section class="clip ss04-scene" data-start="0" data-duration="15" data-track-index="1">
+    <header class="ss04-shell">
+      <div class="ss04-kicker">SWISS SIGNAL / EVIDENCE LOG</div>
+      <div class="ss04-case">CASE 04â€“17<strong>ILLUSTRATIVE</strong></div>
+    </header>
+    <div class="ss04-heading">
+      <div class="ss04-chapter">04</div>
+      <h1 class="ss04-title">PATTERN <span>ACROSS RUNS</span></h1>
+      <div class="ss04-scale">SOURCE â†’ OBSERVATION â†’ PATTERN<br>PROVENANCE REMAINS OPEN</div>
+    </div>
+    <div class="ss04-field">
+      <div class="ss04-axis-label">REPEATED RUNS / SAME SAMPLE</div>
+      <div class="ss04-axis-end">TIME â†’</div>
+      <svg class="ss04-map" viewBox="0 0 1370 588" aria-hidden="true">
+        <path class="ss04-base" d="M176 286 H1108"/>
+        <path id="ss04-prov-1" class="ss04-provenance" d="M176 286 V388"/>
+        <path id="ss04-prov-2" class="ss04-provenance" d="M480 240 V377"/>
+        <path id="ss04-prov-3" class="ss04-provenance" d="M750 335 V402"/>
+        <path id="ss04-prov-4" class="ss04-provenance" d="M1025 275 V382"/>
+        <path id="ss04-pattern-1" class="ss04-pattern" d="M176 286 C286 302 366 244 480 240"/>
+        <path id="ss04-pattern-2" class="ss04-pattern" d="M480 240 C574 236 652 324 750 335"/>
+        <path id="ss04-pattern-3" class="ss04-pattern" d="M750 335 C842 344 925 278 1025 275"/>
+      </svg>
+      <div class="ss04-anchor">
+        <div class="ss04-point-head"><i class="ss04-dot"></i><div class="ss04-point-copy">RUN 01<small>AFTER RESEATING</small></div></div>
+        <div class="ss04-source"><b>E-17</b><span>NOTE / READING SHIFT</span></div>
+      </div>
+      <div class="ss04-burst">
+        <div class="ss04-observation" data-target-x="-150" data-target-y="-65">
+          <div class="ss04-point-head"><i class="ss04-dot"></i><div class="ss04-point-copy">RUN 04<small>AFTER RESEATING</small></div></div>
+          <div class="ss04-source"><b>E-18</b><span>TRACE / REPEAT A</span></div>
+        </div>
+        <div class="ss04-observation" data-target-x="120" data-target-y="30">
+          <div class="ss04-point-head"><i class="ss04-dot"></i><div class="ss04-point-copy">RUN 07<small>AFTER RESEATING</small></div></div>
+          <div class="ss04-source"><b>E-21</b><span>TRACE / REPEAT B</span></div>
+        </div>
+        <div class="ss04-observation" data-target-x="395" data-target-y="-30">
+          <div class="ss04-point-head"><i class="ss04-dot"></i><div class="ss04-point-copy">RUN 11<small>AFTER RESEATING</small></div></div>
+          <div class="ss04-source"><b>E-24</b><span>TRACE / REPEAT C</span></div>
+        </div>
+      </div>
+      <div class="ss04-assumption">
+        <div class="ss04-assumption-label">FORMER ASSUMPTION</div>
+        <strong>THE SAMPLE CHANGED</strong>
+        <i class="ss04-strike"></i>
+      </div>
+      <div class="ss04-pattern-label">AFTER RESEATING</div>
+    </div>
+    <aside class="ss04-theo">
+      <div class="ss04-theo-label">THEO / RECOGNITION</div>
+      <div class="ss04-theo-copy">THE LINKS<br>STAY VISIBLE.</div>
+      <div class="ss04-theo-pulse">
+        <svg class="ss04-theo-svg" viewBox="0 0 250 250" role="img" aria-label="Theo recognizing a pattern">
+          <rect class="ss04-theo-eye" x="33" y="32" width="34" height="34" fill="#111111"/>
+          <rect class="ss04-theo-eye" x="108" y="45" width="34" height="34" fill="#111111"/>
+          <g id="ss04-theo-bar" transform="translate(0 0) rotate(90 114 142)"><rect x="101" y="84" width="26" height="116" fill="#111111"/></g>
+        </svg>
+      </div>
+      <i class="ss04-theo-route"></i>
+      <div class="ss04-theo-meta">BLUE = OBSERVED<br>RED = ASSUMPTION</div>
+    </aside>
+    <footer class="ss04-foot"><span class="ss04-illustrative">ILLUSTRATIVE CASE</span><span class="ss04-provenance-note">E-17 Â· E-18 Â· E-21 Â· E-24 / SOURCE ROUTES OPEN</span></footer>
+  </section>
+</div>
+<script>
+(()=>{
+  const root=document.querySelector('[data-composition-id="ss04"]');
+  const tl=gsap.timeline({paused:true});
+  const draw=(selector)=>{const path=root.querySelector(selector);const length=path.getTotalLength();path.style.strokeDasharray=String(length);path.style.strokeDashoffset=String(length);return path;};
+  const provenance=['#ss04-prov-1','#ss04-prov-2','#ss04-prov-3','#ss04-prov-4'].map(draw);
+  const pattern=['#ss04-pattern-1','#ss04-pattern-2','#ss04-pattern-3'].map(draw);
+  tl.fromTo(root.querySelector('.ss04-shell'),{opacity:0,y:-18},{opacity:1,y:0,duration:.62,ease:'power2.out'},0);
+  tl.fromTo(root.querySelector('.ss04-heading'),{opacity:0,x:-34},{opacity:1,x:0,duration:.72,ease:'power3.out'},.08);
+  tl.fromTo(root.querySelector('.ss04-anchor'),{opacity:0,x:-44},{opacity:1,x:0,duration:.7,ease:'power3.out'},.18);
+  tl.to(provenance[0],{strokeDashoffset:0,duration:.72,ease:'power2.out'},.72);
+  tl.fromTo(root.querySelector('.ss04-theo'),{opacity:0,x:28},{opacity:1,x:0,duration:.65,ease:'power2.out'},1.55);
+  root.querySelectorAll('.ss04-observation').forEach((el,i)=>{
+    tl.fromTo(el,{xPercent:-50,yPercent:-50,x:0,y:0,scale:.64,opacity:0},{x:Number(el.dataset.targetX),y:Number(el.dataset.targetY),scale:1,opacity:1,duration:1.35,ease:'power3.out'},3.05+i*.82);
+    tl.to(provenance[i+1],{strokeDashoffset:0,duration:.72,ease:'power2.out'},3.78+i*.82);
+  });
+  tl.fromTo(root.querySelector('.ss04-assumption'),{opacity:0,x:54},{opacity:1,x:0,duration:.72,ease:'power3.out'},7.05);
+  tl.fromTo(root.querySelector('.ss04-strike'),{scaleX:0,transformOrigin:'0% 50%'},{scaleX:1,duration:.56,ease:'power2.out'},8.05);
+  pattern.forEach((path,i)=>tl.to(path,{strokeDashoffset:0,duration:.78,ease:'power2.out'},10.05+i*.58));
+  tl.fromTo(root.querySelector('.ss04-pattern-label'),{opacity:0,y:18},{opacity:1,y:0,duration:.58,ease:'power2.out'},11.65);
+  tl.fromTo(root.querySelector('.ss04-theo-route'),{scaleX:0,transformOrigin:'100% 50%'},{scaleX:1,duration:.62,ease:'power2.out'},12.38);
+  tl.fromTo(root.querySelector('#ss04-theo-bar'),{attr:{transform:'translate(0 0) rotate(90 114 142)'}},{attr:{transform:'translate(18 0) rotate(0 114 142)'},duration:.38,ease:'power2.inOut'},13.02);
+  tl.fromTo(root.querySelectorAll('.ss04-theo-eye'),{x:0},{x:8,duration:.22,stagger:.08,ease:'power1.out'},13.12);
+  tl.to(root.querySelector('.ss04-theo-pulse'),{y:-2,duration:.75,ease:'sine.inOut',yoyo:true,repeat:1},13.5);
+  window.__timelines['ss04']=tl;
+})();
+</script>
+</template>

@@ -1,7 +1,7 @@
 # Open decisions
 
 1. Confirm long-term repository name and remote URL; local repo slug is `mindrian-eureka`.
-2. Confirm whether `/m:os:eureka` is the final command syntax in the intended MindrianOS host, or a display name that maps to the existing `/mos:eureka` route.
+2. Choose the integration point inside the existing `/mos:eureka` research-planner route and define the host-to-capability bundle contract.
 3. Choose initial public/private license. No license is declared until ownership and redistribution scope are decided.
 4. Select MCP SDK/protocol versions compatible with the MindrianOS host; do not upgrade based on current docs alone.
 5. Choose supported Node and Python versions and worker package manager/lock strategy.

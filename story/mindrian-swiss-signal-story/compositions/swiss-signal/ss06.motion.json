@@ -1,0 +1,7 @@
+{
+  "scene": "ss06",
+  "duration_s": 15,
+  "rules": ["scale-swap-transition", "svg-path-draw", "center-outward-expansion"],
+  "exit": { "vector": "settled; 0 px/s", "still_moving": false },
+  "entry": { "vector": "right; 53 px/s average", "from_rest": false }
+}

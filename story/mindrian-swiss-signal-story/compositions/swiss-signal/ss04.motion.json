@@ -1,0 +1,7 @@
+{
+  "scene": "ss04",
+  "duration_s": 15,
+  "rules": ["svg-path-draw", "center-outward-expansion", "sine-wave-loop"],
+  "exit": { "vector": "settled; 0 px/s", "still_moving": false },
+  "entry": { "vector": "right; 63 px/s average", "from_rest": false }
+}

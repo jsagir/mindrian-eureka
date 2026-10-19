@@ -1,0 +1,243 @@
+{
+  "schema_version": "eureka.structure-mapping-result.v1",
+  "result_id": "sme-map-result-1da15abc56b341545165",
+  "run_id": "jhtv-sme-c15631-vs-c14402-shared-mechanism-roles-2026-10-18",
+  "scope_id": "JHTV Fast Forward / Oliver Kuntz / 2026-07-06 catalog / C15631 target and C14402 comparison",
+  "capability_id": "analogy.map_structure",
+  "capability_version": "0.1.0",
+  "status": "completed",
+  "network": "denied",
+  "maps": [
+    {
+      "map_id": "sme-map-4d64a8feb4bac7f90aef",
+      "base_id": "C14402",
+      "base_domain": "ocular nonviral gene transfer (same JHTV catalog; comparator, not a distant-domain analogy)",
+      "rules": "AN",
+      "ses": 6.8707,
+      "fit": 0.8834,
+      "surface_distance": 0.3333,
+      "novelty": 0.0,
+      "triage_score": 0.0,
+      "rank": 1,
+      "correspondences": [
+        {
+          "base_item": "cargo",
+          "target_item": "cargo",
+          "base_claim_ids": [],
+          "target_claim_ids": []
+        },
+        {
+          "base_item": "carrier",
+          "target_item": "carrier",
+          "base_claim_ids": [],
+          "target_claim_ids": []
+        },
+        {
+          "base_item": "durable_expression",
+          "target_item": "therapeutic_effect",
+          "base_claim_ids": [],
+          "target_claim_ids": []
+        },
+        {
+          "base_item": "posterior_eye",
+          "target_item": "posterior_eye",
+          "base_claim_ids": [],
+          "target_claim_ids": []
+        },
+        {
+          "base_item": "scs",
+          "target_item": "scs",
+          "base_claim_ids": [],
+          "target_claim_ids": []
+        },
+        {
+          "base_item": "cargo_in_carrier",
+          "target_item": "cargo_in_carrier",
+          "base_claim_ids": [
+            "b1"
+          ],
+          "target_claim_ids": [
+            "t1"
+          ]
+        },
+        {
+          "base_item": "cargo_yields_durable_expression",
+          "target_item": "cargo_yields_therapeutic_effect",
+          "base_claim_ids": [
+            "b3",
+            "b4"
+          ],
+          "target_claim_ids": [
+            "t2"
+          ]
+        },
+        {
+          "base_item": "carrier_administered_to_scs",
+          "target_item": "carrier_administered_to_scs",
+          "base_claim_ids": [
+            "b1"
+          ],
+          "target_claim_ids": [
+            "t1"
+          ]
+        },
+        {
+          "base_item": "carrier_targets_posterior_eye",
+          "target_item": "carrier_targets_posterior_eye",
+          "base_claim_ids": [
+            "b4"
+          ],
+          "target_claim_ids": [
+            "t3"
+          ]
+        }
+      ],
+      "candidate_inferences": [],
+      "skolem_entities": [],
+      "interpretation": "The score orders mappings for review. It is not evidence that the analogy or any inference is true."
+    },
+    {
+      "map_id": "sme-map-b5abb37a374591ee91f4",
+      "base_id": "C14402",
+      "base_domain": "ocular nonviral gene transfer (same JHTV catalog; comparator, not a distant-domain analogy)",
+      "rules": "MA",
+      "ses": 4.0083,
+      "fit": 0.862,
+      "surface_distance": 0.3333,
+      "novelty": 0.0,
+      "triage_score": 0.0,
+      "rank": 1,
+      "correspondences": [
+        {
+          "base_item": "cargo",
+          "target_item": "cargo",
+          "base_claim_ids": [],
+          "target_claim_ids": []
+        },
+        {
+          "base_item": "carrier",
+          "target_item": "carrier",
+          "base_claim_ids": [],
+          "target_claim_ids": []
+        },
+        {
+          "base_item": "durable_expression",
+          "target_item": "therapeutic_effect",
+          "base_claim_ids": [],
+          "target_claim_ids": []
+        },
+        {
+          "base_item": "posterior_eye",
+          "target_item": "posterior_eye",
+          "base_claim_ids": [],
+          "target_claim_ids": []
+        },
+        {
+          "base_item": "scs",
+          "target_item": "scs",
+          "base_claim_ids": [],
+          "target_claim_ids": []
+        },
+        {
+          "base_item": "cargo_in_carrier",
+          "target_item": "cargo_in_carrier",
+          "base_claim_ids": [
+            "b1"
+          ],
+          "target_claim_ids": [
+            "t1"
+          ]
+        },
+        {
+          "base_item": "cargo_yields_durable_expression",
+          "target_item": "cargo_yields_therapeutic_effect",
+          "base_claim_ids": [
+            "b3",
+            "b4"
+          ],
+          "target_claim_ids": [
+            "t2"
+          ]
+        },
+        {
+          "base_item": "carrier_administered_to_scs",
+          "target_item": "carrier_administered_to_scs",
+          "base_claim_ids": [
+            "b1"
+          ],
+          "target_claim_ids": [
+            "t1"
+          ]
+        },
+        {
+          "base_item": "carrier_targets_posterior_eye",
+          "target_item": "carrier_targets_posterior_eye",
+          "base_claim_ids": [
+            "b4"
+          ],
+          "target_claim_ids": [
+            "t3"
+          ]
+        }
+      ],
+      "candidate_inferences": [],
+      "skolem_entities": [],
+      "interpretation": "The score orders mappings for review. It is not evidence that the analogy or any inference is true."
+    }
+  ],
+  "verification_targets": [],
+  "evidence_catalog": [
+    {
+      "claim_id": "b1",
+      "source_id": "C14402",
+      "source_ref": "https://jhu.technologypublisher.com/technology/28645",
+      "locator": "technologies.csv / description_full",
+      "quote_sha256": "3b8914cde53ee60722c2f1ca6196fa81feff4f879ce95929bb3b4040ea04645f",
+      "origin": "room"
+    },
+    {
+      "claim_id": "b3",
+      "source_id": "C14402",
+      "source_ref": "https://jhu.technologypublisher.com/technology/28645",
+      "locator": "technologies.csv / description_full",
+      "quote_sha256": "6f3b7d8692c0ffe5b0c2fd05c7e84666e28bade41a2d6f996893dfeed0e32792",
+      "origin": "room"
+    },
+    {
+      "claim_id": "b4",
+      "source_id": "C14402",
+      "source_ref": "https://jhu.technologypublisher.com/technology/28645",
+      "locator": "technologies.csv / description_full",
+      "quote_sha256": "ed7bd84507bc5d2337b4f58182100355684648832ef63b249250587f58de94e2",
+      "origin": "room"
+    },
+    {
+      "claim_id": "t1",
+      "source_id": "C15631",
+      "source_ref": "https://jhu.technologypublisher.com/technology/43809",
+      "locator": "technologies.csv / description_full",
+      "quote_sha256": "26372c63e46483598cb40fc2acdb4c3d3cf140abe405fa3aabf3774d9dc270a6",
+      "origin": "room"
+    },
+    {
+      "claim_id": "t2",
+      "source_id": "C15631",
+      "source_ref": "https://jhu.technologypublisher.com/technology/43809",
+      "locator": "technologies.csv / description_full",
+      "quote_sha256": "d4ff77e993b85ad5ccabb40c30125ffc6bc10de171bb13ddd8f635cebfedf165",
+      "origin": "room"
+    },
+    {
+      "claim_id": "t3",
+      "source_id": "C15631",
+      "source_ref": "https://jhu.technologypublisher.com/technology/43809",
+      "locator": "technologies.csv / description_full",
+      "quote_sha256": "48375d3b32d391bc29e3b665b318036bc2d3f5591aa46f30ea7bb2f1eeda0453",
+      "origin": "room"
+    }
+  ],
+  "warnings": [
+    "Candidate inferences are hypotheses until evidence review.",
+    "Encoding choices affect mapping; rerun leading candidates with an alternative encoding."
+  ]
+}
