@@ -57,6 +57,8 @@ def test_compact_capability_catalog_preserves_all_jobs_and_readiness(monkeypatch
     ]
     assert handoffs["experts.find_for_topic"]["type"] == "related_partial"
     assert handoffs["experts.find_for_topic"]["capabilities"] == ["research.extract_experts_from_papers"]
+    assert "rs_experts_find" in handoffs["experts.find_for_topic"]["mcp"]
+    assert "external expert directory" in handoffs["experts.find_for_topic"]["limitation"]
     assert handoffs["research.orchestrate_multidomain"]["capabilities"] == [
         "research.run_genesis_local_plan", "research.prepare_multidomain_plan",
         "research.group_multidomain_findings"

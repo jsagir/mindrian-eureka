@@ -1,6 +1,6 @@
 {
   "schema_version": "eureka.capability-catalog.v1",
-  "catalog_version": "2026-10-20+standalone-graph-algorithm-services-host-handoff-capability-chains-rs-thesis-mcp",
+  "catalog_version": "2026-10-20+standalone-graph-algorithm-services-host-handoff-capability-chains-rs-thesis-expert-search",
   "readiness_key": {
     "experimental": "A runnable local implementation exists; its method fidelity or decision value still requires evaluation.",
     "host_brokered": "A runnable local step exists, but MindrianOS must provide approved external research and/or review.",
@@ -995,9 +995,9 @@
       "host_handoff": {
         "type": "related_partial",
         "capabilities": ["research.extract_experts_from_papers"],
-        "mcp": "eureka_capability_run with research.extract_experts_from_papers after MindrianOS has approved and supplied paper records",
-        "cli": "eureka-workflow research.extract_experts_from_papers",
-        "limitation": "This extracts author candidates only from supplied papers; it does not find experts by topic, search a directory, validate expertise, or authorize outreach."
+        "mcp": "MindrianOS host-native rs_experts_find searches literal topic terms in Paper titles/abstracts already stored in the bound room; Eureka eureka_capability_run with research.extract_experts_from_papers extracts candidates from host-approved supplied paper records",
+        "cli": "MindrianOS /mos:rs-experts <topic> searches the selected room's local paper corpus; Eureka eureka-workflow research.extract_experts_from_papers",
+        "limitation": "The host route is room-local and corpus-bounded; neither route searches an external expert directory, validates current expertise, or authorizes outreach. The Eureka capability remains blocked."
       }
     },
     {
