@@ -1,6 +1,6 @@
 {
   "schema_version": "eureka.capability-catalog.v1",
-  "catalog_version": "2026-10-20+standalone-graph-algorithm-services-host-handoff-capability-chains",
+  "catalog_version": "2026-10-20+standalone-graph-algorithm-services-host-handoff-capability-chains-rs-thesis-mcp",
   "readiness_key": {
     "experimental": "A runnable local implementation exists; its method fidelity or decision value still requires evaluation.",
     "host_brokered": "A runnable local step exists, but MindrianOS must provide approved external research and/or review.",
@@ -1022,7 +1022,8 @@
       "host_handoff": {
         "type": "host_native",
         "cli": "/mos:rs-thesis <discovery_id>",
-        "limitation": "This reads an existing local Reverse Salient thesis. No equivalent Eureka MCP route is published."
+        "mcp": "MindrianOS rs_thesis_read with discovery_id; bound-room, local-only read. This host tool is not an Eureka route.",
+        "limitation": "Reads an existing local Reverse Salient thesis. The Eureka capability remains planned and has no Eureka MCP route."
       }
     },
     {

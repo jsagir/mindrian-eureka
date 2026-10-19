@@ -48,6 +48,9 @@ def test_compact_capability_catalog_preserves_all_jobs_and_readiness(monkeypatch
         "thesis.read_prior",
     }
     assert handoffs["bottleneck.diagnose"]["type"] == "host_native"
+    assert handoffs["thesis.read_prior"]["type"] == "host_native"
+    assert "rs_thesis_read" in handoffs["thesis.read_prior"]["mcp"]
+    assert "not an Eureka route" in handoffs["thesis.read_prior"]["mcp"]
     assert handoffs["claims.compare"]["type"] == "related_partial"
     assert handoffs["claims.compare"]["capabilities"] == [
         "analysis.compare_text_differences", "analysis.audit_claim_traceability"
