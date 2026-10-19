@@ -4,40 +4,40 @@
   <img src="story/mindrian-opportunity-story/assets/theo-face-rest.svg" alt="Theo, the MindrianOS method guide" width="112" />
 </p>
 
-**Find the questions worth solving. Then help people test them.**
+**Intelligence for finding opportunity in wicked uncertainty.**
 
-MindrianOS Eureka is a local-first set of research and innovation capabilities for MindrianOS. It helps people explore alternative futures, find opportunity problems inside them, and develop selected opportunities into clear, testable problems. Its methods can surface patterns, mechanisms, evidence gaps, and hard questions. People decide what matters and what to do next.
+MindrianOS Eureka is an intelligence system built to search uncertainty for opportunity. Its central challenge is the **wicked problem**: an evolving, interconnected situation with unclear boundaries, competing interpretations, and no single final formulation or solution. Eureka helps people map that uncertainty, imagine futures, find opportunity hypotheses, and develop selected paths into problems that can be investigated and tested. It uses research, pattern finding, analogy, synthesis, and critical challenge to reveal where useful possibilities may lie. People decide what matters and what to do next.
 
 **MindrianOS entrypoint:** `/mos:eureka` · **Repository:** `mindrian-eureka` · **Runtime:** Python 3.11+
 
-> **Theo is the method guide, not an oracle.** Theo helps the host choose a useful framework and sequence of inquiry. The Theo face moves through curiosity, searching, recognition, skepticism, decision, and handover: each pose signals how the inquiry is progressing. The host keeps room context, approvals, evidence review, and decisions. Eureka runs only the selected bounded method over the material the host supplies.
+> **Theo is the outside method thinker; the intelligence agents explore the case.** Together, they help the user inquire into uncertainty: Theo guides method choice, while the agents search the authorized material for patterns, mechanisms, contradictions, and promising questions. The Theo face moves through curiosity, searching, recognition, skepticism, decision, and handover. These are inquiry states, not a claim that a wicked problem has been solved. The host keeps room context, approvals, evidence review, and decisions.
 
-## The innovation process
+## Explore wicked problems for opportunity
 
-The method starts by asking what kind of problem is in front of us. Different questions need different work:
+Wickedness is the operating context for this intelligence: a persistent, changing challenge whose parts affect one another and whose meaning may be contested. It is not a tidy prompt to solve once. The agents explore that uncertainty for possible opportunities, while the user and team decide what deserves attention. Within a wicked challenge, different questions call for different kinds of work:
 
-| Problem type | The question | The work |
+| Inquiry mode | The question | The work |
 |---|---|---|
-| **Undefined** | What might a future look like? | Imagine alternatives. Treat them as possibilities to explore, not predictions. |
-| **Ill-defined** | Where might a worthwhile opportunity emerge? | Explore a field or future for needs, tensions, and candidate problems. There may be many useful answers. |
-| **Well-defined** | Can we meet these stated criteria? | Develop and test a solution against explicit constraints and success measures. |
+| **Wicked challenge** | How does this changing system behave, who sees it differently, and where might change matter? | Map relationships, uncertainties, stakeholders, assumptions, and competing frames. Keep multiple perspectives alive; do not force premature closure. |
+| **Undefined exploration** | What might an alternative future look like? | Imagine futures and trace what could change within them. Treat them as possibilities, not predictions. |
+| **Ill-defined opportunity search** | What worthwhile opportunity might be emerging here? | Explore the system, field, and possible futures for needs, tensions, leverage points, and candidate problems. There may be many useful answers. |
+| **Well-defined investigation** | Can this selected path meet explicit criteria? | Bound one testable part of the challenge with constraints and success measures, then investigate or test it. This makes progress on a wicked problem; it does not mean the whole problem is solved. |
 
-The point is to look beyond today's visible problems without losing contact with evidence. A selected opportunity must eventually become a well-defined problem before a team can test solutions or build a business case.
+The point is not to escape uncertainty as quickly as possible. Uncertainty can signal where existing explanations, technologies, and institutions have not settled the future—and where new opportunities may exist. Eureka helps the team explore that space, connect weak signals, reframe assumptions, and develop several evidence-linked possibilities. A team can make one path testable, learn from it, then return to the wider wicked challenge with better questions.
 
 ```mermaid
-flowchart LR
-  Q[Question about a future] --> U[Explore an undefined space]
-  U --> I[Find opportunities in an ill-defined space]
-  I --> C[Choose a candidate to investigate]
-  C --> W[Define a testable problem]
-  W --> S[Test solutions and develop the case]
-  H[Human judgment] -. steers and reviews .-> U
-  H -. steers and reviews .-> I
-  H -. chooses .-> C
-  H -. decides .-> S
+flowchart TD
+  WP[Wicked challenge: changing, interconnected, uncertain, contested] --> MAP[Map the system, perspectives, assumptions, and unknowns]
+  MAP --> FUT[Explore possible futures]
+  FUT --> OP[Find opportunity hypotheses and leverage points]
+  OP --> PICK[People choose what to investigate]
+  PICK --> TEST[Frame a bounded, testable problem]
+  TEST --> LEARN[Test, research, and learn]
+  LEARN -->|new evidence changes the frame| MAP
+  LEARN -->|new possibility emerges| FUT
 ```
 
-The agents should be useful in four ways: **research assistant** (find and organize source-linked material), **method guide** (explain which inquiry fits the problem), **mentor** (help the user make the next move), and **devil's advocate** (surface assumptions, counterevidence, boundary conditions, and falsifiers). Critique should improve the investigation, not automatically reject an idea. The agents must show uncertainty and never present a similarity, analogy, or generated hypothesis as proof of novelty, demand, or value.
+The agents should be useful in four ways: **research assistant** (find and organize source-linked material across the uncertain landscape), **method guide** (explain which inquiry fits the problem and why), **mentor** (help the user make the next move without collapsing the search too early), and **devil's advocate** (surface assumptions, counterevidence, boundary conditions, unintended effects, and falsifiers). Critique should improve the investigation, not automatically reject an idea. Agents must show uncertainty and never present a similarity, analogy, or generated hypothesis as proof of novelty, demand, or value.
 
 ## What this repository provides
 

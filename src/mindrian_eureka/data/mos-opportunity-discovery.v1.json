@@ -4,7 +4,7 @@
   "name": "MindrianOS Opportunity Discovery",
   "status": "host_integration_contract",
   "entrypoint": "/mos:eureka",
-  "purpose": "Find and develop source-linked opportunity candidates from an authorized MindrianOS room or portfolio scope, then move selected candidates through MindrianOS evidence review and human qualification.",
+  "purpose": "Explore uncertainty, especially wicked challenges, for source-linked opportunity hypotheses across an authorized MindrianOS room or portfolio scope; help people investigate selected paths while preserving uncertainty, competing frames, and human qualification.",
   "ownership": {
     "mindrianos": [
       "active room and portfolio binding",
@@ -24,6 +24,7 @@
   "rules": [
     "Never infer room authorization from a room name, scope_id, filesystem path, or research_grant_id.",
     "Never run all capabilities by default; select methods for the user's objective and state why.",
+    "Explore uncertainty as potential opportunity terrain; do not force a wicked challenge into one problem frame or a single predicted future.",
     "Never treat a retrieval score, pair, analogy, or generated claim as verified opportunity evidence.",
     "Never let Eureka read room paths, fetch outside research, write MindrianOS graph state, or qualify a candidate.",
     "A failed, blocked, partial, or empty run must remain distinguishable from a completed run with no useful candidates.",

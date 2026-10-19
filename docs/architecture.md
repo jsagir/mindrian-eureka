@@ -1,12 +1,12 @@
 # MindrianOS Eureka: standalone repository architecture
 
 **Status:** architecture baseline with local RS, SME, OMM, HSI, and Jason interfaces plus supporting discovery workflow stages; only RS currently has the durable job lifecycle.
-**Purpose:** define an independently buildable repository that MindrianOS can call for opportunity discovery across local room material and explicitly approved research.
+**Purpose:** define an independently buildable intelligence runtime that MindrianOS can call to explore uncertainty—especially wicked challenges—for evidence-linked opportunity discovery across authorized room material and explicitly approved research.
 **Scope:** the capability catalog, local engines, and host handoff contract. The adapter from the existing MindrianOS `/mos:eureka` research-planner workflow, OS-level worker sandbox for every capability, external research broker, and most engine migrations remain unimplemented.
 
 ## 1. Decision summary
 
-Create a standalone repository named **`mindrian-eureka`**. Integrate it with MindrianOS's existing **`/mos:eureka`** user workflow. The repo owns reusable opportunity-discovery capabilities and bounded job execution. MindrianOS remains the user-facing host and the source of truth for room permissions, approval gates, room data, and opportunity decisions.
+Create a standalone repository named **`mindrian-eureka`**. Integrate it with MindrianOS's existing **`/mos:eureka`** user workflow. Eureka's intelligence agents are built to search uncertainty, particularly in wicked problems, for alternative frames, future possibilities, connected signals, and opportunity hypotheses. The repo owns reusable methods and bounded job execution. MindrianOS remains the user-facing host and the source of truth for room permissions, approval gates, room data, and opportunity decisions. The system must preserve uncertainty and competing frames rather than forcing premature problem closure.
 
 The standalone repo should provide:
 

@@ -1,6 +1,6 @@
 # Capability catalog
 
-The catalog exposes user jobs, not package folder names. Each capability must have a manifest, input/output schema, runtime declaration, network/data classification, known limitations, provenance, and an evaluation plan before it is enabled. See [Engine jobs and when to use them](engine-jobs.md) for the innovation-method context, plain-language descriptions, and family-level readiness.
+The catalog exposes user jobs, not package folder names. These methods serve an intelligence system built to explore uncertainty—especially wicked challenges—for opportunity. Capability calls are instruments in that exploration; none should force one problem frame or imply that a complex challenge has been solved. Each capability must have a manifest, input/output schema, runtime declaration, network/data classification, known limitations, provenance, and an evaluation plan before it is enabled. See [Engine jobs and when to use them](engine-jobs.md) for the method context, plain-language descriptions, and family-level readiness.
 
 | Capability ID | User-facing name | Hire when | Initial status |
 |---|---|---|---|

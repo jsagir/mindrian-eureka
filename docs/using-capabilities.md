@@ -4,7 +4,7 @@ MindrianOS is the user-facing host. It resolves the active room, scope, permissi
 
 ## Pick a job by user need
 
-MindrianOS should first classify the user's question as undefined (explore possible futures), ill-defined (find opportunity areas), or well-defined (test a solution against clear criteria). Theo can guide method choice; the user confirms the objective and scope. Then select only the supporting capability whose inputs are ready. See [the engine jobs guide](engine-jobs.md) for the full process and readiness.
+Start with the user's wicked challenge and uncertainty: what is changing, interconnected, contested, or not yet understood—and where might that uncertainty contain opportunity? Do not force the situation into a single clean problem statement. Theo can guide method choice; MindrianOS preserves the different frames and confirms objective and scope with the user. Then select only the supporting capability whose inputs are ready. Undefined-future exploration, ill-defined opportunity search, and well-defined testing are inquiry modes that can recur as evidence and new possibilities reshape the challenge. See [the engine jobs guide](engine-jobs.md) for the full process and readiness.
 
 | User-facing job | Capability | Use it when |
 |---|---|---|
