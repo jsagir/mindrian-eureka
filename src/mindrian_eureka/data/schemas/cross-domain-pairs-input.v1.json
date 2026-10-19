@@ -1,0 +1,161 @@
+{
+  "$defs": {
+    "ArtifactInput": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "source_ref": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Source Ref",
+          "type": "string"
+        },
+        "title": {
+          "default": "",
+          "maxLength": 2000,
+          "title": "Title",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 1000000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "corpus": {
+          "default": "room",
+          "enum": [
+            "room",
+            "external"
+          ],
+          "title": "Corpus",
+          "type": "string"
+        },
+        "media_type": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Media Type"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-fA-F0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sha256"
+        }
+      },
+      "required": [
+        "id",
+        "source_ref",
+        "text"
+      ],
+      "title": "ArtifactInput",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "objective": {
+      "maxLength": 5000,
+      "minLength": 1,
+      "title": "Objective",
+      "type": "string"
+    },
+    "mode": {
+      "default": "local",
+      "enum": [
+        "local",
+        "external",
+        "hybrid"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "scope_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Scope Id",
+      "type": "string"
+    },
+    "snapshot_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "description": "MindrianOS host snapshot identity for graph-derived artifact projections.",
+      "type": "string"
+    },
+    "research_grant_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Research Grant Id"
+    },
+    "artifacts": {
+      "items": {
+        "$ref": "#/$defs/ArtifactInput"
+      },
+      "maxItems": 2500,
+      "minItems": 2,
+      "title": "Artifacts",
+      "type": "array"
+    },
+    "top_k": {
+      "default": 20,
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Top K",
+      "type": "integer"
+    },
+    "scoring": {
+      "default": "hybrid_2026",
+      "enum": ["hybrid_2026", "legacy"],
+      "description": "LATEST RS 2026 hybrid ranker, or the prior unnormalized absolute-difference ranker."
+    },
+    "lex_weight": {
+      "default": 0.5,
+      "minimum": 0,
+      "maximum": 1,
+      "type": "number"
+    },
+    "min_percentile": {
+      "default": 0.9,
+      "minimum": 0,
+      "maximum": 1,
+      "type": "number"
+    }
+  },
+  "required": [
+    "objective",
+    "scope_id",
+    "artifacts"
+  ],
+  "title": "opportunity.find_cross_domain_pairs input",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.cross-domain-pairs-input.v1"
+}

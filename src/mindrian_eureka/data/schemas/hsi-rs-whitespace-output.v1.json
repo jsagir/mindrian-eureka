@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.hsi-rs-whitespace-output.v1",
+  "title": "portfolio.discover_rs_whitespace result",
+  "type": "object",
+  "required": ["schema_version", "capability_id", "capability_version", "status", "scope", "input_fingerprint", "metadata", "zones", "limitations"],
+  "properties": {
+    "schema_version": {"const": "eureka.hsi-rs-whitespace.v1"},
+    "capability_id": {"const": "portfolio.discover_rs_whitespace"},
+    "capability_version": {"const": "0.1.0"},
+    "status": {"const": "completed_rs_seeded_whitespace_scan"},
+    "scope": {"type": "object", "required": ["scope_id", "snapshot_id"], "properties": {
+      "scope_id": {"type": ["string", "null"]}, "snapshot_id": {"type": ["string", "null"]}
+    }, "additionalProperties": false},
+    "input_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "metadata": {"type": "object", "required": ["bottlenecks_checked", "zones_found", "signal_method", "sections_in_reference", "embedding_model"], "properties": {
+      "bottlenecks_checked": {"type": "integer", "minimum": 0}, "zones_found": {"type": "integer", "minimum": 0},
+      "signal_method": {"enum": ["percentile", "fixed"]}, "sections_in_reference": {"type": "integer", "minimum": 0},
+      "embedding_model": {"type": ["string", "null"]}
+    }, "additionalProperties": false},
+    "zones": {"type": "array", "items": {"type": "object"}},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

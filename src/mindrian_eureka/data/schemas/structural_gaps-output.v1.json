@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.structural_gaps.v1",
+  "title": "Find Missing Links Between Shared Neighbors output",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "graph_access",
+    "scope_id",
+    "snapshot_id",
+    "input_fingerprint",
+    "graph_summary",
+    "run_config",
+    "limitations",
+    "pairs",
+    "skipped_hub_node_ids"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.graph-algorithm-result.v1"
+    },
+    "capability_id": {
+      "const": "graph.find_structural_gaps"
+    },
+    "status": {
+      "const": "completed_analysis"
+    },
+    "graph_access": {
+      "const": "read_only_snapshot"
+    },
+    "scope_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "input_fingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "graph_summary": {
+      "type": "object",
+      "required": [
+        "node_count",
+        "edge_count"
+      ],
+      "properties": {
+        "node_count": {
+          "type": "integer"
+        },
+        "edge_count": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "method": {
+      "type": "string"
+    },
+    "run_config": {
+      "type": "object",
+      "required": [
+        "min_common",
+        "hub_cap",
+        "top"
+      ],
+      "properties": {
+        "min_common": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 2
+        },
+        "hub_cap": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000,
+          "default": 150
+        },
+        "top": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000,
+          "default": 200
+        }
+      },
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_node_id",
+          "target_node_id",
+          "common_neighbor_count",
+          "jaccard",
+          "adamic_adar",
+          "null_z",
+          "shared_neighbor_ids"
+        ],
+        "properties": {
+          "source_node_id": {
+            "type": "string"
+          },
+          "target_node_id": {
+            "type": "string"
+          },
+          "common_neighbor_count": {
+            "type": "integer"
+          },
+          "jaccard": {
+            "type": "number"
+          },
+          "adamic_adar": {
+            "type": "number"
+          },
+          "null_z": {
+            "type": "number"
+          },
+          "shared_neighbor_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "skipped_hub_node_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

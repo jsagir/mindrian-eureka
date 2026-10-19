@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.critic-rubric-evaluate-input.v1",
+  "type": "object",
+  "required": ["candidate_id", "source_node_id", "scope_id", "snapshot_id", "candidate", "stage_a_result", "prompt_sha256", "judge_model", "judge_responses"],
+  "properties": {
+    "candidate_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "source_node_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "scope_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "snapshot_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "candidate": {"type": "object", "required": ["mechanismText", "mappingStatement"], "properties": {"mechanismText": {"type": "string", "minLength": 1, "maxLength": 20000}, "mappingStatement": {"type": "string", "minLength": 1, "maxLength": 20000}}, "additionalProperties": true},
+    "stage_a_result": {"type": "object", "required": ["status", "pass", "host_context"], "properties": {"status": {"const": "passed_deterministic_gates"}, "pass": {"const": true}, "host_context": {"type": "object"}}, "additionalProperties": true},
+    "prompt_sha256": {"type": "object", "required": ["neutral", "adversarial"], "properties": {"neutral": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "adversarial": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}, "additionalProperties": false},
+    "judge_model": {"type": "string", "minLength": 1, "maxLength": 256},
+    "judge_responses": {"type": "object", "required": ["neutral", "adversarial"], "properties": {"neutral": {"oneOf": [{"type": "string", "maxLength": 50000}, {"type": "object"}]}, "adversarial": {"oneOf": [{"type": "string", "maxLength": 50000}, {"type": "object"}]}}, "additionalProperties": false},
+    "prompt_max_chars": {"type": "integer", "minimum": 0, "maximum": 20000}
+  },
+  "additionalProperties": false
+}

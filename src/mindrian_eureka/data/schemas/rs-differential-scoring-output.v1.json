@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian-os.com/schemas/eureka/rs-differential-scoring-output.v1.json",
+  "title": "RS differential scoring result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "capability_id",
+    "capability_version",
+    "status",
+    "scope_id",
+    "snapshot_id",
+    "scored_pair",
+    "query_node_id",
+    "doc_node_id",
+    "input_fingerprint",
+    "runtime",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.rs-differential-scoring.v1"
+    },
+    "capability_id": {
+      "const": "research.score_rs_differential_pair"
+    },
+    "capability_version": {
+      "const": "0.1.0"
+    },
+    "status": {
+      "const": "scored"
+    },
+    "scope_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "scored_pair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "query_concept",
+        "doc_concept",
+        "diff",
+        "lsa",
+        "bert",
+        "passes"
+      ],
+      "properties": {
+        "query_concept": {
+          "type": "string"
+        },
+        "doc_concept": {
+          "type": "string"
+        },
+        "diff": {
+          "type": "number"
+        },
+        "lsa": {
+          "type": "number"
+        },
+        "bert": {
+          "type": "number"
+        },
+        "passes": {
+          "type": "boolean"
+        },
+        "evidence": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source_id",
+              "side"
+            ],
+            "properties": {
+              "source_id": {
+                "type": "string",
+                "maxLength": 500
+              },
+              "side": {
+                "enum": [
+                  "problem",
+                  "method"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "query_node_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "doc_node_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "input_fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "runtime": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\."
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.six-hat-review-input.v1",
+  "title": "deliberation.prepare_six_hat_review input",
+  "type": "object",
+  "properties": {
+    "scope_id": {
+      "type": "string"
+    },
+    "topic": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 5000
+    },
+    "hypothesis": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 5000
+    },
+    "arguments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "hat": {
+            "enum": [
+              "white",
+              "red",
+              "black",
+              "yellow",
+              "green",
+              "blue"
+            ]
+          },
+          "argument": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 0
+          }
+        },
+        "required": [
+          "id",
+          "hat",
+          "argument"
+        ],
+        "additionalProperties": true
+      },
+      "minItems": 1,
+      "maxItems": 500
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_ref": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "locator": {
+            "type": "string"
+          },
+          "evidence_quote": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": true
+      },
+      "minItems": 0,
+      "maxItems": 10000
+    },
+    "snapshot_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    }
+  },
+  "required": [
+    "topic",
+    "hypothesis",
+    "arguments"
+  ],
+  "additionalProperties": false
+}

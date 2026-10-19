@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.opportunity-harvest-input.v1",
+  "title": "opportunity.harvest_graph_events input",
+  "type": "object",
+  "properties": {
+    "scope_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "snapshot_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "snapshot": {
+      "type": "object",
+      "properties": {
+        "completeness": { "const": "complete_authorized_scope" },
+        "omitted_nodes": { "const": 0 },
+        "omitted_edges": { "const": 0 },
+        "nodes": { "type": "array", "maxItems": 10000, "items": { "$ref": "#/$defs/node" } },
+        "edges": { "type": "array", "maxItems": 50000, "items": { "$ref": "#/$defs/edge" } }
+      },
+      "required": ["completeness", "omitted_nodes", "omitted_edges", "nodes", "edges"],
+      "additionalProperties": false
+    },
+    "bank_dedup_complete": { "const": true },
+    "banked_opportunity_names": { "type": "array", "maxItems": 100000, "items": { "type": "string", "minLength": 1, "maxLength": 2000 } },
+    "portfolio_rows": {
+      "type": "array", "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "properties": {
+          "a": { "type": "string", "minLength": 1, "maxLength": 256 },
+          "b": { "type": "string", "minLength": 1, "maxLength": 256 },
+          "dims": {
+            "type": "object",
+            "properties": {
+              "strategic_fit": { "type": "number", "minimum": 0, "maximum": 1 },
+              "validated_demand": { "type": "number", "minimum": 0, "maximum": 1 },
+              "tech_econ_feasibility": { "type": "number", "minimum": 0, "maximum": 1 }
+            },
+            "required": ["strategic_fit", "validated_demand", "tech_econ_feasibility"],
+            "additionalProperties": false
+          },
+          "tail_flag": { "type": "boolean" }
+        },
+        "required": ["a", "b", "dims"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["scope_id", "snapshot_id", "snapshot", "bank_dedup_complete", "banked_opportunity_names"],
+  "additionalProperties": false,
+  "$defs": {
+    "node": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "type": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "section": { "type": "string", "maxLength": 256 },
+            "lifecycle": { "type": "string", "maxLength": 128 },
+            "critic": { "type": "string", "maxLength": 128 },
+            "compression_score": { "type": "number", "minimum": -1, "maximum": 1 },
+            "owner": { "type": "string", "maxLength": 1000 },
+            "next_experiment": { "type": "string", "maxLength": 2000 },
+            "decision_question": { "type": "string", "maxLength": 2000 },
+            "lens": { "enum": ["leveraging_resources", "challenging_orthodoxies", "understanding_needs", "harnessing_trends"] },
+            "name": { "type": "string", "maxLength": 2000 },
+            "kind": { "type": "string", "maxLength": 128 },
+            "tail_flag": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["id", "type", "properties"],
+      "additionalProperties": false
+    },
+    "edge": {
+      "type": "object",
+      "properties": {
+        "source": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "target": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "type": { "type": "string", "minLength": 1, "maxLength": 128 }
+      },
+      "required": ["source", "target", "type"],
+      "additionalProperties": false
+    }
+  }
+}

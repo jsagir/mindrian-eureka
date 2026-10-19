@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.edge_atypicality.v1",
+  "title": "Assess How Unusual Existing Category Links Are output",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "graph_access",
+    "scope_id",
+    "snapshot_id",
+    "input_fingerprint",
+    "graph_summary",
+    "run_config",
+    "limitations",
+    "category_attribute",
+    "observed_category_pairs",
+    "edge_profile"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.graph-algorithm-result.v1"
+    },
+    "capability_id": {
+      "const": "graph.assess_edge_atypicality"
+    },
+    "status": {
+      "const": "completed_analysis"
+    },
+    "graph_access": {
+      "const": "read_only_snapshot"
+    },
+    "scope_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "input_fingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "graph_summary": {
+      "type": "object",
+      "required": [
+        "node_count",
+        "edge_count"
+      ],
+      "properties": {
+        "node_count": {
+          "type": "integer"
+        },
+        "edge_count": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "method": {
+      "type": "string"
+    },
+    "run_config": {
+      "type": "object",
+      "required": [
+        "category_attribute",
+        "shuffles",
+        "seed",
+        "use_label"
+      ],
+      "properties": {
+        "category_attribute": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "default": "problem_type"
+        },
+        "shuffles": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 20
+        },
+        "seed": {
+          "type": "integer",
+          "default": 7
+        },
+        "use_label": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "category_attribute": {
+      "type": "string"
+    },
+    "observed_category_pairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "categories",
+          "observed_edge_count",
+          "null_z"
+        ],
+        "properties": {
+          "categories": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "string"
+            }
+          },
+          "observed_edge_count": {
+            "type": "integer"
+          },
+          "null_z": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "edge_profile": {
+      "type": "object",
+      "required": [
+        "n",
+        "p10",
+        "median"
+      ],
+      "properties": {
+        "n": {
+          "type": "integer"
+        },
+        "p10": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "median": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

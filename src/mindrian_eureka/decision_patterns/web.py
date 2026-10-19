@@ -9,6 +9,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from .algorithm import analyze_sequence
+from ..contracts import ResultContractError, validate_request, validate_result
 
 
 class OMMHandler(SimpleHTTPRequestHandler):
@@ -24,8 +25,18 @@ class OMMHandler(SimpleHTTPRequestHandler):
             return
         try:
             body = json.loads(self.rfile.read(length))
+            validate_request("decision.compare_sequence_patterns", body)
             result = analyze_sequence(body)
+            validate_result("decision.compare_sequence_patterns", result)
             payload = json.dumps(result, ensure_ascii=False).encode("utf-8")
+        except ResultContractError as exc:
+            payload = json.dumps({"error": "Output contract violation", "detail": str(exc)}).encode("utf-8")
+            self.send_response(500)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+            return
         except (ValueError, RuntimeError, json.JSONDecodeError) as exc:
             payload = json.dumps({"error": str(exc)}).encode("utf-8")
             self.send_response(400)

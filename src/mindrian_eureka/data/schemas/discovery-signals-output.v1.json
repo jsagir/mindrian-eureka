@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.discovery-signals.v1",
+  "title": "opportunity.synthesize_discovery_signals result",
+  "type": "object",
+  "required": ["schema_version", "capability_id", "status", "outputs", "warnings"],
+  "properties": {
+    "schema_version": {"const": "eureka.discovery-signals.v1"},
+    "capability_id": {"const": "opportunity.synthesize_discovery_signals"},
+    "status": {"type": "string", "minLength": 1},
+    "outputs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/DiscoverySignal"}
+    },
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "scope": {
+      "type": ["object", "null"],
+      "properties": {
+        "scope_id": {"type": "string"},
+        "snapshot_id": {"type": ["string", "null"]}
+      },
+      "required": ["scope_id"],
+      "additionalProperties": true
+    },
+    "job_id": {"type": "string"},
+    "candidate_count": {"type": "integer", "minimum": 0},
+    "ranking_basis": {"type": "string"},
+    "portfolio_write": {"const": "not_performed"},
+    "method_details": {"type": "object"},
+    "engine_runs": {"type": "object"},
+    "rs_result": {"type": "object"}
+  },
+  "$defs": {
+    "SourceRef": {
+      "type": ["object", "null"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "title": {"type": "string"},
+        "source_ref": {"type": ["string", "null"]}
+      },
+      "required": ["artifact_id", "title", "source_ref"],
+      "additionalProperties": true
+    },
+    "DiscoverySignal": {
+      "type": "object",
+      "required": ["id", "kind", "rank", "payload"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^discovery-pair-[a-f0-9]{16}$"},
+        "kind": {"const": "cross_engine_pair_signal"},
+        "rank": {"type": "integer", "minimum": 1},
+        "payload": {
+          "type": "object",
+          "required": ["left", "right", "signals", "source_evidence", "direction", "interpretation", "next_host_actions"],
+          "properties": {
+            "left": {"$ref": "#/$defs/SourceRef"},
+            "right": {"$ref": "#/$defs/SourceRef"},
+            "signals": {
+              "type": "object",
+              "required": ["rs", "hsi", "method_signal_count", "best_within_engine_rank"],
+              "properties": {
+                "rs": {
+                  "type": ["object", "null"],
+                  "properties": {
+                    "rank": {"type": "integer", "minimum": 1},
+                    "structural_similarity": {"type": ["number", "null"]},
+                    "semantic_similarity": {"type": ["number", "null"]},
+                    "direction": {"type": ["string", "null"]}
+                  },
+                  "required": ["rank", "structural_similarity", "semantic_similarity", "direction"],
+                  "additionalProperties": false
+                },
+                "hsi": {
+                  "type": ["object", "null"],
+                  "properties": {
+                    "rank": {"type": "integer", "minimum": 1},
+                    "hsi_score": {"type": "number"},
+                    "hsi_percentile": {"type": "number", "minimum": 0, "maximum": 1},
+                    "surprise_type": {"type": ["string", "null"]},
+                    "source_trail": {"type": ["array", "null"], "items": {"type": "object"}}
+                  },
+                  "required": ["rank", "hsi_score", "hsi_percentile", "surprise_type", "source_trail"],
+                  "additionalProperties": false
+                },
+                "method_signal_count": {"type": "integer", "minimum": 1, "maximum": 2},
+                "best_within_engine_rank": {"type": ["integer", "null"], "minimum": 1}
+              },
+              "additionalProperties": false
+            },
+            "source_evidence": {
+              "type": "object",
+              "required": ["rs", "hsi"],
+              "properties": {"rs": {}, "hsi": {}},
+              "additionalProperties": false
+            },
+            "direction": {"type": "string"},
+            "interpretation": {"type": "string", "minLength": 1},
+            "next_host_actions": {"type": "array", "items": {"type": "string", "minLength": 1}}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

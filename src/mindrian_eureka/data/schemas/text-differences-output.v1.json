@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.text-difference-result.v1",
+  "title": "analysis.compare_text_differences result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "pairs",
+    "buzzword_heuristic",
+    "label"
+  ],
+  "properties": {
+    "status": {
+      "const": "completed_descriptive_analysis"
+    },
+    "pairs": {
+      "type": "array"
+    },
+    "buzzword_heuristic": {
+      "type": "array"
+    },
+    "label": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "eureka.text-difference-result.v1"
+    },
+    "capability_id": {
+      "const": "analysis.compare_text_differences"
+    }
+  },
+  "additionalProperties": true
+}

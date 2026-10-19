@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.critic-prepare-output.v1",
+  "type": "object",
+  "required": ["schema_version", "capability_id", "capability_version", "mechanism_variants", "mechanism_variant_sha256", "required_model", "required_graph_query", "runtime"],
+  "properties": {
+    "schema_version": {"const": "eureka.critic-stage-a.v1"},
+    "capability_id": {"const": "portfolio.prepare_candidate_critic"},
+    "capability_version": {"type": "string"},
+    "mechanism_variants": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"type": "string"}},
+    "mechanism_variant_sha256": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"type": "string", "pattern": "^[a-f0-9]{64}$"}},
+    "required_model": {"type": "string"},
+    "required_graph_query": {"type": "string"},
+    "runtime": {"type": "string"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian-os.com/schemas/eureka/rs-expert-extraction-output.v1.json",
+  "title": "RS paper author extraction result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "capability_id", "capability_version", "status", "scope_id", "snapshot_id", "experts", "counts", "input_fingerprint", "run_config", "limitations"],
+  "properties": {
+    "schema_version": {"const": "eureka.rs-expert-extraction.v1"},
+    "capability_id": {"const": "research.extract_experts_from_papers"},
+    "capability_version": {"const": "0.1.0"},
+    "status": {"enum": ["experts_extracted", "no_authors_found"]},
+    "scope_id": {"type": ["string", "null"]},
+    "snapshot_id": {"type": ["string", "null"]},
+    "experts": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["name", "orcid", "institution", "paper_count", "h_index_estimate", "public_email_or_null", "h_index_basis", "confidence", "confidence_basis", "identity_resolution", "sources", "evidence", "evidence_total"],
+        "properties": {
+          "name": {"type": "string"}, "orcid": {"type": ["string", "null"]},
+          "institution": {"type": ["string", "null"]}, "paper_count": {"type": "integer", "minimum": 1},
+          "h_index_estimate": {"type": "integer", "minimum": 0}, "public_email_or_null": {"type": ["string", "null"]},
+          "h_index_basis": {"const": "retrieved_papers_only"}, "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "confidence_basis": {"type": "array", "items": {"type": "string"}},
+          "identity_resolution": {"enum": ["orcid", "name_only", "name_merged_into_orcid"]},
+          "sources": {"type": "array", "items": {"type": "string"}},
+          "evidence": {"type": "array", "maxItems": 5, "items": {"type": "object"}},
+          "evidence_total": {"type": "integer", "minimum": 1}
+        }
+      }
+    },
+    "counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "input_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "run_config": {
+      "type": "object", "additionalProperties": false,
+      "required": ["include_retracted", "infer_first_author_institution", "runtime"],
+      "properties": {"include_retracted": {"type": "boolean"}, "infer_first_author_institution": {"type": "boolean"}, "runtime": {"type": "string"}}
+    },
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}

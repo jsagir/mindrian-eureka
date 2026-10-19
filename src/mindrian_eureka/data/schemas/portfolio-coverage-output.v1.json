@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.portfolio-coverage-result.v1",
+  "title": "portfolio.inventory_taxonomy_coverage result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.portfolio-coverage-result.v1"
+    },
+    "capability_id": {
+      "const": "portfolio.inventory_taxonomy_coverage"
+    },
+    "status": {
+      "const": "completed_inventory"
+    },
+    "areas": {
+      "type": "array"
+    },
+    "limitations": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true
+}

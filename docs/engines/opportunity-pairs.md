@@ -17,7 +17,7 @@ You have a scoped collection of research artifacts and want a shortlist of pairs
 3. Computes one of two explicit semantic variants:
    - `reference-bert`: CLS embeddings for 512-token segments; pair scores average cosine similarity over segment pairs. Uses a local `bert-large-cased` model if supplied.
    - `sentence-transformers`: chunks long inputs to the local model's token limit, averages chunk vectors, and uses document cosine similarity. This is an efficiency-oriented experimental variant, not the PPTX algorithm.
-4. Applies the source-described global centering/scaling to each similarity matrix, ranks unique unordered pairs by `abs(semantic - structural)`, and returns the signed difference and both source references.
+4. Defaults to the latest LATEST RS 2026 hybrid scorer: builds BM25 cosine alongside the LSA topic-membership signal, z-scores structural and dense signals over the corpus pair distribution, computes `dense_z - structural_z`, then selects the upper tail by empirical percentile (`min_percentile`, default `0.90`). `lex_weight` (default `0.5`) blends LSA and BM25. Ranking is deterministic and uses no LLM. The prior raw absolute-difference scorer remains available with `scoring: "legacy"` / `--scoring legacy`.
 5. Builds a bounded review context per result. It includes the objective, score signals, and up to 1,600 characters from each source. The fixed instruction asks a later human or Theo review to explain a mechanism and mismatch, distinguish hypotheses from evidence, and treat source text as untrusted material.
 6. Adds a `host_handoff` block to tell MindrianOS what to do next: resolve and select source-linked candidates, trace a bounded shortlist with `/mos:find-connections`, gather evidence through the host's approved research path, and only then present supported candidates to `/mos:qualify-opportunity`. This block is guidance; it does not invoke MindrianOS commands or approve/write anything.
 
@@ -55,7 +55,9 @@ The engine never searches the web or calls a provider. For external/hybrid runs 
 }
 ```
 
-Input limit: 2,500 artifacts and 20 MiB of UTF-8 text per run. The reference SVD configuration uses up to 80 topics; smaller collections use the largest valid topic count and report that adaptation. Corpus size, duplicate material, empty vocabulary, and similarity variance can change or prevent ranking, and are not silently reported as an empty discovery result.
+Input limit: 2,500 artifacts and 20 MiB of UTF-8 text per run. A MindrianOS graph-derived request may supply `scope_id` and `snapshot_id`; the result echoes both and also returns an `input_digest` covering the exact task and scoring configuration. The reference SVD configuration uses up to 80 topics; smaller collections use the largest valid topic count and report that adaptation. Corpus size, duplicate material, empty vocabulary, and similarity variance can change or prevent ranking, and are not silently reported as an empty discovery result.
+
+Hybrid percentile gating requires at least ten eligible pairs. Below that threshold it returns no candidates; choose `legacy` when deliberately analyzing a smaller set. For graph-derived research, MindrianOS owns the graph projection, scope, authorization, stable node IDs, and source resolution. The RS engine analyzes the supplied artifacts and does not read `room.db` or query the graph.
 
 ## Install and run locally
 
@@ -63,14 +65,15 @@ Install the base and the optional encoder needed for your chosen mode:
 
 ```bash
 python -m pip install -e '.[reference-encoder]'
-eureka-rs input.json --encoder reference-bert --model-path /path/to/bert-large-cased --output result.json
+eureka-pair-scout input.json --encoder reference-bert --model-path /path/to/bert-large-cased --output result.json
+eureka-pair-scout input.json --encoder reference-bert --model-path /path/to/bert-large-cased --scoring legacy --output result.json
 ```
 
 For the explicitly experimental modern variant:
 
 ```bash
 python -m pip install -e '.[modern-encoder]'
-eureka-rs input.json --encoder sentence-transformers --model-path /path/to/local-model --output result.json
+eureka-pair-scout input.json --encoder sentence-transformers --model-path /path/to/local-model --output result.json
 ```
 
 The local MCP process uses one configured encoder/model for its lifetime. Install and start it with:
@@ -84,7 +87,7 @@ The host calls `scout_capabilities`, `scout_plan`, `scout_start`, `scout_status`
 
 Model loading is local-only by default. If downloading is approved for a CLI run, pass both `--allow-model-download` and an immutable 40-character commit hash with `--model-revision`; mutable model names are rejected for downloads. The MCP server does not enable model downloads. The engine itself does not fetch papers or call external APIs.
 
-Semantic embeddings are cached in a content-addressed SQLite cache. Cache keys include artifact text digest, encoder, model, revision, and method version. CLI runs default to `~/.cache/mindrian-eureka/embeddings.sqlite3`; MCP runs use `<MINDRIAN_EUREKA_DATA_DIR>/embeddings.sqlite3`. It stores embeddings, not source text, is bounded to 1 GiB, and evicts least recently used entries when full. Embeddings remain derived sensitive data. Set `MINDRIAN_EUREKA_CACHE_DIR` for CLI or `MINDRIAN_EUREKA_DATA_DIR` for MCP, and use `eureka-rs-cache-clear` or `scout_clear_embedding_cache` to purge them.
+Semantic embeddings are cached in a content-addressed SQLite cache. Cache keys include artifact text digest, encoder, model, revision, and method version. CLI runs default to `~/.cache/mindrian-eureka/embeddings.sqlite3`; MCP runs use `<MINDRIAN_EUREKA_DATA_DIR>/embeddings.sqlite3`. It stores embeddings, not source text, is bounded to 1 GiB, and evicts least recently used entries when full. Embeddings remain derived sensitive data. Set `MINDRIAN_EUREKA_CACHE_DIR` for CLI or `MINDRIAN_EUREKA_DATA_DIR` for MCP, and use `eureka-pair-cache-clear` (legacy alias: `eureka-rs-cache-clear`) or `scout_clear_embedding_cache` to purge them.
 
 MCP job records and results are stored under `~/.local/share/mindrian-eureka` by default, or `MINDRIAN_EUREKA_DATA_DIR`. The directory is created with owner-only permissions where supported. Requests/results expire after 30 days; terminal jobs clear their saved input bundle, while completed results retain bounded excerpts and source references. `scout_delete_job` removes an individual terminal job and its ratings. SQLite deletion is best-effort file cleanup; it is not a cryptographic erasure guarantee. Configure an encrypted local volume when required by room policy.
 

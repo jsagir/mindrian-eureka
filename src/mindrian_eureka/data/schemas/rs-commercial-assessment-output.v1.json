@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian-os.com/schemas/eureka/rs-commercial-assessment-output.v1.json",
+  "title": "RS commercial hypothesis result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "capability_id", "capability_version", "status", "scope_id", "snapshot_id", "market_size_estimate", "value_proposition", "partnership_targets", "input_fingerprint", "runtime", "limitations"],
+  "properties": {
+    "schema_version": {"const": "eureka.rs-commercial-assessment.v1"},
+    "capability_id": {"const": "research.assess_rs_commercial_case"},
+    "capability_version": {"const": "0.1.0"},
+    "status": {"const": "commercial_hypothesis_ready"},
+    "scope_id": {"type": ["string", "null"]},
+    "snapshot_id": {"type": ["string", "null"]},
+    "market_size_estimate": {"type": "string", "enum": [
+      "unknown-bucket: insufficient signal to estimate market size",
+      "emerging-niche: pre-market opportunity; demand signal not yet established",
+      "small-targeted: focused vertical with bounded TAM; early-stage adopters",
+      "mid-market: established demand with measurable SAM; multi-segment reach",
+      "large-market: validated demand with broad SAM; cross-segment platform potential",
+      "platform-scale: category-defining opportunity with cross-vertical reach"
+    ]},
+    "value_proposition": {"type": "string", "maxLength": 10000},
+    "partnership_targets": {"type": "array", "maxItems": 200, "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "type", "score", "source_ids"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1, "maxLength": 500},
+        "type": {"enum": ["author", "institution"]},
+        "score": {"type": "number", "minimum": 0, "maximum": 1},
+        "source_ids": {"type": "array", "maxItems": 25, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 500}}
+      }
+    }},
+    "input_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "runtime": {"type": "string"},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}

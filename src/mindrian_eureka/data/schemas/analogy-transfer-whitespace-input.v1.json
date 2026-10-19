@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.analogy-transfer-whitespace-input.v1",
+  "title": "Analogy transfer whitespace input",
+  "type": "object",
+  "required": ["artifacts", "baselines"],
+  "properties": {
+    "scope_id": {"type": "string", "maxLength": 256},
+    "snapshot_id": {"type": "string", "maxLength": 256},
+    "mode": {"enum": ["percentile", "fixed"], "default": "percentile"},
+    "min_corpus": {"type": "integer", "minimum": 2, "maximum": 10000, "default": 5},
+    "artifacts": {"type": "array", "minItems": 1, "maxItems": 25000, "items": {"type": "object", "required": ["id", "vector"], "properties": {"id": {"type": "string", "minLength": 1, "maxLength": 256}, "title": {"type": "string", "maxLength": 2000}, "section": {"type": "string", "maxLength": 500}, "vector": {"type": "array", "minItems": 1, "maxItems": 20000, "items": {"type": "number"}}}, "additionalProperties": true}},
+    "baselines": {"type": "array", "minItems": 1, "maxItems": 5000, "items": {"type": "object", "required": ["id", "vector"], "properties": {"id": {"type": "string", "minLength": 1, "maxLength": 256}, "name": {"type": "string", "maxLength": 2000}, "title": {"type": "string", "maxLength": 2000}, "vector": {"type": "array", "minItems": 1, "maxItems": 20000, "items": {"type": "number"}}}, "additionalProperties": true}},
+    "analogy_edges": {"type": "array", "maxItems": 5000, "items": {"type": "object", "required": ["source_id", "target_id"], "properties": {"source_id": {"type": "string", "minLength": 1}, "target_id": {"type": "string", "minLength": 1}, "source_section": {"type": "string"}, "target_section": {"type": "string"}, "analogy_distance": {"type": "string"}, "structural_fitness": {"type": ["number", "null"]}}, "additionalProperties": true}},
+    "hsi_pairs": {"type": "array", "maxItems": 50000, "items": {"type": "object", "required": ["left_id", "right_id", "semantic_sim", "lsa_sim"], "properties": {"left_id": {"type": "string"}, "right_id": {"type": "string"}, "semantic_sim": {"type": "number"}, "lsa_sim": {"type": "number"}}, "additionalProperties": true}}
+  },
+  "additionalProperties": false
+}

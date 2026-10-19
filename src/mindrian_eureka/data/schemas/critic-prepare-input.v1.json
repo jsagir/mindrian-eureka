@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.critic-prepare-input.v1",
+  "type": "object",
+  "required": ["candidate"],
+  "properties": {
+    "candidate": {
+      "type": "object",
+      "required": ["mechanismText"],
+      "properties": {"mechanismText": {"type": "string", "minLength": 1, "maxLength": 20000}},
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

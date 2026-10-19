@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian-os.com/schemas/eureka/rs-commercial-assessment-input.v1.json",
+  "title": "RS commercial hypothesis request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["discovery"],
+  "properties": {
+    "scope_id": {"type": ["string", "null"], "maxLength": 200},
+    "snapshot_id": {"type": ["string", "null"], "maxLength": 200},
+    "discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["query_concept", "doc_concept", "classification"],
+      "properties": {
+        "query_concept": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "doc_concept": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "classification": {"enum": ["structural_transfer", "semantic_implementation", "hybrid"]},
+        "bridge_concept": {"type": "string", "maxLength": 1000},
+        "industry_signals_count": {"type": "integer", "minimum": 0, "maximum": 100000},
+        "breakthrough_score": {"type": "number", "minimum": 0, "maximum": 10},
+        "resolved_authors": {
+          "type": "array", "maxItems": 100,
+          "items": {"type": "object", "additionalProperties": false, "required": ["name"], "properties": {
+            "name": {"type": "string", "minLength": 1, "maxLength": 500},
+            "source_ids": {"type": "array", "maxItems": 25, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 500}}
+          }}
+        },
+        "resolved_institutions": {
+          "type": "array", "maxItems": 100,
+          "items": {"type": "object", "additionalProperties": false, "required": ["name"], "properties": {
+            "name": {"type": "string", "minLength": 1, "maxLength": 500},
+            "source_ids": {"type": "array", "maxItems": 25, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 500}}
+          }}
+        }
+      }
+    }
+  }
+}

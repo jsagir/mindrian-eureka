@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.graph-structural-gaps.v1",
+  "title": "Find Missing Links Between Shared Neighbors input",
+  "type": "object",
+  "required": [
+    "snapshot"
+  ],
+  "properties": {
+    "snapshot": {
+      "type": "object",
+      "required": [
+        "nodes",
+        "edges"
+      ],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "maxItems": 10000,
+          "items": {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "labels": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "name": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "attrs": {
+                "type": "object"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "edges": {
+          "type": "array",
+          "maxItems": 50000,
+          "items": {
+            "type": "object",
+            "required": [
+              "s",
+              "t",
+              "type"
+            ],
+            "properties": {
+              "s": {
+                "type": "string",
+                "minLength": 1
+              },
+              "t": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "created_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "meta": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "min_common": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100,
+      "default": 2
+    },
+    "hub_cap": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10000,
+      "default": 150
+    },
+    "top": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000,
+      "default": 200
+    }
+  },
+  "additionalProperties": false
+}

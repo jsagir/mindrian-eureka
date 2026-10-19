@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 from . import workflow
+from ..contracts import validate_request, validate_result
 
 
 def _read(path: str):
@@ -19,7 +20,7 @@ def _write(value):
 
 
 def main(argv=None) -> int:
-    parser = argparse.ArgumentParser(prog="eureka-sme", description="Local structural mapping and host-brokered SME research")
+    parser = argparse.ArgumentParser(prog="eureka-structure-mapping", description="Map structures and prepare host-brokered verification research")
     commands = parser.add_subparsers(dest="command", required=True)
     plan = commands.add_parser("plan", help="freeze exact query strings for host-side review and approval")
     plan.add_argument("request_json")
@@ -35,16 +36,34 @@ def main(argv=None) -> int:
     finalize.add_argument("assessments_json")
     args = parser.parse_args(argv)
     if args.command == "plan":
-        _write(workflow.prepare_research_plan(**_read(args.request_json)))
+        request = _read(args.request_json)
+        validate_request("analogy.cross_domain_research", {"stage": "prepare_research_plan", "request": request})
+        result = workflow.prepare_research_plan(**request)
+        validate_result("analogy.cross_domain_research", result)
+        _write(result)
     elif args.command == "validate-bundle":
-        _write(workflow.validate_research_bundle(_read(args.plan_json), _read(args.bundle_json)))
+        request = {"plan": _read(args.plan_json), "bundle": _read(args.bundle_json)}
+        validate_request("analogy.cross_domain_research", {"stage": "validate_research_bundle", "request": request})
+        result = workflow.validate_research_bundle(request["plan"], request["bundle"])
+        validate_result("analogy.cross_domain_research", result)
+        _write(result)
     elif args.command == "map":
-        _write(workflow.map_structures(_read(args.mapping_input_json)))
+        document = _read(args.mapping_input_json)
+        payload = document if "document" in document else {"document": document}
+        validate_request("analogy.map_structure", payload)
+        result = workflow.map_structures(payload["document"])
+        validate_result("analogy.map_structure", result)
+        _write(result)
     else:
-        _write(workflow.finalize_assessments(
-            _read(args.mapping_result_json), _read(args.verification_plan_json),
-            _read(args.evidence_bundle_json), _read(args.assessments_json),
-        ))
+        request = {"mapping_result": _read(args.mapping_result_json),
+                   "verification_plan": _read(args.verification_plan_json),
+                   "evidence_bundle": _read(args.evidence_bundle_json),
+                   "assessments": _read(args.assessments_json)}
+        validate_request("analogy.cross_domain_research", {"stage": "finalize_assessments", "request": request})
+        result = workflow.finalize_assessments(request["mapping_result"], request["verification_plan"],
+                                               request["evidence_bundle"], request["assessments"])
+        validate_result("analogy.cross_domain_research", result)
+        _write(result)
     return 0
 
 

@@ -137,14 +137,34 @@ def analyze_sequence(document: dict[str, Any]) -> dict[str, Any]:
     if len(set(ids)) != len(ids):
         raise ValueError("Model ids must be unique")
 
-    hmm_models = [_build_model(model) for model in models]
     sequence = observations[None, :, :]
     results = []
     posteriors = {}
-    for spec, hmm in zip(models, hmm_models):
-        log_likelihood = float(hmm.log_probability(sequence)[0].item())
-        posterior = hmm.predict_proba(sequence)[0].detach().cpu().numpy()
-        predicted = hmm.predict(sequence)[0].detach().cpu().numpy()
+    for spec in models:
+        if len(observations) == 1:
+            # pomegranate's DenseHMM forward/backward implementation cannot
+            # reshape the empty transition axis for a one-step sequence. With
+            # no transitions to evaluate, compute the equivalent initial ×
+            # Bernoulli-emission × terminal likelihood directly.
+            initial, _, emissions = _validate_model(spec)
+            bits = observations[0].astype(bool)
+            initial_array = np.asarray(initial, dtype=np.float64)
+            emission_array = np.asarray(emissions, dtype=np.float64)
+            with np.errstate(divide="ignore", invalid="ignore"):
+                state_log_weights = np.log(initial_array) + np.log(
+                    np.where(bits[None, :], emission_array, 1.0 - emission_array)
+                ).sum(axis=1) + math.log(0.25)
+            max_log_weight = float(np.max(state_log_weights))
+            if not math.isfinite(max_log_weight):
+                raise ValueError(f"The one-step observation has zero probability under model {spec['id']}")
+            log_likelihood = max_log_weight + math.log(float(np.exp(state_log_weights - max_log_weight).sum()))
+            posterior = np.exp(state_log_weights - log_likelihood)[None, :]
+            predicted = np.asarray([int(np.argmax(posterior[0]))])
+        else:
+            hmm = _build_model(spec)
+            log_likelihood = float(hmm.log_probability(sequence)[0].item())
+            posterior = hmm.predict_proba(sequence)[0].detach().cpu().numpy()
+            predicted = hmm.predict(sequence)[0].detach().cpu().numpy()
         posterior_rows = [
             {STATE_NAMES[state]: float(row[state]) for state in range(4)} for row in posterior
         ]
@@ -165,7 +185,7 @@ def analyze_sequence(document: dict[str, Any]) -> dict[str, Any]:
         "method_version": "pomegranate-1.1.2-four-state-bernoulli-hmm-v1",
         "engine": {"name": "pomegranate", "version": "1.1.2", "license": "MIT"},
         "status": "completed_unvalidated_model_comparison",
-        "scope": {"scope_id": document.get("scope_id"), "sequence_id": document.get("sequence_id")},
+        "scope": {"scope_id": document.get("scope_id"), "snapshot_id": document.get("snapshot_id"), "sequence_id": document.get("sequence_id")},
         "observation_count": len(observations),
         "feature_names": list(FEATURE_NAMES),
         "state_names": list(STATE_NAMES),
@@ -235,6 +255,7 @@ def fit_model(document: dict[str, Any]) -> dict[str, Any]:
     }
     return {
         "schema_version": "eureka.decision-sequence-fit-result.v1",
+        "capability_id": "decision.fit_sequence_patterns",
         "engine": {"name": "pomegranate", "version": "1.1.2", "algorithm": "Baum-Welch / expectation-maximization"},
         "status": "exploratory_unvalidated_fit",
         "sequence_count": len(arrays),

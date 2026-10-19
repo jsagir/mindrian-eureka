@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.relationship-proposals.v1",
+  "title": "graph.package_relationship_proposals result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.relationship-proposals.v1"
+    },
+    "capability_id": {
+      "const": "graph.package_relationship_proposals"
+    },
+    "status": {
+      "const": "completed_proposal_packaging"
+    },
+    "proposals": {
+      "type": "array"
+    },
+    "limitations": {
+      "type": "array"
+    },
+    "scope_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

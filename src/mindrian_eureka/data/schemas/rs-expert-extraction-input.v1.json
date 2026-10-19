@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian-os.com/schemas/eureka/rs-expert-extraction-input.v1.json",
+  "title": "RS paper author extraction request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["papers"],
+  "properties": {
+    "scope_id": {"type": ["string", "null"], "maxLength": 200},
+    "snapshot_id": {"type": ["string", "null"], "maxLength": 200},
+    "include_retracted": {"type": "boolean", "default": false},
+    "infer_first_author_institution": {"type": "boolean", "default": false},
+    "papers": {
+      "type": "array", "maxItems": 10000,
+      "items": {
+        "type": "object", "additionalProperties": true,
+        "properties": {
+          "id": {"type": ["string", "number"]},
+          "title": {"type": "string", "maxLength": 20000},
+          "source": {"type": "string", "maxLength": 100},
+          "source_id": {"type": "string", "maxLength": 1000},
+          "source_url": {"type": "string", "maxLength": 4000},
+          "retrieved_at": {"type": "string", "maxLength": 100},
+          "fetched_at": {"type": "string", "maxLength": 100},
+          "doi": {"type": "string", "maxLength": 500},
+          "citationCount": {"type": "number", "minimum": 0},
+          "cited_by_count": {"type": "number", "minimum": 0},
+          "is_retracted": {"type": "boolean"},
+          "institution": {"type": "string", "maxLength": 1000},
+          "authors": {
+            "type": "array", "maxItems": 500,
+            "items": {
+              "oneOf": [
+                {"type": "string", "maxLength": 1000},
+                {"type": "object", "additionalProperties": true,
+                 "properties": {
+                   "name": {"type": "string", "maxLength": 1000},
+                   "orcid": {"type": "string", "maxLength": 200},
+                   "institution": {"type": "string", "maxLength": 1000},
+                   "email": {"type": "string", "maxLength": 500}
+                 }}
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -8,6 +8,7 @@ explicit variant, not a claim of bit-for-bit reproduction of its BERT pipeline.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from typing import Protocol, Sequence
 
 import numpy as np
@@ -43,6 +44,7 @@ class PairCandidate:
     disagreement: float
     interpretation: str
     direction: str
+    method_signals: dict | None = None
 
 
 class SemanticEncoder(Protocol):
@@ -204,6 +206,131 @@ def rank_pairs(
             direction="structural_transfer" if delta > 0 else "semantic_implementation",
         ))
     return candidates
+
+
+_RS_STOPWORDS = set((
+    "a about above after again all also am an and any are as at be because been before being below between both but by can could did do does doing down during each few for from further had has having he her here hers him his how i if in into is it its just may me more most my no nor not of off on once only or other our out over own same she should so some such than that the their them then there these they this those through to too under until up very was we were what when where which while who whom why will with would you your"
+).split())
+_RS_TOKEN_RE = re.compile(r"[^\W_]{2,}", re.UNICODE)
+
+
+def _rs_tokens(text: str) -> list[str]:
+    return [token for token in _RS_TOKEN_RE.findall((text or "").lower()) if token not in _RS_STOPWORDS]
+
+
+def _bm25_cosine(texts: Sequence[str], *, k1: float = 1.5, b: float = 0.75, max_features: int = 5000) -> np.ndarray:
+    """LATEST RS 2026 deterministic BM25-weighted document cosine signal."""
+    docs = [_rs_tokens(text) for text in texts]
+    n = len(docs)
+    df: dict[str, int] = {}
+    for doc in docs:
+        for term in set(doc):
+            df[term] = df.get(term, 0) + 1
+    ranked = sorted(df.items(), key=lambda item: (-item[1], item[0]))[:max_features]
+    index = {term: i for i, (term, _) in enumerate(ranked)}
+    if not index:
+        return np.eye(n, dtype=np.float64)
+    idf = np.array([np.log(1.0 + (n - count + 0.5) / (count + 0.5)) for _, count in ranked])
+    lengths = np.array([len(doc) for doc in docs], dtype=np.float64)
+    avg_length = float(lengths.mean()) or 1.0
+    weighted = np.zeros((n, len(index)), dtype=np.float64)
+    for row, doc in enumerate(docs):
+        counts: dict[int, int] = {}
+        for term in doc:
+            if term in index:
+                col = index[term]
+                counts[col] = counts.get(col, 0) + 1
+        for col, tf in counts.items():
+            denom = tf + k1 * (1.0 - b + b * lengths[row] / avg_length)
+            weighted[row, col] = idf[col] * tf * (k1 + 1.0) / denom
+    norms = np.linalg.norm(weighted, axis=1)
+    norms[norms == 0.0] = 1.0
+    weighted /= norms[:, None]
+    return np.clip(weighted @ weighted.T, 0.0, 1.0)
+
+
+def _zscore_pairs(matrix: np.ndarray) -> np.ndarray:
+    values = np.asarray(matrix, dtype=np.float64)
+    if len(values) < 2:
+        return np.zeros_like(values)
+    upper = values[np.triu_indices(len(values), k=1)]
+    deviation = float(upper.std())
+    if deviation < 1e-12:
+        return np.zeros_like(values)
+    return (values - float(upper.mean())) / deviation
+
+
+def _percentile_ranks(matrix: np.ndarray, eligible: np.ndarray | None = None) -> np.ndarray:
+    values = np.nan_to_num(np.asarray(matrix, dtype=np.float64))
+    n = len(values)
+    out = np.zeros((n, n), dtype=np.float64)
+    if n < 2:
+        return out
+    i, j = np.triu_indices(n, k=1)
+    if eligible is not None:
+        mask = eligible[i, j]
+        i, j = i[mask], j[mask]
+    selected = values[i, j]
+    if not len(selected):
+        return out
+    if len(selected) == 1:
+        out[i, j] = 1.0
+        return out + out.T
+    order = np.argsort(selected, kind="mergesort")
+    sorted_values = selected[order]
+    unique, inverse, counts = np.unique(sorted_values, return_inverse=True, return_counts=True)
+    cumulative = np.cumsum(counts)
+    average_rank = (cumulative - counts + cumulative - 1) / 2.0
+    ranks = np.empty(len(selected), dtype=np.float64)
+    ranks[order] = average_rank[inverse]
+    out[i, j] = ranks / (len(selected) - 1)
+    return out + out.T
+
+
+def rank_pairs_hybrid_2026(
+    artifacts: Sequence[Artifact], structural: np.ndarray, semantic: np.ndarray, *,
+    top_k: int = 20, cross_corpus_only: bool = False, lex_weight: float = 0.5,
+    min_percentile: float = 0.90,
+) -> list[PairCandidate]:
+    """Latest RS hybrid ranker: LSA/BM25 structure versus dense signal, z-gap percentile."""
+    if not 0.0 <= lex_weight <= 1.0:
+        raise ValueError("lex_weight must be between 0 and 1")
+    if not 0.0 <= min_percentile <= 1.0:
+        raise ValueError("min_percentile must be between 0 and 1")
+    n = len(artifacts)
+    if structural.shape != (n, n) or semantic.shape != (n, n):
+        raise ValueError("Similarity matrices must be square and match the artifact count")
+    texts = [artifact.model_text for artifact in artifacts]
+    lexical = _bm25_cosine(texts)
+    structural_z = (1.0 - lex_weight) * _zscore_pairs(structural) + lex_weight * _zscore_pairs(lexical)
+    dense_z = _zscore_pairs(semantic)
+    signed_gap = dense_z - structural_z
+    abs_gap = np.abs(signed_gap)
+    eligible = np.ones((n, n), dtype=bool)
+    if cross_corpus_only:
+        eligible = np.array([[a.corpus != b.corpus for b in artifacts] for a in artifacts], dtype=bool)
+    i, j = np.triu_indices(n, k=1)
+    if int(eligible[i, j].sum()) < 10:
+        return []
+    percentiles = _percentile_ranks(abs_gap, eligible)
+    keep = eligible[i, j] & (percentiles[i, j] >= min_percentile)
+    i, j = i[keep], j[keep]
+    order = sorted(range(len(i)), key=lambda k: (-float(abs_gap[i[k], j[k]]), artifacts[i[k]].id, artifacts[j[k]].id))[:top_k]
+    output: list[PairCandidate] = []
+    for pos in order:
+        left, right = int(i[pos]), int(j[pos])
+        delta = float(signed_gap[left, right])
+        direction = "structural_transfer" if delta > 0 else "semantic_implementation"
+        output.append(PairCandidate(
+            left=artifacts[left], right=artifacts[right],
+            structural_similarity=float(structural[left, right]),
+            semantic_similarity=float(semantic[left, right]), signed_difference=delta,
+            disagreement=abs(delta),
+            interpretation=("dense semantic signal exceeds lexical structural signal; inspect for related meaning expressed through different topic vocabulary" if delta > 0 else "lexical structural signal exceeds dense semantic signal; inspect for shared vocabulary used with different meanings"),
+            direction=direction,
+            method_signals={"scoring": "hybrid_2026", "bm25_similarity": float(lexical[left, right]), "structural_z": float(structural_z[left, right]), "dense_z": float(dense_z[left, right]), "hybrid_signed_gap": delta, "gap_percentile": float(percentiles[left, right])},
+        ))
+    return output
 
 
 def _normalize_rows(matrix: np.ndarray) -> np.ndarray:

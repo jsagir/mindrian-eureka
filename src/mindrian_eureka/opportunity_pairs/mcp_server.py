@@ -24,6 +24,9 @@ from .. import discovery_workflows
 from ..pitch_analysis import analyze_corpus
 from ..hsi_engine import run_hsi, HSIInputError
 from ..analogy_fitness import assess_analogy_fitness, AnalogyInputError, AnalogyUnavailable
+from ..workflow_handlers import HANDLERS as WORKFLOW_HANDLERS, NodeRuntimeUnavailable
+from ..graph_relations.runner import GraphInputError
+from ..contracts import ContractError, ResultContractError, schema_for, validate_request, validate_result
 
 
 logging.basicConfig(stream=sys.stderr, level=os.environ.get("MINDRIAN_EUREKA_LOG_LEVEL", "WARNING"))
@@ -51,18 +54,33 @@ class ScoutRunInput(BaseModel):
     objective: str = Field(min_length=1, max_length=5000)
     mode: Literal["local", "external", "hybrid"] = "local"
     scope_id: str = Field(min_length=1, max_length=256)
+    snapshot_id: str | None = Field(default=None, min_length=1, max_length=256)
     research_grant_id: str | None = Field(default=None, max_length=256)
     artifacts: list[ArtifactInput] = Field(min_length=2, max_length=2500)
     top_k: int = Field(default=20, ge=1, le=100)
+    scoring: Literal["hybrid_2026", "legacy"] = "hybrid_2026"
+    lex_weight: float = Field(default=0.5, ge=0, le=1)
+    min_percentile: float = Field(default=0.9, ge=0, le=1)
 
 
 class OpportunityScoutInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
     objective: str = Field(min_length=1, max_length=5000)
     scope_id: str = Field(min_length=1, max_length=256)
+    snapshot_id: str | None = Field(default=None, min_length=1, max_length=256)
     artifacts: list[ArtifactInput] = Field(min_length=2, max_length=2500)
     top_k: int = Field(default=20, ge=1, le=100)
+    scoring: Literal["hybrid_2026", "legacy"] = "hybrid_2026"
+    lex_weight: float = Field(default=0.5, ge=0, le=1)
+    min_percentile: float = Field(default=0.9, ge=0, le=1)
     dense_vectors: dict[str, list[float]] | None = None
+    # Optional provenance envelope emitted by graph.prepare_artifact_bundle.
+    schema_version: Literal["eureka.graph-artifact-bundle.v1"] | None = None
+    capability_id: Literal["graph.prepare_artifact_bundle"] | None = None
+    status: Literal["completed_projection"] | None = None
+    projection: dict | None = None
+    handoff: dict | None = None
+    limitations: list[str] | None = None
 
 
 class ReviewInput(BaseModel):
@@ -106,6 +124,7 @@ class FinalizeSMEInput(BaseModel):
 class DecisionSequenceInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
     scope_id: str = Field(min_length=1, max_length=256)
+    snapshot_id: str | None = Field(default=None, min_length=1, max_length=256)
     sequence_id: str = Field(min_length=1, max_length=256)
     observations: list[dict] = Field(min_length=1, max_length=2000)
     models: list[dict] = Field(min_length=2, max_length=5)
@@ -140,9 +159,15 @@ def _request_payload(request: ScoutRunInput) -> dict:
         "objective": request.objective,
         "mode": request.mode,
         "scope_id": request.scope_id,
+        "snapshot_id": request.snapshot_id,
         "research_grant_id": request.research_grant_id,
         "artifacts": artifacts,
+        "scoring": request.scoring,
+        "lex_weight": request.lex_weight,
+        "min_percentile": request.min_percentile,
     }
+    payload = {key: value for key, value in payload.items() if value is not None}
+    validate_request(CAPABILITY_ID, payload)
     validate_document(payload)
     text_bytes = sum(len(item["text"].encode("utf-8")) for item in artifacts)
     if text_bytes > 20 * 1024 * 1024:
@@ -174,6 +199,27 @@ def scout_capability(capability_id: str) -> dict:
         if capability.get("id") == capability_id:
             return capability
     return {"status": "not_found", "capability_id": capability_id}
+
+
+@server.tool()
+def scout_capability_contract(capability_id: str) -> dict:
+    """Return a capability record with its packaged JSON input/output contracts.
+
+    Use this before scout_run_workflow when the catalog entry names schema
+    files. A not_published result is explicit; it must not be treated as an
+    unconstrained or production-ready input contract.
+    """
+    capability = scout_capability(capability_id)
+    if capability.get("status") == "not_found":
+        return capability
+    schemas = {}
+    for direction in ("input", "output"):
+        try:
+            schemas[direction] = schema_for(capability_id, direction) or {"status": "not_published"}
+        except (OSError, json.JSONDecodeError, ContractError) as exc:
+            log.exception("Capability schema unavailable for %s", capability_id)
+            schemas[direction] = {"status": "unavailable", "detail": str(exc)}
+    return {"capability": capability, "schemas": schemas}
 
 
 @server.resource("scout://capabilities")
@@ -247,10 +293,13 @@ def scout_start_opportunity_signal_scout(request: OpportunityScoutInput, idempot
     """
     if idempotency_key is not None and not (1 <= len(idempotency_key) <= 128):
         raise ValueError("idempotency_key must contain 1 to 128 characters")
+    validate_request("opportunity.synthesize_discovery_signals", request.model_dump(exclude_none=True))
     artifacts = [item.model_dump(exclude_none=True) for item in request.artifacts]
     payload = {
         "capability_id": "opportunity.synthesize_discovery_signals",
         "objective": request.objective, "mode": "local", "scope_id": request.scope_id,
+        "snapshot_id": request.snapshot_id, "scoring": request.scoring,
+        "lex_weight": request.lex_weight, "min_percentile": request.min_percentile,
         "artifacts": artifacts, "top_k": request.top_k,
         "encoder": ENCODER, "model_path": MODEL_PATH, "model_revision": MODEL_REVISION,
         "dense_vectors": request.dense_vectors,
@@ -324,39 +373,67 @@ def scout_clear_embedding_cache() -> dict:
 @server.tool()
 def scout_sme_prepare_research(request: ResearchPlanInput) -> dict:
     """Freeze exact cross-domain discovery or inference-check queries for host approval."""
-    return sme_workflow.prepare_research_plan(**request.model_dump())
+    raw = request.model_dump(exclude_none=True)
+    validate_request("analogy.cross_domain_research", {"stage": "prepare_research_plan", "request": raw})
+    result = sme_workflow.prepare_research_plan(**raw)
+    validate_result("analogy.cross_domain_research", result)
+    return result
 
 
 @server.tool()
 def scout_sme_validate_research_bundle(request: ResearchBundleInput) -> dict:
     """Validate returned source and query lineage; this does not verify host approval."""
-    return sme_workflow.validate_research_bundle(request.plan, request.bundle)
+    raw = request.model_dump()
+    validate_request("analogy.cross_domain_research", {"stage": "validate_research_bundle", "request": raw})
+    result = sme_workflow.validate_research_bundle(request.plan, request.bundle)
+    validate_result("analogy.cross_domain_research", result)
+    return result
 
 
 @server.tool()
 def scout_sme_map(request: StructureMappingInput) -> dict:
     """Run the local deterministic SME map over host-prepared, claim-linked structures."""
-    return sme_workflow.map_structures(request.document)
+    payload = request.model_dump()
+    validate_request("analogy.map_structure", payload)
+    result = sme_workflow.map_structures(request.document)
+    validate_result("analogy.map_structure", result)
+    return result
 
 
 @server.tool()
 def scout_sme_finalize(request: FinalizeSMEInput) -> dict:
     """Attach reviewed evidence outcomes to mapping inferences; never files to a portfolio."""
-    return sme_workflow.finalize_assessments(
+    raw = request.model_dump()
+    validate_request("analogy.cross_domain_research", {"stage": "finalize_assessments", "request": raw})
+    result = sme_workflow.finalize_assessments(
         request.mapping_result, request.verification_plan, request.evidence_bundle, request.assessments
     )
+    validate_result("analogy.cross_domain_research", result)
+    return result
 
 
 @server.tool()
 def decision_compare_sequence_patterns(request: DecisionSequenceInput) -> dict:
     """Compare a coded decision sequence under caller-supplied HMM parameters."""
-    return decision_patterns.analyze_sequence(request.model_dump())
+    payload = request.model_dump(exclude_none=True)
+    validate_request("decision.compare_sequence_patterns", payload)
+    result = decision_patterns.analyze_sequence(payload)
+    validate_result("decision.compare_sequence_patterns", result)
+    return result
 
 
 @server.tool()
 def decision_fit_sequence_patterns(request: DecisionSequenceFitInput) -> dict:
-    """Exploratorily fit HMM parameters from multiple coded traces and an explicit seed."""
-    return decision_patterns.fit_model(request.model_dump())
+    """Exploratorily fit HMM parameters from multiple coded traces and an explicit seed.
+
+    Requires at least two independently coded traces and 32 total observations.
+    The fit is unvalidated and must not be used to assess, rank, or diagnose people.
+    """
+    payload = request.model_dump(exclude_none=True)
+    validate_request("decision.fit_sequence_patterns", payload)
+    result = decision_patterns.fit_model(payload)
+    validate_result("decision.fit_sequence_patterns", result)
+    return result
 
 
 @server.tool()
@@ -370,35 +447,37 @@ def scout_run_workflow(capability_id: str, request: dict) -> dict:
         raise ValueError("request must be a JSON object")
     if len(json.dumps(request, ensure_ascii=False).encode("utf-8")) > 20 * 1024 * 1024:
         return {"status": "invalid_input", "capability_id": capability_id, "error": "request exceeds 20 MiB"}
-    dispatch = {
-        "portfolio.find_hybrid_similarity_pairs": run_hsi,
-        "analysis.compare_text_differences": _run_jason_workflow,
-        "analogy.assess_structural_fitness": assess_analogy_fitness,
-        "portfolio.inventory_taxonomy_coverage": discovery_workflows.portfolio_coverage,
-        "portfolio.discover_hsi_whitespace": discovery_workflows.discover_hsi_whitespace,
-        "analogy.retrieve_mechanism_candidates": discovery_workflows.retrieve_mechanisms,
-        "research.prepare_multidomain_plan": discovery_workflows.plan_multidomain_research,
-        "research.group_multidomain_findings": discovery_workflows.synthesize_research_findings,
-        "analysis.audit_claim_traceability": discovery_workflows.critique_proposal,
-        "deliberation.prepare_six_hat_review": discovery_workflows.structure_debate,
-        "graph.package_relationship_proposals": discovery_workflows.propose_graph_relationships,
-        "discovery.plan_opportunity_scout": discovery_workflows.plan_opportunity_discovery,
-    }
+    dispatch = WORKFLOW_HANDLERS
     handler = dispatch.get(capability_id)
     if handler is None:
         return {"status": "blocked_or_not_implemented", "capability_id": capability_id,
                 "detail": "This capability has no runnable local workflow handler. Inspect scout_capability for its current readiness."}
     try:
+        validate_request(capability_id, request)
         result = handler(request)
+        try:
+            validate_result(capability_id, result)
+        except ResultContractError as exc:
+            log.exception("Workflow %s violated its output contract", capability_id)
+            return {"status": "failed", "capability_id": capability_id,
+                    "reason": "output_contract_violation", "detail": str(exc)}
         return result
+    except ContractError as exc:
+        return {"status": "invalid_input", "capability_id": capability_id, "error": str(exc)}
     except discovery_workflows.WorkflowInputError as exc:
         return {"status": "invalid_input", "capability_id": capability_id, "error": str(exc)}
+    except sme_workflow.WorkflowError as exc:
+        return {"status": "invalid_input", "capability_id": capability_id, "error": str(exc)}
     except HSIInputError as exc:
+        return {"status": "invalid_input", "capability_id": capability_id, "error": str(exc)}
+    except GraphInputError as exc:
         return {"status": "invalid_input", "capability_id": capability_id, "error": str(exc)}
     except AnalogyInputError as exc:
         return {"status": "invalid_input", "capability_id": capability_id, "error": str(exc)}
     except AnalogyUnavailable as exc:
         return {"status": "blocked", "capability_id": capability_id, "reason": "local_model_unavailable", "detail": str(exc)}
+    except NodeRuntimeUnavailable as exc:
+        return {"status": "blocked", "capability_id": capability_id, "reason": "runtime_unavailable", "detail": str(exc)}
     except Exception as exc:
         log.exception("Workflow %s failed", capability_id)
         return {"status": "failed", "capability_id": capability_id, "error": str(exc)}
@@ -409,6 +488,8 @@ def _run_jason_workflow(payload: dict) -> dict:
                             input_bytes=json.dumps(payload, ensure_ascii=False).encode("utf-8"))
     if result.get("errors"):
         result["status"] = "invalid_input"
+    if payload.get("scope_id") is not None or payload.get("snapshot_id") is not None:
+        result["scope"] = {"scope_id": payload.get("scope_id"), "snapshot_id": payload.get("snapshot_id")}
     return result
 
 
@@ -426,7 +507,16 @@ def scout_compare_text_differences(request: dict) -> dict:
         encoded = json.dumps(request, ensure_ascii=False).encode("utf-8")
         if len(encoded) > 20 * 1024 * 1024:
             return {"status": "invalid_input", "error": "request exceeds 20 MiB"}
-        return _run_jason_workflow(request)
+        validate_request("analysis.compare_text_differences", request)
+        result = _run_jason_workflow(request)
+        if not result.get("errors"):
+            validate_result("analysis.compare_text_differences", result)
+        return result
+    except ContractError as exc:
+        return {"status": "invalid_input", "capability_id": "analysis.compare_text_differences", "error": str(exc)}
+    except ResultContractError as exc:
+        return {"status": "failed", "capability_id": "analysis.compare_text_differences",
+                "reason": "output_contract_violation", "error": str(exc)}
     except Exception as exc:
         log.exception("Jason text-difference analysis failed")
         return {"status": "failed", "error": str(exc)}
@@ -440,7 +530,15 @@ def scout_find_hybrid_similarity_pairs(request: dict) -> dict:
     try:
         if len(json.dumps(request, ensure_ascii=False).encode("utf-8")) > 20 * 1024 * 1024:
             return {"status": "invalid_input", "error": "request exceeds 20 MiB"}
-        return run_hsi(request)
+        validate_request("portfolio.find_hybrid_similarity_pairs", request)
+        result = run_hsi(request)
+        validate_result("portfolio.find_hybrid_similarity_pairs", result)
+        return result
+    except ContractError as exc:
+        return {"status": "invalid_input", "capability_id": "portfolio.find_hybrid_similarity_pairs", "error": str(exc)}
+    except ResultContractError as exc:
+        return {"status": "failed", "capability_id": "portfolio.find_hybrid_similarity_pairs",
+                "reason": "output_contract_violation", "error": str(exc)}
     except HSIInputError as exc:
         return {"status": "invalid_input", "capability_id": "portfolio.find_hybrid_similarity_pairs", "error": str(exc)}
     except Exception as exc:
@@ -454,7 +552,16 @@ def scout_assess_analogy_fitness(request: dict) -> dict:
     try:
         if not isinstance(request, dict) or len(json.dumps(request, ensure_ascii=False).encode("utf-8")) > 10 * 1024 * 1024:
             return {"status": "invalid_input", "capability_id": "analogy.assess_structural_fitness", "error": "request must be an object no larger than 10 MiB"}
-        return assess_analogy_fitness(request)
+        validate_request("analogy.assess_structural_fitness", request)
+        result = assess_analogy_fitness(request)
+        if result.get("status") == "completed_experimental":
+            validate_result("analogy.assess_structural_fitness", result)
+        return result
+    except ContractError as exc:
+        return {"status": "invalid_input", "capability_id": "analogy.assess_structural_fitness", "error": str(exc)}
+    except ResultContractError as exc:
+        return {"status": "failed", "capability_id": "analogy.assess_structural_fitness",
+                "reason": "output_contract_violation", "error": str(exc)}
     except AnalogyInputError as exc:
         return {"status": "invalid_input", "capability_id": "analogy.assess_structural_fitness", "error": str(exc)}
     except AnalogyUnavailable as exc:

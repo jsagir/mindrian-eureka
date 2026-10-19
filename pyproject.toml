@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "Local-first, evidence-linked opportunity discovery capabilities for MindrianOS"
 requires-python = ">=3.11"
 dependencies = [
+  "jsonschema>=4.20,<5",
   "numpy>=2.0,<3",
   "scikit-learn>=1.6,<2",
 ]
@@ -17,23 +18,31 @@ modern-encoder = ["sentence-transformers>=5.0,<6"]
 reference-encoder = ["torch>=2.6,<3", "transformers>=4.50,<6"]
 mcp-server = ["mcp>=2.0,<3"]
 hmm = ["pomegranate==1.1.2"]
+neo4j = ["neo4j>=5.20,<7"]
 
 [project.scripts]
 eureka = "mindrian_eureka.cli:main"
 eureka-rs = "mindrian_eureka.opportunity_pairs.cli:main"
+eureka-pair-scout = "mindrian_eureka.opportunity_pairs.cli:main"
 eureka-mcp = "mindrian_eureka.opportunity_pairs.mcp_server:main"
 eureka-rs-cache-clear = "mindrian_eureka.opportunity_pairs.cli:clear_cache_main"
+eureka-pair-cache-clear = "mindrian_eureka.opportunity_pairs.cli:clear_cache_main"
 eureka-sme = "mindrian_eureka.structure_mapping.cli:main"
+eureka-structure-mapping = "mindrian_eureka.structure_mapping.cli:main"
 eureka-omm = "mindrian_eureka.decision_patterns.cli:main"
+eureka-decision-sequences = "mindrian_eureka.decision_patterns.cli:main"
 eureka-omm-web = "mindrian_eureka.decision_patterns.web:main"
+eureka-decision-sequences-web = "mindrian_eureka.decision_patterns.web:main"
 eureka-workflow = "mindrian_eureka.workflow_cli:main"
 eureka-scout = "mindrian_eureka.scout_cli:main"
+eureka-signal-scout = "mindrian_eureka.scout_cli:main"
+eureka-graph = "mindrian_eureka.graph_relations.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-mindrian_eureka = ["data/*.json"]
+mindrian_eureka = ["data/*.json", "data/eureka/*.cjs", "data/eureka/critic/**/*.cjs", "data/eureka/critic/**/*.json", "data/eureka/portfolio/*.cjs", "data/rs/*.cjs", "data/graph_relations/*.cypher", "data/genesis/*.js", "data/genesis/*.cjs", "data/schemas/*.json"]
 
 [[tool.uv.index]]
 name = "pytorch-cpu"

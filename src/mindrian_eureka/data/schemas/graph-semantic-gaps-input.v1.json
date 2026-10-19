@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.graph-semantic-gaps.v1",
+  "title": "Find Similar Graph Items Without a Link input",
+  "type": "object",
+  "required": [
+    "snapshot"
+  ],
+  "properties": {
+    "snapshot": {
+      "type": "object",
+      "required": [
+        "nodes",
+        "edges"
+      ],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "maxItems": 10000,
+          "items": {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "labels": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "name": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "attrs": {
+                "type": "object"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "edges": {
+          "type": "array",
+          "maxItems": 50000,
+          "items": {
+            "type": "object",
+            "required": [
+              "s",
+              "t",
+              "type"
+            ],
+            "properties": {
+              "s": {
+                "type": "string",
+                "minLength": 1
+              },
+              "t": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "created_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "meta": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "text_label": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "min_similarity": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.25
+    },
+    "top": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000,
+      "default": 200
+    }
+  },
+  "additionalProperties": false
+}

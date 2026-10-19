@@ -123,7 +123,7 @@ class JobStore:
         })
         request_json = json.dumps(request, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
         request_hash = hashlib.sha256(request_json.encode()).hexdigest()
-        snapshot_id = task_snapshot_id(request)
+        snapshot_id = request.get("snapshot_id") or task_snapshot_id(request)
         now = time.time()
         with self._lock, self._connect() as db:
             if idempotency_key:
@@ -383,11 +383,16 @@ class JobManager:
                 result = run_document(
                     request, encoder_name=request["encoder"], model_path=request["model_path"],
                     model_revision=request.get("model_revision"), top_k=request.get("top_k", 20),
+                    scoring=request.get("scoring", "hybrid_2026"),
+                    lex_weight=request.get("lex_weight", 0.5),
+                    min_percentile=request.get("min_percentile", 0.9),
                     job_id=job_id, cache_path=self.store.data_dir / "embeddings.sqlite3",
                     cancel_check=cancel_event.is_set, stage_callback=stage,
                 )
             if cancel_event.is_set():
                 raise RunCancelled("Run cancelled")
+            from ..contracts import validate_result
+            validate_result(request.get("capability_id", "opportunity.find_cross_domain_pairs"), result)
             status = result["status"]
             self.store.transition(job_id, status, progress="complete", result=result, clear_request=True)
         except RunCancelled:
@@ -400,7 +405,10 @@ class JobManager:
             # keep the wire result to a stable category and put diagnostics on stderr.
             import logging
             logging.getLogger(__name__).exception("Eureka job %s failed", job_id)
-            code = "model_unavailable" if "model" in str(exc).lower() else "run_failed"
+            detail = str(exc).lower()
+            code = ("model_unavailable" if any(marker in detail for marker in
+                    ("model", "optional extra", "sentence_transformers", "transformers"))
+                    else "run_failed")
             self.store.transition(job_id, "failed", progress="failed", failure_code=code, clear_request=True)
         finally:
             with self._lock:

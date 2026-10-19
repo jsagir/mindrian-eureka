@@ -20,6 +20,7 @@ from .algorithm import (
     RunCancelled,
     modern_semantic_similarity,
     rank_pairs,
+    rank_pairs_hybrid_2026,
     reference_semantic_similarity,
     structural_similarity,
 )
@@ -29,6 +30,8 @@ from .host_handoff import host_handoff
 
 def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str,
                  allow_model_download: bool = False, top_k: int = 20,
+                 scoring: str | None = None, lex_weight: float | None = None,
+                 min_percentile: float | None = None,
                  job_id: str = "local-rs-run", model_revision: str | None = None,
                  cache_path: str | Path | None = None, cancel_check=None,
                  stage_callback=None) -> dict[str, Any]:
@@ -38,7 +41,8 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
         raise ValueError("Model downloads require a 40-character immutable commit hash via --model-revision")
     started = datetime.now(timezone.utc)
     start_clock = time.monotonic()
-    snapshot_id = task_snapshot_id(document)
+    input_digest = task_snapshot_id(document)
+    snapshot_id = document.get("snapshot_id") or input_digest
     mode = document.get("mode", "local")
     if mode not in ("local", "external", "hybrid"):
         raise ValueError("mode must be local, external, or hybrid")
@@ -101,10 +105,25 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
 
     check_cancelled(cancel_check)
     report_stage(stage_callback, "pair-ranking")
-    pairs = rank_pairs(
-        artifacts, structural, semantic, top_k=top_k,
-        cross_corpus_only=(mode == "hybrid"),
-    )
+    scoring = scoring or document.get("scoring", "hybrid_2026")
+    lex_weight = float(document.get("lex_weight", 0.5) if lex_weight is None else lex_weight)
+    min_percentile = float(document.get("min_percentile", 0.90) if min_percentile is None else min_percentile)
+    if scoring == "hybrid_2026":
+        pairs = rank_pairs_hybrid_2026(
+            artifacts, structural, semantic, top_k=top_k,
+            cross_corpus_only=(mode == "hybrid"), lex_weight=lex_weight,
+            min_percentile=min_percentile,
+        )
+        if mode == "hybrid":
+            eligible_count = sum(1 for i, left in enumerate(artifacts) for right in artifacts[i + 1:] if left.corpus != right.corpus)
+        else:
+            eligible_count = len(artifacts) * (len(artifacts) - 1) // 2
+        if eligible_count < 10:
+            warnings.append("LATEST RS hybrid percentile gate requires at least 10 eligible pairs; no candidates are returned below that threshold.")
+    elif scoring == "legacy":
+        pairs = rank_pairs(artifacts, structural, semantic, top_k=top_k, cross_corpus_only=(mode == "hybrid"))
+    else:
+        raise ValueError("scoring must be hybrid_2026 or legacy")
     outputs = []
     objective = document.get("objective", "")
     for rank, pair in enumerate(pairs, start=1):
@@ -123,6 +142,7 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
                 "semantic_similarity": pair.semantic_similarity,
                 "signed_difference": pair.signed_difference,
                 "disagreement": pair.disagreement,
+                "method_signals": pair.method_signals,
                 "direction": pair.direction,
                 "direction_meaning": "same meaning in different words" if pair.direction == "structural_transfer" else "same words with different meaning",
                 "interpretation_to_review": pair.interpretation,
@@ -178,6 +198,7 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
             "The user objective is recorded in the input but is not used as a scoring signal in this method version.",
             "The reference BERT mode follows the documented source method; bit-for-bit equivalence to the original package has not been established.",
             "The modern sentence-transformer mode is an experimental algorithm variant, not the original PPTX method.",
+            "LATEST RS 2026 hybrid scoring uses corpus-relative signal normalization and requires at least 10 eligible pairs; legacy scoring remains available for smaller corpora.",
         ],
         "warnings": warnings,
         "resource_use": {"duration_ms": duration, "tokens": None, "estimated_cost": None},
@@ -186,8 +207,10 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
             "encoder": {"name": encoder_name, "model": model_path, "revision": model_revision},
             "structural_signal": structural_meta,
             "semantic_signal": {**semantic_meta, "cache": cache_meta},
-            "selection": "top_k_unique_unordered_pairs_by_absolute_semantic_structural_difference",
+            "selection": "LATEST RS 2026 hybrid z-score gap with empirical percentile gate" if scoring == "hybrid_2026" else "legacy top_k by absolute semantic-structural difference",
+            "scoring": {"method": scoring, "lex_weight": lex_weight if scoring == "hybrid_2026" else None, "min_percentile": min_percentile if scoring == "hybrid_2026" else None},
             "mode": mode,
+            "input_digest": input_digest,
             "research_grant_id": document.get("research_grant_id"),
             "input_objective": objective,
         },
@@ -205,10 +228,10 @@ def report_stage(stage_callback, stage: str) -> None:
 
 
 def task_snapshot_id(document: dict[str, Any]) -> str:
-    """Hash the exact task material, independent of encoder and run settings."""
+    """Hash the exact supplied task material and scoring configuration."""
     snapshot = {
         key: document.get(key)
-        for key in ("objective", "mode", "scope_id", "research_grant_id", "artifacts")
+        for key in ("objective", "mode", "scope_id", "snapshot_id", "research_grant_id", "artifacts", "scoring", "lex_weight", "min_percentile")
         if key in document
     }
     raw = json.dumps(snapshot, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
@@ -232,6 +255,15 @@ def validate_document(data: dict[str, Any]) -> None:
     seen: set[str] = set()
     if not isinstance(data.get("objective", ""), str):
         raise ValueError("objective must be a string")
+    if data.get("snapshot_id") is not None and (not isinstance(data["snapshot_id"], str) or not data["snapshot_id"].strip() or len(data["snapshot_id"]) > 256):
+        raise ValueError("snapshot_id must be a non-empty string of at most 256 characters")
+    scoring = data.get("scoring", "hybrid_2026")
+    if scoring not in ("hybrid_2026", "legacy"):
+        raise ValueError("scoring must be 'hybrid_2026' or 'legacy'")
+    for name, default in (("lex_weight", 0.5), ("min_percentile", 0.90)):
+        value = data.get(name, default)
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not 0.0 <= value <= 1.0:
+            raise ValueError(f"{name} must be a number between 0 and 1")
     text_bytes = 0
     for item in data["artifacts"]:
         if (not isinstance(item, dict) or not isinstance(item.get("id"), str)

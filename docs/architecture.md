@@ -245,7 +245,7 @@ Standalone Opportunity Scout runtime
 
 ## 10. Proposed long-term repository layout
 
-This is the architecture target for later capability families. The repository implements RS, SME, OMM, HSI pair scoring, Jason text-difference diagnostics, and selected workflow preparation stages. Eureka breakthrough harvesting, HSI whitespace, full Analogies recall/fitness, Genesis research execution, BONO debate, and graph discovery remain incomplete.
+This is the architecture target for later capability families. The repository exposes 53 experimental or host-brokered capability routes across RS, SME, decision-sequence analysis and fitting, HSI whitespace/pair scoring, analogy, Genesis planning, critic preparation, graph analysis, and research-support stages. Eight catalog entries remain explicitly blocked or planned. These method surfaces do not imply that every end-to-end lifecycle (external evidence gathering, portfolio qualification, or production validation) is implemented. MindrianOS graph projection adapters exist in an isolated review worktree and are not yet merged or released.
 
 ```text
 mindrian-eureka/

@@ -1,4 +1,6 @@
-FROM python:3.12-slim
+FROM node:22-bookworm-slim AS genesis-runtime
+
+FROM python:3.12-bookworm-slim
 
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
@@ -9,6 +11,8 @@ ENV UV_COMPILE_BYTECODE=1 \
     TORCH_HOME=/tmp/torch-home \
     PYTHONDONTWRITEBYTECODE=1
 WORKDIR /app
+
+COPY --from=genesis-runtime /usr/local/bin/node /usr/local/bin/node
 
 RUN pip install --no-cache-dir uv
 COPY pyproject.toml uv.lock README.md ./

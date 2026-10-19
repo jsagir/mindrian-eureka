@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.graph-network-holes.v1",
+  "title": "Find Unclosed Cycles in the Knowledge Graph input",
+  "type": "object",
+  "required": [
+    "snapshot"
+  ],
+  "properties": {
+    "snapshot": {
+      "type": "object",
+      "required": [
+        "nodes",
+        "edges"
+      ],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "maxItems": 10000,
+          "items": {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "labels": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "name": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "attrs": {
+                "type": "object"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "edges": {
+          "type": "array",
+          "maxItems": 50000,
+          "items": {
+            "type": "object",
+            "required": [
+              "s",
+              "t",
+              "type"
+            ],
+            "properties": {
+              "s": {
+                "type": "string",
+                "minLength": 1
+              },
+              "t": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "created_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "meta": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rounds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 4
+    },
+    "seed": {
+      "type": "integer",
+      "default": 7
+    },
+    "hub_cap": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2500,
+      "default": 120
+    },
+    "cycle_limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20000,
+      "default": 20000
+    },
+    "top": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000,
+      "default": 200
+    },
+    "include_persistence": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "additionalProperties": false
+}

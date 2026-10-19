@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian-os.com/schemas/eureka/rs-preprocessing-input.v1.json",
+  "title": "RS document preprocessing request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope_id",
+    "snapshot_id",
+    "documents",
+    "domain_analysis"
+  ],
+  "properties": {
+    "scope_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "snapshot_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "documents": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 100000
+          },
+          "abstract": {
+            "type": "string",
+            "maxLength": 100000
+          },
+          "signal": {
+            "type": "string",
+            "maxLength": 100000
+          }
+        }
+      }
+    },
+    "domain_analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "primary_domain": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "concepts": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "terminology": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "methods": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "breakthroughs": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "boundary_flag": {
+          "type": "boolean"
+        },
+        "adjacent_domains": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "warning": {
+          "type": "string",
+          "maxLength": 1000
+        }
+      }
+    }
+  }
+}
