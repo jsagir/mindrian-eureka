@@ -5,3 +5,5 @@ This repository intentionally has no top-level `LICENSE` file. Engine-source and
 Before publishing, redistributing, or reusing any method outside its approved local evaluation, check the [engine source ledger](engine-source-ledger.md) and the relevant engine guide. Record the source, version, modifications, dependencies, and permitted use. Do not infer permission from a package being available locally or from its implementation being callable.
 
 Third-party dependencies keep their own licenses; see the package metadata and upstream notices. This document is a project status note, not a license grant or legal opinion.
+
+The `/m:os` horizontal brand mark in `assets/mos-logo-horizontal.png` is copied from the Mindrian website's `website/public/brand/mos-logo-horizontal.png` for repository identification. The Theo Wicked Problems framework face is a static rendering of the Wicked Problems face in the canonical Theo framework HTML.

@@ -1,14 +1,21 @@
 # MindrianOS Eureka
 
 <p align="center">
-  <img src="assets/theo-face-wicked-problems.svg" alt="Theo's Wicked Problems framework face: shifting planes, contested boundaries, and open uncertainty" width="160" />
+  <img src="assets/mos-logo-horizontal.png" alt="MindrianOS /m:os — Eureka, on purpose" width="440" />
 </p>
 
-**Extracting opportunities hidden in plain sight.**
+<p align="center"><strong>MindrianOS service · <code>/mos:eureka</code></strong></p>
+<p align="center"><strong>Extracting opportunities hidden in plain sight.</strong></p>
+<p align="center">
+  <img src="assets/theo-face-wicked-problems.svg" alt="Theo's Wicked Problems framework face: shifting planes, contested boundaries, and open uncertainty" width="144" />
+</p>
+<p align="center"><em>Theo's Wicked Problems face: the inquiry stays open while the context shifts.</em></p>
 
 MindrianOS Eureka is an intelligence system built to search uncertainty for opportunity. Its central challenge is the **wicked problem**: an evolving, interconnected situation with unclear boundaries, competing interpretations, and no single final formulation or solution. Eureka helps people map that uncertainty, imagine futures, find opportunity hypotheses, and develop selected paths into problems that can be investigated and tested. It uses research, pattern finding, analogy, synthesis, and critical challenge to reveal where useful possibilities may lie. People decide what matters and what to do next.
 
 **MindrianOS entrypoint:** `/mos:eureka` · **Repository:** `mindrian-eureka` · **Runtime:** Python 3.11+
+
+**Jump to:** [The method](#explore-wicked-problems-for-opportunity) · [Capabilities](#what-this-repository-provides) · [Quick start](#quick-start) · [MindrianOS integration](#how-mindrianos-and-eureka-work-together) · [Readiness](#readiness-at-a-glance) · [Development](#development) · [Policies](#repository-policies)
 
 > **Theo is the outside method thinker; the intelligence agents explore the case.** Together, they help the user inquire into uncertainty: Theo guides method choice, while the agents search the authorized material for patterns, mechanisms, contradictions, and promising questions. The Theo face moves through curiosity, searching, recognition, skepticism, decision, and handover. These are inquiry states, not a claim that a wicked problem has been solved. The host keeps room context, approvals, evidence review, and decisions.
 
@@ -156,7 +163,9 @@ Useful entry points:
 
 See [Using capabilities](docs/using-capabilities.md) for CLI and MCP examples, [Architecture](docs/architecture.md) for system design, and [Engine jobs](docs/engine-jobs.md) for JTBD and method guidance.
 
-Repository policies: [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Licensing and provenance](docs/licensing-and-provenance.md). This repo has no blanket license because some source-derived methods still need rights review.
+## Repository policies
+
+[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Licensing and provenance](docs/licensing-and-provenance.md). This repo has no blanket license because some source-derived methods still need rights review.
 
 ## Theo's role and face
 
