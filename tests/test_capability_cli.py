@@ -36,6 +36,20 @@ def test_compact_capability_catalog_preserves_all_jobs_and_readiness(monkeypatch
         assert "mcp" in item
         assert "input_schema" not in item
         assert "output_schema" not in item
+    handoffs = {item["id"]: item["host_handoff"] for item in result["capabilities"] if "host_handoff" in item}
+    assert set(handoffs) == {
+        "opportunity.discover_breakthroughs",
+        "research.orchestrate_multidomain",
+        "deliberation.structure",
+        "bottleneck.diagnose",
+        "claims.compare",
+        "evidence.fetch_for_question",
+        "experts.find_for_topic",
+        "thesis.read_prior",
+    }
+    assert handoffs["bottleneck.diagnose"]["type"] == "host_native"
+    assert handoffs["claims.compare"]["type"] == "no_exact_route"
+    assert handoffs["experts.find_for_topic"]["type"] == "unavailable"
 
 
 def test_capability_catalog_can_filter_by_readiness_and_jtbd(monkeypatch, capsys):
@@ -43,6 +57,7 @@ def test_capability_catalog_can_filter_by_readiness_and_jtbd(monkeypatch, capsys
     assert blocked["count"] == 4
     assert all(item["status"] == "blocked" for item in blocked["capabilities"])
     assert all(item["cli"] is None and item["mcp"] is None for item in blocked["capabilities"])
+    assert all(item["host_handoff"] for item in blocked["capabilities"])
 
     selected = invoke(monkeypatch, capsys, "--summary", "--search", "wicked")
     assert selected["count"] > 0

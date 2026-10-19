@@ -1,6 +1,6 @@
 {
   "schema_version": "eureka.capability-catalog.v1",
-  "catalog_version": "2026-10-19+standalone-graph-algorithm-services",
+  "catalog_version": "2026-10-20+standalone-graph-algorithm-services-host-handoffs",
   "readiness_key": {
     "experimental": "A runnable local implementation exists; its method fidelity or decision value still requires evaluation.",
     "host_brokered": "A runnable local step exists, but MindrianOS must provide approved external research and/or review.",
@@ -578,7 +578,13 @@
       "limitations": [
         "The supplied Eureka package has multiple routines, but this repo has not migrated or verified them as a single user-facing capability.",
         "Do not equate legacy candidate grades with validated opportunity quality."
-      ]
+      ],
+      "host_handoff": {
+        "type": "related_partial",
+        "mcp": "eureka_graph_opportunity_scout",
+        "cli": "/mos:eureka",
+        "limitation": "These routes surface local pair leads or run MindrianOS's current research workflow; neither implements the full critic-and-evidence capability."
+      }
     },
     {
       "id": "portfolio.classify_weak_signal_tail",
@@ -743,7 +749,13 @@
         "The reviewed Genesis implementation is stronger at planning/persona generation than verified execution.",
         "Perspectives are analytical lenses, not simulated authorities.",
         "No minimum breakthrough count is valid regardless of evidence."
-      ]
+      ],
+      "host_handoff": {
+        "type": "related_partial",
+        "mcp": "research_run with op=plan",
+        "cli": "/mos:scientific-roadmap then /mos:research",
+        "limitation": "MindrianOS can plan and execute approved research, but the Eureka multidomain orchestration capability remains planned."
+      }
     },
     {
       "id": "analysis.critique_pitch",
@@ -812,7 +824,12 @@
       "limitations": [
         "The LATEST BONO source flow has been inventoried, but the shared MindrianOS graph, egress, human-gate, run-state, and close-loop dependencies are not integrated here; no full-debate behavior is asserted.",
         "A multi-perspective debate does not create independent evidence."
-      ]
+      ],
+      "host_handoff": {
+        "type": "related_partial",
+        "cli": "/mos:bono",
+        "limitation": "BONO is a separate governed MindrianOS debate workflow, not an executable route for this blocked Eureka capability."
+      }
     },
     {
       "id": "graph.propose_relationships",
@@ -882,7 +899,13 @@
       "side_effects": [],
       "limitations": [
         "Not implemented in this repository; the host owns room analysis and native command invocation."
-      ]
+      ],
+      "host_handoff": {
+        "type": "host_native",
+        "mcp": "research_run with op=perspective_recall and perspective=rs",
+        "cli": "/mos:find-bottlenecks",
+        "limitation": "This runs MindrianOS Reverse Salient analysis directly; it is not dispatched through Eureka."
+      }
     },
     {
       "id": "claims.compare",
@@ -900,7 +923,12 @@
       "side_effects": [],
       "limitations": [
         "This is not a truth classifier and is not implemented in this repository."
-      ]
+      ],
+      "host_handoff": {
+        "type": "no_exact_route",
+        "mcp": "claim_read and claim_verify",
+        "limitation": "These tools reopen or record checks on individual claims; they do not compare competing explanations or produce a comparative verdict."
+      }
     },
     {
       "id": "evidence.fetch_for_question",
@@ -921,7 +949,13 @@
       "side_effects": [],
       "limitations": [
         "This repository does not fetch sources; it can validate lineage in a host-returned bundle."
-      ]
+      ],
+      "host_handoff": {
+        "type": "host_native_partial",
+        "mcp": "research_run plan, grant_request, run_quick, and filing operations",
+        "cli": "/mos:research",
+        "limitation": "The host research workflow fetches only searches approved under its own plan and grant; it is not a direct Eureka fetcher."
+      }
     },
     {
       "id": "experts.find_for_topic",
@@ -940,7 +974,11 @@
       "side_effects": [],
       "limitations": [
         "No expert directory lookup or outreach is implemented here."
-      ]
+      ],
+      "host_handoff": {
+        "type": "unavailable",
+        "limitation": "No authorized expert directory, privacy policy, or lookup transport is configured."
+      }
     },
     {
       "id": "thesis.read_prior",
@@ -960,7 +998,12 @@
       "side_effects": [],
       "limitations": [
         "Not implemented in this repository; retrieval and status are host-owned."
-      ]
+      ],
+      "host_handoff": {
+        "type": "host_native",
+        "cli": "/mos:rs-thesis <discovery_id>",
+        "limitation": "This reads an existing local Reverse Salient thesis. No equivalent Eureka MCP route is published."
+      }
     },
     {
       "id": "portfolio.inventory_taxonomy_coverage",

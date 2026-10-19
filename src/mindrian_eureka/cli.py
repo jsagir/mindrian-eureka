@@ -50,7 +50,7 @@ def main() -> None:
                 for item in entries:
                     status = item.get("status", "unknown")
                     counts[status] = counts.get(status, 0) + 1
-                fields = ("id", "name", "engine_family", "jtbd", "status", "surface")
+                fields = ("id", "name", "engine_family", "jtbd", "status", "surface", "host_handoff")
                 document = {
                     "schema_version": document.get("schema_version"),
                     "catalog_version": document.get("catalog_version"),
