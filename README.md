@@ -4,7 +4,7 @@
   <img src="story/mindrian-opportunity-story/assets/theo-face-rest.svg" alt="Theo, the MindrianOS method guide" width="112" />
 </p>
 
-**Intelligence for finding opportunity in wicked uncertainty.**
+**Extracting opportunities hidden in plain sight.**
 
 MindrianOS Eureka is an intelligence system built to search uncertainty for opportunity. Its central challenge is the **wicked problem**: an evolving, interconnected situation with unclear boundaries, competing interpretations, and no single final formulation or solution. Eureka helps people map that uncertainty, imagine futures, find opportunity hypotheses, and develop selected paths into problems that can be investigated and tested. It uses research, pattern finding, analogy, synthesis, and critical challenge to reveal where useful possibilities may lie. People decide what matters and what to do next.
 
