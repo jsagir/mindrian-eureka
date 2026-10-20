@@ -18,6 +18,14 @@ from .runner import validate_snapshot
 def _context(capability_id: str, snapshot: dict[str, Any], options: dict[str, Any]) -> tuple[Graph, dict[str, Any]]:
     validate_snapshot(snapshot)
     meta = snapshot.get("meta") or {}
+    if not isinstance(meta, dict):
+        raise GraphInputError("snapshot.meta must be an object")
+    lineage_requested = "scope_id" in meta or "snapshot_id" in meta
+    if lineage_requested and (
+        not isinstance(meta.get("scope_id"), str) or not meta["scope_id"].strip() or
+        not isinstance(meta.get("snapshot_id"), str) or not meta["snapshot_id"].strip()
+    ):
+        raise GraphInputError("lineage requires non-empty snapshot.meta.scope_id and snapshot.meta.snapshot_id")
     fingerprint = "sha256:" + hashlib.sha256(
         json.dumps(snapshot, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hexdigest()

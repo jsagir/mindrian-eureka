@@ -13,16 +13,25 @@ from .traversal import rank_paths
 
 
 def _scope(payload: dict[str, Any]) -> tuple[str | None, str | None]:
-    meta = payload.get("snapshot", {}).get("meta", {}) if isinstance(payload.get("snapshot"), dict) else {}
-    scope_id = payload.get("scope_id") or meta.get("scope_id")
-    snapshot_id = payload.get("snapshot_id") or meta.get("snapshot_id")
+    snapshot = payload.get("snapshot")
+    meta = snapshot.get("meta", {}) if isinstance(snapshot, dict) else {}
+    if not isinstance(meta, dict):
+        raise GraphInputError("snapshot.meta must be an object")
+    scope_id = payload["scope_id"] if "scope_id" in payload else meta.get("scope_id")
+    snapshot_id = payload["snapshot_id"] if "snapshot_id" in payload else meta.get("snapshot_id")
     if scope_id is not None and (not isinstance(scope_id, str) or not scope_id.strip()):
         raise GraphInputError("scope_id must be a non-empty string when provided")
     if snapshot_id is not None and (not isinstance(snapshot_id, str) or not snapshot_id.strip()):
         raise GraphInputError("snapshot_id must be a non-empty string when provided")
-    if meta.get("scope_id") and payload.get("scope_id") and meta["scope_id"] != payload["scope_id"]:
+    lineage_requested = any(key in payload for key in ("scope_id", "snapshot_id")) or any(
+        key in meta for key in ("scope_id", "snapshot_id")
+    )
+    if lineage_requested and (not isinstance(scope_id, str) or not scope_id.strip() or
+                              not isinstance(snapshot_id, str) or not snapshot_id.strip()):
+        raise GraphInputError("lineage requires non-empty scope_id and snapshot_id")
+    if meta.get("scope_id") and "scope_id" in payload and meta["scope_id"] != payload["scope_id"]:
         raise GraphInputError("scope_id does not match the scope bound to the supplied graph snapshot")
-    if meta.get("snapshot_id") and payload.get("snapshot_id") and meta["snapshot_id"] != payload["snapshot_id"]:
+    if meta.get("snapshot_id") and "snapshot_id" in payload and meta["snapshot_id"] != payload["snapshot_id"]:
         raise GraphInputError("snapshot_id does not match the supplied graph snapshot")
     return scope_id, snapshot_id
 
