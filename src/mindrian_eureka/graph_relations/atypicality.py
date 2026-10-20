@@ -33,7 +33,10 @@ def category_zscores(g, attr="problem_type", shuffles=30, seed=7, use_label=Fals
             (a, b), (c, d) = el[i], el[j]
             if len({a, b, c, d}) < 4:
                 continue
-            n1, n2 = pair_key(a, d), pair_key(c, b)
+            # Pick the rewiring orientation at random: (a,d),(c,b) or (a,c),(d,b). A fixed orientation
+            # on sorted pairs is not uniform and biases the null.
+            e, f = (d, c) if r.random() < 0.5 else (c, d)
+            n1, n2 = pair_key(a, f), pair_key(e, b)
             if n1 in es or n2 in es:
                 continue
             es.discard((a, b)); es.discard((c, d)); es.add(n1); es.add(n2)
