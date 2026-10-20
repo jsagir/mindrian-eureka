@@ -8,7 +8,8 @@ from urllib.parse import quote
 from typing import Any
 
 from . import atypicality, bridging, gaps, holes, proposals, textsim
-from .common import Graph, GraphInputError  # noqa: F401  (GraphInputError is re-exported)
+from .common import (MAX_BRIDGE_EDGES, MAX_BRIDGE_NODES, Graph, GraphBudgetError,  # noqa: F401  (re-exported)
+                     GraphInputError, as_deadline, require_size)
 
 
 def prepare_artifact_bundle(snapshot: dict[str, Any], objective: str, scope_id: str,
@@ -152,13 +153,16 @@ def project_focus(snapshot: dict[str, Any], focal_node_id: str, hops: int = 2, m
 def explore(snapshot: dict[str, Any], *, top: int = 100, seed: int = 7,
             attr: str = "problem_type", text_label: str | None = None,
             min_common: int = 2, null_rounds: int = 8, focus_node_id: str | None = None,
-            focus_hops: int = 2) -> dict[str, Any]:
-    """Analyze supplied graph records only; never connects to or mutates a graph store."""
+            focus_hops: int = 2, budget_seconds: float | None = None) -> dict[str, Any]:
+    """Analyze supplied graph records only; never connects to or mutates a graph store.
+
+    The analysis stops with GraphBudgetError (a GraphInputError) when the analysed graph has more than
+    2,500 nodes or 12,000 edges, or when the wall-clock budget runs out (120 seconds by default;
+    budget_seconds overrides it for tests)."""
+    deadline = as_deadline(budget_seconds)
     if not isinstance(snapshot, dict) or not isinstance(snapshot.get("nodes"), list) or not isinstance(snapshot.get("edges"), list):
         raise GraphInputError("snapshot must contain nodes and edges arrays")
     validate_snapshot(snapshot)
-    if len(snapshot["nodes"]) > 10_000 or len(snapshot["edges"]) > 50_000:
-        raise ValueError("snapshot exceeds the analysis limit of 10,000 nodes or 50,000 edges; narrow the authorized snapshot")
     # Bind the result to the exact host projection, including its snapshot
     # metadata. This remains useful when a caller has not assigned snapshot_id.
     snapshot_fingerprint = "sha256:" + hashlib.sha256(
@@ -178,35 +182,39 @@ def explore(snapshot: dict[str, Any], *, top: int = 100, seed: int = 7,
     graph = Graph(snapshot["nodes"], snapshot["edges"], snapshot.get("meta"))
     if not graph.nodes:
         raise GraphInputError("snapshot has no valid nodes")
+    # Checked after the optional focus projection, so a narrow focus can analyse part of a large snapshot.
+    require_size(graph, MAX_BRIDGE_NODES, MAX_BRIDGE_EDGES, "local relationship exploration (it runs exact betweenness)")
     started = time.monotonic()
     signals: dict[str, list[dict[str, Any]]] = {}
     info: dict[str, Any] = {"nodes": len(graph.nodes), "edges": len(graph.edges), "source_meta": graph.meta}
-    rows, skipped = gaps.open_triads(graph, min_common)
+    rows, skipped = gaps.open_triads(graph, min_common, budget_seconds=deadline)
     signals["gaps"] = [{"u": r["u"], "v": r["v"], "score": r["adamic_adar"] + max(0.0, r["z"]) * .1,
                         "common": r["common"], "z": round(r["z"], 3), "via": [graph.name(w) for w in r["via"][:4]]}
                        for r in rows[:top * 3]]
     info["hub_nodes_skipped"] = len(skipped)
-    info["holes"] = holes.hole_summary(graph, rounds=null_rounds, seed=seed)
+    info["holes"] = holes.hole_summary(graph, rounds=null_rounds, seed=seed, budget_seconds=deadline)
+    deadline.check("local relationship exploration")
     info["ripser"] = holes.ripser_summary(graph)
     cycle_scores: dict[tuple[str, str], list[list[str]]] = {}
-    for cycle in holes.induced_c4(graph):
+    for cycle in holes.induced_c4(graph, budget_seconds=deadline):
         for key in ("diagonal_1", "diagonal_2"):
             cycle_scores.setdefault(cycle[key], []).append([graph.name(x) for x in cycle["cycle"]])
     signals["holes"] = [{"u": pair[0], "v": pair[1], "score": float(len(cycles)), "cycles": cycles[:2]}
                          for pair, cycles in sorted(cycle_scores.items(), key=lambda x: (-len(x[1]), x[0]))[:top * 3]]
-    communities, betweenness, participation, bridge_rows = bridging.bridge_report(graph, seed)
+    communities, betweenness, participation, bridge_rows = bridging.bridge_report(graph, seed, budget_seconds=deadline)
     signals["bridge"] = [{"u": r["u"], "v": r["v"], "score": r["score"], "via": graph.name(r["via"])}
                           for r in bridging.bridge_pairs(graph, communities, betweenness, participation)[:top * 3]]
     info["communities"] = len(set(communities.values()))
     info["top_bridges"] = [{"name": graph.name(r["id"]), "betweenness": round(r["betweenness"], 5),
                             "participation": round(r["participation"], 3)} for r in bridge_rows[:10]]
+    deadline.check("local relationship exploration")
     text_ids = [n for n in graph.nodes if text_label is None or text_label in graph.nodes[n].get("labels", [])]
     if len(text_ids) <= 3000:
         signals["semantic"] = [{"u": r["u"], "v": r["v"], "score": r["sim"], "common": r["common"]}
                                for r in textsim.semantic_gaps(graph, text_ids, top=top * 3)]
     else:
         info["semantic"] = "skipped: more than 3000 text nodes; select a label"
-    zscores, categories, _ = atypicality.category_zscores(graph, attr, shuffles=20, seed=seed)
+    zscores, categories, _ = atypicality.category_zscores(graph, attr, shuffles=20, seed=seed, budget_seconds=deadline)
     info["atypicality"] = atypicality.edge_profile(graph, zscores, categories)
     ranked, dropped = proposals.merge(graph, signals)
     for row in ranked:

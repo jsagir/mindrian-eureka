@@ -6,7 +6,7 @@ from __future__ import annotations
 import random
 from collections import Counter, defaultdict, deque
 
-from .common import pair_key
+from .common import as_deadline, pair_key
 
 
 def communities(g, seed=7, rounds=30):
@@ -33,9 +33,11 @@ def communities(g, seed=7, rounds=30):
     return {n: ids[lab[n]] for n in g.nodes}
 
 
-def betweenness(g):
+def betweenness(g, budget_seconds=None):
+    deadline = as_deadline(budget_seconds)
     bc = dict.fromkeys(g.nodes, 0.0)
     for s in g.nodes:
+        deadline.check("exact betweenness")
         stack, pred = [], defaultdict(list)
         sigma = dict.fromkeys(g.nodes, 0.0); sigma[s] = 1.0
         dist = dict.fromkeys(g.nodes, -1); dist[s] = 0
@@ -71,9 +73,11 @@ def participation(g, comm):
     return out
 
 
-def bridge_report(g, seed=7, top=30):
+def bridge_report(g, seed=7, top=30, budget_seconds=None):
+    deadline = as_deadline(budget_seconds)
     comm = communities(g, seed)
-    bc = betweenness(g)
+    deadline.check("community detection")
+    bc = betweenness(g, budget_seconds=deadline)
     pc = participation(g, comm)
     nodes = sorted(g.nodes, key=lambda n: (-(bc[n] * (0.5 + pc[n])), n))
     rows = [{"id": n, "betweenness": bc[n], "participation": pc[n], "community": comm[n]} for n in nodes[:top]]

@@ -6,6 +6,7 @@ import json
 import math
 import random
 import re
+import time
 from collections import Counter, defaultdict
 
 DEFAULT_LABELS = ["Framework", "Technique", "Concept", "ProcessStep", "CaseStudy", "DomainConcept"]
@@ -49,6 +50,52 @@ def assert_read_only(cypher: str) -> str:
 
 class GraphInputError(ValueError):
     """The supplied graph scope or analysis options are invalid."""
+
+
+class GraphBudgetError(GraphInputError):
+    """The analysis would exceed, or did exceed, its resource budget (size or wall-clock time).
+
+    It subclasses GraphInputError so every workflow path that already reports GraphInputError as
+    invalid_input reports a budget stop the same way, with a clear message instead of a hang."""
+
+
+# Internal default for the wall-clock budget of one analysis call. Tests override it with the
+# budget_seconds keyword.
+DEFAULT_BUDGET_SECONDS = 120.0
+# Upper bound on neighbour pairs that open_triads may enumerate in one call.
+MAX_TRIAD_PAIRS = 2_000_000
+# Size limits for analyses that run exact betweenness (explore, backtest). They match the limits of
+# the standalone bridge service in services.py.
+MAX_BRIDGE_NODES = 2500
+MAX_BRIDGE_EDGES = 12000
+
+
+class Deadline:
+    """Monotonic wall-clock deadline. check() raises GraphBudgetError after expiry."""
+
+    def __init__(self, seconds=None):
+        seconds = DEFAULT_BUDGET_SECONDS if seconds is None else seconds
+        if isinstance(seconds, bool) or not isinstance(seconds, (int, float)) or not math.isfinite(seconds) or seconds < 0:
+            raise GraphInputError("budget_seconds must be a finite non-negative number")
+        self.seconds = float(seconds)
+        self.expires = time.monotonic() + self.seconds
+
+    def check(self, what="graph analysis"):
+        if time.monotonic() >= self.expires:
+            raise GraphBudgetError(
+                f"time budget of {self.seconds:g} seconds exceeded during {what}; narrow the authorized snapshot")
+
+
+def as_deadline(budget):
+    """Accept None (default budget), a number of seconds, or an existing Deadline shared across stages."""
+    return budget if isinstance(budget, Deadline) else Deadline(budget)
+
+
+def require_size(g, max_nodes, max_edges, what):
+    if len(g.nodes) > max_nodes or len(g.edges) > max_edges:
+        raise GraphBudgetError(
+            f"{what} is limited to {max_nodes:,} nodes and {max_edges:,} edges "
+            f"(received {len(g.nodes):,} nodes and {len(g.edges):,} edges); narrow the authorized snapshot")
 
 
 def distinct_pairs(g):

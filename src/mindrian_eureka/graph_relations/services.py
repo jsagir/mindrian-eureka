@@ -11,8 +11,8 @@ import math
 from typing import Any
 
 from . import atypicality, bridging, gaps, holes, textsim
-from .common import Graph
-from .runner import GraphInputError, validate_snapshot
+from .common import MAX_BRIDGE_EDGES, MAX_BRIDGE_NODES, Graph, GraphInputError, as_deadline
+from .runner import validate_snapshot
 
 
 def _context(capability_id: str, snapshot: dict[str, Any], options: dict[str, Any]) -> tuple[Graph, dict[str, Any]]:
@@ -41,14 +41,15 @@ def _context(capability_id: str, snapshot: dict[str, Any], options: dict[str, An
     }
 
 
-def find_structural_gaps(payload: dict[str, Any]) -> dict[str, Any]:
+def find_structural_gaps(payload: dict[str, Any], *, budget_seconds: float | None = None) -> dict[str, Any]:
+    deadline = as_deadline(budget_seconds)
     snapshot = payload["snapshot"]
     min_common, hub_cap, top = payload.get("min_common", 2), payload.get("hub_cap", 150), payload.get("top", 200)
     graph, result = _context("graph.find_structural_gaps", snapshot,
                              {"min_common": min_common, "hub_cap": hub_cap, "top": top})
-    if not 1 <= min_common <= 100 or not 1 <= hub_cap <= 10000 or not 1 <= top <= 1000:
+    if not 1 <= min_common <= 100 or not 1 <= hub_cap <= 500 or not 1 <= top <= 1000:
         raise GraphInputError("min_common, hub_cap, or top is outside its allowed range")
-    rows, skipped = gaps.open_triads(graph, min_common=min_common, hub_cap=hub_cap)
+    rows, skipped = gaps.open_triads(graph, min_common=min_common, hub_cap=hub_cap, budget_seconds=deadline)
     result.update({"method": "open_triads", "pairs": [
         {"source_node_id": row["u"], "target_node_id": row["v"], "common_neighbor_count": row["common"],
          "jaccard": row["jaccard"], "adamic_adar": row["adamic_adar"], "null_z": row["z"],
@@ -60,7 +61,8 @@ def find_structural_gaps(payload: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
-def find_network_holes(payload: dict[str, Any]) -> dict[str, Any]:
+def find_network_holes(payload: dict[str, Any], *, budget_seconds: float | None = None) -> dict[str, Any]:
+    deadline = as_deadline(budget_seconds)
     snapshot = payload["snapshot"]
     rounds, seed = payload.get("rounds", 4), payload.get("seed", 7)
     hub_cap, limit, top = payload.get("hub_cap", 120), payload.get("cycle_limit", 20000), payload.get("top", 200)
@@ -76,8 +78,8 @@ def find_network_holes(payload: dict[str, Any]) -> dict[str, Any]:
         raise GraphInputError("include_persistence must be boolean")
     if not 1 <= hub_cap <= 2500 or not 1 <= limit <= 20000 or not 1 <= top <= 1000:
         raise GraphInputError("hub_cap, cycle_limit, or top is outside its allowed range")
-    cycles = holes.induced_c4(graph, hub_cap=hub_cap, limit=limit)
-    null_mean, null_sd = holes.swap_null(graph, rounds=rounds, seed=seed, hub_cap=hub_cap)
+    cycles = holes.induced_c4(graph, hub_cap=hub_cap, limit=limit, budget_seconds=deadline)
+    null_mean, null_sd = holes.swap_null(graph, rounds=rounds, seed=seed, hub_cap=hub_cap, budget_seconds=deadline)
     hole_z = (len(cycles) - null_mean) / null_sd if null_sd > 1e-9 else 0.0
     summary = {"holes": len(cycles), "null_mean": null_mean, "null_sd": null_sd, "z": hole_z}
     diagonal_counts: dict[tuple[str, str], int] = {}
@@ -100,19 +102,20 @@ def find_network_holes(payload: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
-def find_bridge_pairs(payload: dict[str, Any]) -> dict[str, Any]:
+def find_bridge_pairs(payload: dict[str, Any], *, budget_seconds: float | None = None) -> dict[str, Any]:
+    deadline = as_deadline(budget_seconds)
     snapshot = payload["snapshot"]
     seed, top = payload.get("seed", 7), payload.get("top", 200)
     per_node, min_bc = payload.get("per_node", 20), payload.get("min_betweenness", 0.0)
     graph, result = _context("graph.find_bridge_pairs", snapshot,
                              {"seed": seed, "top": top, "per_node": per_node, "min_betweenness": min_bc})
-    if len(graph.nodes) > 2500 or len(graph.edges) > 12000:
+    if len(graph.nodes) > MAX_BRIDGE_NODES or len(graph.edges) > MAX_BRIDGE_EDGES:
         raise GraphInputError("bridge analysis uses exact betweenness and is limited to 2,500 nodes and 12,000 edges")
     if isinstance(seed, bool) or not isinstance(seed, int) or not 1 <= top <= 1000 or not 1 <= per_node <= 100:
         raise GraphInputError("seed, top, or per_node is outside its allowed range")
     if isinstance(min_bc, bool) or not isinstance(min_bc, (int, float)) or not math.isfinite(min_bc) or min_bc < 0:
         raise GraphInputError("min_betweenness must be a finite non-negative number")
-    communities, betweenness, participation, bridge_nodes = bridging.bridge_report(graph, seed)
+    communities, betweenness, participation, bridge_nodes = bridging.bridge_report(graph, seed, budget_seconds=deadline)
     pairs = bridging.bridge_pairs(graph, communities, betweenness, participation,
                                   per_node=per_node, min_bc=min_bc)
     result.update({"method": "label_propagation_brandes_participation", "community_count": len(set(communities.values())),
@@ -128,7 +131,8 @@ def find_bridge_pairs(payload: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
-def assess_edge_atypicality(payload: dict[str, Any]) -> dict[str, Any]:
+def assess_edge_atypicality(payload: dict[str, Any], *, budget_seconds: float | None = None) -> dict[str, Any]:
+    deadline = as_deadline(budget_seconds)
     snapshot = payload["snapshot"]
     attr, shuffles, seed, use_label = payload.get("category_attribute", "problem_type"), payload.get("shuffles", 20), payload.get("seed", 7), payload.get("use_label", False)
     graph, result = _context("graph.assess_edge_atypicality", snapshot,
@@ -140,7 +144,8 @@ def assess_edge_atypicality(payload: dict[str, Any]) -> dict[str, Any]:
     if isinstance(seed, bool) or not isinstance(seed, int) or not isinstance(use_label, bool):
         raise GraphInputError("seed must be an integer and use_label must be boolean")
     zscores, categories, observed = atypicality.category_zscores(graph, attr, shuffles=shuffles,
-                                                                  seed=seed, use_label=use_label)
+                                                                  seed=seed, use_label=use_label,
+                                                                  budget_seconds=deadline)
     result.update({"method": "degree_preserving_edge_rewiring_category_zscores",
                    "category_attribute": attr, "observed_category_pairs": [
                        {"categories": list(pair), "observed_edge_count": count,

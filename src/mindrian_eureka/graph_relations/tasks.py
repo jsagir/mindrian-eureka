@@ -5,8 +5,8 @@ import math
 from typing import Any
 
 from .backtest import evaluate
-from .common import Graph
-from .runner import GraphInputError, validate_snapshot
+from .common import Graph, GraphInputError
+from .runner import validate_snapshot
 from .surprise import score
 from .textsim import btm_unique
 from .traversal import rank_paths
@@ -27,12 +27,12 @@ def _scope(payload: dict[str, Any]) -> tuple[str | None, str | None]:
     return scope_id, snapshot_id
 
 
-def backtest_relationship_methods(payload: dict[str, Any]) -> dict[str, Any]:
+def backtest_relationship_methods(payload: dict[str, Any], *, budget_seconds: float | None = None) -> dict[str, Any]:
     snapshot = payload.get("snapshot")
     validate_snapshot(snapshot)
     scope_id, snapshot_id = _scope(payload)
     evaluation = evaluate(Graph(snapshot["nodes"], snapshot["edges"], snapshot.get("meta")),
-                          payload.get("cutoff"), seed=payload.get("seed", 7))
+                          payload.get("cutoff"), seed=payload.get("seed", 7), budget_seconds=budget_seconds)
     return {"schema_version": "eureka.graph-backtest-result.v1",
             "capability_id": "graph.backtest_relationship_methods",
             "status": "insufficient_data" if evaluation.get("error") else "completed_evaluation",

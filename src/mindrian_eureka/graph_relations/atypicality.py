@@ -6,7 +6,7 @@ from __future__ import annotations
 import random
 from collections import Counter
 
-from .common import distinct_pairs, pair_key, require_rewirable
+from .common import as_deadline, distinct_pairs, pair_key, require_rewirable
 
 
 def _count(edges, cat):
@@ -18,7 +18,8 @@ def _count(edges, cat):
     return c
 
 
-def category_zscores(g, attr="problem_type", shuffles=30, seed=7, use_label=False):
+def category_zscores(g, attr="problem_type", shuffles=30, seed=7, use_label=False, budget_seconds=None):
+    deadline = as_deadline(budget_seconds)
     cat = {n: (g.label(n) if use_label else g.attr(n, attr)) for n in g.nodes}
     base = distinct_pairs(g)
     require_rewirable(base, "the edge atypicality rewiring null")
@@ -28,8 +29,11 @@ def category_zscores(g, attr="problem_type", shuffles=30, seed=7, use_label=Fals
     keys = set(obs)
     runs = []
     for _ in range(shuffles):
+        deadline.check("the edge atypicality rewiring null")
         es = set(base); el = list(es)
-        for _ in range(len(el) * 3):
+        for step in range(len(el) * 3):
+            if not step & 1023:
+                deadline.check("the edge atypicality rewiring null")
             i, j = r.sample(range(len(el)), 2)
             (a, b), (c, d) = el[i], el[j]
             if len({a, b, c, d}) < 4:

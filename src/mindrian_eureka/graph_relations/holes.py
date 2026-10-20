@@ -6,12 +6,14 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from .common import distinct_pairs, pair_key, require_rewirable
+from .common import as_deadline, distinct_pairs, pair_key, require_rewirable
 
 
-def induced_c4(g, hub_cap=120, limit=20000):
+def induced_c4(g, hub_cap=120, limit=20000, budget_seconds=None):
+    deadline = as_deadline(budget_seconds)
     cyc, seen = [], set()
     for u in g.adj:
+        deadline.check("hole search")
         if len(g.adj[u]) > hub_cap:
             continue
         two = defaultdict(list)
@@ -38,10 +40,11 @@ def induced_c4(g, hub_cap=120, limit=20000):
     return cyc
 
 
-def swap_null(g, rounds=10, seed=7, hub_cap=120):
+def swap_null(g, rounds=10, seed=7, hub_cap=120, budget_seconds=None):
     """Hole counts in degree-preserving rewired copies (double edge swaps on undirected pairs)."""
     import random
 
+    deadline = as_deadline(budget_seconds)
     r = random.Random(seed)
     base = distinct_pairs(g)
     require_rewirable(base, "the hole swap null")
@@ -49,9 +52,12 @@ def swap_null(g, rounds=10, seed=7, hub_cap=120):
     from .common import Graph
 
     for _ in range(rounds):
+        deadline.check("the hole swap null")
         es = set(base)
         el = list(es)
-        for _ in range(len(el) * 5):
+        for step in range(len(el) * 5):
+            if not step & 1023:
+                deadline.check("the hole swap null")
             i, j = r.sample(range(len(el)), 2)
             (a, b), (c, d) = el[i], el[j]
             if len({a, b, c, d}) < 4:
@@ -65,15 +71,16 @@ def swap_null(g, rounds=10, seed=7, hub_cap=120):
             es.discard((a, b)); es.discard((c, d)); es.add(n1); es.add(n2)
             el[i], el[j] = n1, n2
         ng = Graph(list(g.nodes.values()), [{"s": a, "t": b, "type": "X"} for a, b in es])
-        counts.append(len(induced_c4(ng, hub_cap)))
+        counts.append(len(induced_c4(ng, hub_cap, budget_seconds=deadline)))
     mean = sum(counts) / len(counts)
     sd = (sum((c - mean) ** 2 for c in counts) / max(1, len(counts) - 1)) ** 0.5
     return mean, sd
 
 
-def hole_summary(g, rounds=10, seed=7):
-    cyc = induced_c4(g)
-    mean, sd = swap_null(g, rounds, seed)
+def hole_summary(g, rounds=10, seed=7, budget_seconds=None):
+    deadline = as_deadline(budget_seconds)
+    cyc = induced_c4(g, budget_seconds=deadline)
+    mean, sd = swap_null(g, rounds, seed, budget_seconds=deadline)
     z = (len(cyc) - mean) / sd if sd > 1e-9 else 0.0
     return {"holes": len(cyc), "null_mean": mean, "null_sd": sd, "z": z}
 
