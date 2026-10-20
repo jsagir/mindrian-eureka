@@ -28,6 +28,7 @@ FEATURE_NAMES = (
     "creative_synthesis",
 )
 MAX_STEPS = 2000
+EMISSION_FLOOR = 1e-6
 
 
 def _pomegranate():
@@ -209,6 +210,54 @@ def analyze_sequence(document: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _fitted_parameters(hmm: Any) -> tuple[list[float], list[list[float]], list[list[float]]]:
+    """Read fitted parameters and return them as valid, normalised probabilities.
+
+    pomegranate's DenseHMM keeps an explicit end probability for each state, so
+    each learned edge row sums to 1 minus that end probability, not to 1. The
+    published model has no end field, so each row is renormalised over the
+    learned continuing edges. That is the same as dividing by (1 - end).
+    A state that Baum-Welch never visits yields 0/0 in pomegranate and NaN
+    parameters. Any non-finite or unnormalisable value is refused: no NaN, inf,
+    or invalid distribution is ever returned.
+    """
+    def finite(array: np.ndarray, label: str) -> np.ndarray:
+        if not np.all(np.isfinite(array)):
+            raise ValueError(
+                f"Exploratory fit produced non-finite {label}; the fit diverged or a state received no probability mass. "
+                "Use fewer iterations, a different seed_model, or more coded sequences."
+            )
+        return array
+
+    def normalise(array: np.ndarray, label: str) -> np.ndarray:
+        array = finite(array, label)
+        if np.any(array < 0):
+            raise ValueError(f"Exploratory fit produced negative {label}")
+        totals = array.sum(axis=-1, keepdims=True)
+        if not np.all(totals > 0):
+            raise ValueError(f"Exploratory fit produced a {label} row with no probability mass")
+        return array / totals
+
+    initial = normalise(np.exp(finite(hmm.starts.detach().cpu().double().numpy(), "initial distribution")), "initial distribution")
+    edges = np.exp(finite(hmm.edges.detach().cpu().double().numpy(), "transition matrix"))
+    ends = np.exp(finite(hmm.ends.detach().cpu().double().numpy(), "end probabilities"))
+    if edges.shape != (4, 4) or ends.shape != (4,):
+        raise ValueError("Exploratory fit returned an unexpected parameter shape")
+    # Rows must satisfy edges[i].sum() + ends[i] == 1 before normalisation.
+    if not np.allclose(edges.sum(axis=1) + ends, 1.0, atol=1e-3):
+        raise ValueError("Exploratory fit produced transition rows that are inconsistent with the learned end probabilities")
+    transitions = normalise(edges, "transition matrix")
+    emissions = np.stack([distribution.probs.detach().cpu().double().numpy().reshape(-1) for distribution in hmm.distributions])
+    emissions = finite(emissions, "emission probabilities")
+    if np.any(emissions < -1e-6) or np.any(emissions > 1 + 1e-6):
+        raise ValueError("Exploratory fit produced emission probabilities outside 0..1")
+    # pomegranate refuses Bernoulli probabilities within 1.2e-7 of 0 or 1, so a
+    # fitted model with a saturated emission could not be analysed again.
+    # Clamp to a margin well inside that limit; the change is below 1e-6.
+    emissions = np.clip(emissions, EMISSION_FLOOR, 1.0 - EMISSION_FLOOR)
+    return initial.tolist(), transitions.tolist(), emissions.tolist()
+
+
 def fit_model(document: dict[str, Any]) -> dict[str, Any]:
     """Run exploratory Baum-Welch updates from a declared seed model."""
     if not isinstance(document, dict):
@@ -242,6 +291,7 @@ def fit_model(document: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("tolerance must be a finite non-negative number")
     hmm = _build_model(seed, max_iter=max_iter, tol=tolerance)
     hmm.fit(arrays)
+    initial_fit, transitions_fit, emissions_fit = _fitted_parameters(hmm)
     trained = {
         "id": str(document.get("model_id", f"{seed['id']}-exploratory-fit")),
         "label": str(document.get("label", f"Exploratory fit from {seed.get('label', seed['id'])}")),
@@ -249,9 +299,9 @@ def fit_model(document: dict[str, Any]) -> dict[str, Any]:
         "parameter_origin": "pomegranate Baum-Welch from caller-provided seed_model",
         "states": list(STATE_NAMES),
         "features": list(FEATURE_NAMES),
-        "initial_distribution": hmm.starts.detach().cpu().exp().tolist(),
-        "transition_matrix": hmm.edges.detach().cpu().exp().tolist(),
-        "emission_probabilities": [distribution.probs.detach().cpu().tolist() for distribution in hmm.distributions],
+        "initial_distribution": initial_fit,
+        "transition_matrix": transitions_fit,
+        "emission_probabilities": emissions_fit,
     }
     return {
         "schema_version": "eureka.decision-sequence-fit-result.v1",
