@@ -1012,6 +1012,18 @@ def _cross_referenced(a, b):
     return len(title) >= 4 and title in text
 
 
+# Plain-language polarity of the retired Convention B surprise_type labels.
+# NOTE: the HSI polarity is the OPPOSITE of the RS `direction` label that has
+# the same name. RS: structural_transfer = semantic > structural (same meaning,
+# different words). HSI: structural_transfer = LSA > semantic (shared words,
+# different meaning). The enum values are kept for existing consumers; read
+# this text, not the label name, to know which way a pair points.
+HSI_SURPRISE_TYPE_MEANING = {
+    'structural_transfer': 'shared words with different meaning (LSA similarity exceeds semantic similarity)',
+    'semantic_implementation': 'same meaning in different words (semantic similarity exceeds LSA similarity)',
+}
+
+
 def compute_hsi_matrix(artifacts, lsa_matrix, semantic_matrix, threshold=0.30,
                        lexical_matrix=None, bm25_matrix=None, ranking='legacy',
                        top_k=20, min_percentile=0.0, confirm_percentile=0.75,
@@ -1098,6 +1110,7 @@ def compute_hsi_matrix(artifacts, lsa_matrix, semantic_matrix, threshold=0.30,
 
         # Classify (retired Convention B string, kept for old readers)
         surprise_type = 'structural_transfer' if lsa_sim > sem_sim else 'semantic_implementation'
+        surprise_type_meaning = HSI_SURPRISE_TYPE_MEANING[surprise_type]
 
         avg_spectral_gap = (
             spectral_profiles[i]['spectral_gap'] + spectral_profiles[j]['spectral_gap']
@@ -1110,6 +1123,7 @@ def compute_hsi_matrix(artifacts, lsa_matrix, semantic_matrix, threshold=0.30,
             'semantic_sim': round(sem_sim, 4),
             'hsi_score': round(float(diff[k]), 4),
             'surprise_type': surprise_type,
+            'surprise_type_meaning': surprise_type_meaning,
             'breakthrough_potential': round(float(breakthrough[k]), 4),
             'spectral_gap_avg': round(avg_spectral_gap, 4),
             'left_dominant_mode': spectral_profiles[i]['dominant_mode'],

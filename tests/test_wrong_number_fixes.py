@@ -8,8 +8,13 @@ import unittest
 import numpy as np
 import pytest
 
+from mindrian_eureka import opportunity_discovery
+from mindrian_eureka.contracts import validate_result
 from mindrian_eureka.decision_patterns.algorithm import analyze_sequence, fit_model
 from mindrian_eureka.discovery_workflows import portfolio_coverage
+from mindrian_eureka.hsi_engine import run_hsi
+from mindrian_eureka.opportunity_pairs.cache import EmbeddingCache
+from mindrian_eureka.opportunity_pairs.runner import run_document
 
 
 def _coverage(artifact_categories: list[list[str]], taxonomy_ids: list[str]) -> dict:
@@ -137,6 +142,119 @@ def test_fitted_model_round_trips_into_analyze_sequence(_hmm_engine):
     assert {item["model_id"] for item in result["model_results"]} == {fitted["id"], "seed"}
     for item in result["model_results"]:
         assert math.isfinite(item["log_likelihood"])
+
+
+# --- W3: the same label name must not hide opposite polarity ------------------
+#
+# RS:  structural_transfer = semantic > structural (same meaning, different words)
+# HSI: structural_transfer = LSA > semantic        (shared words, different meaning)
+# The enum values stay. Each engine now carries a plain-language meaning next to
+# the label. These tests run the REAL engines offline. The dense semantic
+# vectors are supplied the way a host supplies them: HSI takes `dense_vectors`,
+# RS reads them from its own embedding cache, so no model download is needed.
+
+FIXTURE_TEXTS = {
+    "a1": "battery storage grid energy resilience",
+    "a2": "clinical imaging diagnostic medical sensors",
+    "a3": "agricultural irrigation water crop yield",
+    "a4": "electrochemical battery storage power system",
+    "a5": "medical imaging sensors diagnostic equipment",
+    "a6": "battery storage hospital sensors power outage",
+}
+FIXTURE_VECTORS = {
+    "a1": [1, 0, 0], "a2": [0, 1, 0], "a3": [0, 0, 1],
+    "a4": [0.9, 0.1, 0], "a5": [0.1, 0.9, 0], "a6": [0.5, 0.5, 0.7],
+}
+ENCODER, MODEL_PATH, RS_METHOD = "sentence-transformers", "fixture", "sentence-transformer-chunk-mean-v1"
+RS_MEANING = {"structural_transfer": "same meaning in different words", "semantic_implementation": "same words with different meaning"}
+HSI_MEANING_WORDS = {"structural_transfer": "shared words with different meaning", "semantic_implementation": "same meaning in different words"}
+
+
+def _artifacts():
+    return [{"id": key, "source_ref": f"mindrian-graph://node/{key}", "title": key, "text": text} for key, text in FIXTURE_TEXTS.items()]
+
+
+def _seed_rs_cache(path):
+    cache = EmbeddingCache(path)
+    for key, text in FIXTURE_TEXTS.items():
+        # RS embeds "<title>\n\n<text>"; the fixture title equals the id.
+        cache_key = EmbeddingCache.key(f"{key}\n\n{text}", encoder=ENCODER, model=MODEL_PATH, revision=None, method_version=RS_METHOD)
+        cache.put(cache_key, np.asarray([FIXTURE_VECTORS[key]], dtype=float))
+
+
+def _run_rs(tmp_path, scoring):
+    _seed_rs_cache(tmp_path / "embeddings.sqlite3")
+    return run_document(
+        {"artifacts": _artifacts(), "scoring": scoring, "mode": "local"},
+        encoder_name=ENCODER, model_path=MODEL_PATH, top_k=20, cache_path=tmp_path / "embeddings.sqlite3",
+    )
+
+
+def _run_hsi():
+    return run_hsi({"artifacts": _artifacts(), "dense_vectors": FIXTURE_VECTORS, "top_k": 20, "ranking": "percentile", "min_percentile": 0.0})
+
+
+def test_hsi_surprise_type_meaning_matches_actual_polarity():
+    result = _run_hsi()
+    seen = set()
+    for pair in result["hsi_pairs"]:
+        if abs(pair["lsa_sim"] - pair["semantic_sim"]) < 1e-3:
+            continue  # rounded tie: the label is not meaningful
+        label = pair["surprise_type"]
+        seen.add(label)
+        lsa_higher = pair["lsa_sim"] > pair["semantic_sim"]
+        assert (label == "structural_transfer") == lsa_higher
+        assert pair["surprise_type_meaning"].startswith(HSI_MEANING_WORDS[label])
+        if lsa_higher:
+            assert "LSA similarity exceeds semantic similarity" in pair["surprise_type_meaning"]
+        else:
+            assert "semantic similarity exceeds LSA similarity" in pair["surprise_type_meaning"]
+    assert seen == {"structural_transfer", "semantic_implementation"}  # fixture covers both polarities
+
+
+def test_rs_direction_meaning_matches_actual_polarity_legacy_scoring(tmp_path):
+    result = _run_rs(tmp_path, "legacy")
+    seen = set()
+    for output in result["outputs"]:
+        payload = output["payload"]
+        semantic_higher = payload["semantic_similarity"] > payload["structural_similarity"]
+        assert (payload["direction"] == "structural_transfer") == semantic_higher
+        assert payload["direction_meaning"] == RS_MEANING[payload["direction"]]
+        seen.add(payload["direction"])
+    assert seen == {"structural_transfer", "semantic_implementation"}
+
+
+def test_rs_direction_meaning_matches_label_with_hybrid_scoring(tmp_path):
+    result = _run_rs(tmp_path, "hybrid_2026")
+    assert result["outputs"], "fixture must pass the hybrid percentile gate"
+    for output in result["outputs"]:
+        payload = output["payload"]
+        assert (payload["direction"] == "structural_transfer") == (payload["signed_difference"] > 0)
+        assert payload["direction_meaning"] == RS_MEANING[payload["direction"]]
+
+
+def test_combined_signal_carries_both_meanings_and_disambiguates_equal_labels(tmp_path):
+    _seed_rs_cache(tmp_path / "embeddings.sqlite3")
+    request = {
+        "objective": "polarity check", "scope_id": "room:polarity", "snapshot_id": "snap-polarity",
+        "artifacts": _artifacts(), "dense_vectors": FIXTURE_VECTORS, "mode": "local",
+        "scoring": "legacy", "top_k": 20, "encoder": ENCODER, "model_path": MODEL_PATH,
+    }
+    result = opportunity_discovery.run_signal_synthesis(request, data_dir=tmp_path, job_id="polarity")
+    validate_result("opportunity.synthesize_discovery_signals", result)
+    same_name_opposite_meaning = 0
+    for output in result["outputs"]:
+        signals = output["payload"]["signals"]
+        rs, hsi = signals["rs"], signals["hsi"]
+        if rs:
+            assert rs["direction_meaning"] == RS_MEANING[rs["direction"]]
+        if hsi:
+            assert hsi["surprise_type_meaning"].startswith(HSI_MEANING_WORDS[hsi["surprise_type"]])
+        if rs and hsi and rs["direction"] == hsi["surprise_type"]:
+            # Same label name on both engines: the text must tell the reader the polarity differs.
+            if rs["direction_meaning"] != hsi["surprise_type_meaning"].split(" (")[0]:
+                same_name_opposite_meaning += 1
+    assert same_name_opposite_meaning >= 1, "fixture must contain a pair that shows the label collision"
 
 
 if __name__ == "__main__":

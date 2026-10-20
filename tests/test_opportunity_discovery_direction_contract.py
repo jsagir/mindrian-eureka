@@ -17,7 +17,8 @@ def test_signal_synthesis_uses_categorical_rs_direction(monkeypatch, tmp_path):
                 "structural_similarity": 0.4,
                 "semantic_similarity": 0.8,
                 "disagreement": 0.4,
-                "direction": "a_to_b",
+                "direction": "structural_transfer",
+                "direction_meaning": "same meaning in different words",
             },
             "review_context": "Source-linked review context.",
         }],
@@ -35,6 +36,7 @@ def test_signal_synthesis_uses_categorical_rs_direction(monkeypatch, tmp_path):
     )
 
     rs_signal = result["outputs"][0]["payload"]["signals"]["rs"]
-    assert rs_signal["direction"] == "a_to_b"
+    assert rs_signal["direction"] == "structural_transfer"
+    assert rs_signal["direction_meaning"] == "same meaning in different words"
     assert isinstance(rs_signal["direction"], str)
     assert "disagreement" not in rs_signal

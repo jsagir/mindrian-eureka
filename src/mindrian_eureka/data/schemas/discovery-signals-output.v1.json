@@ -64,7 +64,8 @@
                     "rank": {"type": "integer", "minimum": 1},
                     "structural_similarity": {"type": ["number", "null"]},
                     "semantic_similarity": {"type": ["number", "null"]},
-                    "direction": {"type": ["string", "null"]}
+                    "direction": {"type": ["string", "null"]},
+                    "direction_meaning": {"type": ["string", "null"]}
                   },
                   "required": ["rank", "structural_similarity", "semantic_similarity", "direction"],
                   "additionalProperties": false
@@ -76,6 +77,7 @@
                     "hsi_score": {"type": "number"},
                     "hsi_percentile": {"type": "number", "minimum": 0, "maximum": 1},
                     "surprise_type": {"type": ["string", "null"]},
+                    "surprise_type_meaning": {"type": ["string", "null"]},
                     "source_trail": {"type": ["array", "null"], "items": {"type": "object"}}
                   },
                   "required": ["rank", "hsi_score", "hsi_percentile", "surprise_type", "source_trail"],
