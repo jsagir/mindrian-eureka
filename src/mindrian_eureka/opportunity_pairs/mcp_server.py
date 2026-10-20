@@ -25,7 +25,7 @@ from ..pitch_analysis import analyze_corpus
 from ..hsi_engine import run_hsi, HSIInputError
 from ..analogy_fitness import assess_analogy_fitness, AnalogyInputError, AnalogyUnavailable
 from ..workflow_handlers import HANDLERS as WORKFLOW_HANDLERS, NodeRuntimeUnavailable
-from ..graph_relations.runner import GraphInputError
+from ..graph_relations.runner import GraphBudgetError, GraphInputError
 from ..contracts import ContractError, ResultContractError, schema_for, validate_request, validate_result
 
 
@@ -470,6 +470,8 @@ def scout_run_workflow(capability_id: str, request: dict) -> dict:
         return {"status": "invalid_input", "capability_id": capability_id, "error": str(exc)}
     except HSIInputError as exc:
         return {"status": "invalid_input", "capability_id": capability_id, "error": str(exc)}
+    except GraphBudgetError as exc:
+        return {"status": "budget_exceeded", "capability_id": capability_id, "error": str(exc)}
     except GraphInputError as exc:
         return {"status": "invalid_input", "capability_id": capability_id, "error": str(exc)}
     except AnalogyInputError as exc:
