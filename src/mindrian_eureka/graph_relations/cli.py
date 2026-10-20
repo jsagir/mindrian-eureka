@@ -62,7 +62,8 @@ def main() -> None:
                 request = {key: value for key, value in request.items() if value is not None}
                 validate_request(capability_id, request)
                 result = explore(snapshot, top=args.top, seed=args.seed, text_label=args.text_label,
-                                 null_rounds=args.null_rounds, focus_node_id=args.focus, focus_hops=args.focus_hops)
+                                 null_rounds=args.null_rounds, focus_node_id=args.focus, focus_hops=args.focus_hops,
+                                 attr=args.attr)
             elif args.task == "prepare-artifact-bundle":
                 capability_id = "graph.prepare_artifact_bundle"
                 request = {"snapshot": snapshot, "objective": args.objective, "scope_id": args.scope_id}
