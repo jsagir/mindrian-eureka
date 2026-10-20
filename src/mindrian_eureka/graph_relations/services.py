@@ -86,7 +86,9 @@ def find_network_holes(payload: dict[str, Any], *, budget_seconds: float | None 
         raise GraphInputError("include_persistence must be boolean")
     if not 1 <= hub_cap <= 2500 or not 1 <= limit <= 20000 or not 1 <= top <= 1000:
         raise GraphInputError("hub_cap, cycle_limit, or top is outside its allowed range")
-    cycles = holes.induced_c4(graph, hub_cap=hub_cap, limit=limit, budget_seconds=deadline)
+    cycles = holes.induced_c4(graph, hub_cap=hub_cap, limit=limit + 1, budget_seconds=deadline)
+    cycle_limit_truncated = len(cycles) > limit
+    cycles = cycles[:limit]
     null_mean, null_sd = holes.swap_null(graph, rounds=rounds, seed=seed, hub_cap=hub_cap, budget_seconds=deadline)
     hole_z = (len(cycles) - null_mean) / null_sd if null_sd > 1e-9 else 0.0
     summary = {"holes": len(cycles), "null_mean": null_mean, "null_sd": null_sd, "z": hole_z}
@@ -102,6 +104,7 @@ def find_network_holes(payload: dict[str, Any], *, budget_seconds: float | None 
                           "completed" if persistence is not None else "unavailable")
     result.update({"method": "induced_c4_with_degree_preserving_swap_null", "summary": summary,
                    "candidate_diagonals": candidates, "cycles_examined": len(cycles),
+                   "cycle_limit_truncated": cycle_limit_truncated,
                    "ripser_summary": persistence, "persistence_status": persistence_status,
                    "limitations": result["limitations"] + [
                        "A missing diagonal in an induced four-cycle is a structural lead, not evidence of a meaningful relationship.",

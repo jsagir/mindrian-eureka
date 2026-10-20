@@ -17,6 +17,7 @@
     "summary",
     "candidate_diagonals",
     "cycles_examined",
+    "cycle_limit_truncated",
     "ripser_summary",
     "persistence_status"
   ],
@@ -170,6 +171,10 @@
     },
     "cycles_examined": {
       "type": "integer"
+    },
+    "cycle_limit_truncated": {
+      "type": "boolean",
+      "description": "True when at least one additional cycle existed beyond run_config.cycle_limit."
     },
     "ripser_summary": {
       "type": [
