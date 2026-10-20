@@ -75,10 +75,10 @@
       "runtime": "python>=3.11",
       "resource_limits": {
         "snapshot_file_bytes": 104857600,
-        "max_nodes": 10000,
-        "max_edges": 50000,
+        "max_nodes": 2500,
+        "max_edges": 12000,
         "max_focus_hops": 5,
-        "max_focus_nodes": 10000,
+        "max_focus_nodes": 2500,
         "max_null_rounds": 20,
         "max_output_proposals": 1000
       },
