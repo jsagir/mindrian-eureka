@@ -6,7 +6,7 @@ from __future__ import annotations
 import random
 from collections import Counter
 
-from .common import pair_key
+from .common import distinct_pairs, pair_key, require_rewirable
 
 
 def _count(edges, cat):
@@ -20,7 +20,8 @@ def _count(edges, cat):
 
 def category_zscores(g, attr="problem_type", shuffles=30, seed=7, use_label=False):
     cat = {n: (g.label(n) if use_label else g.attr(n, attr)) for n in g.nodes}
-    base = sorted({pair_key(e["s"], e["t"]) for e in g.edges})
+    base = distinct_pairs(g)
+    require_rewirable(base, "the edge atypicality rewiring null")
     obs = _count(base, cat)
     r = random.Random(seed)
     sums, sq = Counter(), Counter()

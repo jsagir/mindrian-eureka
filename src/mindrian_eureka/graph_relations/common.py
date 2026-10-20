@@ -47,6 +47,23 @@ def assert_read_only(cypher: str) -> str:
     return cypher
 
 
+class GraphInputError(ValueError):
+    """The supplied graph scope or analysis options are invalid."""
+
+
+def distinct_pairs(g):
+    """Sorted list of distinct undirected node pairs in the graph."""
+    return sorted({pair_key(e["s"], e["t"]) for e in g.edges})
+
+
+def require_rewirable(pairs, what):
+    """A double edge swap needs two distinct edges. Fewer cannot be analysed, so say so clearly."""
+    if len(pairs) < 2:
+        raise GraphInputError(
+            f"{what} needs at least 2 distinct edges between different nodes; "
+            f"the snapshot has {len(pairs)}. Supply a larger authorized snapshot.")
+
+
 def pair_key(a, b):
     return (a, b) if a <= b else (b, a)
 

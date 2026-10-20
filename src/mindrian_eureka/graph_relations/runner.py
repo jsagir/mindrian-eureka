@@ -8,11 +8,7 @@ from urllib.parse import quote
 from typing import Any
 
 from . import atypicality, bridging, gaps, holes, proposals, textsim
-from .common import Graph
-
-
-class GraphInputError(ValueError):
-    """The supplied graph scope or analysis options are invalid."""
+from .common import Graph, GraphInputError  # noqa: F401  (GraphInputError is re-exported)
 
 
 def prepare_artifact_bundle(snapshot: dict[str, Any], objective: str, scope_id: str,

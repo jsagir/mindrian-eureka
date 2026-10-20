@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from .common import pair_key
+from .common import distinct_pairs, pair_key, require_rewirable
 
 
 def induced_c4(g, hub_cap=120, limit=20000):
@@ -43,7 +43,8 @@ def swap_null(g, rounds=10, seed=7, hub_cap=120):
     import random
 
     r = random.Random(seed)
-    base = sorted({pair_key(e["s"], e["t"]) for e in g.edges})
+    base = distinct_pairs(g)
+    require_rewirable(base, "the hole swap null")
     counts = []
     from .common import Graph
 

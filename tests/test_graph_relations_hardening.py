@@ -17,6 +17,9 @@ import unittest
 
 from mindrian_eureka.graph_relations import atypicality, holes
 from mindrian_eureka.graph_relations.common import Graph
+from mindrian_eureka.graph_relations.runner import GraphInputError, explore
+from mindrian_eureka.graph_relations.services import assess_edge_atypicality, find_network_holes
+from mindrian_eureka.opportunity_pairs import mcp_server
 
 
 def gnm_graph(n, m, seed, categories=False):
@@ -75,6 +78,55 @@ class UnbiasedSwapNullTests(unittest.TestCase):
         first = atypicality.category_zscores(graph, shuffles=10, seed=11)
         self.assertEqual(first, atypicality.category_zscores(graph, shuffles=10, seed=11))
         self.assertNotEqual(holes.swap_null(graph, rounds=4, seed=11), holes.swap_null(graph, rounds=4, seed=12))
+
+
+def tiny_snapshot(edge_pairs, node_ids="abcd"):
+    nodes = [{"id": n, "labels": ["Framework"], "name": n.upper(), "attrs": {"problem_type": "x"}, "text": n}
+             for n in node_ids]
+    return {"nodes": nodes, "edges": [{"s": a, "t": b, "type": "RELATES_TO"} for a, b in edge_pairs],
+            "meta": {"scope_id": "s", "snapshot_id": "t"}}
+
+
+class TooSmallGraphTests(unittest.TestCase):
+    ONE = tiny_snapshot([("a", "b")], "ab")
+    # Two directed edges that are the same undirected pair count as ONE distinct edge.
+    ONE_PAIR_TWICE = tiny_snapshot([("a", "b"), ("b", "a")], "ab")
+    ZERO = tiny_snapshot([], "ab")
+    TWO = tiny_snapshot([("a", "b"), ("c", "d")])
+
+    def assert_small_graph_error(self, call):
+        with self.assertRaises(GraphInputError) as caught:
+            call()
+        self.assertIn("at least 2 distinct edges", str(caught.exception))
+        self.assertNotIn("Sample larger than population", str(caught.exception))
+
+    def test_nulls_raise_the_package_input_error_below_two_distinct_edges(self):
+        for snapshot in (self.ZERO, self.ONE, self.ONE_PAIR_TWICE):
+            graph = Graph(snapshot["nodes"], snapshot["edges"])
+            self.assert_small_graph_error(lambda: holes.swap_null(graph))
+            self.assert_small_graph_error(lambda: atypicality.category_zscores(graph))
+
+    def test_services_and_explore_raise_the_package_input_error(self):
+        for snapshot in (self.ZERO, self.ONE, self.ONE_PAIR_TWICE):
+            self.assert_small_graph_error(lambda: find_network_holes({"snapshot": snapshot}))
+            self.assert_small_graph_error(lambda: assess_edge_atypicality({"snapshot": snapshot}))
+            self.assert_small_graph_error(lambda: explore(snapshot))
+
+    def test_workflow_handler_reports_invalid_input_not_failed(self):
+        for capability in ("graph.explore_local_relationships", "graph.find_network_holes",
+                           "graph.assess_edge_atypicality", "graph.propose_relationships"):
+            for snapshot in (self.ZERO, self.ONE, self.ONE_PAIR_TWICE):
+                response = mcp_server.scout_run_workflow(capability, {"snapshot": snapshot})
+                self.assertEqual(response["status"], "invalid_input", (capability, response))
+                self.assertEqual(response["capability_id"], capability)
+                self.assertIn("at least 2 distinct edges", response["error"])
+
+    def test_two_edges_are_enough(self):
+        self.assertEqual(explore(self.TWO)["status"], "completed_analysis")
+        self.assertEqual(find_network_holes({"snapshot": self.TWO})["status"], "completed_analysis")
+        self.assertEqual(assess_edge_atypicality({"snapshot": self.TWO})["status"], "completed_analysis")
+        response = mcp_server.scout_run_workflow("graph.explore_local_relationships", {"snapshot": self.TWO})
+        self.assertEqual(response["status"], "completed_analysis")
 
 
 if __name__ == "__main__":
