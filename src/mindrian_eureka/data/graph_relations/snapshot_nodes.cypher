@@ -8,6 +8,6 @@ RETURN coalesce(toString(n.id), toString(n.uuid), elementId(n)) AS id,
        n.discipline AS discipline,
        n.domain AS domain,
        n.jtbd_anchor AS jtbd_anchor,
-       coalesce(n.source_ref, n.url, n.uri, n.path) AS source_ref,
+       coalesce(n.source_ref, n.url, n.uri) AS source_ref,
        left(coalesce(n.definition, n.description, n.core_principles, n.key_insight, n.lesson, n.pws_definition, ''), 600) AS text
 LIMIT 10001
