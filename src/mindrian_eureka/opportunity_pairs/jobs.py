@@ -37,7 +37,44 @@ class JobStore:
             pass
         self.db_path = self.data_dir / "jobs.sqlite3"
         self._lock = threading.RLock()
+        self._owner_lock_path = self.data_dir / ".jobs.owner.lock"
+        self._owner_lock_file = self._owner_lock_path.open("a+b")
+        try:
+            if os.name == "nt":
+                import msvcrt
+                self._owner_lock_file.seek(0, os.SEEK_END)
+                if self._owner_lock_file.tell() == 0:
+                    self._owner_lock_file.write(b"\0")
+                    self._owner_lock_file.flush()
+                self._owner_lock_file.seek(0)
+                msvcrt.locking(self._owner_lock_file.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(self._owner_lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except (OSError, BlockingIOError) as exc:
+            self._owner_lock_file.close()
+            raise RuntimeError("Another Eureka process already owns this job data directory") from exc
+        self._owner_lock_file.seek(0)
+        self._owner_lock_file.truncate()
+        self._owner_lock_file.write(f"pid={os.getpid()}\n".encode("ascii"))
+        self._owner_lock_file.flush()
         self._init_db()
+
+    def close(self) -> None:
+        """Release the process owner lock; closing the process also releases it."""
+        lock_file = getattr(self, "_owner_lock_file", None)
+        if lock_file is None or lock_file.closed:
+            return
+        try:
+            if os.name == "nt":
+                import msvcrt
+                lock_file.seek(0)
+                msvcrt.locking(lock_file.fileno(), msvcrt.LK_UNLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+        finally:
+            lock_file.close()
 
     def _connect(self) -> sqlite3.Connection:
         db = sqlite3.connect(self.db_path, timeout=30)
@@ -168,12 +205,15 @@ class JobStore:
                    clear_request: bool = False) -> None:
         now = time.time()
         with self._connect() as db:
+            db.execute("BEGIN IMMEDIATE")
             row = db.execute("SELECT status FROM jobs WHERE job_id=?", (job_id,)).fetchone()
             if not row:
                 return
+            if row["status"] in TERMINAL:
+                return
             db.execute("""UPDATE jobs SET status=?,progress=?,result_json=COALESCE(?,result_json),
                          failure_code=?,request_json=CASE WHEN ? THEN NULL ELSE request_json END,updated_at=?
-                         WHERE job_id=?""",
+                         WHERE job_id=? AND status NOT IN ('completed','completed_empty','failed','blocked','cancelled','expired')""",
                        (status, progress or status,
                         json.dumps(result, ensure_ascii=False, separators=(",", ":")) if result is not None else None,
                         failure_code, int(clear_request), now, job_id))
