@@ -66,7 +66,7 @@ class GraphRelationshipTests(unittest.TestCase):
 
         catalog = json.loads((Path(__file__).parents[1] / "src/mindrian_eureka/data/capability-catalog.v1.json").read_text())
         runnable = [row for row in catalog["capabilities"] if row.get("status") in {"experimental", "host_brokered"}]
-        self.assertEqual(len(runnable), 58)
+        self.assertEqual(len(runnable), 59)
         for capability in runnable:
             capability_id = capability["id"]
             output = io.StringIO()

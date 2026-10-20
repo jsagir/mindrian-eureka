@@ -245,7 +245,7 @@ Standalone Opportunity Scout runtime
 
 ## 10. Proposed long-term repository layout
 
-This is the architecture target for later capability families. The repository exposes 58 experimental or host-brokered capability routes across RS, SME, decision-sequence analysis and fitting, HSI whitespace/pair scoring, analogy, Genesis planning, critic preparation, graph analysis, and research-support stages. Eight catalog entries remain explicitly blocked or planned. These method surfaces do not imply that every end-to-end lifecycle (external evidence gathering, portfolio qualification, or production validation) is implemented. MindrianOS graph projection adapters are committed on a feature branch and are not yet merged or released.
+This is the architecture target for later capability families. The repository exposes 59 experimental or host-brokered capability routes across RS, SME, decision-sequence analysis and fitting, HSI whitespace/pair scoring, analogy, Genesis planning (including the source-linked IP-finance domain detector), critic preparation, graph analysis, and research-support stages. Eight catalog entries remain explicitly blocked or planned. These method surfaces do not imply that every end-to-end lifecycle (external evidence gathering, portfolio qualification, or production validation) is implemented. MindrianOS graph projection adapters are committed on a feature branch and are not yet merged or released.
 
 ```text
 mindrian-eureka/

@@ -1,6 +1,6 @@
 {
   "schema_version": "eureka.capability-catalog.v1",
-  "catalog_version": "2026-10-20+standalone-graph-algorithm-services-host-handoff-capability-chains-rs-thesis-expert-search",
+  "catalog_version": "2026-10-20+standalone-graph-algorithm-services-host-handoff-capability-chains-rs-thesis-expert-search-genesis-ip-finance-domain-service",
   "readiness_key": {
     "experimental": "A runnable local implementation exists; its method fidelity or decision value still requires evaluation.",
     "host_brokered": "A runnable local step exists, but MindrianOS must provide approved external research and/or review.",
@@ -1457,6 +1457,50 @@
           "tool": "scout_run_workflow",
           "arguments": {
             "capability_id": "research.run_genesis_local_plan",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.classify_ip_finance_domain_signals",
+      "name": "Detect IP Finance Signals in Research Text",
+      "engine_family": "Genesis domain identification",
+      "jtbd": "Use when a supplied research collection may involve IP strategy, patents, credit risk, finance, or their intersections. Return lexical domain signals with source-linked segment results to help choose a follow-up research method.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": ["CLI", "MCP"],
+      "implementation": "src/mindrian_eureka/data/genesis/ip-finance-domain-runner.cjs via src/mindrian_eureka/workflow_handlers.py",
+      "input_schema": "schemas/ip-finance-domain-input.v1.json",
+      "output_schema": "schemas/ip-finance-domain-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "max_segments": 2500,
+        "max_text_bytes": 20971520,
+        "execution_timeout_seconds": 15
+      },
+      "requires": [
+        "Host-authorized source-linked text segments with stable IDs",
+        "Scope and snapshot identifiers"
+      ],
+      "network": "none; all text is supplied by the caller.",
+      "side_effects": [],
+      "limitations": [
+        "Classification is lexical pattern matching; domain scores are hit-count heuristics, not calibrated probabilities.",
+        "Only the highest-scoring domain and up to three secondary domains are returned for each segment; ties follow source lexicon order.",
+        "A domain signal does not verify a claim, establish creditworthiness, assess legal status, or demonstrate an opportunity.",
+        "Acronym patterns are case-sensitive and can still be ambiguous in context; ambiguous short-acronym hits are returned as explicit warnings.",
+        "Source authorship and reuse rights are unresolved; local evaluation only."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": ["research.classify_ip_finance_domain_signals", "<request.json>"]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.classify_ip_finance_domain_signals",
             "request": "<capability input schema>"
           }
         }

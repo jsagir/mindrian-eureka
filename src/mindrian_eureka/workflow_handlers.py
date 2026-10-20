@@ -8,6 +8,7 @@ import math
 import os
 import shutil
 import subprocess
+import copy
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -780,6 +781,50 @@ def run_genesis_local_plan(payload: dict) -> dict:
     return result
 
 
+def classify_ip_finance_domain_signals(payload: dict) -> dict:
+    """Run the LATEST IP-finance lexical domain detector on supplied segments."""
+    node = shutil.which("node")
+    if not node:
+        raise NodeRuntimeUnavailable("IP-finance domain detector unavailable: install Node.js 22 or newer")
+    segments = payload["segments"]
+    if len({item["id"] for item in segments}) != len(segments):
+        raise ValueError("IP-finance domain input contains duplicate segment IDs")
+    if sum(len(item["text"].encode("utf-8")) for item in segments) > 20 * 1024 * 1024:
+        raise ValueError("IP-finance domain input exceeds 20 MiB of text")
+    request = copy.deepcopy(payload)
+    for item in request["segments"]:
+        digest = hashlib.sha256(item["text"].encode("utf-8")).hexdigest()
+        if item.get("sha256") and item["sha256"].lower() != digest:
+            raise ValueError(f"IP-finance domain text hash does not match segment {item['id']!r}")
+        item["sha256"] = digest
+    fingerprint = hashlib.sha256(json.dumps(request, sort_keys=True, ensure_ascii=False,
+                                             separators=(",", ":")).encode("utf-8")).hexdigest()
+    runner = Path(__file__).resolve().parent / "data" / "genesis" / "ip-finance-domain-runner.cjs"
+    try:
+        version = subprocess.run([node, "--version"], capture_output=True, text=True, timeout=2, check=False)
+        major = int(version.stdout.strip().lstrip("v").split(".", 1)[0])
+        if version.returncode or major < 22:
+            raise NodeRuntimeUnavailable("IP-finance domain detector requires Node.js 22 or newer")
+        completed = subprocess.run(
+            [node, str(runner)], input=json.dumps(request, ensure_ascii=False),
+            text=True, capture_output=True, timeout=15, check=False,
+            env={"PATH": os.environ.get("PATH", ""), "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"},
+        )
+    except (subprocess.TimeoutExpired, ValueError, OSError) as exc:
+        if isinstance(exc, NodeRuntimeUnavailable):
+            raise
+        raise NodeRuntimeUnavailable("Could not run the IP-finance domain detector worker") from exc
+    if completed.returncode:
+        raise ValueError(completed.stderr.strip()[:1000] or "IP-finance domain worker failed")
+    try:
+        result = json.loads(completed.stdout)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError("IP-finance domain worker returned malformed JSON") from exc
+    result["input_fingerprint"] = fingerprint
+    result["schema_version"] = "eureka.ip-finance-domain-result.v1"
+    return result
+
+
 def classify_weak_signal_tail(payload: dict) -> dict:
     """Apply the LATEST Eureka low-attention/high-growth cohort classifier."""
     node = shutil.which("node")
@@ -1241,6 +1286,7 @@ HANDLERS = {
     "research.prepare_multidomain_plan": workflows.plan_multidomain_research,
     "research.group_multidomain_findings": workflows.synthesize_research_findings,
     "research.run_genesis_local_plan": run_genesis_local_plan,
+    "research.classify_ip_finance_domain_signals": classify_ip_finance_domain_signals,
     "portfolio.classify_weak_signal_tail": classify_weak_signal_tail,
     "portfolio.assess_candidate_dimensions": assess_eureka_candidate_dimensions,
     "opportunity.prepare_statement": prepare_eureka_opportunity_statement,

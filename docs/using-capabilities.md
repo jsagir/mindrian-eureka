@@ -19,6 +19,7 @@ Start with the user's wicked challenge and uncertainty: what is changing, interc
 | Map a mechanism to a problem | `analogy.map_structure` | A source mechanism is selected and you want possible relational transfers made explicit for testing. |
 | Turn confirmed fields into research tasks | `research.prepare_multidomain_plan` | The user or Theo has confirmed relevant fields and the host will run approved research. |
 | Build a Genesis plan from local graph context | `research.run_genesis_local_plan` | MindrianOS supplies the authorized graph projection; Theo reviews domains and the host approves any external research. |
+| Detect IP-finance domain signals | `research.classify_ip_finance_domain_signals` | Supply authorized text segments with IDs, source refs, scope, and snapshot; use keyword-domain signals to route follow-up investigation. |
 | Draft an evidence-linked innovation hypothesis | `research.generate_rs_thesis` | The host supplies the classified concepts, breakthrough dimension, and linked evidence; the output is a hypothesis record, not prior-room retrieval or validation. |
 | `research.analyze_rs_domain_projection` | Find relevant fields in the local knowledge graph | Use before RS preprocessing with an authorized graph snapshot; Eureka ranks caller-supplied framework records and returns node/source lineage without reading the graph. |
 | `research.score_rs_differential_pair` | Compare a problem and method across wording and meaning | Supply concepts and two same-model vectors from MindrianOS; the route computes the lexical/semantic differential and retains source references. |
@@ -63,6 +64,7 @@ eureka-workflow analysis.compare_text_differences input.json --output result.jso
 eureka-workflow analogy.assess_structural_fitness input.json --output result.json
 eureka-workflow research.prepare_multidomain_plan input.json --output result.json
 eureka-workflow research.run_genesis_local_plan graph-projection.json --output genesis-plan.json
+eureka-workflow research.classify_ip_finance_domain_signals ip-finance-request.json --output ip-finance-domains.json
 eureka-workflow research.analyze_rs_domain_projection rs-domain-projection.json --output rs-domain-analysis.json
 eureka-workflow research.score_rs_differential_pair rs-differential-request.json --output rs-differential-score.json
 eureka-workflow research.assess_rs_pair_set_quality rs-pair-set.json --output rs-pair-quality.json
