@@ -26,6 +26,14 @@ _WRITE = re.compile(
     r"(write|mutate)\b",
     re.I,
 )
+_CLAUSE_WORDS = frozenset({
+    "MATCH", "OPTIONAL", "WHERE", "RETURN", "WITH", "UNWIND", "ORDER", "BY", "SKIP", "LIMIT",
+    "CALL", "YIELD", "UNION", "CREATE", "MERGE", "SET", "DELETE", "DETACH", "REMOVE", "DROP",
+    "LOAD", "CSV", "START", "STOP", "RENAME", "TERMINATE", "GRANT", "DENY", "REVOKE", "ALTER",
+    "FOREACH", "USE", "SHOW", "EXPLAIN", "PROFILE", "TRANSACTIONS",
+})
+_ALLOWED_CLAUSE_WORDS = frozenset({"MATCH", "OPTIONAL", "WHERE", "RETURN", "WITH", "UNWIND", "ORDER", "BY", "SKIP", "LIMIT"})
+_ALLOWED_FUNCTIONS = frozenset({"any", "coalesce", "toString", "elementId", "labels", "type", "left"})
 
 
 def strip_cypher_noise(q: str) -> str:
@@ -38,8 +46,21 @@ def strip_cypher_noise(q: str) -> str:
 
 
 def assert_read_only(cypher: str) -> str:
-    """Raise ValueError if the statement could write. Conservative: false alarms are fine."""
+    """Allow bounded read-query clauses and pure functions; reject all other Cypher clauses."""
+    if not isinstance(cypher, str) or not cypher.strip():
+        raise ValueError("read-only guard: query must be non-empty text")
     clean = strip_cypher_noise(cypher)
+    clauses = {word.upper() for word in re.findall(r"\b[A-Za-z_][A-Za-z_0-9]*\b", clean)} & _CLAUSE_WORDS
+    disallowed = clauses - _ALLOWED_CLAUSE_WORDS
+    if disallowed:
+        raise ValueError(f"read-only guard: clause is not allowlisted ({sorted(disallowed)[0]})")
+    if not re.match(r"\s*(?:OPTIONAL\s+)?MATCH\b", clean, re.I):
+        raise ValueError("read-only guard: query must begin with an allowlisted MATCH clause")
+    for function in re.findall(r"\b([A-Za-z_][A-Za-z_0-9]*)\s*\(", clean):
+        if function.upper() in _ALLOWED_CLAUSE_WORDS:
+            continue
+        if function not in _ALLOWED_FUNCTIONS:
+            raise ValueError(f"read-only guard: function is not allowlisted ({function})")
     m = _WRITE.search(clean)
     if m:
         raise ValueError(f"read-only guard: forbidden token {m.group(0)!r}")
