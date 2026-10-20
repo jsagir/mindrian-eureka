@@ -4,8 +4,9 @@ Without this, a method has not earned a place in the agent."""
 from __future__ import annotations
 
 import heapq
+from datetime import date, datetime, time, timezone
 
-from .common import MAX_BRIDGE_EDGES, MAX_BRIDGE_NODES, as_deadline, pair_key, require_size
+from .common import GraphInputError, MAX_BRIDGE_EDGES, MAX_BRIDGE_NODES, as_deadline, pair_key, require_size
 from .gaps import ranked_pairs
 from .bridging import communities, betweenness, participation, bridge_pairs
 from .holes import induced_c4
@@ -15,14 +16,39 @@ def dated_edges(g):
     return [e for e in g.edges if e.get("created_at")]
 
 
+def _parse_date(value, field="cutoff"):
+    if isinstance(value, datetime):
+        parsed = value
+    elif isinstance(value, date):
+        parsed = datetime.combine(value, time.min, tzinfo=timezone.utc)
+    elif isinstance(value, str):
+        raw = value.strip()
+        try:
+            parsed_date = date.fromisoformat(raw)
+        except ValueError:
+            try:
+                parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+            except ValueError as exc:
+                raise GraphInputError(f"{field} must be an ISO date or date-time") from exc
+        else:
+            parsed = datetime.combine(parsed_date, time.min, tzinfo=timezone.utc)
+    else:
+        raise GraphInputError(f"{field} must be an ISO date or date-time")
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
 def choose_cutoff(g, frac=0.7):
-    ds = sorted(e["created_at"] for e in dated_edges(g))
-    return ds[int(len(ds) * frac)] if ds else None
+    ds = sorted(_parse_date(e["created_at"], "edge created_at") for e in dated_edges(g))
+    return ds[int(len(ds) * frac)].isoformat() if ds else None
 
 
 def split(g, cutoff):
-    train = g.before(cutoff)
-    future = {pair_key(e["s"], e["t"]) for e in g.edges if e.get("created_at") and e["created_at"] >= cutoff}
+    cutoff_date = _parse_date(cutoff)
+    train = g.filtered(lambda e: not e.get("created_at") or _parse_date(e["created_at"], "edge created_at") < cutoff_date)
+    future = {pair_key(e["s"], e["t"]) for e in g.edges
+              if e.get("created_at") and _parse_date(e["created_at"], "edge created_at") >= cutoff_date}
     future = {p for p in future if not train.has_edge(*p)}
     return train, future
 
@@ -69,6 +95,7 @@ def evaluate(g, cutoff=None, ks=(10, 50, 200), seed=7, only_pairs=None, budget_s
     cutoff = cutoff or choose_cutoff(g)
     if not cutoff:
         return {"error": "no dated relationships; cannot backtest"}
+    cutoff = _parse_date(cutoff).isoformat()
     train, future = split(g, cutoff)
     if only_pairs is not None:
         future = {p for p in future if p in only_pairs}
