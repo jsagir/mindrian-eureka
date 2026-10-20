@@ -102,7 +102,7 @@ def portfolio_coverage(document: dict[str, Any]) -> dict[str, Any]:
         "scope_id": document.get("scope_id"),
         "snapshot_id": document.get("snapshot_id"),
         "input_counts": {"artifacts": total, "taxonomy_categories": len(categories)},
-        "coverage": {"represented_categories": len(covered), "unrepresented_categories": len(ranked), "represented_fraction": len(covered) / len(ranked)},
+        "coverage": {"represented_categories": len(covered), "unrepresented_categories": len(ranked) - len(covered), "represented_fraction": len(covered) / len(ranked)},
         "areas": [{"category_id": cid, "label": categories[cid]["label"], "artifact_count": counts[cid], "artifact_refs": [_refs(artifact_by_id[aid]) for aid in sorted(membership[cid])]} for cid in ranked],
         "interpretation": "Unrepresented or thin categories are portfolio coverage observations only. They do not establish external demand, novelty, or commercial opportunity.",
         "provenance": {"method": "count supplied artifact-to-taxonomy assignments", "taxonomy_source": document.get("taxonomy_source"), "computed_at": _now()},
