@@ -12,7 +12,7 @@
       "id": "graph.prepare_artifact_bundle",
       "name": "Prepare Graph Knowledge for the Opportunity Scout",
       "engine_family": "Graph-to-engine handoff",
-      "jtbd": "Use when an authorized graph snapshot contains node descriptions that should be screened by the existing RS/HSI scout. Project eligible nodes into its source-linked local artifact bundle.",
+      "jtbd": "Use when an authorized graph snapshot contains node descriptions that should be screened by the existing Screen One Local Snapshot for Opportunity Pair Leads engine. Project eligible nodes into its source-linked local artifact bundle.",
       "status": "experimental",
       "version": "0.1.0",
       "surface": [
@@ -366,9 +366,9 @@
       "limitations": [
         "Pair signals are discovery leads, not evidence of novelty, value, or opportunity.",
         "MindrianOS must resolve room references, review connections, research evidence, and file decisions.",
-        "Reference equivalence to the original RS package and model evaluation remain open.",
+        "Reference equivalence to the original unusual-pairs package and model evaluation remain open.",
         "The ranking of the unusual-pairs engine is not verified bit-for-bit against the original package; the default hybrid_2026 scoring adds steps the original does not have.",
-        "The default LATEST RS 2026 hybrid scorer needs at least ten eligible pairs; use legacy scoring for smaller corpora.",
+        "The default LATEST unusual-pairs hybrid 2026 scorer needs at least ten eligible pairs; use legacy scoring for smaller corpora.",
         "For graph-derived input, MindrianOS supplies the bounded, authorized artifact projection and resolves returned IDs; Eureka does not query or own the local graph."
       ],
       "input_schema": "schemas/cross-domain-pairs-input.v1.json",
@@ -648,7 +648,7 @@
       "id": "portfolio.find_coverage_gaps",
       "name": "Check Which Portfolio Themes Are Underrepresented",
       "engine_family": "Portfolio coverage-gap discovery",
-      "jtbd": "Use when portfolio records and a sourced taxonomy are available and you want thin categories inventoried; optionally add host-computed HSI pairs and shared-model vectors for a room-relative whitespace scan.",
+      "jtbd": "Use when portfolio records and a sourced taxonomy are available and you want thin categories inventoried; optionally add host-computed wording-and-meaning pairs and shared-model vectors for a room-relative whitespace scan.",
       "status": "experimental",
       "version": "0.1.0",
       "surface": [
@@ -667,13 +667,13 @@
       },
       "requires": [
         "Sourced taxonomy and explicit artifact category assignments",
-        "Same-model vectors and HSI seed pairs if whitespace analysis is requested"
+        "Same-model vectors and wording-and-meaning seed pairs if whitespace analysis is requested"
       ],
       "network": "denied for local analysis",
       "side_effects": [],
       "limitations": [
         "Taxonomy coverage is a count inventory; optional whitespace is relative only to supplied room artifacts and baselines.",
-        "The workflow does not run HSI, embed content, search literature, measure market demand, or establish novelty.",
+        "The workflow does not run the wording-and-meaning pairs engine, embed content, search literature, measure market demand, or establish novelty.",
         "A gap in room material does not establish external demand or commercial whitespace."
       ],
       "routes": {
@@ -1045,7 +1045,7 @@
       "network": "denied by the engine; no external research.",
       "side_effects": [],
       "limitations": [
-        "Counts representation only; it does not run original HSI embedding, PCA/UMAP, or demand analysis, and does not establish market whitespace.",
+        "Counts representation only; it does not run original wording-and-meaning embedding, PCA/UMAP, or demand analysis, and does not establish market whitespace.",
         "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
       ],
       "input_schema": "schemas/portfolio-coverage-input.v1.json",
@@ -1080,7 +1080,7 @@
       "implementation": "src/mindrian_eureka/discovery_workflows.py::discover_hsi_whitespace",
       "requires": [
         "At least 2 room artifact vectors and 1 reference framework vector",
-        "HSI pair results for the same snapshot",
+        "Wording-and-meaning pair results for the same snapshot",
         "Vectors generated with one shared embedding model"
       ],
       "network": "Denied; host supplies vectors and reference frameworks.",
@@ -1239,11 +1239,11 @@
         "network": "none"
       },
       "requires": [
-        "MindrianOS-produced HSI whitespace zones and 2D projection",
+        "MindrianOS-produced wording-and-meaning whitespace zones and 2D projection",
         "MindrianOS-authorized framework ADDRESSES_PROBLEM_TYPE and FEEDS_INTO edges with stable graph IDs and display names",
         "Stable scope and snapshot identifiers where available"
       ],
-      "network": "None; graph-derived framework edges and HSI zones are supplied by MindrianOS.",
+      "network": "None; graph-derived framework edges and wording-and-meaning zones are supplied by MindrianOS.",
       "side_effects": [],
       "limitations": [
         "Problem type is inherited from the supplied framework graph; raw text classification is not performed.",
@@ -1763,9 +1763,9 @@
       "network": "denied; model loading is local-only and no embeddings are fetched",
       "side_effects": [],
       "limitations": [
-        "HSI and spectral outputs are exploratory portfolio-relative signals, not probability, quality, market, or novelty estimates.",
+        "Wording-and-meaning and spectral outputs are exploratory portfolio-relative signals, not probability, quality, market, or novelty estimates.",
         "Without a configured local encoder or supplied vectors, the engine explicitly falls back to a lexical-only comparison.",
-        "The copied HSI reference source has unresolved redistribution rights and is local-evaluation only.",
+        "The copied wording-and-meaning reference source has unresolved redistribution rights and is local-evaluation only.",
         "The whitespace-to-taxonomy workflow is not included in this capability."
       ],
       "input_schema": "schemas/hsi-pairs-input.v1.json",
@@ -1831,7 +1831,7 @@
       "id": "opportunity.synthesize_discovery_signals",
       "name": "Screen One Local Snapshot for Opportunity Pair Leads",
       "engine_family": "Local opportunity-pair screening",
-      "jtbd": "Use when a scoped local catalog and local semantic model are ready and you want RS and HSI pair leads from the same snapshot for Theo and human review. The result is a shortlist, not a qualification.",
+      "jtbd": "Use when a scoped local catalog and local semantic model are ready and you want unusual-pairs and wording-and-meaning pair leads from the same snapshot for Theo and human review. The result is a shortlist, not a qualification.",
       "status": "experimental",
       "surface": [
         "CLI",
@@ -1841,17 +1841,17 @@
       "requires": [
         "2..2500 source-linked local artifacts",
         "MindrianOS scope and snapshot identity when the bundle is graph-derived",
-        "Configured local RS model or local model cache",
-        "Optional precomputed dense vectors or local HSI model; without these HSI uses labeled lexical-only degradation"
+        "Configured local unusual-pairs model or local model cache",
+        "Optional precomputed dense vectors or local wording-and-meaning model; without these that engine uses labeled lexical-only degradation"
       ],
       "network": "denied; both methods use local supplied material and local models only",
       "side_effects": [],
       "limitations": [
         "This combines two retrieval signals, not the full Eureka harvest/critic/qualification lifecycle.",
-        "No RS and HSI scores are fused; results are ordered by number of methods surfacing a pair and then best within-engine rank.",
+        "No unusual-pairs and wording-and-meaning scores are fused; results are ordered by number of methods surfacing a pair and then best within-engine rank.",
         "Pair signals do not establish technical complementarity, novelty, market value, or a breakthrough.",
         "Theo review, graph tracing, external evidence, SME adjudication, and opportunity-bank writes are separate host actions.",
-        "HSI reference-source rights remain unresolved; local evaluation only.",
+        "Wording-and-meaning reference-source rights remain unresolved; local evaluation only.",
         "The complete graph.prepare_artifact_bundle result is accepted directly by eureka-signal-scout (legacy alias: eureka-scout) and scout_start_opportunity_signal_scout; the host remains responsible for authorizing the projection."
       ],
       "input_schema": "schemas/discovery-signals-input.v1.json",
@@ -1956,7 +1956,7 @@
       },
       "requires": [
         "Authorized artifact vectors and baseline framework vectors from one embedding model",
-        "Host-supplied analogy edges or HSI pairs with section labels"
+        "Host-supplied analogy edges or wording-and-meaning pairs with section labels"
       ],
       "network": "none; all graph records and vectors are caller supplied",
       "side_effects": [],
@@ -1987,7 +1987,7 @@
       "id": "portfolio.assess_candidate_dimensions",
       "name": "Assess Eureka Candidate Dimensions",
       "engine_family": "Eureka portfolio assessment",
-      "jtbd": "Use when MindrianOS has a source-linked candidate pair, a comparable authorized cohort, the RS pair signal, and explicit criterion judgments; inspect separate portfolio dimensions and their consistency-gated AHP-weighted signal before human review.",
+      "jtbd": "Use when MindrianOS has a source-linked candidate pair, a comparable authorized cohort, the unusual-pairs signal, and explicit criterion judgments; inspect separate portfolio dimensions and their consistency-gated AHP-weighted signal before human review.",
       "status": "experimental",
       "version": "0.1.0",
       "surface": [
@@ -2007,10 +2007,10 @@
       "requires": [
         "MindrianOS-authorized node cohort from one graph snapshot",
         "Stable candidate IDs and source references for both candidate nodes",
-        "MindrianOS-supplied RS direction, absolute difference, and source reference",
+        "MindrianOS-supplied unusual-pairs direction, absolute difference, and source reference",
         "A reciprocal 3x3 pairwise judgment matrix over strategic fit, validated demand, and technical-economic feasibility with consistency ratio <=0.1"
       ],
-      "network": "None; all node/cohort data and RS signals are caller supplied.",
+      "network": "None; all node/cohort data and unusual-pairs signals are caller supplied.",
       "side_effects": [],
       "limitations": [
         "Dimension values are heuristic cohort-relative signals, not calibrated probabilities or independently verified facts.",
@@ -2610,7 +2610,7 @@
         "execution_timeout_seconds": 30
       },
       "requires": [
-        "A bounded cohort of source-linked RS differential scores from one authorized MindrianOS scope and snapshot"
+        "A bounded cohort of source-linked unusual-pairs differential scores from one authorized MindrianOS scope and snapshot"
       ],
       "network": "None; scores and lineage are caller supplied.",
       "side_effects": [],
@@ -2657,13 +2657,13 @@
         "execution_timeout_seconds": 15
       },
       "requires": [
-        "RS differential scores with LSA, BERT, differential, and pass state"
+        "Unusual-pairs differential scores with LSA, BERT, differential, and pass state"
       ],
       "network": "None; scored-pair inputs are caller supplied.",
       "side_effects": [],
       "limitations": [
         "Classification uses fixed thresholds (strictly greater than 0.3 by default) and is not a validated assessment of transfer value.",
-        "The source direction-convention module is absent from LATEST; Eureka follows Convention A as documented in RS math source.",
+        "The source direction-convention module is absent from LATEST; Eureka follows Convention A as documented in the unusual-pairs math source.",
         "A none classification means neither axis cleared its floor and must not be passed to the thesis generator.",
         "No graph access, retrieval, room lookup, or persistence occurs.",
         "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
@@ -2705,7 +2705,7 @@
         "execution_timeout_seconds": 15
       },
       "requires": [
-        "A classified supported RS pair",
+        "A classified supported unusual pair",
         "Optional breakthrough score and industry-signal count from an authorized host workflow",
         "Optional host-resolved authors and institutions with source IDs"
       ],
@@ -2716,7 +2716,7 @@
         "Value propositions are deterministic source templates, not customer-tested claims or a complete business case.",
         "Partnership target ordering scores follow input order; names, identity, expertise, consent, and availability are not independently checked.",
         "The host must resolve and authorize names and evidence before sending this local payload; this capability performs no directory access or persistence.",
-        "The upstream direction-independent egress helper is replaced by the local RS content-hygiene filter; MindrianOS host egress governance remains authoritative.",
+        "The upstream direction-independent egress helper is replaced by the local unusual-pairs content-hygiene filter; MindrianOS host egress governance remains authoritative.",
         "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
       ],
       "routes": {
@@ -2756,7 +2756,7 @@
         "execution_timeout_seconds": 15
       },
       "requires": [
-        "A classified RS pair with diff, LSA, BERT, and pass state",
+        "A classified unusual pair with diff, LSA, BERT, and pass state",
         "Host-supplied market signal count and/or corpus-relative pair signals where available"
       ],
       "network": "None; all pair and substrate signals are caller supplied.",

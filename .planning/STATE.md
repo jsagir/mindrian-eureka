@@ -63,8 +63,8 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 1] RS original `similarity_code` package is not in the repo. REL-01 may stay open if the source cannot be traced.
-- [Phase 1] The JHTV HSI command may not be recoverable. ENG-03 allows a rebuild with recorded settings.
+- [Phase 1] Unusual-pairs engine original `similarity_code` package is not in the repo. REL-01 may stay open if the source cannot be traced.
+- [Phase 1] The JHTV wording-and-meaning pairs engine command may not be recoverable. ENG-03 allows a rebuild with recorded settings.
 - [Phase 3] HOST-01 needs edits in the MindrianOS plugin repo. That repo is GSD-only and has its own commit rules.
 - [Phase 3] The graph-derive replay input and script were not found. HOST-02 may end as a provenance-gap mark.
 - [All] Peer uncommitted edits exist under `story/`. Use `--only` or explicit file lists for every commit. Never stage or revert them.

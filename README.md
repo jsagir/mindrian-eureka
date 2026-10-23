@@ -49,7 +49,7 @@ The agents should be useful in four ways: **research assistant** (find and organ
 
 This repository packages bounded methods behind CLI and MCP interfaces, with a readiness-aware catalog describing what each job needs and what its result means. Available local surfaces include:
 
-- **Opportunity pair discovery:** find unusual pairs in an authorized collection; combine RS and HSI shortlists for follow-up.
+- **Opportunity pair discovery:** find unusual pairs in an authorized collection; combine the shortlists of the unusual-pairs and wording-and-meaning pairs engines for follow-up.
 - **Portfolio signals and critique:** compare wording and semantic patterns, inspect supplied taxonomy coverage, examine room-relative whitespace hypotheses, and run the deterministic Stage A grounding gates over MindrianOS-supplied local embeddings and graph neighbors.
 - **Baseline whitespace:** identify underrepresented baseline concepts in a MindrianOS-authorized artifact projection using supplied same-model vectors; outputs are room-relative research leads.
 - **External literature whitespace:** compare MindrianOS-authorized room vectors with papers retrieved through its approved research broker; surface retrieved-set gaps, gap-filling papers, and nearby cross-domain literature with source trails.
@@ -111,7 +111,7 @@ uv run eureka-workflow research.extract_experts_from_papers approved-papers.json
 uv run eureka-workflow analogy.cross_domain_research stage-request.json --output stage-result.json
 ```
 
-Runnable catalog entries with CLI/MCP surfaces publish input and output JSON schemas. The generic `eureka-workflow` and `scout_run_workflow` routes enforce the published schemas, as do dedicated capability routes. All 59 runnable entries now have CLI routes, advertised MCP routes, and retrievable input/output contracts; live catalog verification covers all 59, while direct live execution covers representative shared and dedicated routes. The MindrianOS integration branch has passing live bound-room authorization and graph-analysis checks using the production session resolver and a live Eureka stdio MCP process; the room database remains unchanged. This adapter is committed on a feature branch but has not been merged or released. Real-user room evaluation remains outstanding. The Genesis planner, IP-finance domain detector, weak-signal tail, critic, RS domain analyzer, RS classifier, breakthrough scorer, commercial assessor, preprocessor, and expert extraction workers require Node.js 22 or newer; the MCP container includes this runtime. The critic asks MindrianOS to supply locally computed embeddings and graph neighbors; it never opens the room graph. Its two rubric prompts must stay inside MindrianOS's approved local judge path. RS expert extraction processes only papers supplied by MindrianOS; it does not search, resolve the expert directory, or write to a room. `analogy.cross_domain_research` is called one stage at a time; MindrianOS performs approved research between local stages.
+Runnable catalog entries with CLI/MCP surfaces publish input and output JSON schemas. The generic `eureka-workflow` and `scout_run_workflow` routes enforce the published schemas, as do dedicated capability routes. All 59 runnable entries now have CLI routes, advertised MCP routes, and retrievable input/output contracts; live catalog verification covers all 59, while direct live execution covers representative shared and dedicated routes. The MindrianOS integration branch has passing live bound-room authorization and graph-analysis checks using the production session resolver and a live Eureka stdio MCP process; the room database remains unchanged. This adapter is committed on a feature branch but has not been merged or released. Real-user room evaluation remains outstanding. The Genesis planner, IP-finance domain detector, weak-signal tail, critic, field finder, pair classifier, breakthrough scorer, commercial assessor, preprocessor, and expert extraction workers require Node.js 22 or newer; the MCP container includes this runtime. The critic asks MindrianOS to supply locally computed embeddings and graph neighbors; it never opens the room graph. Its two rubric prompts must stay inside MindrianOS's approved local judge path. Expert extraction processes only papers supplied by MindrianOS; it does not search, resolve the expert directory, or write to a room. `analogy.cross_domain_research` is called one stage at a time; MindrianOS performs approved research between local stages.
 
 ### Connect Eureka engines to the MindrianOS graph
 
@@ -144,7 +144,7 @@ uv run eureka-graph --task sme-bridge --snapshot graph-snapshot.json \
 
 This uses only the supplied graph snapshot and bundled mapping code; no external `SME_LIB` install or network access is needed. Correspondences and candidate inferences remain hypotheses for source-backed review.
 
-To send graph node text through RS/HSI, prepare the exact existing Scout bundle and run it with the existing signal engine:
+To send graph node text through the Screen One Local Snapshot for Opportunity Pair Leads engine, prepare the exact existing Scout bundle and run it with the existing signal engine:
 
 ```bash
 uv run eureka-graph --task prepare-artifact-bundle --snapshot graph-snapshot.json \
@@ -154,7 +154,7 @@ MINDRIAN_EUREKA_RS_MODEL_PATH=/absolute/path/to/local-model \
   uv run eureka-signal-scout scout-bundle.json --output scout-result.json
 ```
 
-Install the local encoder first with `uv sync --extra modern-encoder`. MindrianOS must authorize the snapshot and resolve the returned `mindrian-graph://node/{id}` references. Use the MCP projection only with a host-authorized snapshot; the host can pass the resulting `artifacts` into its existing RS/HSI job.
+Install the local encoder first with `uv sync --extra modern-encoder`. MindrianOS must authorize the snapshot and resolve the returned `mindrian-graph://node/{id}` references. Use the MCP projection only with a host-authorized snapshot; the host can pass the resulting `artifacts` into its existing Screen One Local Snapshot for Opportunity Pair Leads job.
 
 The composite `graph.explore_local_relationships` capability is available through `eureka-workflow` and `scout_run_workflow` when MindrianOS supplies an authorized snapshot object. Its five core signals can also be invoked independently as `graph.find_structural_gaps`, `graph.find_network_holes`, `graph.find_bridge_pairs`, `graph.assess_edge_atypicality`, and `graph.find_semantic_gaps`; each has its own name, JTBD, input/output schema, and CLI/MCP route. MCP never resolves Neo4j credentials, room paths, or room permissions. See the [graph algorithm service contracts](docs/capability-catalog.md#capability-catalog) and [origin notes](docs/algorithm-origins-and-rationale.md).
 
@@ -207,14 +207,26 @@ scripts/run-mcp-container
 
 The wrapper disables network access, mounts the model read-only, makes the container root filesystem read-only, and applies configurable CPU and memory limits. The model must already exist on the host.
 
+## Engine names
+
+Eureka names its pair engines by what they do. The first engine was formerly called RS.
+
+| Name | One-line job | Catalog id |
+|---|---|---|
+| Find Unusual Pairs Across a Research Collection (the unusual-pairs engine) | Finds pairs in a collection whose meaning signal and structure signal differ, with source links for follow-up. | `opportunity.find_cross_domain_pairs` |
+| Rank Unusual Pairs by Wording and Meaning (the wording-and-meaning pairs engine) | Ranks pairs whose wording similarity and meaning similarity differ, for investigation. | `portfolio.find_hybrid_similarity_pairs` |
+| Screen One Local Snapshot for Opportunity Pair Leads | Runs both engines on one local snapshot and returns one shortlist for human review. It does not fuse scores. | `opportunity.synthesize_discovery_signals` |
+
+The one-line job text of each entry is the `jtbd` field of that catalog id in `src/mindrian_eureka/data/capability-catalog.v1.json`. Results are candidates, not verified.
+
 ## Readiness at a glance
 
 | Area | Current state |
 |---|---|
 | Opportunity-pair discovery (the unusual-pairs engine) | Runnable CLI and durable stdio MCP jobs; experimental pending evaluation. Its ranking is not verified bit-for-bit against its original source (see below). |
-| RS + HSI signal scout | Runnable shortlist union; it does not fuse scores or qualify opportunities. |
+| Screen One Local Snapshot for Opportunity Pair Leads (signal scout) | Runnable shortlist union; it does not fuse scores or qualify opportunities. |
 | SME mapping and research handoff | Local mapping and bounded workflow stages; external research is host-brokered and source/license review remains open. |
-| HSI, analogy, Genesis, Jason, BONO, graph stages | Selected CLI/MCP stages are callable; full-family workflows have mixed or incomplete readiness. |
+| Wording-and-meaning pairs, analogy, Genesis, Jason, BONO, graph stages | Selected CLI/MCP stages are callable; full-family workflows have mixed or incomplete readiness. |
 | OMM decision-sequence analysis | Experimental; not an opportunity finder or validated measure of a person's ability. |
 | MindrianOS integration | Contract is documented; the `/mos:eureka` adapter remains outstanding. |
 
@@ -247,7 +259,7 @@ Useful entry points:
 - `eureka-structure-mapping`: map structures and prepare host-brokered verification research (`eureka-sme` remains a compatibility alias).
 - `eureka-decision-sequences`: compare decision-sequence models (install the `hmm` extra; `eureka-omm` remains a compatibility alias).
 - `eureka-workflow`: run a named supporting capability stage.
-- `eureka-signal-scout`: run the local RS + HSI signal scout (`eureka-scout` remains a compatibility alias).
+- `eureka-signal-scout`: run the local Screen One Local Snapshot for Opportunity Pair Leads signal scout (`eureka-scout` remains a compatibility alias).
 
 See [Using capabilities](docs/using-capabilities.md) for CLI and MCP examples, [Architecture](docs/architecture.md) for system design, and [Engine jobs](docs/engine-jobs.md) for JTBD and method guidance.
 

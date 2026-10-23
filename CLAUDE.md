@@ -4,7 +4,7 @@
 
 **MindrianOS Eureka**
 
-MindrianOS Eureka is a local Python engine (CLI + stdio MCP server) that finds candidate opportunity pairs in a collection of documents. It ranks pairs where meaning-similarity and vocabulary-structure similarity disagree (RS, HSI, graph services). It returns leads for human review. It never claims novelty, evidence, or value.
+MindrianOS Eureka is a local Python engine (CLI + stdio MCP server) that finds candidate opportunity pairs in a collection of documents. It ranks pairs where meaning-similarity and vocabulary-structure similarity disagree (the unusual-pairs engine, the wording-and-meaning pairs engine, graph services). It returns leads for human review. It never claims novelty, evidence, or value.
 
 Repo: `mindrian-eureka`. Runtime: Python 3.11+ with `uv`. Used by MindrianOS (`/mos:eureka`) and by direct CLI.
 

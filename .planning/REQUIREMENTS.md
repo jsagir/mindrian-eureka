@@ -7,18 +7,18 @@
 
 ### Release readiness (REL)
 
-- [ ] **REL-01**: Maintainer has a written record of the RS source origin, author attribution and license status, with a go / no-go for public distribution.
-- [ ] **REL-02**: README and package metadata state the RS fidelity status (not verified bit-for-bit) in plain words.
+- [ ] **REL-01**: Maintainer has a written record of the unusual-pairs engine source origin, author attribution and license status, with a go / no-go for public distribution.
+- [ ] **REL-02**: README and package metadata state the unusual-pairs engine fidelity status (not verified bit-for-bit) in plain words.
 
 ### Engine parity (ENG)
 
 - [ ] **ENG-01**: A test runs plugin `rs-engine.py` and repo `eureka-pair-scout` on the same fixed input and reports the rank overlap and score differences.
-- [ ] **ENG-02**: The project records one chosen RS path as canonical, or documents why both stay, with the parity result as evidence.
-- [ ] **ENG-03**: The exact HSI command and settings that produced `top_k 200` on the JHTV run are found, or rebuilt and recorded.
+- [ ] **ENG-02**: The project records one chosen unusual-pairs engine path as canonical, or documents why both stay, with the parity result as evidence.
+- [ ] **ENG-03**: The exact wording-and-meaning pairs engine command and settings that produced `top_k 200` on the JHTV run are found, or rebuilt and recorded.
 
 ### One-command run (RUN)
 
-- [ ] **RUN-01**: User runs one command (`eureka run`) with a folder of CSV or Markdown sources and gets RS and HSI ranked pairs.
+- [ ] **RUN-01**: User runs one command (`eureka run`) with a folder of CSV or Markdown sources and gets ranked pairs from the unusual-pairs engine and the wording-and-meaning pairs engine.
 - [ ] **RUN-02**: The command first builds a clean corpus with stable IDs, as `prepare_engine_corpus.py` does for JHTV.
 - [ ] **RUN-03**: The command writes a run manifest: input file hashes, record counts, settings, seeds, library and model versions, output hashes.
 - [ ] **RUN-04**: Running the command twice on the same input gives identical ranked output, and a test proves it.

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The first milestone makes Eureka operational by other users. The JHTV review on 2026-10-23 showed that the run is only partly reproducible and that no one-command path exists. The work goes in four steps. First, settle the one item that can block a public release (RS licensing and attribution) and prove which RS and HSI paths are trustworthy. Second, build the one-command run (`eureka run`) and the first-run check (`eureka doctor`) on top of those proven paths. Third, connect the run to MindrianOS (`/mos:eureka`) and close the graph-derive replay gap. Fourth, ship a small public example and a plain-English guide so a non-author can reproduce the method and knows what is not reproducible.
+The first milestone makes Eureka operational by other users. The JHTV review on 2026-10-23 showed that the run is only partly reproducible and that no one-command path exists. The work goes in four steps. First, settle the one item that can block a public release (licensing and attribution of the unusual-pairs engine, formerly called RS) and prove which unusual-pairs and wording-and-meaning paths are trustworthy. Second, build the one-command run (`eureka run`) and the first-run check (`eureka doctor`) on top of those proven paths. Third, connect the run to MindrianOS (`/mos:eureka`) and close the graph-derive replay gap. Fourth, ship a small public example and a plain-English guide so a non-author can reproduce the method and knows what is not reproducible.
 
 ## Phases
 
@@ -12,32 +12,32 @@ The first milestone makes Eureka operational by other users. The JHTV review on 
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Release Gate and Engine Parity** - Settle RS licensing and attribution, prove or choose the RS path, recover the HSI command
-- [ ] **Phase 2: One-Command Run and Doctor** - `eureka run` builds a clean corpus, ranks RS and HSI pairs, writes a manifest; `eureka doctor` checks the setup
+- [ ] **Phase 1: Release Gate and Engine Parity** - Settle unusual-pairs engine licensing and attribution, prove or choose its canonical path, recover the wording-and-meaning pairs engine command
+- [ ] **Phase 2: One-Command Run and Doctor** - `eureka run` builds a clean corpus, ranks unusual pairs and wording-and-meaning pairs, writes a manifest; `eureka doctor` checks the setup
 - [ ] **Phase 3: Host Integration and Replay Rebuild** - `/mos:eureka` calls the run through the MCP server; the graph-derive replay is rebuilt or marked as a provenance gap
 - [ ] **Phase 4: Public Example and Reproduction Guide** - Small public dataset with expected hashes, plus a "reproduce the JHTV method" guide
 
 ## Phase Details
 
 ### Phase 1: Release Gate and Engine Parity
-**Goal**: The maintainer knows whether Eureka may ship publicly, which RS path is canonical, and which HSI command produced the JHTV `top_k 200` result.
+**Goal**: The maintainer knows whether Eureka may ship publicly, which unusual-pairs engine path is canonical, and which wording-and-meaning pairs engine command produced the JHTV `top_k 200` result.
 **Depends on**: Nothing (first phase)
 **Requirements**: REL-01, REL-02, ENG-01, ENG-02, ENG-03
 **Success Criteria** (what must be TRUE):
-  1. The maintainer can open one written record that states the RS source origin, author attribution and license status, and ends with a go / no-go for public distribution.
+  1. The maintainer can open one written record that states the unusual-pairs engine source origin, author attribution and license status, and ends with a go / no-go for public distribution.
   2. Running the parity test on one fixed input prints the rank overlap and the score differences between plugin `rs-engine.py` and repo `eureka-pair-scout`.
-  3. The project docs name one canonical RS path, or explain why both stay, and cite the parity result as evidence.
-  4. A reader can copy the exact HSI command and settings that produced `top_k 200` on the JHTV run, either found in the room history or rebuilt and recorded.
-  5. The README and the package metadata state in plain words that RS fidelity is not verified bit-for-bit.
+  3. The project docs name one canonical unusual-pairs engine path, or explain why both stay, and cite the parity result as evidence.
+  4. A reader can copy the exact wording-and-meaning pairs engine command and settings that produced `top_k 200` on the JHTV run, either found in the room history or rebuilt and recorded.
+  5. The README and the package metadata state in plain words that unusual-pairs engine fidelity is not verified bit-for-bit.
 **Plans**: TBD
 **Scope notes**: The go / no-go gates public shipping in Phase 4 only. Phases 2 and 3 can proceed on a no-go. REL-02 wording depends on the REL-01 record and the ENG-01 result.
 
 ### Phase 2: One-Command Run and Doctor
 **Goal**: A non-author can check their setup, run one command on a folder of their own sources, and get the same ranked pairs every time, with a manifest that proves it.
-**Depends on**: Phase 1 (canonical RS path and HSI command decide what `eureka run` calls)
+**Depends on**: Phase 1 (canonical unusual-pairs engine path and wording-and-meaning pairs engine command decide what `eureka run` calls)
 **Requirements**: RUN-01, RUN-02, RUN-03, RUN-04, RUN-05, DOC-01, DOC-02
 **Success Criteria** (what must be TRUE):
-  1. User runs `eureka run` on a folder of CSV or Markdown sources and gets RS and HSI ranked pair files, built on a clean corpus with stable record IDs.
+  1. User runs `eureka run` on a folder of CSV or Markdown sources and gets ranked pair files from both engines, built on a clean corpus with stable record IDs.
   2. Each run writes a manifest with input file hashes, record counts, settings, seeds, library and model versions, and output file hashes.
   3. Running the command twice on the same input gives identical ranked output, and a test in the suite proves it.
   4. Every output file carries the "candidate, not verified" label and a score-meaning note.
@@ -63,7 +63,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. A small public dataset ships in the repo, and `eureka run` on it finishes end to end on a fresh checkout.
   2. The output hashes of that run match the shipped expected hashes, and a check fails when they differ.
   3. A "reproduce the JHTV method" guide in plain English walks a non-author through the steps from install to ranked pairs.
-  4. The guide states what is reproducible (RS, HSI, per the Phase 1 record), what is not (the replay outcome from Phase 3, RS bit-for-bit fidelity), and keeps the "candidate, not verified" wording.
+  4. The guide states what is reproducible (the unusual-pairs and wording-and-meaning pairs engines, per the Phase 1 record), what is not (the replay outcome from Phase 3, unusual-pairs engine bit-for-bit fidelity), and keeps the "candidate, not verified" wording.
 **Plans**: TBD
 **Scope notes**: The dataset license must allow redistribution. If REL-01 ends in no-go, ship the example and guide as internal only and record the reason.
 
