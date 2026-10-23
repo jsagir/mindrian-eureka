@@ -105,7 +105,7 @@ Cross-version check (PROVEN). The unusual-pairs engine run with the repo `.venv`
 
 ## 6. Inputs and outputs
 
-Input corpus (PROVEN): 2117 files under `engine-input-room/technology/` in the JHTV run folder `/home/jsagi/MindrianRooms/jhtv-oliver-kuntz/solution-design/full-catalog-run-2026-10-18/`.
+Input corpus (PROVEN): 2117 files under `engine-input-room/technology/` in the run folder of a scratch copy of the partner room: `$SCRATCH/partner-room/solution-design/full-catalog-run-2026-10-18/`.
 
 - Manifest: `engine-input-manifest.json`, sha256 `32c74cceafdf37b1085f6c89c41a59ee640f9ef27546e679c33ce068f80d5312`. It holds `markdown_sha256` for each of the 2117 records.
 - Check: every file of every scratch copy has the manifest sha256 (0 mismatches in 3 copies).
