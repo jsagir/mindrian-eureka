@@ -187,21 +187,21 @@ With every entry a hit and `RS_EMBEDDING_MODEL=minilm`, B never imports sentence
 | Five original files exist: `comparison.py`, `lsa.py`, `paper_cleaning.py`, `paper_gathering.py`, `sts_bert.py`. 434 lines in total. | `/mnt/c/Users/jsagi/Downloads/similarity_code (3)/similarity_code/` (dir mtime 2026-04-12) |
 | Same five files are in the plugin repo, byte-identical. sha256: `comparison.py` aef65081..., `lsa.py` a3672fea..., `paper_cleaning.py` dbf5f402..., `paper_gathering.py` dd2a46fd..., `sts_bert.py` d0edc2c3... The directory is gitignored (`.planning/*`), so it is not in git history. | `/home/jsagi/dev/MindrianOS-Plugin/.planning/phases/89-reverse-salient-engine/source/` ; `git check-ignore -v` returns `.gitignore:97:.planning/*` |
 | The files have no license header, no copyright line, no author line. The only matches for "copyright" are string literals in `paper_cleaning.py` that strip publisher notices from abstracts. | `grep -n -i "copyright\|licen\|author"` on the five files |
-| The plugin planning record says: "Received the original implementation from Newton Kwan (research paper code, 5 files, ~250 LOC)", dated 2026-04-12. | `.planning/phases/89-reverse-salient-engine/PLAN.md` line 53 |
-| The plugin cites the algorithm as "Kwan 2023" and "Newton Kwan et al. (2023)". No journal, venue, DOI, or URL for any paper was found in any file searched. "et al." names no other person. | `rs-engine.py` header; `rs_math.py` docstring; `.planning/phases/89-reverse-salient-engine/RESEARCH.md` lines 202-207; grep of `MindrianOS`, `PWS-Book`, `rethinking-mindrianos`, `Theo/.planning` found no other mention |
+| The plugin planning record says: "Received the original implementation from the original author (name held privately) (research paper code, 5 files, ~250 LOC)", dated 2026-04-12. | `.planning/phases/89-reverse-salient-engine/PLAN.md` line 53 |
+| The plugin cites the algorithm as "the original author, 2023" and "the original author et al. (2023)". No journal, venue, DOI, or URL for any paper was found in any file searched. "et al." names no other person. | `rs-engine.py` header; `rs_math.py` docstring; `.planning/phases/89-reverse-salient-engine/RESEARCH.md` lines 202-207; grep of `MindrianOS`, `PWS-Book`, `rethinking-mindrianos`, `Theo/.planning` found no other mention |
 | Line-count mismatch: `PLAN.md` says "~250 LOC"; `ALGORITHM-SOURCE.md` says 438; actual is 434. Minor, but the record should state the measured number. | as above |
 | The deck: file name in the origin note is `Algorithmic Generation of Solutions.pptx`, 15 slides, "file dated 2025-04-20". Other names in docs: `Algorithmic Generation of Reverse Salient Solutions (1).pptx` and `... of Solutions (1) (1).pptx`. The deck file was NOT found under `/mnt/c/Users/jsagi/Downloads` or `/home/jsagi` (maxdepth 6 name search). The deck text was extracted once (2026-09-23). The note lists no author on the slides. | `/home/jsagi/MindrianOS/research/2026-09-23-origin-concept-algorithmic-generation-of-rs-solutions.md` (byte-identical copy in `rethinking-mindrianos/research/`); `.planning/phases/89-reverse-salient-engine/ALGORITHM-SOURCE.md` front matter |
 | Date conflict: code attributed to 2023; deck file dated 2025-04-20; code received 2026-04-12. | the three sources above |
 | The plugin is BSL 1.1, Licensor Jonathan Sagir, "(c) 2024-2026". | `/home/jsagi/dev/MindrianOS-Plugin/LICENSE` |
 | The Eureka repo has no top-level `LICENSE` on purpose. | `docs/licensing-and-provenance.md` |
 | The Eureka ledger row for RS says: "User-provided research; upstream authorship and redistribution rights unresolved"; "Local evaluation only pending rights review"; "independent implementation ... no source file copied". | `docs/engine-source-ledger.md` row `RS / opportunity.find_cross_domain_pairs` (line 30) |
-| Eureka ships CJS files with the header `Copyright (c) 2026 Mindrian. BSL 1.1.` that mention "Kwan 2023" in comments. | `src/mindrian_eureka/data/rs/rs-differential-scorer.cjs` lines 2 and 33 |
+| Eureka ships CJS files with the header `Copyright (c) 2026 Mindrian. BSL 1.1.` that mention "the original author, 2023" in comments. | `src/mindrian_eureka/data/rs/rs-differential-scorer.cjs` lines 2 and 33 |
 | The Eureka Python RS reuses the same numeric settings as `lsa.py` (2000 features, `max_df` 0.5, 80 components, `n_iter` 10, seed 256, top 7 terms), but the code text is different (no loop copy). Whether parameter reuse needs a permission is a question for the owner, not for this research. | `algorithm.py` lines 53-73 vs `lsa.py` |
 
 ### What is unknown (the gap list)
 1. Who wrote the code beyond one name. Who is in "et al."
 2. Whether a paper exists, and its citation (venue, year, DOI).
-3. What terms Newton Kwan (or an institution) attached when the code was handed over. No email, license, or note was found.
+3. What terms the original author (name held privately) (or an institution) attached when the code was handed over. No email, license, or note was found.
 4. Who wrote the deck, and whether the deck and code have the same owner.
 5. Whether the owner holds written permission to adapt or redistribute the code or the method description.
 6. Whether any employer or institution of the author has a claim. (Stated as a gap only.)
@@ -487,7 +487,7 @@ Not a rename or migration phase. Omitted on purpose. One note: the JHTV room hol
    - Known: G1, G2, G3, G5 are open.
    - Recommendation: write `no-go`, `status: draft`; a human decides. NEEDS_HUMAN: set `decided_by` and `decided_on`.
 3. **May the record name the source author in a tracked file?**
-   - Known: the name already appears in the plugin repo and in a Eureka `.cjs` comment ("Kwan 2023"). An owner rule bars real names of testers or advisors in tracked repos. The author is neither, but the rule is close.
+   - Known: the name already appears in the plugin repo and in a Eureka `.cjs` comment ("the original author, 2023"). An owner rule bars real names of testers or advisors in tracked repos. The author is neither, but the rule is close.
    - Recommendation: keep the name; flag it for the owner in the checkpoint task.
 4. **Where can the deck and any hand-over message be found?**
    - Known: not on disk by name search. 

@@ -49,7 +49,7 @@ The two copies of the 5 original files are byte-identical (PROVEN). The plugin r
 
 ## 3. Author and citation facts
 
-- Original author, name held privately. The name is not written in this repo. It is held in the plugin repo planning files, which are private and gitignored: `.planning/phases/89-reverse-salient-engine/PLAN.md` (line 53), `RESEARCH.md` and `ALGORITHM-SOURCE.md` in the same directory, under `/home/jsagi/dev/MindrianOS-Plugin/`. The owner holds the pointer.
+- Original author, name held privately. This record does not quote the name. It appears in comments of one older adapted source file, tracked as open item O1 (section 4). The name is also held in the plugin repo planning files, which are private and gitignored: `.planning/phases/89-reverse-salient-engine/PLAN.md` (line 53), `RESEARCH.md` and `ALGORITHM-SOURCE.md` in the same directory, under `/home/jsagi/dev/MindrianOS-Plugin/`. The owner holds the pointer.
 - The plugin notes cite the method with "et al.". That wording names no other person (PROVEN). Who else took part is unknown (G1).
 - No paper venue, DOI or URL was found in any file searched (PROVEN). Whether a paper exists is unknown (G2).
 - The line counts conflict across notes: about 250, 438, and 434 measured (PROVEN).
