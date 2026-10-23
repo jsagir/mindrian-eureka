@@ -108,12 +108,12 @@ def build_corpus() -> list[dict]:
         words = [rng.choice(topics[own]) for _ in range(rng.randint(16, 20))]
         words += [rng.choice(topics[other]) for _ in range(rng.randint(5, 9))]
         rare = _pseudo_words(rng, rng.randint(3, 5), used, syllables=4)
-        # Alternate rare tokens are written with a capital letter. TF-IDF folds
+        # Every third rare token is written with a capital letter. TF-IDF folds
         # case, so the columns stay tied. The membership count uses raw
         # whitespace tokens, so only the plain form matches a topic keyword.
         # This makes the tie order change the structural matrix, as it does on
         # real text with mixed case and punctuation.
-        words += [w.capitalize() if k % 2 else w for k, w in enumerate(rare)]
+        words += [w.capitalize() if k % 3 == 2 else w for k, w in enumerate(rare)]
         rng.shuffle(words)
         docs.append({
             "id": f"syn-{i + 1:03d}",
