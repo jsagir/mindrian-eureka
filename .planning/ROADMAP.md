@@ -12,7 +12,7 @@ The first milestone makes Eureka operational by other users. The JHTV review on 
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Release Gate and Engine Parity** - Settle unusual-pairs engine licensing and attribution, prove or choose its canonical path, recover the wording-and-meaning pairs engine command
+- [x] **Phase 1: Release Gate and Engine Parity** (completed 2026-10-23, one open owner item) - Settle unusual-pairs engine licensing and attribution, prove or choose its canonical path, recover the wording-and-meaning pairs engine command
 - [ ] **Phase 2: One-Command Run and Doctor** - `eureka run` builds a clean corpus, ranks unusual pairs and wording-and-meaning pairs, writes a manifest; `eureka doctor` checks the setup
 - [ ] **Phase 3: Host Integration and Replay Rebuild** - `/mos:eureka` calls the run through the MCP server; the graph-derive replay is rebuilt or marked as a provenance gap
 - [ ] **Phase 4: Public Example and Reproduction Guide** - Small public dataset with expected hashes, plus a "reproduce the JHTV method" guide
@@ -29,7 +29,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The project docs name one canonical unusual-pairs engine path, or explain why both stay, and cite the parity result as evidence.
   4. A reader can copy the exact wording-and-meaning pairs engine command and settings that produced `top_k 200` on the JHTV run, either found in the room history or rebuilt and recorded.
   5. The README and the package metadata state in plain words that unusual-pairs engine fidelity is not verified bit-for-bit.
-**Plans**: TBD
+**Plans**: 6 plans, all complete
+- [x] 01-01: Release-gate record (decision stays draft no-go; owner sign-off pending)
+- [x] 01-02: Reproduction record for the JHTV pair results
+- [x] 01-03: Parity test for the unusual-pairs engine
+- [x] 01-04: Stable top-7 term order
+- [x] 01-05: Canonical path record for the unusual-pairs engine
+- [x] 01-06: Fidelity statement
+**Open owner item**: sign-off on the release decision (draft no-go). Phases 2 and 3 proceed; Phase 4 ships internal only until the owner changes it.
 **Scope notes**: The go / no-go gates public shipping in Phase 4 only. Phases 2 and 3 can proceed on a no-go. REL-02 wording depends on the REL-01 record and the ENG-01 result.
 
 ### Phase 2: One-Command Run and Doctor
@@ -74,7 +81,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Release Gate and Engine Parity | 0/TBD | Not started | - |
+| 1. Release Gate and Engine Parity | 6/6 | Complete (owner sign-off open) | 2026-10-23 |
 | 2. One-Command Run and Doctor | 0/TBD | Not started | - |
 | 3. Host Integration and Replay Rebuild | 0/TBD | Not started | - |
 | 4. Public Example and Reproduction Guide | 0/TBD | Not started | - |

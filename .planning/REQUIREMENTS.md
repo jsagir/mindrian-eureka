@@ -7,14 +7,14 @@
 
 ### Release readiness (REL)
 
-- [ ] **REL-01**: Maintainer has a written record of the unusual-pairs engine source origin, author attribution and license status, with a go / no-go for public distribution.
-- [ ] **REL-02**: README and package metadata state the unusual-pairs engine fidelity status (not verified bit-for-bit) in plain words.
+- [x] **REL-01**: Maintainer has a written record of the unusual-pairs engine source origin, author attribution and license status, with a go / no-go for public distribution.
+- [x] **REL-02**: README and package metadata state the unusual-pairs engine fidelity status (not verified bit-for-bit) in plain words.
 
 ### Engine parity (ENG)
 
-- [ ] **ENG-01**: A test runs plugin `rs-engine.py` and repo `eureka-pair-scout` on the same fixed input and reports the rank overlap and score differences.
-- [ ] **ENG-02**: The project records one chosen unusual-pairs engine path as canonical, or documents why both stay, with the parity result as evidence.
-- [ ] **ENG-03**: The exact wording-and-meaning pairs engine command and settings that produced `top_k 200` on the JHTV run are found, or rebuilt and recorded.
+- [x] **ENG-01**: A test runs plugin `rs-engine.py` and repo `eureka-pair-scout` on the same fixed input and reports the rank overlap and score differences.
+- [x] **ENG-02**: The project records one chosen unusual-pairs engine path as canonical, or documents why both stay, with the parity result as evidence.
+- [x] **ENG-03**: The exact wording-and-meaning pairs engine command and settings that produced `top_k 200` on the JHTV run are found, or rebuilt and recorded.
 
 ### One-command run (RUN)
 
@@ -59,11 +59,11 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REL-01 | Phase 1 - Release Gate and Engine Parity | Pending |
-| REL-02 | Phase 1 - Release Gate and Engine Parity | Pending |
-| ENG-01 | Phase 1 - Release Gate and Engine Parity | Pending |
-| ENG-02 | Phase 1 - Release Gate and Engine Parity | Pending |
-| ENG-03 | Phase 1 - Release Gate and Engine Parity | Pending |
+| REL-01 | Phase 1 - Release Gate and Engine Parity | Complete (record exists; decision draft no-go; owner sign-off pending) |
+| REL-02 | Phase 1 - Release Gate and Engine Parity | Complete |
+| ENG-01 | Phase 1 - Release Gate and Engine Parity | Complete |
+| ENG-02 | Phase 1 - Release Gate and Engine Parity | Complete |
+| ENG-03 | Phase 1 - Release Gate and Engine Parity | Complete |
 | RUN-01 | Phase 2 - One-Command Run and Doctor | Pending |
 | RUN-02 | Phase 2 - One-Command Run and Doctor | Pending |
 | RUN-03 | Phase 2 - One-Command Run and Doctor | Pending |
@@ -83,4 +83,4 @@
 
 ---
 *Requirements defined: 2026-10-23*
-*Last updated: 2026-10-23 after roadmap creation*
+*Last updated: 2026-10-23 after Phase 1 close-out*
