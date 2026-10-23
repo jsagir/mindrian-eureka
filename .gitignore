@@ -30,3 +30,6 @@ Thumbs.db
 .vscode/
 **/.hyperframes/
 **/.thumbnails/
+
+# GSD hook scratch
+.planning/.mindrian/
