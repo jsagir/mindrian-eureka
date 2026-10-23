@@ -2,7 +2,7 @@
 record: rs-source-release-gate
 version: 1
 decision: no-go
-decision_scope: public distribution of the RS engine (eureka-pair-scout, hybrid_2026 and legacy) and its docs
+decision_scope: public distribution of the unusual-pairs engine (eureka-pair-scout, hybrid_2026 and legacy) and its docs
 decided_by: Jonathan Sagir (owner)
 decided_on: ""
 status: draft
@@ -14,15 +14,15 @@ reopen_when:
 evidence_checked_on: 2026-10-23
 ---
 
-# RS source release gate
+# Release gate for the unusual-pairs engine source
 
-This record answers one question: may Eureka ship the Reverse Salient (RS) engine publicly. It is a project status note. It is not a license grant and not legal advice.
+This record answers one question: may Eureka ship the engine "Find Unusual Pairs Across a Research Collection" (id opportunity.find_cross_domain_pairs, formerly called RS) publicly. It finds pairs of documents in a collection where meaning and wording disagree. Below, this record calls it the unusual-pairs engine. It is a project status note. It is not a license grant and not legal advice.
 
 Label key. PROVEN means the fact was read or measured by a command on 2026-10-23. UNKNOWN means no evidence was found.
 
 ## 1. Summary
 
-The default answer is no-go. The RS method and its numeric settings come from a research code package of 5 files that was handed to the project. That package has no license text, no copyright line and no author line. Four gaps are open: who wrote the code (G1), whether a paper exists (G2), what terms came with the hand-over (G3), and whether written permission to adapt or redistribute exists (G5). The repo docs say these must close before production distribution. The owner (Jonathan Sagir) is the only person who can change this record from draft. Until then, Phases 2 and 3 proceed, and Phase 4 ships the RS example and guide as internal only.
+The default answer is no-go. The method of the unusual-pairs engine and its numeric settings come from a research code package of 5 files that was handed to the project. That package has no license text, no copyright line and no author line. Four gaps are open: who wrote the code (G1), whether a paper exists (G2), what terms came with the hand-over (G3), and whether written permission to adapt or redistribute exists (G5). The repo docs say these must close before production distribution. The owner (Jonathan Sagir) is the only person who can change this record from draft. Until then, Phases 2 and 3 proceed, and Phase 4 ships the unusual-pairs example and guide as internal only.
 
 ## 2. Origin facts
 
@@ -40,8 +40,8 @@ Evidence was re-run on 2026-10-23. Every hash below equals the output of `sha256
 | Original file paper_cleaning.py (plugin repo copy) | `/home/jsagi/dev/MindrianOS-Plugin/.planning/phases/89-reverse-salient-engine/source/paper_cleaning.py` | dbf5f402a3effe7ef366884c30c3ed6e4b80e291afb0dd96bdcb96adb203c45c | PROVEN |
 | Original file paper_gathering.py (plugin repo copy) | `/home/jsagi/dev/MindrianOS-Plugin/.planning/phases/89-reverse-salient-engine/source/paper_gathering.py` | dd2a46fd519a31e7b086d203fecf6d40091a832bc6190531fef8edd40f5ec024 | PROVEN |
 | Original file sts_bert.py (plugin repo copy) | `/home/jsagi/dev/MindrianOS-Plugin/.planning/phases/89-reverse-salient-engine/source/sts_bert.py` | d0edc2c3d56961387c4809887e55d7db81d4f4e04650ee4ddb2402aee946825c | PROVEN |
-| LATEST RS script (reference path B; the r-and-d copy in the plugin repo has the same hash) | `/mnt/c/Users/jsagi/Downloads/research/LATEST/engines/rs/shared/scripts/rs-engine.py` | 044b9ae6b807617f32dc029ff310b73653efa40e245e5bcf7750ef811c9fde45 | PROVEN |
-| Shipped plugin RS script (path A, legacy scoring only) | `/home/jsagi/dev/MindrianOS-Plugin/scripts/rs-engine.py` | 57c18df558d83fbffc8e9f7fda905729d0c0fbfe18a1c370b1db816efa3937f1 | PROVEN |
+| LATEST script `rs-engine.py` (reference path B; the r-and-d copy in the plugin repo has the same hash) | `/mnt/c/Users/jsagi/Downloads/research/LATEST/engines/rs/shared/scripts/rs-engine.py` | 044b9ae6b807617f32dc029ff310b73653efa40e245e5bcf7750ef811c9fde45 | PROVEN |
+| Shipped plugin script `rs-engine.py` (path A, legacy scoring only) | `/home/jsagi/dev/MindrianOS-Plugin/scripts/rs-engine.py` | 57c18df558d83fbffc8e9f7fda905729d0c0fbfe18a1c370b1db816efa3937f1 | PROVEN |
 | PowerPoint deck "Algorithmic Generation of Solutions" | searched under `/mnt/c/Users/jsagi/Downloads` and `/home/jsagi` (depth 6), names "Algorithmic Generation of Solutions" and "Algorithmic Generation of Reverse Salient Solutions" | none | UNKNOWN (not found on disk) |
 | Date the project received the code | plugin planning file `.planning/phases/89-reverse-salient-engine/PLAN.md` (line 53) | none | PROVEN as a written claim: 2026-04-12 |
 
@@ -66,7 +66,7 @@ The two copies of the 5 original files are byte-identical (PROVEN). The plugin r
 
 ## 5. What the repo copied versus reimplemented
 
-- The Python RS path in `src/mindrian_eureka/opportunity_pairs/algorithm.py` reuses these numeric settings from the original `lsa.py`: 2000 features, max_df 0.5, 80 components, n_iter 10, seed 256, top 7 terms per topic (PROVEN by reading both files).
+- The Python path of the unusual-pairs engine in `src/mindrian_eureka/opportunity_pairs/algorithm.py` reuses these numeric settings from the original `lsa.py`: 2000 features, max_df 0.5, 80 components, n_iter 10, seed 256, top 7 terms per topic (PROVEN by reading both files).
 - The code text is independent. No original file is copied into this repo (PROVEN by the ledger statement and by the Phase 1 rule not to vendor). This record cites paths and sha256 values only.
 - The CJS files under `src/mindrian_eureka/data/rs/` carry the header "Copyright (c) 2026 Mindrian. BSL 1.1."
 - Whether reuse of the numeric settings needs permission is a question for the owner. This record does not answer it.
@@ -91,5 +91,5 @@ To move to go, the owner needs: G1, G2, G3 and G5 closed, and condition C1 done.
 ## 8. Effect on phases
 
 - Phases 2 and 3 proceed on a no-go.
-- Phase 4 ships the RS example and guide as internal only on a no-go, and records the reason.
+- Phase 4 ships the unusual-pairs example and guide as internal only on a no-go, and records the reason.
 - The decision gates public shipping in Phase 4 only.
