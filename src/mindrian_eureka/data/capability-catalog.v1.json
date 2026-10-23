@@ -367,6 +367,7 @@
         "Pair signals are discovery leads, not evidence of novelty, value, or opportunity.",
         "MindrianOS must resolve room references, review connections, research evidence, and file decisions.",
         "Reference equivalence to the original RS package and model evaluation remain open.",
+        "The ranking of the unusual-pairs engine is not verified bit-for-bit against the original package; the default hybrid_2026 scoring adds steps the original does not have.",
         "The default LATEST RS 2026 hybrid scorer needs at least ten eligible pairs; use legacy scoring for smaller corpora.",
         "For graph-derived input, MindrianOS supplies the bounded, authorized artifact projection and resolves returned IDs; Eureka does not query or own the local graph."
       ],

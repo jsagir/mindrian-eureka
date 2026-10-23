@@ -117,6 +117,26 @@ Do not send every artifact to a generative model. First use the similarity signa
 
 ## Source and reproduction status
 
-The user-provided PowerPoint was named `Algorithmic Generation of Solutions (1) (1).pptx`; older source-analysis metadata calls the deck `Algorithmic Generation of Reverse Salient Solutions (1).pptx`. It also refers to the original `similarity_code` package. Those files are not present in this checkout, so confirm that the two deck names refer to the same source before claiming fidelity. This implementation is derived from the documented method analysis in the older MindrianOS repository at [ALGORITHM-SOURCE.md](/home/jsagi/dev/MindrianOS-Plugin/.planning/phases/89-reverse-salient-engine/ALGORITHM-SOURCE.md). No source code or model weights have been copied. The implementation is **not yet verified bit-for-bit** against the PPTX package; original source availability, author attribution, and licensing must be resolved before production distribution.
+The user-provided PowerPoint was named `Algorithmic Generation of Solutions (1) (1).pptx`; older source-analysis metadata calls the deck `Algorithmic Generation of Reverse Salient Solutions (1).pptx`. It also refers to the original `similarity_code` package. The original package and the deck are not in this repo. The package files (5 files) exist on the maintainer machine; their paths and sha256 values are in [rs-release-gate.md](../rs-release-gate.md). The deck was not found on that machine by name search. Confirm that the two deck names refer to the same source before claiming fidelity. This implementation is derived from the documented method analysis in the older MindrianOS repository at [ALGORITHM-SOURCE.md](/home/jsagi/dev/MindrianOS-Plugin/.planning/phases/89-reverse-salient-engine/ALGORITHM-SOURCE.md). No source code or model weights have been copied. The ranking of the unusual-pairs engine is **not verified bit-for-bit** against the original package; original source availability, author attribution, and licensing must be resolved before production distribution.
+
+The repo path (`eureka-pair-scout`, scoring `hybrid_2026`) is the canonical path for new runs: see [rs-engine-parity.md](../rs-engine-parity.md) for the measured comparison. The release status of the engine is in the release record [rs-release-gate.md](../rs-release-gate.md).
+
+The repo path ranks with the same logic as the JHTV reference script, but it builds the dense input by a different rule: title plus body, chunked, chunk vectors averaged. The reference script embeds the body once and cuts it at the model limit. As a result the repo path does not reproduce the JHTV ranking at the meaning-signal level. On the committed fixtures the share of shared pairs is 0.74 and the rank correlation is 0.62. On a 40-file sample of the JHTV collection the share is 0.423. Fidelity to the original method is not verified bit-for-bit. The JHTV pair file keeps its provenance to the reference script version that made it.
+
+### Known deviations from the original package
+
+These deviations were read from the original files and are written here in our own words. No original code or comment text is copied. Items marked INFERRED are reasoned from the formulas, not run.
+
+| Id | Item | Original package | Eureka |
+|----|------|------------------|--------|
+| D1 | Text split | Splits on a single space. | Splits on any whitespace (both ports). |
+| D2 | Stop words | Also removes the NLTK English stop words before TF-IDF. | Skips the NLTK step (both ports). |
+| D3 | BERT segments | Feeds raw 512-token segments with no start or end tokens. | Uses 510 tokens plus the two special tokens. |
+| D4 | BERT matrix scaling | Rescales with a different centre, then applies a second min-max step. | Uses the maximum absolute deviation and no second step. This affects `legacy` scoring; the z-scores in `hybrid_2026` remove it. INFERRED from the formulas. |
+| D5 | Ranking | Ranks by the absolute BERT-minus-LSA difference and shows the top 1000. | The default `hybrid_2026` (BM25 mix, z-gap, percentile gate) is not in the original. It is the 2026 extension. |
+| D6 | Model | Uses a large cased BERT. | The JHTV run and the modern mode use MiniLM. |
+| D7 | Topics | Fixed topic count. | Small corpora use fewer than 80 topics (documented adaptation). |
+| D8 | Top-7 term tie-break | Stable order for tied terms. | FIXED on 2026-10-23 in plan 01-04: the tight LSA limit (1e-6) now passes without an expected failure (maximum difference 3.37e-08). |
+| D9 | Input | Reads cleaned Scopus abstracts. | Reads whatever the caller supplies. |
 
 The faithful reference encoder and the modern encoder variant must remain separate in results and evaluation. Faster execution is not evidence of better opportunity discovery. The first evaluation set should preserve the PPTX examples and include user-judged useful and unhelpful pairs, with a held-out subset for selecting a default.

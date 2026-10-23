@@ -14,7 +14,8 @@
   "limitations": [
     "Signal disagreement identifies unusual pairs, not validated opportunities.",
     "The user objective is included in review context but does not affect pair scoring.",
-    "Reference mode is based on source-analysis notes and has not been proven bit-for-bit equivalent to the original package.",
+    "The ranking of the unusual-pairs engine is not verified bit-for-bit against the original package; the default hybrid_2026 scoring adds steps the original does not have.",
+    "The repo path ranks with the same logic as the JHTV reference script but builds the dense input by a different rule, so it does not reproduce the JHTV ranking at the meaning-signal level.",
     "Modern sentence-transformer mode is an experimental variant.",
     "Model download is disabled by default; local execution does not itself enforce an OS sandbox.",
     "The MCP server requires MindrianOS to validate room scope and research grant IDs; the IDs are audit references, not authorization on their own.",

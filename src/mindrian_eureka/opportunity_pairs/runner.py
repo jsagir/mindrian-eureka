@@ -197,6 +197,7 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
             "Score disagreement identifies unusual pairs, not validated opportunities.",
             "The user objective is recorded in the input but is not used as a scoring signal in this method version.",
             "The reference BERT mode follows the documented source method; bit-for-bit equivalence to the original package has not been established.",
+            "The ranking of the unusual-pairs engine is not verified bit-for-bit against the original package; the default hybrid_2026 scoring adds steps the original does not have.",
             "The modern sentence-transformer mode is an experimental algorithm variant, not the original PPTX method.",
             "LATEST RS 2026 hybrid scoring uses corpus-relative signal normalization and requires at least 10 eligible pairs; legacy scoring remains available for smaller corpora.",
         ],
