@@ -14,6 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 RECORD = ROOT / "docs" / "rs-engine-parity.md"
 REPRODUCTION = ROOT / "docs" / "hsi-rs-jhtv-reproduction.md"
 BASELINE = ROOT / "tests" / "fixtures" / "rs_parity" / "baseline_report_pre_fix.json"
+AFTER_FIX = ROOT / "tests" / "fixtures" / "rs_parity" / "report_after_tie_break_fix.json"
+LSA_TIGHT_LIMIT = 1e-6
 
 REQUIRED_KEYS = [
     "record",
@@ -84,6 +86,13 @@ def section_three(text: str) -> str:
     stops = [body.index(marker) for marker in ("\n### ", "\n## 4.") if marker in body]
     assert stops, "section 3 has no end marker"
     return body[: min(stops)]
+
+
+def section_three_one(text: str) -> str:
+    """Text between the '### 3.1' heading and the '## 4.' heading."""
+    start = text.index("### 3.1")
+    end = text.index("\n## 4.", start)
+    return text[start:end]
 
 
 def baseline_value(report: dict, dotted: str):
@@ -164,7 +173,7 @@ def test_section_seven_has_the_four_open_items():
     section = text[start:end].lower()
     for word in ("tie-break", "clip", "dense-input", "top_k"):
         assert word in section, f"section 7 lacks a row for: {word}"
-    assert "pending, scheduled in plan 01-04" in section
+    assert "pending, scheduled" not in section, "the tie-break row must have a final status"
 
 
 def test_known_difference_wording_and_smoke_figure_present():
@@ -186,3 +195,33 @@ def test_links_to_reproduction_record_and_quotes_outcome_lines():
     assert len(outcome_lines) == 2
     for line in outcome_lines:
         assert line in text, f"outcome line not quoted exactly: {line[:60]}"
+
+
+def test_section_three_one_numbers_equal_after_fix_report():
+    report = json.loads(AFTER_FIX.read_text(encoding="utf-8"))
+    section = section_three_one(_text())
+    keys = list(REQUIRED_METRIC_KEYS)
+    if report["layers"].get("layer4_real_model") is not None:
+        keys += LAYER4_METRIC_KEYS
+    problems = check_drift(section, report, keys)
+    assert not problems, "\n".join(problems)
+
+
+def test_section_three_one_drift_check_detects_a_changed_number():
+    report = json.loads(AFTER_FIX.read_text(encoding="utf-8"))
+    section = section_three_one(_text())
+    key = "layers.layer2_lsa.max_abs_delta"
+    expected = format(baseline_value(report, key), ".4g")
+    tampered = section.replace(f"| {expected} |", "| 9.999 |", 1)
+    assert tampered != section
+    assert check_drift(tampered, report, [key])
+
+
+def test_tie_break_row_says_fixed_exactly_when_after_fix_lsa_delta_is_tight():
+    report = json.loads(AFTER_FIX.read_text(encoding="utf-8"))
+    text = _text()
+    start = text.index("## 7. Open fix list for path C")
+    end = text.index("\n## 8.", start)
+    row = next(line for line in text[start:end].splitlines() if "tie-break" in line.lower() and line.startswith("|"))
+    is_fixed = report["layers"]["layer2_lsa"]["max_abs_delta"] <= LSA_TIGHT_LIMIT
+    assert ("fixed" in row.lower()) == is_fixed, row

@@ -27,6 +27,8 @@ Reasons:
 
 The owner also locked the dense rule: path C embeds title plus body, split in chunks, and averages the chunk vectors. The difference to path B is recorded as evidence in section 4. It is not a defect to fix by matching path B.
 
+Fidelity of the unusual-pairs engine: not verified bit-for-bit against the original package. The repo path ranks with the same logic as the reference script but uses a different dense-input rule (section 3.1 and section 4).
+
 ## 2. The three code paths
 
 | Id | Path | sha256 | Scoring | Dense signal | Notes |
@@ -41,7 +43,7 @@ Warning: the installed plugin copy of `rs-engine.py` looks right and is wrong fo
 
 How to read it. Layer 1 is the ranker. Layers 2 and 3 are the inputs to the ranker. The test keeps the layers apart so that a difference shows its cause. A low end-to-end overlap with equal layer 1 means the inputs differ, not the ranker.
 
-These numbers come from the code state BEFORE the tie-break fix of plan 01-04. They are read from `tests/fixtures/rs_parity/baseline_report_pre_fix.json` and written with Python format `.4g`. The after-fix numbers are added by plan 01-06. The input is a synthetic corpus of 32 documents with seeded dense vectors (PROVEN, system `python3` with numpy 2.2.6 and scikit-learn 1.8.0).
+These numbers come from the code state BEFORE the tie-break fix of plan 01-04. They are read from `tests/fixtures/rs_parity/baseline_report_pre_fix.json` and written with Python format `.4g`. The after-fix numbers are in section 3.1. The input is a synthetic corpus of 32 documents with seeded dense vectors (PROVEN, system `python3` with numpy 2.2.6 and scikit-learn 1.8.0).
 
 | Metric | Value | Meaning |
 |--------|-------|---------|
@@ -65,6 +67,37 @@ These numbers come from the code state BEFORE the tie-break fix of plan 01-04. T
 Verdict line from the report: ranker equal; bm25 max abs delta 2.4e-07, lsa max abs delta 1.1e-02; end to end overlap 1.00 with shared dense vectors; dense input differs on real models (see layer 4).
 
 The negative-cosine case (layer 3b) is a known difference. With negative cosines in the fixture, the overlap without a clip is 0.86 and with the clip injected it is 1.00 (PROVEN, in the same report).
+
+### 3.1 After the tie-break fix
+
+These numbers come from the code state AFTER the tie-break fix of plan 01-04. They are read from `tests/fixtures/rs_parity/report_after_tie_break_fix.json` and written with Python format `.4g`. The input, the machine and the libraries are the same as in the table above (PROVEN). Only the rows that moved are explained here. A test checks every value against the report file.
+
+| Metric | Value | Meaning |
+|--------|-------|---------|
+| `layers.layer1_ranker.max_abs_gap_delta` | 4.865e-05 | Ranker only, same matrices: same pair set, same order, largest gap difference. |
+| `layers.layer2_bm25.max_abs_delta` | 2.4e-07 | BM25 matrix, largest difference to path B. |
+| `layers.layer2_lsa.max_abs_delta` | 3.371e-08 | LSA matrix, largest difference to path B. Fell from 0.01064 to this value after the tie-break fix. |
+| `layers.layer2_lsa.spearman` | 1 | Rank agreement of the LSA values. |
+| `layers.layer3_end_to_end.overlap_at_10` | 1 | Shared pairs in the top 10, end to end with shared dense vectors. |
+| `layers.layer3_end_to_end.overlap_at_20` | 1 | Same, top 20. |
+| `layers.layer3_end_to_end.overlap_at_full` | 1 | Same, all 50 pairs. |
+| `layers.layer3_end_to_end.spearman_rank` | 1 | Rank agreement on the shared pairs. |
+| `layers.layer3_end_to_end.sign_agreement` | 1 | The direction label of the gap never flips. |
+| `layers.plugin_legacy_leg.overlap_at_full` | 0.51 | Path A against path C in legacy scoring. Report only. |
+| `layers.layer4_real_model.overlap_at_10` | 0.6 | Real MiniLM on the synthetic corpus, top 10. Report only. |
+| `layers.layer4_real_model.overlap_at_20` | 0.7 | Same, top 20. |
+| `layers.layer4_real_model.overlap_at_full` | 0.74 | Same, all pairs (37 of 50 shared). |
+| `layers.layer4_real_model.spearman_rank` | 0.6238 | Rank agreement on the 37 shared pairs. |
+| `layers.layer4_real_model.spearman_signed_gap` | 0.8938 | Agreement of the signed gap. |
+| `layers.layer4_real_model.sign_agreement` | 1 | Direction label agrees. |
+
+What changed. The LSA difference to path B fell from 0.01064 to 3.371e-08, below the tight limit of 1e-6. The end-to-end rank agreement with shared dense vectors rose from 0.9994 to 1, because layer 3 uses the fixed LSA step. Layer 1, the BM25 matrix and the negative-cosine case did not change. Layer 4 moved in the third decimal (rank agreement 0.6209 before, 0.6238 after).
+
+Read the real-model rows with care. The repo path ranks with the same logic as the reference script, but it builds the dense input by a different rule (title plus body, chunk-mean, against body only, truncated). On the real model it does not reproduce the reference ranking at the meaning-signal level: overlap 0.74 over the full list, rank correlation 0.6238 on these fixtures, and 0.423 on the 40-file JHTV smoke (section 4). The tie-break fix did not close this gap, and it was not meant to. The owner decision keeps the repo rule canonical. Fidelity to the original method is not verified bit-for-bit.
+
+Output change from the fix. The fix changes LSA values in tie cases. For a corpus with exact term ties, the ranked output can differ from output made before 2026-10-23.
+
+Verdict line from the report: ranker equal; bm25 max abs delta 2.4e-07, lsa max abs delta 3.4e-08; end to end overlap 1.00 with shared dense vectors; dense input differs on real models (see layer 4).
 
 ## 4. JHTV smoke figures (not reproducible from the repo)
 
@@ -91,7 +124,7 @@ B is the reference script and C is the repo path. The first column names the ite
 | Dense encoding | One call, truncated at the model limit | Chunks of limit minus 2 tokens, chunk vectors averaged | Main source of disagreement. |
 | Negative cosine | Clipped to 0 | Not clipped | Changes pairs only when a cosine is negative (layer 3b). A known difference. |
 | Float precision | LSA and BM25 as float32, gap rounded to 4 decimals in output | float64 | Gap differences up to 1.1e-3. |
-| Top-7 LSA terms | Stable descending sort | `np.argsort` order, ties differ | LSA difference up to 0.0227 on 40 real files, none in that ranking. Fix scheduled (section 7). |
+| Top-7 LSA terms | Stable descending sort | `np.argsort` order, ties differ | LSA difference up to 0.0227 on 40 real files, none in that ranking. Fixed in plan 01-04 (section 3.1). |
 | SVD components | `max(1, min(80, n-1, terms-1))` | `min(n-1, terms-1, 80)`, raises below 1 | Same for normal corpora. |
 | Degenerate corpus | Returns identity | Raises `ValueError` | Edge case only. |
 | Percentile gate | Needs 10 eligible pairs | Same | Same. |
@@ -123,7 +156,7 @@ Facts from plan 01-02 that this record depends on:
 
 | Item | Decision or status | Owner |
 |------|--------------------|-------|
-| top-7 term tie-break | Pending, scheduled in plan 01-04. Plan 01-06 sets the final status. | Phase 1 plan 01-04 |
+| top-7 term tie-break | Fixed in plan 01-04; evidence in section 3.1 (LSA max abs delta 3.371e-08, at most 1e-6). | Phase 1 plan 01-04 |
 | negative-cosine clip | Not applied in path C, because the canonical rule is the repo path. Documented as a known difference, covered by layer 3b. | Owner decision, recorded here |
 | dense-input rule | Repo rule: title plus body, chunk-mean. Locked by the owner on 2026-10-23. | Owner (Jonathan Sagir) |
 | top_k cap of 100 in `run_document` | Unchanged in Phase 1. Phase 2 must lift it to 200, so that the one-command run can match the stored JHTV file size (200 pairs). | Phase 2 |
