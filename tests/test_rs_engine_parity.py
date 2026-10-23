@@ -478,6 +478,21 @@ def test_layer3b_negative_cosine_is_a_known_difference(monkeypatch, tmp_path):
     assert "known difference" in m["note"]
 
 
+def test_clip_and_cap_decisions_are_documented(monkeypatch, tmp_path):
+    """Pin the two Phase 1 decisions: no clip in path C, and top_k at most 100."""
+    m = _layer3b_negative_cosine(monkeypatch, tmp_path / "decisions.sqlite3")
+    assert "known difference" in m["note"]
+    # This pins the current Phase 1 state. Phase 2 lifts the cap to 200 and must update this check.
+    _install_stub(monkeypatch, "nonneg")
+    with pytest.raises(ValueError, match="top_k must be between 0 and 100"):
+        runner.run_document(
+            _document("hybrid_2026"), encoder_name="sentence-transformers",
+            model_path=_vectors()["cases"]["nonneg"]["model"],
+            top_k=101, scoring="hybrid_2026", min_percentile=0.9,
+            cache_path=tmp_path / "cap.sqlite3",
+        )
+
+
 def test_plugin_legacy_leg_reports_finite_numbers(monkeypatch, tmp_path):
     leg = _plugin_legacy_leg(monkeypatch, tmp_path / "legacy.sqlite3")
     assert leg["overlap_at_full"] > 0
