@@ -81,7 +81,9 @@ def structural_similarity(texts: Sequence[str], *, topics: int = 80, cancel_chec
     svd.fit(tfidf)
     topic_terms: list[set[str]] = []
     for component in svd.components_:
-        top = np.argsort(component)[-7:][::-1]
+        # Stable descending order: equal values keep the lower term index first,
+        # as in the original source (sorted, reverse, first 7).
+        top = [index for index, _ in sorted(enumerate(component), key=lambda pair: pair[1], reverse=True)[:7]]
         topic_terms.append({str(terms[i]) for i in top})
 
     membership = np.zeros((len(texts), len(topic_terms)), dtype=np.float64)

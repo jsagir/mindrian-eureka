@@ -28,6 +28,10 @@ Layers:
     3b negative cosine: known difference, reported
     4  real model (optional): report only
 Every call of run_document passes a tmp embedding cache path.
+
+Decision: no negative-cosine clip in path C; the clip is a path B step and the canonical rule is the repo path.
+Decision: run_document keeps top_k at most 100 in Phase 1; Phase 2 must lift it to 200 for the one-command run.
+Fix (plan 01-04): path C orders the top 7 terms of each LSA topic with a stable descending sort, so ties keep the lower term index first.
 """
 
 from __future__ import annotations
@@ -57,7 +61,6 @@ FIXTURES = Path(__file__).resolve().parent / "fixtures" / "rs_parity"
 REPO_ROOT = Path(__file__).resolve().parent.parent
 REFERENCE_SHA256 = "044b9ae6b807617f32dc029ff310b73653efa40e245e5bcf7750ef811c9fde45"
 PLUGIN_SHA256 = "57c18df558d83fbffc8e9f7fda905729d0c0fbfe18a1c370b1db816efa3937f1"
-LSA_TIE_REASON = "top-7 term tie-break differs from reference; fixed in plan 01-04"
 
 
 # ------------------------------------------------------------------ fixtures --
@@ -456,7 +459,6 @@ def test_layer2_lsa_matrix_rank_agreement():
     assert _layer2_components()[1]["spearman"] >= 0.99
 
 
-@pytest.mark.xfail(strict=True, reason=LSA_TIE_REASON)
 def test_layer2_lsa_matrix_tight_limit():
     assert _layer2_components()[1]["max_abs_delta"] <= 1e-6
 
