@@ -5,7 +5,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mindrian-eureka"
 version = "0.1.0"
-description = "Local-first, evidence-linked opportunity discovery capabilities for MindrianOS"
+description = "Local-first, evidence-linked opportunity discovery capabilities for MindrianOS. The unusual-pairs ranking is not verified bit-for-bit against its original source."
+readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
   "jsonschema>=4.20,<5",

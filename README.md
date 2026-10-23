@@ -211,7 +211,7 @@ The wrapper disables network access, mounts the model read-only, makes the conta
 
 | Area | Current state |
 |---|---|
-| RS opportunity-pair discovery | Runnable CLI and durable stdio MCP jobs; experimental pending evaluation. |
+| Opportunity-pair discovery (the unusual-pairs engine) | Runnable CLI and durable stdio MCP jobs; experimental pending evaluation. Its ranking is not verified bit-for-bit against its original source (see below). |
 | RS + HSI signal scout | Runnable shortlist union; it does not fuse scores or qualify opportunities. |
 | SME mapping and research handoff | Local mapping and bounded workflow stages; external research is host-brokered and source/license review remains open. |
 | HSI, analogy, Genesis, Jason, BONO, graph stages | Selected CLI/MCP stages are callable; full-family workflows have mixed or incomplete readiness. |
@@ -219,6 +219,18 @@ The wrapper disables network access, mounts the model read-only, makes the conta
 | MindrianOS integration | Contract is documented; the `/mos:eureka` adapter remains outstanding. |
 
 See the [machine-readable capability catalog](src/mindrian_eureka/data/capability-catalog.v1.json) for the complete status of each stable capability ID. See the [JHTV opportunity assessment](evaluations/room-runs/jhtv-opportunity-leads-2026-10-18.md) for an example of results framed as diligence leads with supporting evidence and disqualifying questions.
+
+## Fidelity of the unusual-pairs engine
+
+The engine "Find Unusual Pairs Across a Research Collection" finds pairs of documents whose meaning is close but whose vocabulary structure is far apart, or the reverse. It is called "the unusual-pairs engine" below. Its capability id is `opportunity.find_cross_domain_pairs`.
+
+Eureka's unusual-pairs engine is a reimplementation of a method from research code. It is not verified bit-for-bit against that code, and its default scoring adds steps the original does not have. Treat results as leads.
+
+- **Canonical path.** For new runs, use `eureka-pair-scout` with scoring `hybrid_2026`. The owner decided this on 2026-10-23. The [parity record](docs/rs-engine-parity.md) shows the measured comparison.
+- **Same ranking logic, different meaning input.** The repo path ranks with the same logic as the reference script, but it builds the dense (meaning) input by a different rule. The repo path embeds title plus body in chunks and averages the chunks. The reference script embeds the body once and cuts it at the model limit. On the committed test fixtures the repo path shares 74 percent of the pairs with the reference script (rank correlation 0.62). On a 40-file sample of the JHTV collection the share is 42 percent. So the repo path does not reproduce the JHTV ranking at the meaning-signal level.
+- **JHTV run.** The 2026-10-18 JHTV pair file came from an earlier reference script version, not from this package. JHTV candidates keep their provenance to that script by sha256. The exact commands, and their exact reproduction on a scratch copy, are in the [reproduction record](docs/hsi-rs-jhtv-reproduction.md).
+- **Release status.** Rights and release status of this engine are tracked in the [release record](docs/rs-release-gate.md). This README does not state the decision. See the record. This repo has no blanket license.
+- **Results are candidates for human review.** They are candidate, not verified.
 
 ## Development
 
