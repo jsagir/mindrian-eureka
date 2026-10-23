@@ -14,6 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Release Gate and Engine Parity** (completed 2026-10-23, one open owner item) - Settle unusual-pairs engine licensing and attribution, prove or choose its canonical path, recover the wording-and-meaning pairs engine command
 - [ ] **Phase 2: One-Command Run and Doctor** - `eureka run` builds a clean corpus, ranks unusual pairs and wording-and-meaning pairs, writes a manifest; `eureka doctor` checks the setup
+- [ ] **Phase 2.1: Opportunity Hub in the mos-brand format** - One local page shows the opportunity bank, the connection graph and the full catalogue of an analyzed collection, styled by the mos-brand book
 - [ ] **Phase 3: Host Integration and Replay Rebuild** - `/mos:eureka` calls the run through the MCP server; the graph-derive replay is rebuilt or marked as a provenance gap
 - [ ] **Phase 4: Public Example and Reproduction Guide** - Small public dataset with expected hashes, plus a "reproduce the JHTV method" guide
 
@@ -51,6 +52,18 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. `eureka doctor` checks Python, `uv`, local model presence, and cache and data directory permissions, and prints the exact fix for each failure. A missing model produces a clear message, never a silent failure.
 **Plans**: TBD
 
+### Phase 2.1: Opportunity Hub in the mos-brand format
+**Goal**: A user who ran `eureka run` can open one local page that shows the opportunity bank, the connection graph and the full catalogue of the analyzed collection, styled by the mos-brand book.
+**Depends on**: Phase 2 (the hub reads the `eureka run` output and its manifest)
+**Requirements**: HUB-01, HUB-02, HUB-03, HUB-04, HUB-05
+**Success Criteria** (what must be TRUE):
+  1. After `eureka run` on a folder of sources, one command writes a single local hub page with three views (opportunity bank, connection graph, full catalogue). The catalogue has search and filter. A check shows the page makes no network call and loads only local files.
+  2. A design-decisions file lists every choice for colour, type, layout, motion and the Theo face, and cites the mos-brand ruling (`mos-brand context`, `mos-brand review`) for each. The review passes on the hub page.
+  3. Every claim and every opportunity on the hub shows the label "candidate, not verified" and a link to its source record. A test fails when an item lacks either.
+  4. The hub can be password-gated by an option, and the page reads from a local file only. The public-data example reproduces the existing JHTV hub (opportunity bank, idea graph, October leads page) in the new format, with no private room data in the repo.
+**Plans**: TBD
+**Scope notes**: The mos-brand book (`~/mos-brand`, CLI `bin/mos-brand.cjs`) is the design authority. A brand intake runs as the first plan. The JHTV reference files live in the partner room's solution-design folder; use them as a visual and structural reference only. The example must come from public data.
+
 ### Phase 3: Host Integration and Replay Rebuild
 **Goal**: A MindrianOS user can start the one-command run from `/mos:eureka`, and the five JHTV candidates that cite the graph-derive replay have either a repeatable script or an honest provenance-gap mark.
 **Depends on**: Phase 2 (the MCP server calls the one-command run; the replay script reuses the manifest pattern)
@@ -77,11 +90,12 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Release Gate and Engine Parity | 6/6 | Complete (owner sign-off open) | 2026-10-23 |
 | 2. One-Command Run and Doctor | 0/TBD | Not started | - |
+| 2.1. Opportunity Hub in the mos-brand format | 0/TBD | Not started | - |
 | 3. Host Integration and Replay Rebuild | 0/TBD | Not started | - |
 | 4. Public Example and Reproduction Guide | 0/TBD | Not started | - |

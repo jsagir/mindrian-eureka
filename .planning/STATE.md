@@ -2,11 +2,11 @@
 gsd_state_version: '1.0'
 status: ready_to_plan
 progress:
-  total_phases: 4
+  total_phases: 5
   completed_phases: 1
   total_plans: 6
   completed_plans: 6
-  percent: 25
+  percent: 20
 ---
 
 # Project State
@@ -20,12 +20,12 @@ See: .planning/PROJECT.md (updated 2026-10-23)
 
 ## Current Position
 
-Phase: 2 of 4 (One-Command Run and Doctor) is next. Phase 1 is complete (6 of 6 plans, 2026-10-23), with one open owner item.
+Phase: 2 of 5 (One-Command Run and Doctor) is next. Phase 2.1 (Opportunity Hub) follows Phase 2. Phase 1 is complete (6 of 6 plans, 2026-10-23), with one open owner item.
 Plan: 0 of TBD in Phase 2
 Status: Ready to plan Phase 2
 Last activity: 2026-10-23 - Phase 1 closed in planning files (quick 261023-q2c)
 
-Progress: [██░░░░░░░░] 25%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 

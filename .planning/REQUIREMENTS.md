@@ -34,6 +34,14 @@
 - [ ] **HOST-01**: `/mos:eureka` in MindrianOS calls the Eureka MCP server for the one-command run, with room scope and approval rules respected.
 - [ ] **HOST-02**: The graph-derive replay used for JHTV OPP-027 to OPP-031 is rebuilt as a recorded, repeatable script, or the five candidates are marked "provenance gap" in the room.
 
+### Hub (HUB)
+
+- [ ] **HUB-01**: The hub is generated from `eureka run` output (opportunity bank, connection graph and catalogue views, with search and filter on the catalogue). It makes no network call and no data leaves the machine.
+- [ ] **HUB-02**: Every design choice (colour, type, layout, motion, Theo face) is ruled by the mos-brand book through its CLI (`mos-brand context`, `mos-brand review`), with the ruling cited in a design-decisions file.
+- [ ] **HUB-03**: Every claim and opportunity on the hub shows its "candidate, not verified" status and its source link.
+- [ ] **HUB-04**: The hub can be password-gated by an option, and the page reads from a local file only (enclave-safe).
+- [ ] **HUB-05**: The existing JHTV hub (opportunity bank, idea graph, October leads page; reference files live in the partner room's solution-design folder) is reproduced in the new format from a public-data example, not from private room data.
+
 ### Public example (EXM)
 
 - [ ] **EXM-01**: A small public dataset example runs end to end with `eureka run` and ships with expected output hashes.
@@ -73,14 +81,19 @@
 | DOC-02 | Phase 2 - One-Command Run and Doctor | Pending |
 | HOST-01 | Phase 3 - Host Integration and Replay Rebuild | Pending |
 | HOST-02 | Phase 3 - Host Integration and Replay Rebuild | Pending |
+| HUB-01 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
+| HUB-02 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
+| HUB-03 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
+| HUB-04 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
+| HUB-05 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
 | EXM-01 | Phase 4 - Public Example and Reproduction Guide | Pending |
 | EXM-02 | Phase 4 - Public Example and Reproduction Guide | Pending |
 
 **Coverage:**
-- v1 requirements: 16 total
-- Mapped to phases: 16 (Phase 1: 5, Phase 2: 7, Phase 3: 2, Phase 4: 2)
+- v1 requirements: 21 total
+- Mapped to phases: 21 (Phase 1: 5, Phase 2: 7, Phase 2.1: 5, Phase 3: 2, Phase 4: 2)
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-10-23*
-*Last updated: 2026-10-23 after Phase 1 close-out*
+*Last updated: 2026-10-23 after adding Phase 2.1 (Hub)*
