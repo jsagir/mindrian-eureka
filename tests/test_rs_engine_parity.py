@@ -280,6 +280,70 @@ def _versions() -> dict:
     return {"python": platform.python_version(), "numpy": np.__version__, "scikit_learn": sklearn.__version__}
 
 
+# ------------------------------------------------- live legs and layer 4 (opt-in) --
+
+REFERENCE_ENV = "EUREKA_RS_REFERENCE_SCRIPT"
+PLUGIN_ENV = "EUREKA_RS_PLUGIN_SCRIPT"
+REAL_MODEL_ENV = "EUREKA_RS_PARITY_REAL_MODEL"
+OFFLINE_ENV = {"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"}
+
+
+def _load_generator():
+    """Load the maintainer generator by file path. It runs no code on import."""
+    spec = importlib.util.spec_from_file_location(
+        "eureka_parity_generator", REPO_ROOT / "scripts" / "generate_rs_parity_golden.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _checked_script(env_name: str, expected_sha256: str) -> Path:
+    """Return the script path only when its sha256 equals the expected hash."""
+    path = Path(os.environ[env_name])
+    actual = hashlib.sha256(path.read_bytes()).hexdigest()
+    if actual != expected_sha256:
+        pytest.fail(f"{env_name} names {path} with sha256 {actual}; expected {expected_sha256}. "
+                    "Refusing to run an unexpected script.")
+    return path
+
+
+def _ranked(output: dict, gap_key: str) -> list[tuple[str, str, float]]:
+    generator = _load_generator()
+    return [(generator.strip_id(p["source_artifact_id"]), generator.strip_id(p["target_artifact_id"]), p[gap_key])
+            for p in output["pairs"]]
+
+
+def _layer4_real_model(cache_dir: Path) -> dict | None:
+    """Run path B and path C with the real model. Report only, nothing is asserted."""
+    model = os.environ.get(REAL_MODEL_ENV)
+    if not model or not os.environ.get(REFERENCE_ENV):
+        return None
+    script = _checked_script(REFERENCE_ENV, REFERENCE_SHA256)
+    generator = _load_generator()
+    room_root = Path(cache_dir) / "layer4-room"
+    section = room_root / "room" / generator.SECTION
+    section.mkdir(parents=True, exist_ok=True)
+    for item in _corpus():
+        (section / f"{item['id']}.md").write_text(f"{item['text']}\n", encoding="utf-8")
+    b_run = generator.run_script(script, room_root / "room", room_root / "b_real.json", ["--no-verify"], room_root)
+    b_pairs = [{"left": generator.strip_id(p["source_artifact_id"]), "right": generator.strip_id(p["target_artifact_id"]),
+                "hybrid_signed_gap": p["hybrid_signed_gap"]} for p in b_run["output"]["pairs"]]
+    with pytest.MonkeyPatch.context() as mp:
+        for name, value in OFFLINE_ENV.items():
+            mp.setenv(name, value)
+        result = runner.run_document(
+            _document("hybrid_2026"), encoder_name="sentence-transformers", model_path=model,
+            top_k=100, scoring="hybrid_2026", min_percentile=0.9, cache_path=Path(cache_dir) / "layer4.sqlite3")
+    metrics = _end_to_end_metrics(b_pairs, _pairs_from_result(result), "hybrid_signed_gap", "gap")
+    metrics["model"] = model
+    metrics["note"] = (
+        "Difference comes from the dense-input rule: path B embeds the body text once and truncates; "
+        "path C embeds title and body, chunks and averages. The owner decided the path C rule is canonical. "
+        "Phase 1 does not change it."
+    )
+    return metrics
+
+
 def build_parity_report(cache_dir: Path, layer4: dict | None = None) -> dict:
     """Build the report that plans 01-05 and 01-06 read. Keys are a contract."""
     cache_dir = Path(cache_dir)
@@ -362,7 +426,8 @@ def _all_numbers_finite(node) -> bool:
 
 @pytest.fixture(scope="module")
 def report(tmp_path_factory):
-    return build_parity_report(tmp_path_factory.mktemp("parity-cache"))
+    cache_dir = tmp_path_factory.mktemp("parity-cache")
+    return build_parity_report(cache_dir, layer4=_layer4_real_model(cache_dir))
 
 
 # --------------------------------------------------------------------- tests --
@@ -449,3 +514,41 @@ def test_report_is_complete_finite_and_printed(report, capsys, tmp_path):
     target = os.environ.get("EUREKA_PARITY_REPORT_PATH")
     if target:
         Path(target).write_text(json.dumps(report, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+
+
+@pytest.mark.skipif(not os.environ.get(REFERENCE_ENV), reason=f"{REFERENCE_ENV} is not set")
+def test_live_reference_matches_golden(tmp_path):
+    """Path B, run as a subprocess on a temp room, must equal the committed golden."""
+    script = _checked_script(REFERENCE_ENV, REFERENCE_SHA256)
+    generator = _load_generator()
+    golden = _golden()
+    for case, info in _vectors()["cases"].items():
+        case_dir = tmp_path / case
+        case_dir.mkdir()
+        room = generator.make_room(case_dir, _corpus(), info["vectors"])
+        run = generator.run_script(script, room, case_dir / "b_out.json", ["--no-verify"], tmp_path)
+        live = _ranked(run["output"], "hybrid_signed_gap")
+        expected = [(p["left"], p["right"], p["hybrid_signed_gap"]) for p in golden["cases"][case]["pairs"]]
+        assert [(a, b) for a, b, _ in live] == [(a, b) for a, b, _ in expected], case
+        assert max(abs(x[2] - y[2]) for x, y in zip(live, expected)) <= 1e-4, case
+
+
+@pytest.mark.skipif(not os.environ.get(PLUGIN_ENV), reason=f"{PLUGIN_ENV} is not set")
+def test_live_plugin_script_matches_legacy_golden(tmp_path):
+    """Path A (legacy scoring only), run as a subprocess, must equal the committed golden."""
+    script = _checked_script(PLUGIN_ENV, PLUGIN_SHA256)
+    generator = _load_generator()
+    info = _vectors()["cases"]["nonneg"]
+    room = generator.make_room(tmp_path, _corpus(), info["vectors"])
+    run = generator.run_script(script, room, tmp_path / "a_out.json", [], tmp_path)
+    live = _ranked(run["output"], "abs_diff")
+    expected = [(p["left"], p["right"], p["abs_diff"]) for p in _load("golden_plugin_legacy.json")["cases"]["nonneg"]["pairs"]]
+    assert [(a, b) for a, b, _ in live] == [(a, b) for a, b, _ in expected]
+
+
+@pytest.mark.skipif(not (os.environ.get(REAL_MODEL_ENV) and os.environ.get(REFERENCE_ENV)),
+                    reason=f"{REAL_MODEL_ENV} and {REFERENCE_ENV} are not both set")
+def test_layer4_real_model_is_report_only(report):
+    layer4 = report["layers"]["layer4_real_model"]
+    assert layer4 is not None and _all_numbers_finite(layer4)
+    assert {"overlap_at_10", "overlap_at_20", "overlap_at_full", "spearman_rank", "abs_gap_delta"} <= set(layer4)
