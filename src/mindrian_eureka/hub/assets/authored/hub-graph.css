@@ -69,3 +69,14 @@
   .hub-graph-stage { grid-column: 5 / 13; }
   .hub-graph-stage--3d { min-block-size: 560px; }
 }
+.hub-stage-canvas { position: absolute; inset: 0; overflow: hidden; }
+.hub-stage-canvas canvas { display: block; }
+.hub-stage-labels { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.hub-stage-chip { position: absolute; display: grid; gap: 4px; max-inline-size: calc(100% - 8px); line-height: 1.5; }
+.hub-stage-chip > span { display: block; }
+.hub-stage-chip a { font-family: var(--mos-font-code); font-size: 13px; }
+.hub-stage-chip-status { font-size: 13px; }
+.hub-stage-chip--selected { background: var(--mos-white); }
+.hub-stage-chip[hidden], #graph-tooltip[hidden] { display: none; }
+#graph-tooltip { position: absolute; pointer-events: none; white-space: pre-wrap; z-index: 1; }
+#graph-loading { position: absolute; inset-block-start: 16px; inset-inline-start: 16px; }

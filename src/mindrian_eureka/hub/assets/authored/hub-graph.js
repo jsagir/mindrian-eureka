@@ -27,14 +27,308 @@
   }
   function showStageButtons() { stageButtons.hidden = false; }
   function showFallback() {
+    if (cameraFrame !== null) { cancelAnimationFrame(cameraFrame); cameraFrame = null; }
+    if (resizeStage) resizeStage.disconnect();
+    if (G.instance && typeof G.instance._destructor === "function") G.instance._destructor();
+    G.stageEl.removeAttribute("role");
+    G.stageEl.removeAttribute("aria-label");
     G.mode = "fallback";
     G.instance = null;
     G.stage = null;
     stageButtons.hidden = true;
     G.stageEl.classList.remove("hub-graph-stage--3d");
     G.stageEl.replaceChildren(text("p", "Gr12", {}, { id: "graph-fallback" }), pairBlock);
+    emitReady();
   }
-  function startStage(stageEl) { showFallback(); }
+  let readySent = false;
+  let stageStarted = false;
+  let startPending = null;
+  let resizeStage = null;
+  let cameraFrame = null;
+  const INK = "#111111";
+  const PAPER = "#F7F5EE";
+  const COBALT = "#1F3FBF";
+  const YELLOW = "#F2C200";
+  const DIM = "#d8d4c8";
+  function emitReady() {
+    if (!readySent) { readySent = true; HubApp.emit("graph-ready"); }
+  }
+  function xyz(value) { return { x: value.x, y: value.y, z: value.z }; }
+  function easeProgress(progress) {
+    const token = getComputedStyle(document.documentElement).getPropertyValue("--mos-ease");
+    const values = token.match(/cubic-bezier\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)/);
+    if (!values) return progress;
+    const a = Number(values[1]), b = Number(values[2]), c = Number(values[3]), d = Number(values[4]);
+    function curve(t, first, second) {
+      return 3 * (1 - t) * (1 - t) * t * first + 3 * (1 - t) * t * t * second + t * t * t;
+    }
+    let low = 0, high = 1;
+    for (let i = 0; i < 20; i++) {
+      const mid = (low + high) / 2;
+      if (curve(mid, a, c) < progress) low = mid; else high = mid;
+    }
+    return progress === 1 ? 1 : curve((low + high) / 2, b, d);
+  }
+  // The only authored camera player. Library duration is never supplied.
+  function moveCamera(graph, destination, aim, placeLabels, instant) {
+    if (cameraFrame !== null) cancelAnimationFrame(cameraFrame);
+    cameraFrame = null;
+    const from = xyz(graph.camera().position);
+    const fromAim = xyz(graph.controls().target);
+    const duration = instant ? 0 : HubApp.motion.ms("--mos-time-reframe");
+    const began = performance.now();
+    function frame(now) {
+      const fraction = HubApp.motion.reduced ? 1 : duration ? Math.min(1, (now - began) / duration) : 1;
+      const amount = easeProgress(fraction);
+      const position = {}, target = {};
+      ["x", "y", "z"].forEach(function (axis) {
+        position[axis] = from[axis] + (destination[axis] - from[axis]) * amount;
+        target[axis] = fromAim[axis] + (aim[axis] - fromAim[axis]) * amount;
+      });
+      graph.cameraPosition(position, target);
+      placeLabels();
+      if (fraction < 1) cameraFrame = requestAnimationFrame(frame);
+      else cameraFrame = null;
+    }
+    if (duration === 0) frame(began);
+    else cameraFrame = requestAnimationFrame(frame);
+  }
+  function webglAvailable() {
+    const canvas = document.createElement("canvas");
+    let context = null;
+    try { context = canvas.getContext("webgl2") || canvas.getContext("webgl"); }
+    catch (_) { return false; }
+    if (!context) return false;
+    const release = context.getExtension("WEBGL_lose_context");
+    if (release) release.loseContext();
+    return true;
+  }
+  function loadStageLibrary() {
+    if (typeof window.ForceGraph3D === "function") return Promise.resolve();
+    return new Promise(function (resolve, reject) {
+      const script = document.createElement("script");
+      script.src = "vendor/3d-force-graph.min.js";
+      script.addEventListener("load", function () {
+        if (typeof window.ForceGraph3D === "function") resolve();
+        else reject(new Error("Graph library unavailable"));
+      }, { once: true });
+      script.addEventListener("error", function () { reject(new Error("Graph library unavailable")); }, { once: true });
+      document.head.appendChild(script);
+    });
+  }
+  function startStage(stageEl) {
+    stageEl.replaceChildren(text("p", "Gr11", {}, { class: "hub-mono", id: "graph-loading" }));
+    // Wait until the graph view is visible so its initial dimensions and fit are real.
+    startPending = function () {
+      if (stageStarted || HubApp.state.view !== "graph") return;
+      stageStarted = true;
+      if (!webglAvailable()) { showFallback(); return; }
+      loadStageLibrary().then(function () { createStage(stageEl); }).catch(function (error) {
+        console.error(error);
+        showFallback();
+      });
+    };
+    startPending();
+  }
+  function createStage(stageEl) {
+    const nodes = HubApp.data.records.filter(function (record) { return record.visible_pair_count > 0; })
+      .map(function (record) { return { id: record.id, record: record }; });
+    const nodeIndex = new Map(nodes.map(function (node) { return [node.id, node]; }));
+    const links = pairs.map(function (pair) {
+      return { source: pair.left.id, target: pair.right.id, pair: pair };
+    });
+    const labels = HubApp.el("div", { class: "hub-stage-labels", "aria-hidden": "true" });
+    const chips = new Map();
+    HubApp.data.bridges.forEach(function (bridge) {
+      const record = HubApp.index.records.get(bridge.record_id);
+      const chip = HubApp.el("div", { class: "hub-graph-chip hub-stage-chip", "data-bridge-id": record.id }, [
+        text("span", "Gr15", { ID: record.id }),
+        HubApp.el("span", { class: "hub-stage-chip-status" }, record.label),
+        HubApp.el("a", { href: record.source_link, tabindex: "-1" }, record.id)
+      ]);
+      chips.set(record.id, chip);
+      labels.appendChild(chip);
+    });
+    const selectedChip = HubApp.el("div", { class: "hub-graph-chip hub-stage-chip hub-stage-chip--selected", hidden: true });
+    labels.appendChild(selectedChip);
+    const tooltip = HubApp.el("div", { id: "graph-tooltip", class: "hub-graph-tooltip", "aria-hidden": "true", hidden: true });
+    const host = HubApp.el("div", { class: "hub-stage-canvas" });
+    host.style.visibility = "hidden";
+    stageEl.classList.add("hub-graph-stage--3d");
+    stageEl.setAttribute("role", "img");
+    stageEl.setAttribute("aria-label", HubApp.fmt("Gr13"));
+    stageEl.removeAttribute("tabindex");
+    const loading = text("p", "Gr11", {}, { class: "hub-mono", id: "graph-loading" });
+    stageEl.replaceChildren(host, labels, tooltip, loading);
+    let graph;
+    let fitted = null;
+    let active = null;
+    let selectedNode = null;
+    let finished = false;
+    function nodeColor(node) {
+      if (active && !active.has(node.id)) return DIM;
+      return node.record.bridge ? YELLOW : HubApp.index.hoods.get(node.record.hood).tint;
+    }
+    function linkColor(link) {
+      return active && !(active.has(link.pair.left.id) && active.has(link.pair.right.id)) ? DIM : COBALT;
+    }
+    function placeLabels() {
+      if (!graph || !finished) return;
+      const width = stageEl.clientWidth, height = stageEl.clientHeight;
+      const occupied = [];
+      function place(chip, node, hidden) {
+        chip.hidden = hidden;
+        if (hidden) return;
+        const point = graph.graph2ScreenCoords(node.x, node.y, node.z);
+        const w = chip.offsetWidth, h = chip.offsetHeight;
+        const x = Math.max(4, Math.min(width - w - 4, point.x + 10));
+        let y = Math.max(4, Math.min(height - h - 4, point.y + 10));
+        for (let tries = 0; tries < 8 && occupied.some(function (box) {
+          return x < box.x + box.w && x + w > box.x && y < box.y + box.h && y + h > box.y;
+        }); tries++) y = (y + h + 8 > height - h - 4) ? 4 : y + h + 8;
+        chip.style.insetInlineStart = x + "px";
+        chip.style.insetBlockStart = y + "px";
+        occupied.push({ x: x, y: y, w: w, h: h });
+      }
+      chips.forEach(function (chip, id) { place(chip, nodeIndex.get(id), Boolean(active && !active.has(id))); });
+      if (selectedNode) {
+        selectedChip.textContent = selectedNode.id;
+        place(selectedChip, selectedNode, false);
+      } else selectedChip.hidden = true;
+    }
+    function shell() {
+      nodes.forEach(function (node) {
+        if (!node.record.bridge || !node.__threeObj) return;
+        const mesh = node.__threeObj;
+        let outline = mesh.children.find(function (child) { return child.name === "hub-ink-shell"; });
+        if (!outline) {
+          outline = mesh.clone(false);
+          outline.name = "hub-ink-shell";
+          outline.material = mesh.material.clone();
+          outline.material.side = 1;
+          outline.material.opacity = 1;
+          outline.material.transparent = false;
+          outline.position.set(0, 0, 0);
+          outline.scale.setScalar(1.18);
+          mesh.add(outline);
+        }
+        outline.material.color.set(active && !active.has(node.id) ? DIM : INK);
+      });
+    }
+    function flyTo(id) {
+      const node = nodeIndex.get(id);
+      if (!node || !finished) return false;
+      const camera = graph.camera().position;
+      const target = graph.controls().target;
+      const delta = { x: camera.x - target.x, y: camera.y - target.y, z: camera.z - target.z };
+      const length = Math.hypot(delta.x, delta.y, delta.z) || 1;
+      const distance = 100;
+      const destination = { x: node.x + delta.x / length * distance,
+        y: node.y + delta.y / length * distance, z: node.z + delta.z / length * distance };
+      moveCamera(graph, destination, xyz(node), placeLabels);
+      return true;
+    }
+    function refreshSelection(sel, move) {
+      active = null;
+      selectedNode = null;
+      if (sel) {
+        const ids = sel.type === "record" ? [sel.id] : [HubApp.index.pairs.get(sel.key).left.id, HubApp.index.pairs.get(sel.key).right.id];
+        active = new Set(ids);
+        pairs.forEach(function (pair) {
+          if (ids.includes(pair.left.id)) active.add(pair.right.id);
+          if (ids.includes(pair.right.id)) active.add(pair.left.id);
+        });
+        selectedNode = nodeIndex.get(ids[0]) || null;
+      }
+      graph.nodeColor(nodeColor).linkColor(linkColor);
+      shell();
+      placeLabels();
+      if (move && selectedNode) flyTo(selectedNode.id);
+    }
+    function showNodeTip(node) {
+      tooltip.hidden = !node;
+      if (!node) return;
+      const record = node.record;
+      let value = HubApp.fmt("Gr14.sphere", { ID: record.id, title: record.title })
+        + "\n" + HubApp.fmt("Gr14.hood", { k: record.hood });
+      if (record.bridge) value += "\n" + HubApp.fmt("Gr14.bridge");
+      tooltip.textContent = value + "\n" + record.label;
+    }
+    function showLinkTip(link) {
+      tooltip.hidden = !link;
+      if (link) tooltip.textContent = HubApp.fmt("Gr14.line", {
+        engine: HubApp.data.engines[link.pair.engine].short_name, z: link.pair.rank_score_text });
+    }
+    // Stage follows the deviation recorded at the top of this file: every link cobalt, width 1.6 for crossing pairs, no particles.
+    graph = window.ForceGraph3D({ controlType: "orbit" })(host)
+      .width(stageEl.clientWidth).height(stageEl.clientHeight).backgroundColor(PAPER)
+      .nodeId("id").nodeVal(function (node) { return node.record.bridge ? 5 : 2.2; })
+      .nodeResolution(16).nodeOpacity(.95).nodeColor(nodeColor)
+      .nodeLabel(function () { return ""; }).linkLabel(function () { return ""; })
+      .linkColor(linkColor).linkOpacity(1).linkWidth(function (link) { return link.pair.width; })
+      .linkDirectionalParticles(0).warmupTicks(300).cooldownTicks(0)
+      .enableNodeDrag(false).showNavInfo(false)
+      .onNodeClick(function (node) { HubApp.select({ type: "record", id: node.id }, stageEl); })
+      .onLinkClick(function (link) { HubApp.select({ type: "pair", key: link.pair.key }, stageEl); })
+      .onBackgroundClick(function () { HubApp.clearSelection(); })
+      .onNodeHover(showNodeTip).onLinkHover(showLinkTip)
+      .onEngineStop(function () {
+        if (finished) { shell(); return; }
+        finished = true;
+        // Freeze the settled coordinates as well as using zero cooldown ticks.
+        nodes.forEach(function (node) { node.fx = node.x; node.fy = node.y; node.fz = node.z; });
+        requestAnimationFrame(function () {
+          if (G.instance !== graph) return;
+          shell();
+          graph.zoomToFit(0, 40);
+          fitted = { position: xyz(graph.camera().position), aim: xyz(graph.controls().target) };
+          host.style.visibility = "visible";
+          loading.remove();
+          G.mode = "3d";
+          showStageButtons();
+          placeLabels();
+          if (HubApp.state.selection) refreshSelection(HubApp.state.selection, false);
+          requestAnimationFrame(function () { placeLabels(); emitReady(); });
+        });
+      });
+    G.instance = graph;
+    graph.controls().autoRotate = false;
+    graph.controls().enableDamping = false;
+    graph.d3Force("link").distance(function (link) { return link.pair.crosses ? 60 : 40; })
+      .strength(function (link) { return link.pair.crosses ? .08 : .15; });
+    graph.d3Force("charge").strength(-55);
+    G.stage = {
+      select: function (sel) { refreshSelection(sel, true); },
+      clear: function () { refreshSelection(null, false); }, flyTo: flyTo,
+      zoom: function (factor) {
+        if (!finished) return;
+        const camera = graph.camera().position, aim = graph.controls().target;
+        moveCamera(graph, { x: aim.x + (camera.x - aim.x) / factor,
+          y: aim.y + (camera.y - aim.y) / factor, z: aim.z + (camera.z - aim.z) / factor }, xyz(aim), placeLabels);
+      },
+      reset: function () { if (fitted) moveCamera(graph, fitted.position, fitted.aim, placeLabels); }
+    };
+    graph.controls().addEventListener("change", placeLabels);
+    graph.controls().addEventListener("start", function () {
+      if (cameraFrame !== null) { cancelAnimationFrame(cameraFrame); cameraFrame = null; }
+    });
+    stageEl.addEventListener("pointermove", function (event) {
+      const box = stageEl.getBoundingClientRect();
+      tooltip.style.insetInlineStart = Math.max(4, Math.min(box.width - tooltip.offsetWidth - 4, event.clientX - box.x + 12)) + "px";
+      tooltip.style.insetBlockStart = Math.max(4, Math.min(box.height - tooltip.offsetHeight - 4, event.clientY - box.y + 12)) + "px";
+    });
+    stageEl.addEventListener("pointerleave", function () { tooltip.hidden = true; });
+    stageEl.addEventListener("webglcontextlost", function (event) { event.preventDefault(); showFallback(); }, true);
+    resizeStage = new ResizeObserver(function () {
+      if (!stageEl.clientWidth) return;
+      graph.width(stageEl.clientWidth).height(stageEl.clientHeight);
+      placeLabels();
+    });
+    resizeStage.observe(stageEl);
+    graph.graphData({ nodes: nodes, links: links });
+    host.querySelectorAll("canvas").forEach(function (canvas) { canvas.removeAttribute("tabindex"); });
+  }
+
   Object.defineProperty(HubApp, "graphView", { value: Object.freeze({
     get mode() { return G.mode; },
     get instance() { return G.instance; },
@@ -276,6 +570,9 @@
     return HubApp.el("div", { class: "hub-graph-tour" }, [go, empty]);
   }
   function render(container) {
+    readySent = false;
+    stageStarted = false;
+    startPending = null;
     if (diagramObserver) diagramObserver.disconnect();
     diagram = null;
     lastWidth = 0;
@@ -303,7 +600,10 @@
     const scene = HubApp.el("div", { class: "hub-graph-scene" }, [guide(), G.stageEl]);
     container.replaceChildren(text("h2", "Gr01", {}, { "data-view-heading": "" }), text("p", "Gr02"),
       scene, stageButtons, find(), tour());
-    if (HubApp.data.graph.earned) startStage(G.stageEl);
+    if (HubApp.data.graph.earned) {
+      container.appendChild(pairBlock);
+      startStage(G.stageEl);
+    }
     else if (pairs.length) { drawSmall(); container.appendChild(pairBlock); }
     else {
       G.mode = "empty";
@@ -313,13 +613,16 @@
     if (HubApp.data.graph.not_drawn > 0) container.appendChild(text("p", "Gr08", { n: HubApp.data.graph.not_drawn }));
     shown = HubApp.data.config.bank_page;
     listPairs();
-    HubApp.emit("graph-ready");
+    if (!HubApp.data.graph.earned) emitReady();
   }
   HubApp.registerView("graph", { render: render, onEvent: function (name, detail) {
     if (name === "select" || name === "clear") {
       marks();
       if (G.stage) { if (name === "select") G.stage.select(detail); else G.stage.clear(); }
     }
-    if (name === "view" && detail === "graph") drawDiagram();
+    if (name === "view" && detail === "graph") {
+      drawDiagram();
+      if (startPending) startPending();
+    }
   } });
 })();
