@@ -8,14 +8,27 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 
+from ..run.contracts import LABEL
 from ..run.output import _score
 from .contracts import (
+    ENGINE_KEYS,
+    ENGINE_UNUSUAL,
+    ENGINE_WORDING,
+    HUB_CONFIG,
+    HUB_DATA_SCHEMA,
     NEIGHBORHOOD_TINTS,
     WIDTH_CROSSING,
     WIDTH_MAX,
     WIDTH_MIN,
+    Payload,
+    PayloadBridge,
+    PayloadEngine,
     PayloadHood,
+    PayloadPair,
+    PayloadRecord,
+    RunData,
     RunPair,
+    deep_link,
 )
 
 
@@ -146,3 +159,296 @@ def pair_widths(pairs: Sequence[RunPair], labels: Mapping[str, str]) -> dict[str
             ratio = (pair.rank_score - low) / (high - low)
             widths[pair_key(pair)] = WIDTH_MIN + (WIDTH_MAX - WIDTH_MIN) * ratio
     return widths
+
+
+def _is_weak(pair: RunPair, floor: float | None) -> bool:
+    return floor is not None and pair.percentile is not None and pair.percentile < floor
+
+
+def _bridge_candidates(
+    pairs: Sequence[RunPair],
+    weights: Mapping[str, float],
+    hood_by_record: Mapping[str, int],
+) -> dict[str, tuple[float, str, list[int]]]:
+    """Return each qualified record's best one-engine bridge reading."""
+    candidates: dict[str, tuple[float, str, list[int]]] = {}
+    for engine in ENGINE_KEYS:
+        by_record: dict[str, dict[int, float]] = {}
+        for pair in pairs:
+            if pair.engine != engine:
+                continue
+            first_hood = hood_by_record.get(pair.left_id)
+            second_hood = hood_by_record.get(pair.right_id)
+            if first_hood is None or second_hood is None:
+                continue
+            weight = weights[pair_key(pair)]
+            first_partners = by_record.setdefault(pair.left_id, {})
+            second_partners = by_record.setdefault(pair.right_id, {})
+            first_partners[second_hood] = max(first_partners.get(second_hood, 0.0), weight)
+            second_partners[first_hood] = max(second_partners.get(first_hood, 0.0), weight)
+        for record_id in sorted(by_record):
+            partners = by_record[record_id]
+            if len(partners) < 2:
+                continue
+            top_weights = sorted(partners.values(), reverse=True)[:2]
+            score = sum(top_weights)
+            hoods = sorted(partners)
+            existing = candidates.get(record_id)
+            if existing is None or score > existing[0] or (
+                score == existing[0] and engine == ENGINE_UNUSUAL and existing[1] != ENGINE_UNUSUAL
+            ):
+                candidates[record_id] = (score, engine, hoods)
+    return candidates
+
+
+def build_payload(
+    run: RunData, *, file_links: Mapping[str, str] | None = None
+) -> Payload:
+    """Build a stable payload from run files without reading time or path state.
+
+    Args:
+        run: Validated run data from `load_run`.
+        file_links: Optional relative links to source files, keyed by record ID.
+
+    Returns:
+        The complete JSON-compatible hub payload.
+
+    Raises:
+        ValueError: A pair uses an unknown engine or record ID.
+    """
+    records_by_id = {record.id: record for record in run.records}
+    if set(run.engines) != set(ENGINE_KEYS):
+        raise ValueError("run must contain both known engines")
+
+    floors: dict[str, float | None] = {}
+    all_pairs: list[RunPair] = []
+    visible_pairs: list[RunPair] = []
+    weak_by_engine: dict[str, int] = {}
+    for engine_key in ENGINE_KEYS:
+        engine = run.engines[engine_key]
+        floor = engine.min_percentile if engine.min_percentile > 0.0 else None
+        floors[engine_key] = floor
+        weak_by_engine[engine_key] = 0
+        for pair in engine.pairs:
+            if pair.engine != engine_key:
+                raise ValueError(f"pair {pair_key(pair)} is under the wrong engine")
+            if pair.left_id not in records_by_id:
+                raise ValueError(f"pair {pair_key(pair)} references unknown record {pair.left_id}")
+            if pair.right_id not in records_by_id:
+                raise ValueError(f"pair {pair_key(pair)} references unknown record {pair.right_id}")
+            all_pairs.append(pair)
+            if _is_weak(pair, floor):
+                weak_by_engine[engine_key] += 1
+            else:
+                visible_pairs.append(pair)
+
+    weights = engine_weights(visible_pairs)
+    edges: dict[tuple[str, str], float] = {}
+    visible_ids: set[str] = set()
+    for pair in visible_pairs:
+        first, second = sorted((pair.left_id, pair.right_id))
+        visible_ids.update((first, second))
+        edge = (first, second)
+        edges[edge] = edges.get(edge, 0.0) + weights[pair_key(pair)]
+    labels = label_propagation(edges, sorted(visible_ids))
+    hoods = number_hoods(labels)
+    hood_by_record = {
+        record_id: hood["number"]
+        for hood in hoods
+        for record_id in hood["record_ids"]
+    }
+    widths = pair_widths(visible_pairs, labels)
+    bridge_candidates = _bridge_candidates(visible_pairs, weights, hood_by_record)
+    ranked_bridges = sorted(
+        bridge_candidates.items(), key=lambda item: (-item[1][0], item[0])
+    )[: HUB_CONFIG["tour_max"]]
+    bridges: list[PayloadBridge] = []
+    bridge_by_record: dict[str, tuple[int, list[int]]] = {}
+    for rank, (record_id, (score, chosen_engine, bridge_hoods)) in enumerate(
+        ranked_bridges, start=1
+    ):
+        bridges.append(
+            {
+                "record_id": record_id,
+                "rank": rank,
+                "engine": chosen_engine,
+                "score": score,
+                "score_text": score_text(score),
+                "hoods": bridge_hoods,
+            }
+        )
+        bridge_by_record[record_id] = (rank, bridge_hoods)
+
+    by_text_hash: dict[str, list[str]] = {}
+    for record in run.records:
+        if record.text and record.text_sha256:
+            by_text_hash.setdefault(record.text_sha256, []).append(record.id)
+    identical_groups = sorted(
+        (sorted(ids) for ids in by_text_hash.values() if len(ids) > 1),
+        key=lambda ids: ids[0],
+    )
+    identical_to: dict[str, list[str]] = {}
+    for group in identical_groups:
+        for record_id in group:
+            identical_to[record_id] = [other for other in group if other != record_id]
+    no_text_ids = {record.id for record in run.records if not record.text}
+
+    pair_keys_by_record: dict[str, list[str]] = {record_id: [] for record_id in records_by_id}
+    visible_count_by_record: dict[str, int] = {record_id: 0 for record_id in records_by_id}
+    for pair in all_pairs:
+        key = pair_key(pair)
+        pair_keys_by_record[pair.left_id].append(key)
+        pair_keys_by_record[pair.right_id].append(key)
+        if pair in visible_pairs:
+            visible_count_by_record[pair.left_id] += 1
+            visible_count_by_record[pair.right_id] += 1
+
+    records: list[PayloadRecord] = []
+    link_by_record: dict[str, str] = {}
+    for record in sorted(run.records, key=lambda item: item.id):
+        catalogue_link = deep_link(record.id)
+        file_link = file_links.get(record.id) if file_links is not None else None
+        source_link = file_link or catalogue_link
+        link_by_record[record.id] = source_link
+        bridge = bridge_by_record.get(record.id)
+        records.append(
+            {
+                "id": record.id,
+                "title": record.title,
+                "text": record.text,
+                "source_ref": record.source_ref,
+                "source_file": record.source_file,
+                "text_sha256": record.text_sha256,
+                "hood": hood_by_record.get(record.id),
+                "pair_keys": sorted(pair_keys_by_record[record.id]),
+                "pair_count": len(pair_keys_by_record[record.id]),
+                "visible_pair_count": visible_count_by_record[record.id],
+                "bridge": bridge is not None,
+                "bridge_rank": bridge[0] if bridge is not None else None,
+                "bridge_hoods": bridge[1] if bridge is not None else [],
+                "identical_to": identical_to.get(record.id, []),
+                "no_text": record.id in no_text_ids,
+                "source_link": source_link,
+                "catalogue_link": catalogue_link,
+                "file_link": file_link,
+                "label": LABEL,
+            }
+        )
+
+    pairs: list[PayloadPair] = []
+    for pair in sorted(
+        all_pairs,
+        key=lambda item: (ENGINE_KEYS.index(item.engine), item.rank, item.pair_id),
+    ):
+        left = records_by_id[pair.left_id]
+        right = records_by_id[pair.right_id]
+        weak = _is_weak(pair, floors[pair.engine])
+        pairs.append(
+            {
+                "key": pair_key(pair),
+                "pair_id": pair.pair_id,
+                "engine": pair.engine,
+                "rank": pair.rank,
+                "left": {
+                    "id": left.id,
+                    "title": left.title,
+                    "source_file": left.source_file,
+                    "source_link": link_by_record[left.id],
+                },
+                "right": {
+                    "id": right.id,
+                    "title": right.title,
+                    "source_file": right.source_file,
+                    "source_link": link_by_record[right.id],
+                },
+                "wording": pair.wording,
+                "meaning": pair.meaning,
+                "rank_score": pair.rank_score,
+                "wording_text": score_text(pair.wording),
+                "meaning_text": score_text(pair.meaning),
+                "rank_score_text": score_text(pair.rank_score),
+                "percentile": pair.percentile,
+                "reading": pair.reading,
+                "label": LABEL,
+                "weak": weak,
+                "weight": 0.0 if weak else weights[pair_key(pair)],
+                "width": WIDTH_MIN if weak else widths[pair_key(pair)],
+                "crosses": (
+                    not weak
+                    and hood_by_record.get(pair.left_id) != hood_by_record.get(pair.right_id)
+                ),
+                "flag_identical": pair.left_id in identical_to or pair.right_id in identical_to,
+                "flag_no_text": pair.left_id in no_text_ids or pair.right_id in no_text_ids,
+            }
+        )
+
+    removed_counts: dict[str, int] = {}
+    for item in run.dropped:
+        reason = str(item.get("reason", "unknown reason"))
+        removed_counts[reason] = removed_counts.get(reason, 0) + 1
+    removed = [
+        {"reason": reason, "count": str(removed_counts[reason])}
+        for reason in sorted(removed_counts)
+    ]
+    removed_text = "; ".join(
+        f"{reason} ({removed_counts[reason]})" for reason in sorted(removed_counts)
+    )
+    engines_payload: dict[str, PayloadEngine] = {}
+    short_names = {
+        ENGINE_UNUSUAL: "Unusual-pairs engine",
+        ENGINE_WORDING: "Wording engine",
+    }
+    for engine_key in ENGINE_KEYS:
+        engine = run.engines[engine_key]
+        floor = floors[engine_key]
+        engines_payload[engine_key] = {
+            "key": engine_key,
+            "name": engine.name,
+            "short_name": short_names[engine_key],
+            "score_meaning": engine.score_meaning,
+            "notes": list(engine.notes),
+            "floor": floor,
+            "floor_text": f"{floor:.2f}" if floor is not None else "",
+            "pairs": len(engine.pairs),
+            "top_k": engine.top_k,
+            "top_k_reached": engine.top_k_reached,
+            "weak": weak_by_engine[engine_key],
+        }
+
+    visible_record_count = len(visible_ids)
+    weak_count = sum(weak_by_engine.values())
+    return {
+        "schema": HUB_DATA_SCHEMA,
+        "label": LABEL,
+        "tool_version": run.tool_version,
+        "run_fingerprint": run.manifest_sha256,
+        "config": dict(HUB_CONFIG),
+        "counts": {
+            "records": len(run.records),
+            "pairs": {key: len(run.engines[key].pairs) for key in ENGINE_KEYS},
+            "hoods": len(hoods),
+            "records_in_visible_pairs": visible_record_count,
+            "records_in_no_pair": len(run.records) - visible_record_count,
+            "weak_pairs": weak_count,
+        },
+        "engines": engines_payload,
+        "records": records,
+        "pairs": pairs,
+        "hoods": hoods,
+        "bridges": bridges,
+        "data_check": {
+            "identical_records": sum(len(group) for group in identical_groups),
+            "identical_groups": identical_groups,
+            "no_text_records": len(no_text_ids),
+            "removed_count": len(run.dropped),
+            "removed": removed,
+            "removed_text": removed_text,
+            "boilerplate": "not_checked",
+        },
+        "graph": {
+            "earned": visible_record_count >= HUB_CONFIG["graph_min_records"],
+            "visible_records": visible_record_count,
+            "min_records": HUB_CONFIG["graph_min_records"],
+            "not_drawn": len(run.records) - visible_record_count,
+        },
+    }
