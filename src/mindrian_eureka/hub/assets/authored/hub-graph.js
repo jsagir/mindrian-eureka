@@ -77,7 +77,8 @@
     const fromAim = xyz(graph.controls().target);
     const duration = instant ? 0 : HubApp.motion.ms("--mos-time-reframe");
     const began = performance.now();
-    function frame(now) {
+    function frame() {
+      const now = performance.now();
       const fraction = HubApp.motion.reduced ? 1 : duration ? Math.min(1, (now - began) / duration) : 1;
       const amount = easeProgress(fraction);
       const position = {}, target = {};
@@ -90,7 +91,7 @@
       if (fraction < 1) cameraFrame = requestAnimationFrame(frame);
       else cameraFrame = null;
     }
-    if (duration === 0) frame(began);
+    if (duration === 0) frame();
     else cameraFrame = requestAnimationFrame(frame);
   }
   function webglAvailable() {
@@ -123,8 +124,8 @@
       if (stageStarted || HubApp.state.view !== "graph") return;
       stageStarted = true;
       if (!webglAvailable()) { showFallback(); return; }
-      loadStageLibrary().then(function () { createStage(stageEl); }).catch(function (error) {
-        console.error(error);
+      loadStageLibrary().then(function () { createStage(stageEl); }).catch(function () {
+        console.error("Graph stage unavailable");
         showFallback();
       });
     };
@@ -141,10 +142,9 @@
     const chips = new Map();
     HubApp.data.bridges.forEach(function (bridge) {
       const record = HubApp.index.records.get(bridge.record_id);
-      const chip = HubApp.el("div", { class: "hub-graph-chip hub-stage-chip", "data-bridge-id": record.id }, [
-        text("span", "Gr15", { ID: record.id }),
-        HubApp.el("span", { class: "hub-stage-chip-status" }, record.label),
-        HubApp.el("a", { href: record.source_link, tabindex: "-1" }, record.id)
+      const chip = HubApp.el("div", { class: "hub-stage-chip", "data-bridge-id": record.id }, [
+        text("a", "Gr15", { ID: record.id }, { href: record.source_link, class: "hub-graph-chip" }),
+        HubApp.el("span", { class: "hub-stage-chip-status" }, record.label)
       ]);
       chips.set(record.id, chip);
       labels.appendChild(chip);
@@ -174,7 +174,12 @@
     }
     function placeLabels() {
       if (!graph || !finished) return;
-      const width = stageEl.clientWidth, height = stageEl.clientHeight;
+      const width = labels.clientWidth;
+      const desktop = window.matchMedia("(min-width: 1024px)").matches;
+      const sheet = parseFloat(document.documentElement.style.getPropertyValue("--hub-sheet-height")) || 0;
+      const height = !desktop && HubApp.state.panelOpen
+        ? Math.max(80, Math.min(stageEl.clientHeight, innerHeight - sheet - stageEl.getBoundingClientRect().y))
+        : stageEl.clientHeight;
       const occupied = [];
       function place(chip, node, hidden) {
         chip.hidden = hidden;
@@ -223,9 +228,22 @@
       const delta = { x: camera.x - target.x, y: camera.y - target.y, z: camera.z - target.z };
       const length = Math.hypot(delta.x, delta.y, delta.z) || 1;
       const distance = 100;
-      const destination = { x: node.x + delta.x / length * distance,
-        y: node.y + delta.y / length * distance, z: node.z + delta.z / length * distance };
-      moveCamera(graph, destination, xyz(node), placeLabels);
+      const aim = xyz(node);
+      // Keep the selected mark in the area left visible by the specified panel.
+      if (HubApp.state.panelOpen) {
+        const matrix = graph.camera().matrixWorld.elements;
+        const halfView = distance * Math.tan(graph.camera().fov * Math.PI / 360);
+        const desktop = window.matchMedia("(min-width: 1024px)").matches;
+        const covered = desktop ? Math.min(400, stageEl.clientWidth * .8)
+          : Math.max(0, stageEl.clientHeight - innerHeight * .38);
+        const amount = halfView * covered / (desktop ? stageEl.clientWidth : stageEl.clientHeight);
+        ["x", "y", "z"].forEach(function (axis, index) {
+          aim[axis] += (desktop ? matrix[index] : -matrix[index + 4]) * amount;
+        });
+      }
+      const destination = { x: aim.x + delta.x / length * distance,
+        y: aim.y + delta.y / length * distance, z: aim.z + delta.z / length * distance };
+      moveCamera(graph, destination, aim, placeLabels);
       return true;
     }
     function refreshSelection(sel, move) {
@@ -274,12 +292,17 @@
       .onNodeHover(showNodeTip).onLinkHover(showLinkTip)
       .onEngineStop(function () {
         if (finished) { shell(); return; }
+        if (graph.graphData().nodes.length !== nodes.length || nodes.some(function (node) {
+          return !node.__threeObj || ![node.x, node.y, node.z].every(Number.isFinite);
+        })) return;
         finished = true;
         // Freeze the settled coordinates as well as using zero cooldown ticks.
         nodes.forEach(function (node) { node.fx = node.x; node.fy = node.y; node.fz = node.z; });
         requestAnimationFrame(function () {
           if (G.instance !== graph) return;
           shell();
+          // The vendor fit reads mesh world matrices, which can still be from the empty frame.
+          graph.scene().updateMatrixWorld(true);
           graph.zoomToFit(0, 40);
           fitted = { position: xyz(graph.camera().position), aim: xyz(graph.controls().target) };
           host.style.visibility = "visible";
@@ -298,7 +321,10 @@
       .strength(function (link) { return link.pair.crosses ? .08 : .15; });
     graph.d3Force("charge").strength(-55);
     G.stage = {
-      select: function (sel) { refreshSelection(sel, true); },
+      select: function (sel) {
+        if (HubApp.state.view === "graph") stageEl.scrollIntoView({ block: "start", behavior: "instant" });
+        refreshSelection(sel, true);
+      },
       clear: function () { refreshSelection(null, false); }, flyTo: flyTo,
       zoom: function (factor) {
         if (!finished) return;
