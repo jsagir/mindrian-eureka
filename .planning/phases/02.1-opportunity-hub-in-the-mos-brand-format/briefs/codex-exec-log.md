@@ -64,3 +64,14 @@
 - Inspected real-public shell captures at 1280 and 320; owner visual approval remains pending.
 - Deviations: driver direct-visibility step and stdout flush fix; unknown initial hash keeps bank visible.
 - UNVERIFIED: feature views, 3D, screen-reader review, Safari and owner brand stop. NEXT: Plan 11.
+
+## 02.1-11
+- Commits: 679ad60, 3729a26, 5ed93cc.
+- Full suite: 1118 passed, 27 skipped, 45 subtests passed in 226.59 seconds.
+- Focused checks: 52 passed. Ruff: PASS. Node syntax: PASS. Mypy: not applicable.
+- Chromium and Firefox: all 80 rows keep labels and both sources; deleted-chip negative control detected.
+- Paging, per-engine order, cut-offs, weak rows, keyboard, selection and empty states passed.
+- Five widths pass font, target, overflow and grid checks; reduced-motion transitions are zero.
+- Inspected real-public bank controls/rows at 1280 and 320; owner visual approval pending.
+- Deviations: fixed shared reduced-motion specificity, aligned engine default to both, adapted script-source safety check.
+- UNVERIFIED: reading panel and later Potential eureka UI features, screen reader, Safari, owner brand stop. NEXT: Plan 12.
