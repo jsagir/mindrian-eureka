@@ -435,4 +435,3 @@ def js_assignment(name: str, value: object, *, digits: int | None = 6) -> bytes:
     text = canonical_json(value, digits=digits).decode("utf-8").rstrip("\n")
     safe = _JSON_STRING.sub(_escape_match, text)
     return f"window.{name} = {safe};\n".encode()
-
