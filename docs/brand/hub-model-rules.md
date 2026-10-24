@@ -55,3 +55,9 @@ Measured on 2026-10-24 with `PYTHONPATH=src python3 -m pytest tests/test_hub_wri
 - Two builds into different output folders were byte-identical; the file set matched a small run.
 
 No record cap is set for the page. This is the largest run tested. Browser load time for the same run is measured in plan 18.
+
+## Deviations from the book guide
+
+Deviation from the book graph guide (GUIDE lines 17 to 27): the guide draws bridge links thick yellow with red particles. The hub draws every pair in cobalt, width 1.6 for pairs that cross neighborhoods, and draws no particles. Reason: D-21 no ambient motion (rule 19), and yellow alone is 1.54:1 on paper. Status: deviation, not book-derived; proposed segment.
+
+The stage built by plan 18 follows the same rule: every link cobalt, no particles.

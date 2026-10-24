@@ -1,0 +1,71 @@
+/* Deviation from the book graph guide (GUIDE lines 17 to 27): the guide draws bridge links thick yellow with red particles. The hub draws every pair in cobalt, width 1.6 for pairs that cross neighborhoods, and draws no particles. Reason: D-21 no ambient motion (rule 19), and yellow alone is 1.54:1 on paper. Status: deviation, not book-derived; proposed segment. */
+.hub-graph-scene { display: grid; gap: var(--hub-space-5); min-inline-size: 0; }
+.hub-graph-guide { min-inline-size: 0; }
+.hub-graph-guide p, #graph-legend { font-size: 16px; }
+#graph-legend { list-style: none; padding: 0; margin-block: var(--hub-space-5); }
+#graph-legend li { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: var(--hub-space-3); margin-block: var(--hub-space-4); align-items: center; }
+.hub-graph-swatch { display: inline-block; inline-size: 28px; block-size: 2px; background: var(--mos-blue); }
+.hub-graph-swatch--record { inline-size: 16px; block-size: 16px; border-radius: 50%; background: #5b7bd6; }
+.hub-graph-swatch--eureka { inline-size: 20px; block-size: 20px; border-radius: 50%; background: var(--mos-yellow); border: 2px solid var(--mos-ink); }
+.hub-graph-swatch--unusual_pairs, .hub-graph-swatch--wording_and_meaning { background: transparent; border-block-start: 2px dashed var(--mos-blue); }
+.hub-graph-swatch--crossing { block-size: 4px; }
+.hub-graph-swatch--selected { inline-size: 20px; block-size: 20px; border-radius: 50%; background: var(--mos-paper); border: 3px solid var(--mos-ink); }
+.hub-graph-stage { min-inline-size: 0; background: var(--mos-paper); position: relative; }
+.hub-graph-stage--3d { block-size: 70dvh; min-block-size: 360px; max-block-size: 560px; }
+#graph-stage-buttons { display: flex; flex-wrap: wrap; gap: var(--hub-space-3); margin-block: var(--hub-space-4); }
+#graph-stage-buttons[hidden], #graph-guide-body[hidden] { display: none; }
+.hub-graph-find { display: grid; gap: var(--hub-space-3); margin-block: var(--hub-space-6); max-inline-size: 640px; }
+.hub-graph-find label { font-weight: 600; }
+#graph-find-matches { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--hub-space-3); }
+#graph-find-matches button { inline-size: 100%; text-align: start; overflow-wrap: anywhere; }
+.hub-graph-tour { margin-block: var(--hub-space-5); }
+.hub-graph-pairs { list-style: none; padding: 0; }
+.hub-graph-pair { min-inline-size: 0; }
+.hub-graph-pair .hub-chip { margin-inline-start: var(--hub-space-3); }
+.hub-graph-source p { margin-block-start: 0; }
+.hub-graph-chip { font-family: var(--mos-font-code); font-size: 13px; letter-spacing: .04em; padding: var(--hub-space-2); color: var(--mos-ink); background: var(--mos-yellow); border: 1px solid var(--mos-ink); overflow-wrap: anywhere; }
+.hub-graph-tooltip { font-size: 13px; padding: var(--hub-space-3); color: var(--mos-ink); background: var(--mos-white); border: 1px solid var(--mos-ink); max-inline-size: 320px; overflow-wrap: anywhere; }
+.hub-diagram { position: relative; min-inline-size: 0; overflow: hidden; }
+.hub-diagram svg { display: block; max-inline-size: 100%; }
+.hub-diagram-controls { position: absolute; inset: 0; pointer-events: none; }
+.hub-diagram-hit { position: absolute; inline-size: 44px; block-size: 44px; padding: 0; border: 0; background: transparent; color: transparent; overflow: hidden; font-size: 13px; pointer-events: auto; }
+.hub-diagram-hit:focus-visible { outline-offset: 0; }
+.hub-diagram-chord { stroke: var(--mos-blue); stroke-width: 2; }
+.hub-diagram-chord--crossing { stroke-width: 4; }
+.hub-diagram-record circle { fill: #5b7bd6; stroke: var(--mos-ink); stroke-width: 1; }
+.hub-diagram-record text { font-family: var(--mos-font-code); font-size: 13px; letter-spacing: .04em; fill: var(--mos-ink); stroke: var(--mos-paper); stroke-width: 4; paint-order: stroke; }
+.hub-diagram-record.is-selected circle { stroke: var(--mos-ink); stroke-width: 3; }
+.hub-diagram-hood-1 circle { fill: #5b7bd6; }
+.hub-diagram-hood-2 circle { fill: #c9645c; }
+.hub-diagram-hood-3 circle { fill: #4f8f7a; }
+.hub-diagram-hood-4 circle { fill: #8a6bb8; }
+.hub-diagram-hood-5 circle { fill: #b07a45; }
+.hub-diagram-hood-6 circle { fill: #3f8fb0; }
+.hub-diagram-hood-7 circle { fill: #b5608f; }
+.hub-diagram-hood-8 circle { fill: #6f7f8f; }
+.hub-diagram-hood-9 circle { fill: #a8584f; }
+.hub-diagram-hood-10 circle { fill: #5e6fa8; }
+.hub-diagram-hood-11 circle { fill: #4d7f5f; }
+.hub-diagram-hood-12 circle { fill: #8c5f8f; }
+.hub-diagram-hood-13 circle { fill: #6a94a4; }
+.hub-diagram-hood-14 circle { fill: #a67b5b; }
+.hub-diagram-hood-15 circle { fill: #57709c; }
+.hub-diagram-hood-16 circle { fill: #9c6b6b; }
+.hub-diagram-hood-17 circle { fill: #6b8f8a; }
+.hub-diagram-hood-18 circle { fill: #9e8a4a; }
+.hub-diagram-hood-19 circle { fill: #7b6ea6; }
+.hub-diagram-hood-20 circle { fill: #a07090; }
+.hub-diagram-hood-21 circle { fill: #708a60; }
+.hub-diagram-record.is-dimmed circle { fill: #d8d4c8; }
+@media (min-width: 768px) {
+  .hub-graph-scene { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .hub-graph-guide, .hub-graph-stage { grid-column: 1 / -1; }
+  .hub-graph-guide { padding: var(--hub-space-5); border: 1px solid var(--mos-ink); background: var(--mos-quiet); }
+  .hub-graph-stage--3d { block-size: 560px; }
+}
+@media (min-width: 1024px) {
+  .hub-graph-scene { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .hub-graph-guide { grid-column: 1 / 5; align-self: start; max-block-size: 900px; overflow: auto; }
+  .hub-graph-stage { grid-column: 5 / 13; }
+  .hub-graph-stage--3d { min-block-size: 560px; }
+}
