@@ -179,6 +179,11 @@ def test_is_hub_folder_false_for_empty_missing_and_broken(tmp_path: Path) -> Non
         ("hub-", "#record:hub-"),
         ("banks", "#banks"),
         ("my-hub-x", "#my-hub-x"),
+        ("bank-controls", "#record:bank-controls"),
+        ("graph-stage", "#record:graph-stage"),
+        ("catalogue-list", "#record:catalogue-list"),
+        ("record:bank", "#record:record:bank"),
+        ("record:record:bank", "#record:record:record:bank"),
     ],
 )
 def test_deep_link(record_id: str, expected: str) -> None:

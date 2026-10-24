@@ -378,8 +378,9 @@ def is_hub_folder(path: Path) -> bool:
 def deep_link(record_id: str) -> str:
     """Return the fragment that opens a record.
 
-    A record id that equals a view name, or starts with `hub-` (the ids of the page
-    chrome), gets the `#record:` form so it cannot clash with a view or a page element.
+    View names and the prefixes used by page chrome get the `#record:` form.
+    An ID already starting with `record:` gets the same prefix so the routing
+    escape remains distinct from the original record ID.
 
     Args:
         record_id: The id of the record.
@@ -387,7 +388,9 @@ def deep_link(record_id: str) -> str:
     Returns:
         The fragment, with the leading hash sign.
     """
-    if record_id in VIEW_NAMES or record_id.startswith("hub-"):
+    if record_id in VIEW_NAMES or record_id.startswith(
+        ("hub-", "bank-", "graph-", "catalogue-", "record:")
+    ):
         return f"#record:{record_id}"
     return f"#{record_id}"
 
