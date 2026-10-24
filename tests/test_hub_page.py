@@ -1,0 +1,324 @@
+"""Check local hub structure, escaping, provenance and privacy boundaries."""
+
+from __future__ import annotations
+
+import copy
+from dataclasses import dataclass, field, replace
+from html.parser import HTMLParser
+from pathlib import Path
+from urllib.parse import urlsplit
+
+import pytest
+from hub_support import make_run_folder
+from mindrian_eureka.hub import page
+from mindrian_eureka.hub.assets import static_assets
+from mindrian_eureka.hub.contracts import FACE_FILES, LOCKUP_FILE, Payload, has_internal_name
+from mindrian_eureka.hub.deck import DECK
+from mindrian_eureka.hub.model import build_payload
+from mindrian_eureka.hub.reader import load_run
+from mindrian_eureka.run.contracts import LABEL
+
+REPO = Path(__file__).resolve().parents[1]
+FILES = (
+    {item.output_path for item in static_assets()}
+    | set(page.STYLE_ORDER)
+    | set(page.SCRIPT_ORDER)
+    | {"hub-boot.js"}
+)
+VOID = {"meta", "link", "img", "input", "br", "hr"}
+CHROME = {
+    "hub-header",
+    "hub-title-band",
+    "hub-face",
+    "hub-title",
+    "hub-meaning",
+    "hub-status",
+    "hub-counts",
+    "hub-nav",
+    "hub-results",
+    "hub-panel",
+    "hub-panel-title",
+    "hub-data-check",
+    "hub-footer",
+    "bank-controls",
+    "bank-list",
+    "graph-stage",
+    "graph-list",
+    "catalogue-controls",
+    "catalogue-list",
+}
+
+
+@dataclass
+class Element:
+    tag: str
+    attrs: dict[str, str | None]
+    text: str = ""
+    children: list[Element] = field(default_factory=list)
+
+    def descendants(self) -> list[Element]:
+        return [child for item in self.children for child in (item, *item.descendants())]
+
+
+class Document(HTMLParser):
+    def __init__(self, content: bytes):
+        super().__init__(convert_charrefs=True)
+        self.nodes: list[Element] = []
+        self.stack: list[Element] = []
+        self.feed(content.decode("utf-8"))
+        assert not self.stack
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        node = Element(tag, dict(attrs))
+        if self.stack:
+            self.stack[-1].children.append(node)
+        self.nodes.append(node)
+        if tag not in VOID:
+            self.stack.append(node)
+
+    def handle_endtag(self, tag: str) -> None:
+        assert self.stack and self.stack[-1].tag == tag, (
+            tag,
+            self.stack[-1:] if self.stack else [],
+        )
+        self.stack.pop()
+
+    def handle_data(self, data: str) -> None:
+        for node in self.stack:
+            node.text += data
+
+    def by_id(self, name: str) -> Element:
+        return next(node for node in self.nodes if node.attrs.get("id") == name)
+
+    def tagged(self, name: str) -> list[Element]:
+        return [node for node in self.nodes if node.tag == name]
+
+
+@pytest.fixture
+def payload(tmp_path: Path) -> Payload:
+    return build_payload(load_run(make_run_folder(tmp_path)))
+
+
+def _doc(payload: Payload, *, files: set[str] | None = None) -> Document:
+    return Document(page.render_page(payload, files=FILES if files is None else files))
+
+
+def _pair_rows(node: Element) -> list[Element]:
+    return [child for child in node.descendants() if "data-pair-key" in child.attrs]
+
+
+def _assert_pair_sources(document: Document) -> None:
+    for section in ("bank", "graph"):
+        for row in _pair_rows(document.by_id(section)):
+            assert LABEL in row.text, row.attrs["data-pair-key"]
+            anchors = [node for node in row.descendants() if node.tag == "a"]
+            assert len(anchors) == 2
+            assert all(anchor.attrs.get("href") for anchor in anchors)
+
+
+def _assert_csp_constant() -> None:
+    text = (REPO / "docs/brand/hub-probe-results.md").read_text()
+    decision = next(
+        line.partition(": ")[2] for line in text.splitlines() if line.startswith("CSP decision:")
+    )
+    expected = None if decision.lower() == "none" else decision
+    assert page.CONTENT_SECURITY_POLICY == expected
+
+
+def test_shell_landmarks_ids_outline_and_navigation(payload: Payload) -> None:
+    doc = _doc(payload)
+    assert len(doc.tagged("h1")) == 1
+    levels = [
+        int(node.tag[1]) for node in doc.nodes if node.tag in {"h1", "h2", "h3", "h4", "h5", "h6"}
+    ]
+    assert levels[0] == 1
+    assert all(after <= before + 1 for before, after in zip(levels, levels[1:], strict=False))
+    assert all(doc.tagged(tag) for tag in ("header", "nav", "main", "aside", "footer"))
+    ids = [node.attrs["id"] for node in doc.nodes if "id" in node.attrs]
+    assert len(ids) == len(set(ids))
+    assert CHROME <= set(ids)
+    main = doc.by_id("hub-results")
+    assert [node.attrs.get("id") for node in main.children] == ["bank", "graph", "catalogue"]
+    assert any(node.attrs.get("href") == "#hub-results" for node in doc.tagged("a"))
+    nav = doc.by_id("hub-nav")
+    assert [node.attrs["href"] for node in nav.children] == ["#bank", "#graph", "#catalogue"]
+    assert nav.children[0].attrs["aria-current"] == "page"
+    face = doc.by_id("hub-face")
+    assert face.attrs["alt"] == "" and face.attrs["aria-hidden"] == "true"
+    assert face.attrs["src"] == FACE_FILES["Rest"]
+    assert any(node.attrs.get("src") == LOCKUP_FILE for node in doc.tagged("img"))
+    assert doc.tagged("html")[0].attrs["lang"] == "en"
+    assert doc.tagged("title")[0].text == DECK["G01.bank"]
+
+
+def test_relative_links_no_active_inline_content_and_csp(payload: Payload) -> None:
+    doc = _doc(payload)
+    for node in doc.nodes:
+        assert node.tag != "style"
+        assert not any(name == "style" or name.startswith("on") for name in node.attrs)
+        for attribute in ("src", "href"):
+            value = node.attrs.get(attribute)
+            if value:
+                assert not urlsplit(value).scheme and not value.startswith("/")
+    scripts = doc.tagged("script")
+    assert all(node.attrs.get("src") for node in scripts)
+    assert [node.attrs["src"] for node in scripts if "defer" not in node.attrs] == ["hub-boot.js"]
+    policy = [
+        node
+        for node in doc.tagged("meta")
+        if node.attrs.get("http-equiv") == "Content-Security-Policy"
+    ]
+    assert len(policy) == 1 and policy[0].attrs["content"] == page.CONTENT_SECURITY_POLICY
+    assert doc.tagged("head")[0].children[1] is policy[0]
+    _assert_csp_constant()
+
+
+def test_changed_csp_constant_fails_consistency_check(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(page, "CONTENT_SECURITY_POLICY", "default-src 'self'")
+    with pytest.raises(AssertionError):
+        _assert_csp_constant()
+
+
+def test_only_existing_files_are_linked_in_order(payload: Payload) -> None:
+    files = FILES - {"hub-graph.css"}
+    doc = _doc(payload, files=files)
+    styles = [
+        node.attrs["href"] for node in doc.tagged("link") if node.attrs.get("rel") == "stylesheet"
+    ]
+    assert styles == [name for name in page.STYLE_ORDER if name in files and name != "hub-gate.css"]
+    scripts = [node.attrs["src"] for node in doc.tagged("script") if "defer" in node.attrs]
+    assert scripts == [name for name in page.SCRIPT_ORDER if name != "hub-gate.js"]
+    no_csp = Document(page.render_page(payload, files=set(), csp=None))
+    assert not no_csp.tagged("script")
+    assert not any(
+        node.attrs.get("http-equiv") == "Content-Security-Policy" for node in no_csp.nodes
+    )
+
+
+def test_hostile_text_cannot_create_markup(tmp_path: Path) -> None:
+    payload = build_payload(load_run(make_run_folder(tmp_path, hostile=True)))
+    payload["records"][3]["title"] += '<img src=x onerror="window.__pwned=1">'
+    raw = page.render_page(payload, files=FILES)
+    doc = Document(raw)
+    assert b"&lt;script&gt;" in raw and b"&lt;img" in raw
+    assert not any("onerror" in node.attrs for node in doc.nodes)
+    assert (
+        len(doc.tagged("script"))
+        == len([name for name in page.SCRIPT_ORDER if name != "hub-gate.js"]) + 1
+    )
+    assert doc.by_id("record:bank").attrs["data-record-id"] == "bank"
+    hostile_title = next(
+        record["title"] for record in payload["records"] if "<script>" in record["title"]
+    )
+    assert any(hostile_title in node.text for node in doc.tagged("td"))
+    assert all(
+        not (node.attrs.get("href") or "").startswith("javascript:") for node in doc.tagged("a")
+    )
+
+
+def test_record_ids_cannot_collide_with_shell_or_escape_ids(tmp_path: Path) -> None:
+    run = load_run(make_run_folder(tmp_path, n_records=4, zero_pairs=True))
+    ids = ["bank-controls", "record:bank", "bank", "graph-stage"]
+    records = tuple(
+        replace(record, id=record_id) for record, record_id in zip(run.records, ids, strict=True)
+    )
+    payload = build_payload(replace(run, records=records))
+    doc = _doc(payload)
+    actual = [node.attrs["id"] for node in doc.nodes if "id" in node.attrs]
+    assert len(actual) == len(set(actual))
+    for record in payload["records"]:
+        assert doc.by_id(record["catalogue_link"][1:]).attrs["data-record-id"] == record["id"]
+
+
+def test_every_pair_has_label_and_two_sources_and_catalogue_has_source(payload: Payload) -> None:
+    doc = _doc(payload)
+    _assert_pair_sources(doc)
+    rows = [node for node in doc.tagged("tr") if "data-record-id" in node.attrs]
+    assert len(rows) == len(payload["records"])
+    records = {record["id"]: record for record in payload["records"]}
+    for row in rows:
+        anchors = [node for node in row.descendants() if node.tag == "a"]
+        assert len(anchors) == 1
+        assert anchors[0].attrs["href"] == records[row.attrs["data-record-id"]]["source_link"]
+        assert len([node for node in row.children if node.tag == "td"]) == 4
+
+
+def test_a_row_without_label_fails_the_same_hub03_check(payload: Payload) -> None:
+    altered = copy.deepcopy(payload)
+    altered["pairs"][0]["label"] = ""
+    with pytest.raises(AssertionError):
+        _assert_pair_sources(_doc(altered))
+
+
+@pytest.mark.parametrize(
+    "target",
+    [
+        "javascript:alert(1)",
+        "https://example.test",
+        "//example.test",
+        "/absolute",
+        "data:text/html,bad",
+    ],
+)
+def test_renderer_refuses_nonlocal_source_links(payload: Payload, target: str) -> None:
+    payload["records"][0]["source_link"] = target
+    with pytest.raises(ValueError, match="relative"):
+        _doc(payload)
+
+
+@pytest.mark.parametrize("count,shown,pointer", [(10, 10, False), (80, 50, True)])
+def test_pair_prerender_limit(tmp_path: Path, count: int, shown: int, pointer: bool) -> None:
+    payload = build_payload(load_run(make_run_folder(tmp_path, pairs_per_engine=(count, 0))))
+    doc = _doc(payload)
+    assert len(_pair_rows(doc.by_id("bank"))) == shown
+    assert (DECK["B14"] in doc.by_id("bank").text) is pointer
+
+
+def test_catalogue_prerender_limit(tmp_path: Path) -> None:
+    payload = build_payload(load_run(make_run_folder(tmp_path, n_records=250)))
+    doc = _doc(payload)
+    assert len([node for node in doc.tagged("tr") if "data-record-id" in node.attrs]) == 200
+    assert DECK["C11"] in doc.by_id("catalogue").text
+
+
+def test_zero_pairs_and_one_engine_empty_states(tmp_path: Path) -> None:
+    empty = build_payload(load_run(make_run_folder(tmp_path, zero_pairs=True)))
+    doc = _doc(empty)
+    assert doc.by_id("hub-face").attrs["src"] == FACE_FILES["Limit"]
+    assert DECK["B10"] in doc.by_id("bank").text and DECK["B11"] in doc.by_id("bank").text
+    assert not _pair_rows(doc.by_id("bank"))
+    mixed = build_payload(load_run(make_run_folder(tmp_path / "mixed", pairs_per_engine=(10, 0))))
+    mixed_doc = _doc(mixed)
+    for key in ("unusual_pairs", "wording_and_meaning"):
+        assert any(node.text == DECK[f"G15.{key}"] for node in mixed_doc.tagged("h3"))
+
+
+def test_copy_and_empty_text_flags_render(tmp_path: Path) -> None:
+    payload = build_payload(
+        load_run(
+            make_run_folder(tmp_path, n_records=8, pairs_per_engine=28, copies=2, empty_text=1)
+        )
+    )
+    doc = _doc(payload)
+    text = " ".join(row.text for row in _pair_rows(doc.by_id("bank")))
+    assert "Identical text to" in text and DECK["P09.no_text"] in text
+
+
+def test_fixed_copy_footer_noscript_and_stable_bytes(payload: Payload) -> None:
+    first = page.render_page(payload, files=FILES)
+    assert first == page.render_page(payload, files=FILES)
+    assert first.endswith(b"\n") and not first.endswith(b"\n\n")
+    assert not any(char in first.decode() for char in (chr(8211), chr(8212)))
+    assert not has_internal_name(first.decode())
+    doc = Document(first)
+    footer = doc.by_id("hub-footer").text
+    assert LABEL in footer and payload["run_fingerprint"][:12] in footer and DECK["G05"] in footer
+    assert DECK["G12"] in doc.tagged("noscript")[0].text
+
+
+def test_real_public_fixture_renders_a_well_formed_offline_page() -> None:
+    payload = build_payload(load_run(REPO / "tests/fixtures/hub_public/run"))
+    doc = _doc(payload)
+    assert len(doc.tagged("h1")) == 1
+    assert all(node.attrs.get("src") for node in doc.tagged("script"))
+    _assert_pair_sources(doc)
