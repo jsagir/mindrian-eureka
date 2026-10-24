@@ -13,3 +13,11 @@
 - Ruff: PASS. Mypy strict: PASS. mos-brand doctor: PASS.
 - Deviations: four CLI-refused Theo files copied by the permitted byte-identical fallback.
 - UNVERIFIED: exact bundled versions for ngraph.events, ngraph.graph, preact, and part of three; notices retained.
+
+## 02.1-07
+- Commits: cfa22c9, 77c6b17.
+- Full suite: 979 passed, 27 skipped, 45 subtests passed.
+- Fixture tests: 43 passed. Ruff: PASS. Mypy: not applicable to data and test-only changes.
+- Real model: 36 records; 63 unusual pairs; 200 wording pairs; all five files byte-identical across two completed runs.
+- Deviations: interrupted one slow multithread attempt; completed both runs with matching one-thread settings and no-sync offline environment.
+- UNVERIFIED: Phase 4 fresh-checkout hashes and UI visuals. The real fixture has one neighborhood and zero bridges.
