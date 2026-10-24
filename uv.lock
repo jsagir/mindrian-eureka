@@ -670,6 +670,9 @@ dependencies = [
 hmm = [
     { name = "pomegranate" },
 ]
+hub-gate = [
+    { name = "cryptography" },
+]
 mcp-server = [
     { name = "mcp" },
 ]
@@ -687,6 +690,7 @@ reference-encoder = [
 
 [package.metadata]
 requires-dist = [
+    { name = "cryptography", marker = "extra == 'hub-gate'", specifier = ">=44,<51" },
     { name = "jsonschema", specifier = ">=4.20,<5" },
     { name = "mcp", marker = "extra == 'mcp-server'", specifier = ">=2.0,<3" },
     { name = "neo4j", marker = "extra == 'neo4j'", specifier = ">=5.20,<7" },
@@ -697,7 +701,7 @@ requires-dist = [
     { name = "torch", marker = "extra == 'reference-encoder'", specifier = ">=2.6,<3", index = "https://download.pytorch.org/whl/cpu" },
     { name = "transformers", marker = "extra == 'reference-encoder'", specifier = ">=4.50,<6" },
 ]
-provides-extras = ["modern-encoder", "reference-encoder", "mcp-server", "hmm", "neo4j"]
+provides-extras = ["hub-gate", "modern-encoder", "reference-encoder", "mcp-server", "hmm", "neo4j"]
 
 [[package]]
 name = "mpmath"

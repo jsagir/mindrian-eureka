@@ -99,3 +99,73 @@ def test_shadowing_a_canonical_file_is_refused(
     monkeypatch.setattr(assets, "ASSETS_ROOT", tmp_path)
     with pytest.raises(ValueError, match="duplicate output paths"):
         assets.all_assets()
+
+
+def test_vendor_library_and_notices_are_packaged() -> None:
+    folder = assets.ASSETS_ROOT / "static/vendor"
+    assert (folder / "LICENSE-3d-force-graph.txt").read_text().startswith("MIT License")
+    notices = (folder / "NOTICES.txt").read_text()
+    assert "Direct dependency license metadata" in notices
+    assert "BSD-3-Clause" in notices and "ISC" in notices
+    assert "ForceGraph3D" in (folder / "3d-force-graph.min.js").read_text()
+
+
+def test_package_data_covers_assets_and_optional_gate() -> None:
+    import tomllib
+
+    project = Path(__file__).resolve().parents[1]
+    config = tomllib.loads((project / "pyproject.toml").read_text())
+    patterns = config["tool"]["setuptools"]["package-data"]["mindrian_eureka"]
+    package = project / "src/mindrian_eureka"
+    matched = {path for pattern in patterns for path in package.glob(pattern) if path.is_file()}
+    assert all(item.package_path in matched for item in assets.static_assets())
+    assert "hub/assets/authored/*" in patterns
+    assert config["project"]["optional-dependencies"]["hub-gate"] == ["cryptography>=44,<51"]
+    assert config["project"]["dependencies"] == [
+        "jsonschema>=4.20,<5",
+        "numpy>=2.0,<3",
+        "scikit-learn>=1.6,<2",
+    ]
+
+
+def test_wheel_contains_tokens_and_vendor_bundle(tmp_path: Path) -> None:
+    import importlib.util
+    import subprocess
+    import sys
+    import zipfile
+
+    if not all(importlib.util.find_spec(name) for name in ("setuptools", "wheel")):
+        pytest.skip("setuptools and wheel are required for the offline wheel check")
+    project = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "wheel",
+            ".",
+            "--no-deps",
+            "--no-build-isolation",
+            "--no-index",
+            "-w",
+            str(tmp_path),
+        ],
+        cwd=project,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    wheels = list(tmp_path.glob("*.whl"))
+    assert len(wheels) == 1
+    with zipfile.ZipFile(wheels[0]) as wheel:
+        names = set(wheel.namelist())
+    assert "mindrian_eureka/hub/assets/static/tokens.css" in names
+    assert "mindrian_eureka/hub/assets/static/vendor/3d-force-graph.min.js" in names
+
+
+def test_static_assets_do_not_include_local_paths() -> None:
+    for asset in assets.static_assets():
+        data = asset.package_path.read_bytes()
+        assert str(Path.home()).encode() not in data
+        assert str(Path.cwd()).encode() not in data

@@ -15,6 +15,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+hub-gate = ["cryptography>=44,<51"]
 modern-encoder = ["sentence-transformers>=5.0,<6"]
 reference-encoder = ["torch>=2.6,<3", "transformers>=4.50,<6"]
 mcp-server = ["mcp>=2.0,<3"]
@@ -43,7 +44,7 @@ eureka-graph = "mindrian_eureka.graph_relations.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-mindrian_eureka = ["data/*.json", "data/eureka/*.cjs", "data/eureka/critic/**/*.cjs", "data/eureka/critic/**/*.json", "data/eureka/portfolio/*.cjs", "data/rs/*.cjs", "data/graph_relations/*.cypher", "data/genesis/*.js", "data/genesis/*.cjs", "data/schemas/*.json"]
+mindrian_eureka = ["data/*.json", "data/eureka/*.cjs", "data/eureka/critic/**/*.cjs", "data/eureka/critic/**/*.json", "data/eureka/portfolio/*.cjs", "data/rs/*.cjs", "data/graph_relations/*.cypher", "data/genesis/*.js", "data/genesis/*.cjs", "data/schemas/*.json", "hub/assets/static/**/*", "hub/assets/authored/*"]
 
 [[tool.uv.index]]
 name = "pytorch-cpu"

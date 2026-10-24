@@ -56,6 +56,13 @@ EXPECTED_STATIC: dict[str, str] = {
         "25a5447330f5ce68637e21e6d200f4564ae92a7614accb4b8a79bc51a98720ad"
     ),
     "tokens.css": ("28f12859744dc738cdddd593a1f5ab72119f6914166b4ec74d309df62ff1dc7b"),
+    "vendor/3d-force-graph.min.js": (
+        "fa365edfa625f055982ea9e41feac875bc1c46c6225318c420eed26646e78499"
+    ),
+    "vendor/LICENSE-3d-force-graph.txt": (
+        "7262e566e874d1ce8cfadace01d4f635f8d704b6bdf7b4345cc028e5faeafded"
+    ),
+    "vendor/NOTICES.txt": ("f4eb589ddf23f95a04e167d599f1ad5756bed090f155ca76b8d1a304c0b50512"),
 }
 
 BOOK_SOURCES: dict[str, str] = {
@@ -114,6 +121,9 @@ BOOK_SOURCES: dict[str, str] = {
         "segments/foundations/typography/jetbrains-mono/entries/2026-10-19/asset-ff0057ecb6.txt"
     ),
     "tokens.css": ("segments/foundations/tokens/entries/2026-10-19/asset-b1c43da20b.css"),
+    "vendor/3d-force-graph.min.js": ("npm:3d-force-graph@1.79.1"),
+    "vendor/LICENSE-3d-force-graph.txt": ("npm:3d-force-graph@1.79.1"),
+    "vendor/NOTICES.txt": ("npm:3d-force-graph@1.79.1"),
 }
 
 
