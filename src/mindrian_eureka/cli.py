@@ -4,17 +4,32 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
+from collections.abc import Sequence
 from pathlib import Path
+
+from .run.command import (
+    ENGINES_TEXT,
+    EXIT_CODES_TEXT,
+    doctor_cli,
+    register_commands,
+    run_command,
+)
+from .run.manifest import tool_version
 
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 
 
-def main() -> None:
+def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="eureka",
-        description="Inspect Mindrian Eureka capabilities and the MindrianOS host workflow.",
+        description="Rank unusual pairs in a folder of documents, check this machine, and "
+        "inspect Mindrian Eureka capabilities and the MindrianOS host workflow.\n\n" + ENGINES_TEXT,
+        epilog=EXIT_CODES_TEXT,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
+    parser.add_argument("--version", action="version", version=f"eureka {tool_version()}")
     commands = parser.add_subparsers(dest="command", required=True)
     capabilities = commands.add_parser("capabilities", help="list runnable, brokered, blocked, and planned capability jobs")
     capabilities.add_argument(
@@ -31,7 +46,13 @@ def main() -> None:
     schema.add_argument("capability_id")
     schema.add_argument("--direction", choices=("input", "output", "both"), default="both")
     commands.add_parser("workflow", help="print the MindrianOS opportunity-discovery host contract")
-    args = parser.parse_args()
+    register_commands(commands)
+    raw = list(sys.argv[1:] if argv is None else argv)
+    args = parser.parse_args(raw)
+    if args.command == "run":
+        return run_command(args, raw)
+    if args.command == "doctor":
+        return doctor_cli(args)
 
     if args.command in ("capabilities", "capability", "schema"):
         document = json.loads((DATA_DIR / "capability-catalog.v1.json").read_text(encoding="utf-8"))
@@ -92,10 +113,11 @@ def main() -> None:
                         definitions[key] = {"status": "unavailable", "detail": str(exc)}
                 document = {"capability_id": args.capability_id, "version": capability.get("version"),
                             "status": capability.get("status"), **definitions}
-    else:
+    elif args.command == "workflow":
         document = json.loads((DATA_DIR / "mos-opportunity-discovery.v1.json").read_text(encoding="utf-8"))
     print(json.dumps(document, ensure_ascii=False, indent=2))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
