@@ -53,3 +53,14 @@
 - Deviations: structural JSON braces retained per existing contract; added exact-namespace and scheme-only URL controls.
 - Public CLI build: 36 records, 63 and 200 pairs; exact Gr09 present and static network scan clean.
 - UNVERIFIED: browser interaction/layout and Plan 18 scale load time. NEXT: Plan 10.
+
+## 02.1-10
+- Commits: 9dd21d5, 18173a2, 8c9b9c5.
+- Full suite: 1105 passed, 27 skipped, 45 subtests passed in 211.00 seconds.
+- Focused checks: 114 passed; three final routing/API regressions passed separately.
+- Ruff: PASS. Node syntax: PASS. Mypy: not applicable to CSS, JS and test-only changes.
+- Chromium and Firefox behavior/no-JS checks passed with no attempted remote request or page error.
+- Widths 320, 390, 768, 1280, 1600: minimum font 13 px, no undersized controls or overflow.
+- Inspected real-public shell captures at 1280 and 320; owner visual approval remains pending.
+- Deviations: driver direct-visibility step and stdout flush fix; unknown initial hash keeps bank visible.
+- UNVERIFIED: feature views, 3D, screen-reader review, Safari and owner brand stop. NEXT: Plan 11.
