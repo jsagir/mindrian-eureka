@@ -84,6 +84,16 @@ def test_prepare_offline_environment_sets_missing_defaults(
     assert os.environ["HF_HUB_DISABLE_TELEMETRY"] == "1"
 
 
+def test_prepare_offline_environment_quiets_model_libraries(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    names = ("TRANSFORMERS_VERBOSITY", "HF_HUB_DISABLE_PROGRESS_BARS", *OFFLINE_NAMES)
+    _restorable_env(monkeypatch, names)
+    engines.prepare_offline_environment()
+    assert os.environ["TRANSFORMERS_VERBOSITY"] == "error"
+    assert os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] == "1"
+
+
 def test_apply_thread_limits_none_changes_nothing(monkeypatch: pytest.MonkeyPatch) -> None:
     _restorable_env(monkeypatch, THREAD_NAMES)
     engines.apply_thread_limits(None)

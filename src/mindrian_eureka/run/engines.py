@@ -161,6 +161,9 @@ def prepare_offline_environment() -> None:
     os.environ["TRANSFORMERS_OFFLINE"] = "1"
     os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
     os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+    # Keep model-library load reports and progress bars (with color codes) off the terminal.
+    os.environ.setdefault("TRANSFORMERS_VERBOSITY", "error")
+    os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
 
 
 def apply_thread_limits(threads: int | None) -> None:
