@@ -1,11 +1,11 @@
 ---
 gsd_state_version: '1.0'
-status: ready_to_plan
+status: executing
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 12
+  completed_plans: 7
   percent: 20
 ---
 
@@ -20,10 +20,10 @@ See: .planning/PROJECT.md (updated 2026-10-23)
 
 ## Current Position
 
-Phase: 2 of 5 (One-Command Run and Doctor) is next. Phase 2.1 (Opportunity Hub) follows Phase 2. Phase 1 is complete (6 of 6 plans, 2026-10-23), with one open owner item.
-Plan: 0 of TBD in Phase 2
-Status: Ready to plan Phase 2
-Last activity: 2026-10-23 - Phase 1 closed in planning files (quick 261023-q2c)
+Phase: 2 of 5 (One-Command Run and Doctor) is executing. Phase 2.1 (Opportunity Hub) follows Phase 2. Phase 1 is complete (6 of 6 plans, 2026-10-23), with one open owner item.
+Plan: 1 of 6 in Phase 2 complete (02-01). Wave 2 next: 02-02, 02-03, 02-04, 02-05.
+Status: Executing Phase 2
+Last activity: 2026-10-24 - Completed 02-01 (caps lift, contracts, test scaffold)
 
 Progress: [██░░░░░░░░] 20%
 
@@ -64,7 +64,7 @@ None yet.
 ### Carry-over items
 
 - Owner sign-off on the release decision (draft no-go) in `docs/rs-release-gate.md`. Only the owner sets `decided_on`.
-- `top_k` cap 100 to 200 and artifact cap 2500 vs JHTV 2117+ (Phase 2): the `run_document` cap blocks a repo-side JHTV rerun with 200 pairs and 2117+ files.
+- `top_k` cap 100 to 200 and artifact cap 2500 to 3000: DONE in plan 02-01 (`limits.py`). The MCP schemas still cap at 2,500 artifacts and 100 pairs (Phase 3 item).
 - Engine version must be recorded in the run manifest (the tie-break change in plan 01-04 changes the top-7 term order).
 - Open item O1: older comments in `rs-differential-scorer.cjs` still cite the original author. Editing the file changes its sha256 in the ledger. Owner decides later.
 
@@ -93,6 +93,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-10-23
-Stopped at: Phase 1 closed. Next step is plan-phase for Phase 2.
+Last session: 2026-10-24
+Stopped at: Completed 02-01-PLAN.md. Next step is wave 2 of Phase 2 (02-02 to 02-05).
 Resume file: None

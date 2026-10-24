@@ -51,7 +51,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Every output file carries the "candidate, not verified" label and a score-meaning note.
   5. `eureka doctor` checks Python, `uv`, local model presence, and cache and data directory permissions, and prints the exact fix for each failure. A missing model produces a clear message, never a silent failure.
 **Plans**: 6 plans in 3 waves (wave 1: 02-01; wave 2: 02-02, 02-03, 02-04, 02-05 in parallel; wave 3: 02-06)
-- [ ] 02-01: Caps lift (top_k 200, 3,000 artifacts), shared contracts and test scaffold
+- [x] 02-01: Caps lift (top_k 200, 3,000 artifacts), shared contracts and test scaffold
 - [ ] 02-02: Corpus builder with CSV mapping file and flags
 - [ ] 02-03: Typed engine facade for both engines
 - [ ] 02-04: Projection, canonical writer, manifest and console
@@ -101,7 +101,7 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Release Gate and Engine Parity | 6/6 | Complete (owner sign-off open) | 2026-10-23 |
-| 2. One-Command Run and Doctor | 0/6 | Planned | - |
+| 2. One-Command Run and Doctor | 1/6 | In progress | - |
 | 2.1. Opportunity Hub in the mos-brand format | 0/TBD | Not started | - |
 | 3. Host Integration and Replay Rebuild | 0/TBD | Not started | - |
 | 4. Public Example and Reproduction Guide | 0/TBD | Not started | - |
