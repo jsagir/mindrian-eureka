@@ -63,3 +63,82 @@ Fallback: if a later browser version stops loading local files under the chosen 
 Result: WebGL context creation works in headless Chromium and headless Firefox. Chromium reports the renderer `ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device ...), SwiftShader driver)` both with and without the SwiftShader launch flags. Firefox reports `WebGL 1.0` with a software renderer (llvmpipe). The driver turns WebGL off for a test with `--disable-gpu --disable-3d-apis` (Chromium) or the preference `webgl.disabled` (Firefox); in both browsers `canvas.getContext("webgl")` then returns nothing. Rendering speed on software WebGL was not measured, and no screenshot of a WebGL scene was inspected. Visual verification is pending.
 
 Fallback: a test of the 3D view runs with WebGL on (software renderer) and a separate test runs with WebGL off, to show the fallback screen. If a machine lacks both, the test skips with a reason.
+
+## 3d-force-graph (npm)
+
+Commands run on 2026-10-24 (a development-time call; the hub itself never calls the network):
+
+```text
+npm view 3d-force-graph@1.79.1 version license dist.integrity dist.tarball --json
+npm view 3d-force-graph time --json
+npm view 3d-force-graph dist-tags --json
+```
+
+| Field | Value |
+|-------|-------|
+| Version | 1.79.1 |
+| License | MIT |
+| Integrity | sha512-iscIVt4jWjJ11KEEswgOIOWk8Ew4EFKHRyERJXJ0ouycqzHCtWwb9E5imnxS5rYF1f1IESkFNAfB+h3EkU0Irw== |
+| Tarball | https://registry.npmjs.org/3d-force-graph/-/3d-force-graph-1.79.1.tgz |
+| Published | 2026-02-04 (2026-02-04T20:54:45.679Z) |
+| Age on 2026-10-24 | 262 days (rule: at least 14 days) |
+| Newest version | 1.80.1, published 2026-09-29 (25 days old). It is the `latest` tag. |
+| Version between | 1.80.0, published 2026-04-05 |
+
+Result: the pin 1.79.1 is MIT licensed, 262 days old, so it passes the 14 day rule of UI-SPEC section 14. The integrity string above is what the registry reports; it was not yet checked against a downloaded file. The license text and notices inside the tarball were not yet read.
+
+Fallback: if 1.79.1 is missing or younger than 14 days when plan 06 vendors the file, use the newest version that is at least 14 days old, and the owner confirms the change because D-12 names 1.79.1. Plan 06 downloads the tarball, checks it against the integrity string, and a person checks the package pages (threat T-02.1-15).
+
+## Crypto library dependency
+
+Commands and outputs on 2026-10-24:
+
+```text
+$ grep -n 'name = "cryptography"' -A2 uv.lock
+194:name = "cryptography"
+195-version = "50.0.2"
+
+$ grep -n '"pyjwt' uv.lock
+622:    { name = "pyjwt", extra = ["crypto"] }      (inside the mcp 2.3.0 block)
+
+$ sed -n 1188,1191p uv.lock
+[package.optional-dependencies]
+crypto = [
+    { name = "cryptography" },
+]
+
+$ grep -n "cryptography" pyproject.toml
+(no output)
+
+$ python3 -c "import cryptography; print(cryptography.__version__)"       # system Python
+46.0.3
+
+$ .venv/bin/python -c "import cryptography; print(cryptography.__version__)"   # project environment
+50.0.2
+```
+
+In `uv.lock`, `cryptography` is reached only through `mcp` (the `mcp-server` extra), which needs `pyjwt` with its `crypto` extra. The `mindrian-eureka` package lists only `jsonschema`, `numpy` and `scikit-learn` as base dependencies, and `pyproject.toml` has no direct `cryptography` line. The project environment on this machine has `cryptography` 50.0.2 because extras were installed there, not because the base install needs it.
+
+Result: `cryptography` is NOT a base dependency. A base `uv sync` does not install it. Decision: add an optional extra named `hub-gate` with `cryptography` (plan 06 edits `pyproject.toml`). PBKDF2 needs only the standard library `hashlib.pbkdf2_hmac`; only AES-GCM needs the library.
+
+Fallback: if the library is missing when `--password-env` is used, the build stops with exit code 2 and a fix text that names `uv sync --extra hub-gate`. The tests that make a ciphertext use `pytest.importorskip("cryptography")`.
+
+## Safari (WebKit)
+
+Result: not testable here. WebKit does not start on this machine (see "Headless browser tool": missing system libraries), and no Safari was available. Nothing about Safari is claimed. The gate, the CSP and the 3D view need a human check in Safari in plan 19.
+
+Fallback: the locked screen shows L06 ("This browser cannot unlock the file. Open the page in a current browser.") when `crypto.subtle` is missing, and the CSP meta tag is optional hardening, so a Safari difference in either degrades to a clear message and not to a leak.
+
+## Engine cut-offs in the manifest
+
+The manifest `settings` section is written from the engine settings dataclasses in `src/mindrian_eureka/run/engines.py` (`manifest_engine_sections`). The keys below were read from that code and checked against a manifest from a stub run in `tests/test_hub_probe_record.py`. No manifest from a real model run exists on this machine.
+
+- `settings.unusual_pairs.min_percentile`: default 0.90. The percentile gate for pairs of the unusual-pairs engine.
+- `settings.wording_and_meaning.min_percentile`: default 0.0. The percentile gate for pairs of the wording-and-meaning engine. The value 0.0 hides nothing.
+- `settings.wording_and_meaning.confirm_percentile`: default 0.75. The percentile at which the second wording signal confirms a pair. It is a confirmation level, not a display cut-off.
+
+Reading of the engine code (not a run): both engines apply `min_percentile` before ranking (`opportunity_pairs/algorithm.py` line 318 and `hsi_reference.py` line 1095), so pairs below the gate may be absent from the pair files of the run. The wording engine also records `threshold: None` in its reference parameters (`engines.py` line 375); the hub must not invent a number for it.
+
+Result: each engine has a named percentile gate in `settings`, and the keys exist in a stub-run manifest. Whether a percentile gate equals a visible link cut-off, and whether the run folder still holds pairs below the gate, is UNVERIFIED and goes to plan 08.
+
+Fallback: a missing key means "no cut-off" (B06 text, and no "Show weaker pairs" control). A value of 0.0 means the engine hides nothing. The hub never invents a number.
