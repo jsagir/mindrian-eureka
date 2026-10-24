@@ -1,3 +1,5 @@
+> Superseded for the hub on 2026-10-24 by docs/brand/hub-design-decisions.md. The README application decisions below still hold.
+
 # M:OS brand application for Eureka
 
 ## Work record

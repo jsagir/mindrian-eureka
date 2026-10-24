@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/anthropics/knowledge-work-plugins",
+  "commit": "2d6f7e22dd25593f0f748010430ef86f19659735",
+  "path": "marketing/skills/draft-content/SKILL.md",
+  "retrievedOn": "2026-10-20",
+  "license": "Apache-2.0",
+  "role": "Archival upstream reference; use the Mindrian adapter SKILL.md for execution"
+}

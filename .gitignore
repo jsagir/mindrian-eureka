@@ -34,3 +34,11 @@ Thumbs.db
 
 # GSD hook scratch
 .planning/.mindrian/
+
+# mos-brand machine-specific files: absolute paths of this machine, rebuilt by `mos-brand configure`
+.mindrian/brand.lock.json
+.mindrian/WORKFLOW.md
+
+# mos-brand local memory (not shared)
+.mindrian/memory.db*
+.mindrian/memory.json
