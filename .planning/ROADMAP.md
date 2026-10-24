@@ -71,7 +71,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02.1-01: Brand intake with mos-brand (init, owner checkpoint, configure, adopt), decisions file and silent-item register
 - [x] 02.1-02: Phase 2 touch-ups: W1 engine note fix, staged-run hook for the hub, W2 README run and doctor section
 - [x] 02.1-03: Hub package base: contracts, copy deck, run reader, run-folder test helper
-- [ ] 02.1-04: Browser test harness and recorded probes (WebCrypto, CSP, WebGL, library facts, crypto dependency)
+- [x] 02.1-04: Browser test harness and recorded probes (WebCrypto, CSP, WebGL, library facts, crypto dependency)
 - [ ] 02.1-05: Hub model: neighborhoods, cut-offs, bridges, data check, payload, label and source link guard
 - [ ] 02.1-06: Packaged book assets, vendored 3d-force-graph, package data and hub-gate extra (package legitimacy checkpoint)
 - [ ] 02.1-07: Public-data fixture with license record and a frozen real run (HUB-05 input)
@@ -121,6 +121,6 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Release Gate and Engine Parity | 6/6 | Complete (owner sign-off open) | 2026-10-23 |
 | 2. One-Command Run and Doctor | 6/6 | Complete (verification: human_needed) | 2026-10-24 |
-| 2.1. Opportunity Hub in the mos-brand format | 3/19 | In progress | - |
+| 2.1. Opportunity Hub in the mos-brand format | 4/19 | In progress | - |
 | 3. Host Integration and Replay Rebuild | 0/TBD | Not started | - |
 | 4. Public Example and Reproduction Guide | 0/TBD | Not started | - |

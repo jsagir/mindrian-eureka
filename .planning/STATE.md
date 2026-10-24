@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02.1-03-PLAN.md
-last_updated: "2026-10-24T15:36:00.000Z"
-last_activity: 2026-10-24 -- Phase 2.1 execution started
+stopped_at: Completed 02.1-04-PLAN.md
+last_updated: "2026-10-24T16:15:00.000Z"
+last_activity: 2026-10-24 -- Completed 02.1-04 (browser test harness and probes)
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 31
-  completed_plans: 15
-  percent: 48
+  completed_plans: 16
+  percent: 52
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-10-23)
 ## Current Position
 
 Phase: 2.1 (Opportunity Hub in the mos-brand format) — EXECUTING
-Plan: 4 of 19
+Plan: 5 of 19
 Status: Ready to execute
-Last activity: 2026-10-24 -- Completed 02.1-03 (hub package base)
+Last activity: 2026-10-24 -- Completed 02.1-04 (browser test harness and probes)
 
-Progress: [█████░░░░░] 48%
+Progress: [█████░░░░░] 52%
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Progress: [█████░░░░░] 48%
 | Phase 02.1 P01 | 22min | 3 tasks | 11 files |
 | Phase 02.1 P02 | 35min | 3 tasks | 7 files |
 | Phase 02.1 P03 | 15min | 2 tasks | 8 files |
+| Phase 02.1 P04 | 37min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -68,6 +69,7 @@ Recent decisions affecting current work:
 - [Roadmap]: Domain research skipped on purpose at init. Domain is internal and documented in repo docs.
 - [Phase 02.1-01]: D-14 owner ruling 2026-10-24: keep, label Potential eureka. D-17 password gate kept as drafted.
 - [Phase 02.1-03]: Hub JS data file escapes characters inside JSON strings only (and also < and >); the word eureka is allowed only as the product name, Potential eureka, and the command eureka hub; the reader refuses unknown reading sentences and files whose hash differs from the manifest.
+- [Phase 02.1-04]: CSP decision = default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none' (Firefox does not enforce a meta CSP on local file loads, so the static scan stays a required control). cryptography becomes the optional extra hub-gate. 3d-force-graph@1.79.1 passes the 14 day rule (MIT, 262 days old). Browser tests skip without tools; EUREKA_REQUIRE_BROWSER=1 makes them fail.
 
 ### Pending Todos
 
@@ -105,6 +107,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-10-24T15:36:00.000Z
-Stopped at: Completed 02.1-03-PLAN.md
-Resume file: .planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/02.1-04-PLAN.md
+Last session: 2026-10-24T16:15:00.000Z
+Stopped at: Completed 02.1-04-PLAN.md
+Resume file: .planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/02.1-05-PLAN.md
