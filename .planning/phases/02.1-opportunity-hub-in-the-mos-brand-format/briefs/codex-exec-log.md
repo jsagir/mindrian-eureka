@@ -42,3 +42,14 @@
 - Deviations: dedicated regression module and minimal Gr09 render change implement the requested checks.
 - UNVERIFIED: chip, tour, panel, sphere and ink-shell browser checks belong to later plans per addendum.
 - NEXT: Plan 09. No threshold changes, existing PLAN edits, or push.
+
+## 02.1-09
+- Commits: 1f1d8fa, efd711e, b272d99, 60691a4.
+- Full suite: 1066 passed, 27 skipped, 45 subtests passed in 176.08 seconds.
+- Focused checks: 172 passed before final controls; writer/offline after controls: 36 passed.
+- Ruff: PASS. Mypy strict: PASS for links.py, writer.py and command.py.
+- Scale: 3000 records, 200 pairs per engine, 0.3087 seconds; data 5021056 bytes, HTML 211006 bytes.
+- Two builds byte-identical; run/source trees unchanged; output guard, rollback, labels, hashes and modes passed.
+- Deviations: structural JSON braces retained per existing contract; added exact-namespace and scheme-only URL controls.
+- Public CLI build: 36 records, 63 and 200 pairs; exact Gr09 present and static network scan clean.
+- UNVERIFIED: browser interaction/layout and Plan 18 scale load time. NEXT: Plan 10.
