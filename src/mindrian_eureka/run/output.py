@@ -3,6 +3,7 @@
 One canonical JSON writer serves every JSON file. Files go to a staging folder next
 to the output folder and one rename publishes them, so an interrupted run never leaves
 a folder that looks complete. A folder is replaced only when it already is an Eureka run.
+A caller can pass its own test and kind word (the hub does) to replace its own earlier folder.
 
 This module imports only the standard library and `.contracts`.
 """
@@ -14,7 +15,7 @@ import json
 import math
 import os
 import shutil
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from types import TracebackType
@@ -248,18 +249,38 @@ def _is_empty_dir(path: Path) -> bool:
     return path.is_dir() and not any(path.iterdir())
 
 
-def ensure_out_dir_allowed(input_dir: Path, out_dir: Path) -> None:
+def _not_replaceable(kind: str) -> UsageError:
+    """Build the error for an existing folder that the caller may not replace."""
+    earlier = kind.removeprefix("Eureka ")
+    return UsageError(
+        f"output folder exists and is not an {kind}",
+        fix=f"Choose a new folder name, an empty folder, or the folder of an earlier {earlier}.",
+    )
+
+
+def ensure_out_dir_allowed(
+    input_dir: Path,
+    out_dir: Path,
+    *,
+    replaceable: Callable[[Path], bool] | None = None,
+    kind: str = "Eureka run",
+) -> None:
     """Refuse an output folder that could damage the input or a foreign folder.
 
     Args:
         input_dir: The input folder.
         out_dir: The requested output folder.
+        replaceable: A test for an existing non-empty folder that may be replaced.
+            None means `is_eureka_run_folder`.
+        kind: The name of the folder kind, used in the error text. The default is
+            "Eureka run".
 
     Raises:
         UsageError: The output folder is, holds or lies inside the input folder; or it
-            is a file; or it is a non-empty folder that is not an Eureka run; or no
+            is a file; or it is a non-empty folder that `replaceable` refuses; or no
             parent folder can hold it.
     """
+    may_replace = is_eureka_run_folder if replaceable is None else replaceable
     source = input_dir.resolve()
     target = out_dir.resolve()
     if target == source or target.is_relative_to(source):
@@ -278,11 +299,8 @@ def ensure_out_dir_allowed(input_dir: Path, out_dir: Path) -> None:
                 "output path is a file",
                 fix="Choose a folder name that does not exist, or an empty folder.",
             )
-        if not is_eureka_run_folder(target) and not _is_empty_dir(target):
-            raise UsageError(
-                "output folder exists and is not an Eureka run",
-                fix="Choose a new folder name, an empty folder, or the folder of an earlier run.",
-            )
+        if not may_replace(target) and not _is_empty_dir(target):
+            raise _not_replaceable(kind)
         return
     parent = target.parent
     while not parent.exists() and parent != parent.parent:
@@ -319,10 +337,28 @@ class StagedRun:
     Attributes:
         path: The staging folder.
         out_dir: The final output folder.
+        replaceable: The test for an existing non-empty folder that `publish` may replace.
+        kind: The name of the folder kind, used in the error text.
     """
 
-    def __init__(self, out_dir: Path) -> None:
+    def __init__(
+        self,
+        out_dir: Path,
+        *,
+        replaceable: Callable[[Path], bool] | None = None,
+        kind: str = "Eureka run",
+    ) -> None:
+        """Create the staging folder.
+
+        Args:
+            out_dir: The final output folder.
+            replaceable: A test for an existing non-empty folder that `publish` may
+                replace. None means `is_eureka_run_folder`.
+            kind: The name of the folder kind, used in the error text.
+        """
         self.out_dir = out_dir
+        self.replaceable = is_eureka_run_folder if replaceable is None else replaceable
+        self.kind = kind
         self.path = out_dir.parent / f".{out_dir.name}.staging-{os.getpid()}"
         out_dir.parent.mkdir(parents=True, exist_ok=True)
         if self.path.exists():
@@ -376,11 +412,13 @@ class StagedRun:
     def publish(self) -> None:
         """Move the staging folder to the output folder.
 
-        An existing Eureka run folder or an empty folder is replaced. Any other
-        existing path raises UsageError and leaves the staging folder in place.
+        An existing folder that `replaceable` accepts (by default an Eureka run) or an
+        empty folder is replaced. Any other existing path raises UsageError and leaves
+        the staging folder in place.
 
         Raises:
-            UsageError: The output path exists and is not an Eureka run or an empty folder.
+            UsageError: The output path exists and is neither accepted by `replaceable`
+                nor an empty folder.
         """
         out = self.out_dir
         if not out.exists() and not out.is_symlink():
@@ -391,11 +429,8 @@ class StagedRun:
                 "output path exists and is not a folder",
                 fix="Choose a folder name that does not exist.",
             )
-        if not is_eureka_run_folder(out) and not _is_empty_dir(out):
-            raise UsageError(
-                "output folder exists and is not an Eureka run",
-                fix="Choose a new folder name, an empty folder, or the folder of an earlier run.",
-            )
+        if not self.replaceable(out) and not _is_empty_dir(out):
+            raise _not_replaceable(self.kind)
         aside = out.parent / f".{out.name}.old-{os.getpid()}"
         if aside.exists():
             shutil.rmtree(aside)

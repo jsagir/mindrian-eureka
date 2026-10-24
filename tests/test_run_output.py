@@ -424,6 +424,98 @@ def test_out_parent_is_file_refused(tmp_path: Path) -> None:
         output.ensure_out_dir_allowed(source, blocker / "run")
 
 
+# --- replaceable predicate and kind word (hub hook) ----------------------------
+
+
+def _is_marked(folder: Path) -> bool:
+    return (folder / "hub-marker.txt").is_file()
+
+
+def _marked_folder(path: Path) -> Path:
+    path.mkdir()
+    (path / "hub-marker.txt").write_text("hub", encoding="utf-8")
+    (path / "old.txt").write_text("old", encoding="utf-8")
+    return path
+
+
+def test_default_call_refuses_foreign_folder_with_the_old_text(tmp_path: Path) -> None:
+    out = tmp_path / "run"
+    out.mkdir()
+    (out / "mine.txt").write_text("keep", encoding="utf-8")
+    with pytest.raises(UsageError) as caught, output.StagedRun(out) as staged:
+        staged.write("new.txt", b"new")
+        staged.publish()
+    assert caught.value.message == "output folder exists and is not an Eureka run"
+    assert caught.value.fix == (
+        "Choose a new folder name, an empty folder, or the folder of an earlier run."
+    )
+    assert (out / "mine.txt").read_text(encoding="utf-8") == "keep"
+
+
+def test_predicate_lets_publish_replace_a_marked_folder(tmp_path: Path) -> None:
+    out = _marked_folder(tmp_path / "hub")
+    with output.StagedRun(out, replaceable=_is_marked, kind="Eureka hub") as staged:
+        staged.write("new.txt", b"new")
+        staged.publish()
+    assert (out / "new.txt").read_bytes() == b"new"
+    assert not (out / "old.txt").exists()
+    assert not [p for p in tmp_path.iterdir() if p.name.startswith(".")]
+
+
+def test_false_predicate_refuses_and_keeps_the_staging_folder(tmp_path: Path) -> None:
+    out = tmp_path / "hub"
+    out.mkdir()
+    (out / "mine.txt").write_text("keep", encoding="utf-8")
+    staged = output.StagedRun(out, replaceable=_is_marked, kind="Eureka hub")
+    staged.write("new.txt", b"new")
+    with pytest.raises(UsageError, match="output folder exists and is not an Eureka hub"):
+        staged.publish()
+    assert (out / "mine.txt").read_text(encoding="utf-8") == "keep"
+    assert (staged.path / "new.txt").exists()
+    staged.discard()
+
+
+def test_ensure_out_dir_allowed_applies_the_predicate(tmp_path: Path) -> None:
+    source = tmp_path / "in"
+    source.mkdir()
+    marked = _marked_folder(tmp_path / "hub")
+    output.ensure_out_dir_allowed(source, marked, replaceable=_is_marked, kind="Eureka hub")
+    foreign = tmp_path / "foreign"
+    foreign.mkdir()
+    (foreign / "x.txt").write_text("x", encoding="utf-8")
+    with pytest.raises(UsageError, match="output folder exists and is not an Eureka hub"):
+        output.ensure_out_dir_allowed(source, foreign, replaceable=_is_marked, kind="Eureka hub")
+    other = tmp_path / "other"
+    _write_manifest(other)
+    with pytest.raises(UsageError, match="not an Eureka hub"):
+        output.ensure_out_dir_allowed(source, other, replaceable=_is_marked, kind="Eureka hub")
+
+
+def test_ensure_out_dir_allowed_keeps_the_input_guards_with_a_predicate(tmp_path: Path) -> None:
+    source = tmp_path / "in"
+    source.mkdir()
+    with pytest.raises(UsageError, match="input folder"):
+        output.ensure_out_dir_allowed(source, source, replaceable=_is_marked, kind="Eureka hub")
+    blocker = tmp_path / "blocker"
+    blocker.write_text("x", encoding="utf-8")
+    with pytest.raises(UsageError, match="file"):
+        output.ensure_out_dir_allowed(source, blocker, replaceable=_is_marked, kind="Eureka hub")
+
+
+def test_empty_folder_is_replaced_with_any_predicate(tmp_path: Path) -> None:
+    out = tmp_path / "hub"
+    out.mkdir()
+    with output.StagedRun(out, replaceable=lambda _folder: False, kind="Eureka hub") as staged:
+        staged.write("new.txt", b"new")
+        staged.publish()
+    assert (out / "new.txt").read_bytes() == b"new"
+    source = tmp_path / "in"
+    source.mkdir()
+    empty = tmp_path / "empty"
+    empty.mkdir()
+    output.ensure_out_dir_allowed(source, empty, replaceable=lambda _f: False, kind="Eureka hub")
+
+
 def test_source_has_no_short_engine_codes_or_em_dash() -> None:
     text = Path(output.__file__).read_text(encoding="utf-8")
     assert chr(0x2014) not in text
