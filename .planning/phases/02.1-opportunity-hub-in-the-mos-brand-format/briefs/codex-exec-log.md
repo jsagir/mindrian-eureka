@@ -121,3 +121,15 @@
 - Five widths meet font/target floors and reflow; measured diagram glyph placement has no overlaps.
 - Inspected diagram/fallback captures at 320/1280; corrected initial overlaps and hidden/font measurement.
 - UNVERIFIED: 3D sphere/ink shell, Safari, screen reader and owner review. NEXT: Plan 18, then 16 and 19.
+
+## 02.1-18
+- Commits: 6b854e6, 3cba58b, 9101a76, b5e4204.
+- Full suite: 1235 passed, 27 skipped, 45 subtests passed in 421.75 seconds.
+- Focused: 59 static/record, 20 stage, 4 final camera and 5 final fit/width checks passed; full includes 22 stage cases.
+- Ruff: PASS. Strict mypy page.py: PASS. Node syntax: PASS.
+- Chromium and Firefox: settled positions/pixels in both motion modes, shells, status/source labels and fallbacks pass.
+- Camera uses 760 ms token, instant reduced motion, actual 1200 ms acceptance deadline, one shared player.
+- Scale: 3000 records, 630 nodes, 400 links; first graph-ready 1.0397 s, later focused 1.0269 s; bound 20 s.
+- CSP: six blocked vendor style injections per browser; only style-src relaxed, fresh probe verifies requirement.
+- Captures at 320/1280 inspected; fixed stale fit matrices and panel occlusion; real public fixture unchanged.
+- UNVERIFIED: Safari, real touch, screen reader and owner review. NEXT: Plan 16, then 19; owner stop stays 17.
