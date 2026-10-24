@@ -322,3 +322,104 @@ def test_real_public_fixture_renders_a_well_formed_offline_page() -> None:
     assert len(doc.tagged("h1")) == 1
     assert all(node.attrs.get("src") for node in doc.tagged("script"))
     _assert_pair_sources(doc)
+
+
+@pytest.mark.parametrize("hostile", [False, True])
+def test_locked_page_contains_no_collection_data(tmp_path: Path, hostile: bool) -> None:
+    payload = build_payload(
+        load_run(
+            make_run_folder(
+                tmp_path,
+                n_records=9 if hostile else 31,
+                hostile=hostile,
+                seed_text="DISTINCT_PRIVATE_SOURCE_TEXT_7319 for the locked privacy test.",
+            )
+        )
+    )
+    raw = page.render_page(None, files=FILES, gated=True)
+    doc = Document(raw)
+    chrome_ids = {node.attrs.get("id") for node in doc.nodes}
+    for record in payload["records"]:
+        # Static shell names may equal hostile record IDs; data bindings must still be absent.
+        if record["id"] not in chrome_ids:
+            assert record["id"].encode() not in raw
+        assert record["title"].encode() not in raw
+        if len(record["text"]) >= 12:
+            assert record["text"][:12].encode() not in raw
+    assert not any("data-record-id" in node.attrs for node in doc.nodes)
+    assert not any("data-pair-key" in node.attrs for node in doc.nodes)
+    for value in (
+        payload["run_fingerprint"],
+        payload["run_fingerprint"][:12],
+        payload["tool_version"],
+    ):
+        assert value.encode() not in raw
+    for engine in payload["engines"].values():
+        assert all(note.encode() not in raw for note in engine["notes"])
+    for key in ("records", "unusual_pairs", "wording_and_meaning", "hoods"):
+        assert DECK[f"G11.{key}"].encode() not in raw
+    assert raw == page.render_page(None, files=FILES, gated=True)
+    assert len(doc.tagged("h1")) == 1
+    ids = [node.attrs["id"] for node in doc.nodes if "id" in node.attrs]
+    assert len(ids) == len(set(ids))
+    assert CHROME <= set(ids)
+    assert doc.tagged("title")[0].text == DECK["G01.locked"]
+    assert doc.by_id("hub-face").attrs["src"] == FACE_FILES["Boundary"]
+    assert DECK["L01"] == doc.by_id("hub-title").text
+    assert DECK["L02"] == doc.by_id("hub-meaning").text
+    assert DECK["L07"] in doc.by_id("hub-locked").text
+    assert DECK["G13"] in doc.tagged("noscript")[0].text
+    assert doc.by_id("hub-footer").text == DECK["G05"]
+
+
+def test_locked_form_attributes_and_hidden_empty_containers() -> None:
+    doc = Document(page.render_page(None, files=FILES, gated=True))
+    field = doc.by_id("hub-passphrase")
+    for key, value in {
+        "type": "password",
+        "autocomplete": "off",
+        "autocapitalize": "off",
+        "spellcheck": "false",
+    }.items():
+        assert field.attrs[key] == value
+    assert any(
+        node.attrs.get("for") == "hub-passphrase" and node.text == DECK["L03.label"]
+        for node in doc.tagged("label")
+    )
+    toggle = doc.by_id("hub-passphrase-toggle")
+    assert toggle.attrs["type"] == "button" and toggle.attrs["aria-pressed"] == "false"
+    assert toggle.attrs["aria-controls"] == "hub-passphrase"
+    assert toggle.text == DECK["L03.show"]
+    assert doc.by_id("hub-unlock").attrs["type"] == "submit"
+    assert "action" not in doc.by_id("hub-locked-form").attrs
+    assert doc.by_id("hub-locked-status").attrs["aria-live"] == "polite"
+    for name in (
+        "hub-counts",
+        "hub-nav",
+        "hub-results",
+        "bank",
+        "graph",
+        "catalogue",
+        "hub-panel",
+        "hub-data-check",
+    ):
+        node = doc.by_id(name)
+        assert "hidden" in node.attrs and not node.text
+    assert all(node.tag != "style" and "style" not in node.attrs for node in doc.nodes)
+    assert all(node.attrs.get("src") for node in doc.tagged("script"))
+    for node in doc.nodes:
+        assert not any(name.startswith("on") for name in node.attrs)
+        for key in ("href", "src"):
+            value = node.attrs.get(key)
+            if value:
+                assert not urlsplit(value).scheme and not value.startswith("/")
+    assert any(node.attrs.get("http-equiv") == "Content-Security-Policy" for node in doc.nodes)
+    assert any(node.attrs.get("href") == "hub-gate.css" for node in doc.tagged("link"))
+    assert any(node.attrs.get("src") == "hub-gate.js" for node in doc.tagged("script"))
+
+
+def test_gate_and_payload_modes_cannot_be_mixed(payload: Payload) -> None:
+    with pytest.raises(ValueError, match="no payload"):
+        page.render_page(payload, files=FILES, gated=True)
+    with pytest.raises(ValueError, match="requires a payload"):
+        page.render_page(None, files=FILES)

@@ -328,6 +328,99 @@ def _data_check(payload: Payload) -> str:
     )
 
 
+def _finish(body: list[str], files: Collection[str], csp: str | None, *, gated: bool) -> bytes:
+    parts = list(body)
+    for name in SCRIPT_ORDER:
+        if name in files and (gated or name != "hub-gate.js"):
+            parts.append(_el("script", attrs={"src": name, "defer": True}))
+    document = _el(
+        "html",
+        _head(files, csp, gated=gated)
+        + "\n"
+        + _el("body", "\n".join(parts), {"class": "mos-brand"}),
+        {"lang": "en", "class": "no-js"},
+    )
+    return ("<!doctype html>\n" + document + "\n").encode("utf-8")
+
+
+def _locked_page(files: Collection[str], csp: str | None) -> bytes:
+    header = _el("img", attrs={"src": LOCKUP_FILE, "alt": DECK["G03.lockup_alt"]})
+    header += _el("span", _copy("G03"))
+    title = _el(
+        "img",
+        attrs={
+            "id": "hub-face",
+            "src": FACE_FILES["Boundary"],
+            "alt": "",
+            "aria-hidden": "true",
+        },
+    )
+    title += _el("p", _copy("G04"), {"class": "hub-eyebrow"})
+    title += _el("h1", _copy("L01"), {"id": "hub-title", "tabindex": "-1"})
+    title += _el("p", _copy("L02"), {"id": "hub-meaning"})
+    title += _el("p", attrs={"id": "hub-status"})
+    form = _el("label", _copy("L03.label"), {"for": "hub-passphrase"})
+    form += _el(
+        "input",
+        attrs={
+            "id": "hub-passphrase",
+            "type": "password",
+            "autocomplete": "off",
+            "autocapitalize": "off",
+            "spellcheck": "false",
+        },
+    )
+    form += _el(
+        "button",
+        _copy("L03.show"),
+        {
+            "id": "hub-passphrase-toggle",
+            "type": "button",
+            "aria-pressed": "false",
+            "aria-controls": "hub-passphrase",
+        },
+    )
+    form += _el("button", _copy("L03.unlock"), {"id": "hub-unlock", "type": "submit"})
+    form += _el("p", attrs={"id": "hub-locked-status", "aria-live": "polite"})
+    locked = _el("form", form, {"id": "hub-locked-form"}) + _el("p", _copy("L07"))
+    views = []
+    for name, containers in (
+        ("bank", ("bank-controls", "bank-list")),
+        ("graph", ("graph-stage", "graph-list")),
+        ("catalogue", ("catalogue-controls", "catalogue-list")),
+    ):
+        views.append(
+            _el(
+                "section",
+                "".join(_el("div", attrs={"id": item}) for item in containers),
+                {"id": name, "data-view": name, "hidden": True},
+            )
+        )
+    body = [
+        _el("a", _copy("G02"), {"href": "#hub-results", "class": "hub-skip"}),
+        _el("header", header, {"id": "hub-header"}),
+        _el("div", title, {"id": "hub-title-band"}),
+        _el("div", locked, {"id": "hub-locked", "class": "hub-panel"}),
+        _el("div", attrs={"id": "hub-counts", "hidden": True}),
+        _el("nav", attrs={"id": "hub-nav", "aria-label": DECK["G10"], "hidden": True}),
+        _el("main", "".join(views), {"id": "hub-results", "hidden": True}),
+        _el(
+            "aside",
+            _el("h2", attrs={"id": "hub-panel-title"}),
+            {
+                "id": "hub-panel",
+                "aria-live": "polite",
+                "aria-labelledby": "hub-panel-title",
+                "hidden": True,
+            },
+        ),
+        _el("section", attrs={"id": "hub-data-check", "hidden": True}),
+        _el("footer", _el("p", _copy("G05")), {"id": "hub-footer"}),
+        _el("noscript", _el("p", _copy("G13"))),
+    ]
+    return _finish(body, files, csp, gated=True)
+
+
 def render_page(
     payload: Payload | None,
     *,
@@ -349,7 +442,11 @@ def render_page(
     Raises:
         ValueError: The payload and gate mode disagree, or a source URL is not local.
     """
-    if payload is None or gated:
+    if gated:
+        if payload is not None:
+            raise ValueError("A locked page must receive no payload")
+        return _locked_page(files, csp)
+    if payload is None:
         raise ValueError("An open page requires a payload")
     face = "Rest" if payload["pairs"] else "Limit"
     header = _el("img", attrs={"src": LOCKUP_FILE, "alt": DECK["G03.lockup_alt"]}) + _el(
@@ -395,14 +492,4 @@ def render_page(
         ),
         _el("noscript", _el("p", _copy("G12"))),
     ]
-    for name in SCRIPT_ORDER:
-        if name in files and name != "hub-gate.js":
-            body.append(_el("script", attrs={"src": name, "defer": True}))
-    document = _el(
-        "html",
-        _head(files, csp, gated=False)
-        + "\n"
-        + _el("body", "\n".join(body), {"class": "mos-brand"}),
-        {"lang": "en", "class": "no-js"},
-    )
-    return ("<!doctype html>\n" + document + "\n").encode("utf-8")
+    return _finish(body, files, csp, gated=False)
