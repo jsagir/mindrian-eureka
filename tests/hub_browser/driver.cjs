@@ -217,7 +217,7 @@ async function main() {
             await page.reload({ waitUntil: "load" });
             break;
           case "click":
-            await page.click(step.selector);
+            await page.click(step.selector, step.position ? { position: step.position } : {});
             break;
           case "fill":
             await page.fill(step.selector, step.value);

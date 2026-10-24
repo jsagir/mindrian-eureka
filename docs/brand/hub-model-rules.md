@@ -54,10 +54,14 @@ Measured on 2026-10-24 with `PYTHONPATH=src python3 -m pytest tests/test_hub_wri
 - Machine: local Linux host, 12 logical CPUs (os.cpu_count), 18819248128 bytes physical memory (os.sysconf).
 - Two builds into different output folders were byte-identical; the file set matched a small run.
 
-No record cap is set for the page. This is the largest run tested. Browser load time for the same run is measured in plan 18.
+No record cap is set for the page. This is the largest run tested. Browser load time is recorded below.
+
+Measured browser load on 2026-10-25 with required Chromium and the one-thread numeric environment: the 3000-record synthetic run has 200 pairs per engine, 630 drawn nodes and 400 links. The first settled graph-ready event arrived in 1.0397 seconds, measured from opening the graph view by tests/test_hub_browser_stage.py::test_scale_3000_graph_ready with performance.now. This is one local observation, below the 20-second test bound; it is not a guarantee on another device.
 
 ## Deviations from the book guide
 
 Deviation from the book graph guide (GUIDE lines 17 to 27): the guide draws bridge links thick yellow with red particles. The hub draws every pair in cobalt, width 1.6 for pairs that cross neighborhoods, and draws no particles. Reason: D-21 no ambient motion (rule 19), and yellow alone is 1.54:1 on paper. Status: deviation, not book-derived; proposed segment.
 
 The stage built by plan 18 follows the same rule: every link cobalt, no particles.
+
+The measured stage has no particle and every link is cobalt.
