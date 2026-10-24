@@ -97,7 +97,8 @@ async function main() {
   try {
     browser = await kind.launch(launchOptions(scenario));
   } catch (error) {
-    fail("browser cannot start (" + scenario.browser + "): " + String(error.message).split("\n")[0]);
+    const lines = String(error.message).split("\n").map((l) => l.trim()).filter(Boolean);
+    fail("browser cannot start (" + scenario.browser + "): " + lines.slice(0, 3).join(" | "));
   }
 
   const result = {
