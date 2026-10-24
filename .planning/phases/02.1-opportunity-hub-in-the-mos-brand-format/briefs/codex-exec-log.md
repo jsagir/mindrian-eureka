@@ -21,3 +21,12 @@
 - Real model: 36 records; 63 unusual pairs; 200 wording pairs; all five files byte-identical across two completed runs.
 - Deviations: interrupted one slow multithread attempt; completed both runs with matching one-thread settings and no-sync offline environment.
 - UNVERIFIED: Phase 4 fresh-checkout hashes and UI visuals. The real fixture has one neighborhood and zero bridges.
+
+## 02.1-08
+- Commits: 8ab1244, 82fed7e, a93c1ac, a6cb0ce.
+- Full suite: 1008 passed, 27 skipped, 45 subtests passed.
+- Focused checks: 80 page/asset tests and 46 contract tests passed.
+- Ruff: PASS. Mypy strict: PASS for page.py and contracts.py. Boot script syntax: PASS.
+- Deviations: reserve component and record: prefixes to fix shell/record collisions; contextual privacy checks for IDs identical to static chrome.
+- UNVERIFIED: encryption/unlock behavior and visual owner review remain in later plans.
+- NEXT: requested GSD quick task for synthetic Potential eureka coverage, before Plan 09.
