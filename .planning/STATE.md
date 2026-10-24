@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: "Phase 2.1 planned: 19 plans in 10 waves, checker passed"
-last_updated: "2026-10-24T14:30:56.155Z"
-last_activity: "2026-10-24 - Completed wave 3 (02-06 pipeline, CLI, run-twice and label tests). Full suite 668 passed, 27 skipped. Orchestrator re-ran the full suite and a real-model run twice: all files byte-identical except run-info.json."
+last_updated: "2026-10-24T14:41:17.130Z"
+last_activity: 2026-10-24 -- Phase 2.1 execution started
 progress:
   total_phases: 5
   completed_phases: 2
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-23)
 
 **Core value:** A user who is not the author can install Eureka, run it on their own collection with one command, and get the same ranked candidates every time, with hashes and settings that prove it. Output stays labeled "candidate, not verified".
-**Current focus:** Phase 2 - One-Command Run and Doctor
+**Current focus:** Phase 2.1 — Opportunity Hub in the mos-brand format
 
 ## Current Position
 
-Phase: 2 of 5 (One-Command Run and Doctor) is executing. Phase 2.1 (Opportunity Hub) follows Phase 2. Phase 1 is complete (6 of 6 plans, 2026-10-23), with one open owner item.
-Plan: 6 of 6 in Phase 2 complete (02-01 to 02-06). Phase verification next.
-Status: Executing Phase 2
-Last activity: 2026-10-24 - Completed wave 3 (02-06 pipeline, CLI, run-twice and label tests). Full suite 668 passed, 27 skipped. Orchestrator re-ran the full suite and a real-model run twice: all files byte-identical except run-info.json.
+Phase: 2.1 (Opportunity Hub in the mos-brand format) — EXECUTING
+Plan: 1 of 19
+Status: Executing Phase 2.1
+Last activity: 2026-10-24 -- Phase 2.1 execution started
 
 Progress: [████░░░░░░] 40%
 
