@@ -29,6 +29,8 @@ def test_written_hub_is_offline(tmp_path: Path, no_network: list[object], hostil
     ("bad.html", '<link rel="preconnect" href="./local">'),
     ("bad.css", '@import url(https://host/x);'),
     ("bad.css", 'a{background:url(//host/x)}'),
+    ("bad.css", 'a{background:url(https:relative)}'),
+    ("bad.js", 'const url="http://www.w3.org/2000/svg.evil/x"'),
     ("bad.js", 'fetch("./x")'),
     ("bad.js", 'new XMLHttpRequest()'),
     ("bad.js", 'new WebSocket("./x")'),

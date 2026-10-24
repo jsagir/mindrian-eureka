@@ -69,13 +69,14 @@ def scan_for_network(folder: Path) -> list[str]:
             parser.feed(text)
             findings.extend(f"{name}: {item}" for item in parser.findings)
         elif path.suffix == ".js":
-            if _JS.search(text) or _URL.search(text.replace(_SVG, "")):
+            without_namespace = re.sub(re.escape(_SVG) + r"(?=[\"'\s<>]|$)", "", text)
+            if _JS.search(text) or _URL.search(without_namespace):
                 findings.append(f"{name}: remote URL or network API")
         elif path.suffix == ".css":
             # Canonical CSS may mention a URL in a comment; only load constructs count.
             uncommented = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
             for match in re.finditer(r"(?:url\s*\([^)]*\)|@import[^;]+)", uncommented, re.I):
-                if _URL.search(match.group()):
+                if re.search(r"(?:https?:|wss?:|ftp:|//)", match.group(), re.I):
                     findings.append(f"{name}: remote CSS load")
         elif path.suffix not in {".json", ".txt", ".md"} and _URL.search(text):
             findings.append(f"{name}: remote URL in unknown file type")
