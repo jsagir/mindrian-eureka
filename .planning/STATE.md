@@ -5,8 +5,8 @@ progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 12
-  completed_plans: 7
-  percent: 20
+  completed_plans: 11
+  percent: 33
 ---
 
 # Project State
@@ -21,11 +21,11 @@ See: .planning/PROJECT.md (updated 2026-10-23)
 ## Current Position
 
 Phase: 2 of 5 (One-Command Run and Doctor) is executing. Phase 2.1 (Opportunity Hub) follows Phase 2. Phase 1 is complete (6 of 6 plans, 2026-10-23), with one open owner item.
-Plan: 1 of 6 in Phase 2 complete (02-01). Wave 2 next: 02-02, 02-03, 02-04, 02-05.
+Plan: 5 of 6 in Phase 2 complete (02-01 to 02-05). Wave 3 next: 02-06.
 Status: Executing Phase 2
-Last activity: 2026-10-24 - Completed 02-01 (caps lift, contracts, test scaffold)
+Last activity: 2026-10-24 - Completed wave 2 (02-02 corpus, 02-03 engine facade, 02-04 manifest and output, 02-05 doctor). Full suite 581 passed, 26 skipped.
 
-Progress: [██░░░░░░░░] 20%
+Progress: [███░░░░░░░] 33%
 
 ## Performance Metrics
 

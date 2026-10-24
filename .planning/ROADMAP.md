@@ -52,10 +52,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. `eureka doctor` checks Python, `uv`, local model presence, and cache and data directory permissions, and prints the exact fix for each failure. A missing model produces a clear message, never a silent failure.
 **Plans**: 6 plans in 3 waves (wave 1: 02-01; wave 2: 02-02, 02-03, 02-04, 02-05 in parallel; wave 3: 02-06)
 - [x] 02-01: Caps lift (top_k 200, 3,000 artifacts), shared contracts and test scaffold
-- [ ] 02-02: Corpus builder with CSV mapping file and flags
-- [ ] 02-03: Typed engine facade for both engines
-- [ ] 02-04: Projection, canonical writer, manifest and console
-- [ ] 02-05: Model discovery, `eureka doctor` and offline install note
+- [x] 02-02: Corpus builder with CSV mapping file and flags
+- [x] 02-03: Typed engine facade for both engines
+- [x] 02-04: Projection, canonical writer, manifest and console
+- [x] 02-05: Model discovery, `eureka doctor` and offline install note
 - [ ] 02-06: Pipeline, CLI wiring, run-twice (RUN-04) and label (RUN-05) tests
 
 ### Phase 2.1: Opportunity Hub in the mos-brand format
