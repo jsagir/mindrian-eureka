@@ -1,0 +1,13 @@
+# Reference view mapping
+
+The reference pages were read for structure only. Their collection text, names, scores, hypotheses and narrative are not copied. The public-data hub reproduces the review routes with its own frozen source records and engine outputs.
+
+| Reference view | Structure observed | Hub view and what is reproduced | Not reproduced and why |
+|---|---|---|---|
+| Opportunity bank | A static candidate report with ranked material, scores, source references, evidence, whitespace and challenge sections. | Opportunity bank: ranked candidate pairs, engine words, scores, source links and reading actions. | Written whitespace assessments and opportunity hypotheses are not reproduced. They require interpretation; the hub uses fixed templates and stored fields under D-08. |
+| Idea graph | A Cytoscape graph with nodes, edges, clusters, relationship filters, a legend and an inspection panel. The script comes from a remote host. | Connection graph: records and proposed pairs, neighborhoods, Find, a Potential eureka tour and the source-grounded panel. | The reference renderer, room relationship types and remote script are not reproduced. The hub uses its approved local 3D library and the two run engines. Rotation and particles remain excluded under D-21; they are not attributed to this reference renderer. |
+| Leads report | A static reading report with candidate leads, source references, hypotheses, score discussion, evidence and challenge sections. | Leading pair rows in the bank open reading panels; the Potential eureka tour offers a second review route when a run supplies marked records. | The written walkthrough, hypotheses and challenge narrative are not reproduced. They need a writer and human review, which are deferred. |
+
+The idea graph differs from the renderer assumed by the planning example: the observed page uses a 2D Cytoscape view. The mapping is about reading and inspection structure; it does not claim the same layout or analysis. The graph-guide deviation concerning yellow links and particles belongs to the canonical book template, recorded in [model rules](hub-model-rules.md).
+
+Source of the example data: see tests/fixtures/hub_public/SOURCE.md. No private room data is used. The [fixture provenance](../../tests/fixtures/hub_public/SOURCE.md) records the license, selection and frozen run. Its actual output has no Potential eureka, so the example shows the honest none state. Positive tour, chip, explanation and ink-shell checks use the separate synthetic test fixture in tests/hub_support.py, which is not a finding and never ships in the example or package.

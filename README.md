@@ -98,6 +98,33 @@ Two runs on the same input give the same ranked files. `run-info.json` is the on
 
 Every result is a candidate, not verified. It is a lead for human review.
 
+## Open the results as one page
+
+Build a local page from a finished run:
+
+```bash
+uv run eureka hub ./eureka-run --out ./eureka-hub
+```
+
+Open `eureka-hub/hub.html` in a current browser. The Opportunity bank ranks the pairs, the Connection graph shows their neighborhoods, and the Catalogue lists the records. Select a record or pair to read its fields and follow its source link. Every result is a candidate, not verified.
+
+The page runs from local files and sends nothing over the internet. It needs no running server or meaning model. The default source links open the record in the catalogue. Add `--source-dir ./my-sources` to link to the original files instead; keep their relative location when moving the hub.
+
+### Optional password gate
+
+Install the gate support while keeping the local encoder support from the run setup:
+
+```bash
+uv sync --extra hub-gate --extra modern-encoder
+read -r -s -p 'Passphrase: ' HUB_PASS
+printf '\n'
+export HUB_PASS
+uv run eureka hub ./eureka-run --out ./eureka-hub-locked --password-env HUB_PASS
+unset HUB_PASS
+```
+
+The gate encrypts the stored hub payload. It does not protect a computer that already has the passphrase. The data is readable in the browser after unlock. Original run folders, source files and older open exports remain readable. See the [gate record](docs/brand/hub-gate-record.md) for its assumptions and limits, and [offline installation](docs/offline-install.md) for setup.
+
 ## Quick start
 
 Install the package and inspect the available job contracts:
