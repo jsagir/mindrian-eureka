@@ -37,3 +37,14 @@
   .hub-bank-read { grid-column: 12; grid-row: 1; padding-inline: var(--hub-space-2); overflow-wrap: anywhere; }
   .hub-bank-reading { grid-column: 2 / 10; grid-row: 2; }
 }
+.hub-bank-read { min-inline-size: 44px; }
+@media (min-width: 1024px) {
+  /* The reserved reading column leaves the bank a tablet-sized content area. */
+  html[data-panel-open] #bank .hub-bank-row { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  html[data-panel-open] #bank .hub-bank-rank { grid-column: 1; grid-row: 1; }
+  html[data-panel-open] #bank .hub-bank-records { grid-column: 2 / 7; grid-row: 1; }
+  html[data-panel-open] #bank .hub-bank-scores { grid-column: 1 / 4; grid-row: 2; }
+  html[data-panel-open] #bank .hub-bank-labels { grid-column: 4 / 6; grid-row: 2; }
+  html[data-panel-open] #bank .hub-bank-read { grid-column: 6; grid-row: 2; }
+  html[data-panel-open] #bank .hub-bank-reading { grid-column: 1 / -1; grid-row: 3; }
+}

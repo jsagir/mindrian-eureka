@@ -103,7 +103,9 @@
       app.state.panelOpen = false;
       if (panel) panel.hide();
       app.emit("clear", null);
-      const target = opener && document.contains(opener) && typeof opener.focus === "function"
+      const target = opener && opener !== document.body && document.contains(opener)
+        && typeof opener.focus === "function" && opener.getClientRects().length
+        && getComputedStyle(opener).visibility !== "hidden"
         ? opener : document.getElementById("hub-title");
       if (target) target.focus();
       opener = null;
