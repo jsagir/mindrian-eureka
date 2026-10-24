@@ -249,6 +249,9 @@ async function main() {
             await page.screenshot({ path: step.path, fullPage: Boolean(step.fullPage) });
             result.screenshots.push(step.path);
             break;
+          case "visible":
+            result.results[step.as] = await page.locator(step.selector).isVisible();
+            break;
           case "dom": {
             const html = await page.content();
             if (step.path) fs.writeFileSync(step.path, html);
@@ -278,7 +281,8 @@ async function main() {
     if (context) await context.close().catch(() => {});
     await browser.close().catch(() => {});
   }
-  process.stdout.write(JSON.stringify(result) + "\n");
+  // Wait for pipe output to flush before main exits, including large DOM snapshots.
+  await new Promise(resolve => process.stdout.write(JSON.stringify(result) + "\n", resolve));
 }
 
 main().then(
