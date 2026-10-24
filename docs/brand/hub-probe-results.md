@@ -52,9 +52,11 @@ More measured facts:
 - Firefox 146.0.1 does not apply a meta policy to local file subresources. A page with only `default-src 'none'` still ran an external local script in Firefox, and Chromium blocked it. Firefox did enforce the policy on inline script, on `data:` images, on remote loads and on fetch. So the policy is a real control against network leaks and inline code in both browsers, and it is NOT a control against loading local files in Firefox.
 - The candidates 1 and 2 behave the same in both browsers on this machine. Candidate 1 is the stricter text, because `file:` allows any local file.
 
-CSP decision: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'
+Plan 18 measurement on 2026-10-25: the pinned 3d-force-graph UMD bundle injects six style elements at load. Both Chromium and Firefox reported six style-src-elem violations under the baseline policy. Only style-src gains 'unsafe-inline' so those local library styles can work. Raw measurements are in build/hub-plan18-csp-before/vendor-policy-chromium/result.json and vendor-policy-firefox/result.json. The decision test now measures this vendor requirement in both browsers in addition to the baseline probes; no other directive is relaxed.
 
-Decision rule used: the strictest candidate for which script, stylesheet, image and font all load in BOTH browsers, and the policy is enforced (inline script blocked, `data:` image blocked, a remote image reported, the remote fetch reported). The test `test_csp_decision_follows_the_rule_and_matches_the_record` computes the decision from fresh measurements and compares it with the line above.
+CSP decision: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'none'
+
+Decision rule used: include the measured vendor style requirement, then choose the strictest candidate for which script, stylesheet, image and font all load in BOTH browsers, and the policy is enforced (inline script blocked, `data:` image blocked, a remote image reported, the remote fetch reported). The test `test_csp_decision_follows_the_rule_and_matches_the_record` computes the decision from fresh measurements and compares it with the line above.
 
 Fallback: if a later browser version stops loading local files under the chosen policy, the decision becomes "none": no meta tag, and the controls are the static scan of the built page (no remote URL, no inline script) and the page-level request block of the harness.
 

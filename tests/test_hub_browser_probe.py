@@ -606,10 +606,40 @@ def test_csp_control_page_loads_everything_and_the_harness_blocks_the_fetch(
         assert row["fetch_reached_harness"] is True
 
 
+def vendor_needs_inline_styles(tmp_path: Path, baseline: str) -> bool:
+    """Measure the pinned UMD's style injection under the baseline policy."""
+    root = Path(__file__).resolve().parents[1]
+    vendor = root / "src/mindrian_eureka/hub/assets/static/vendor/3d-force-graph.min.js"
+    needs_inline = False
+    for browser in BROWSERS:
+        require_browser(browser)
+        folder = tmp_path / f"vendor-policy-{browser}"
+        folder.mkdir()
+        (folder / "vendor.js").write_bytes(vendor.read_bytes())
+        (folder / "index.html").write_text(
+            '<!doctype html><meta charset="utf-8">'
+            '<meta http-equiv="Content-Security-Policy" content="' + baseline + '">'
+            '<script src="vendor.js" defer></script><p>Local vendor policy probe.</p>'
+        )
+        script = write_script(folder, "read.js", 'return typeof window.ForceGraph3D;')
+        result = run_scenario({"browser": browser, "url": file_url(folder / "index.html"),
+                               "steps": [{"kind": "eval", "file": script, "as": "global"}]})
+        assert result["ok"] and result["results"]["global"] == "function"
+        assert result["blockedRequests"] == [] and result["pageErrors"] == []
+        (folder / "result.json").write_text(json.dumps(result, indent=2))
+        violations = result["cspViolations"]
+        assert all(item["directive"].startswith("style-src") for item in violations)
+        print(f"vendor inline style requirement: {browser}: {len(violations)} reports")
+        needs_inline = needs_inline or bool(violations)
+    return needs_inline
+
+
 def test_csp_decision_follows_the_rule_and_matches_the_record(
-    csp_table: dict[str, dict[str, dict[str, Any]]],
+    csp_table: dict[str, dict[str, dict[str, Any]]], tmp_path: Path,
 ) -> None:
     decision = decide(csp_table)
+    if decision != "none" and vendor_needs_inline_styles(tmp_path, decision):
+        decision = decision.replace("style-src 'self'", "style-src 'self' 'unsafe-inline'")
     print(f"\nCSP decision computed: {decision}")
     record = Path(__file__).resolve().parents[1] / "docs" / "brand" / "hub-probe-results.md"
     if not record.is_file():

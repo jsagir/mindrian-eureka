@@ -25,7 +25,7 @@ from .contracts import (
 from .deck import DECK, fill
 
 CONTENT_SECURITY_POLICY: str | None = (
-    "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; "
+    "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; "
     "font-src 'self'; connect-src 'none'"
 )
 STYLE_ORDER = (
