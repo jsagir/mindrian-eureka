@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from hashing_stub import HashingEncoder
+from hashing_stub import HashingEncoder, hashing_encode
 
 CORPUS_FIXTURE = Path(__file__).resolve().parent / "fixtures" / "rs_parity" / "corpus.json"
 REGION_NAMES = {
@@ -93,6 +93,21 @@ def hashing_encoder(monkeypatch: pytest.MonkeyPatch) -> type[HashingEncoder]:
 
     monkeypatch.setattr(runner, "SentenceTransformerEncoder", HashingEncoder)
     return HashingEncoder
+
+
+@pytest.fixture
+def stub_encoders(monkeypatch: pytest.MonkeyPatch, hashing_encoder: type[HashingEncoder]) -> None:
+    """Replace both meaning encoders with the hashing stub. No model files are needed.
+
+    The unusual-pairs encoder class is patched by `hashing_encoder`. This fixture also
+    patches `engines.load_local_encode`, so callers must reach it as a module attribute.
+    """
+    import mindrian_eureka.run.engines as engines
+
+    def _load(model_dir: Path) -> Callable[[list[str]], Any]:
+        return hashing_encode
+
+    monkeypatch.setattr(engines, "load_local_encode", _load)
 
 
 @pytest.fixture
