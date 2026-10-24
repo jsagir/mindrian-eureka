@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from collections.abc import Callable, Iterator
 from pathlib import Path
 
 import pytest
 from conftest import InputSet
 from mindrian_eureka.cli import main
+from mindrian_eureka.run import engines
 from mindrian_eureka.run.contracts import LABEL, SCORE_MEANING, SUMMARY_LINE
 from mindrian_eureka.run.engines import BUILTIN_EXCLUDE_NOTE
 from mindrian_eureka.run.project import (
@@ -190,7 +192,22 @@ def test_no_short_engine_code_in_output_or_streams(run_out: tuple[Path, str, str
                 assert SHORT_CODE.search(value) is None, (path.name, value)
 
 
-def test_no_internal_file_name_in_output_or_streams(run_out: tuple[Path, str, str]) -> None:
+@pytest.fixture
+def fresh_reference(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Make the next run import the reference engine again, so its import-time note is seen.
+
+    The note is printed once per process, at the first import. An earlier test in the same
+    process would otherwise hide it. Monkeypatch restores the old module on teardown.
+    """
+    monkeypatch.delitem(sys.modules, "mindrian_eureka.hsi_reference", raising=False)
+    monkeypatch.setattr(engines, "_reference_module", None)
+    monkeypatch.setattr(engines, "_reference_notes", ())
+    monkeypatch.setattr(engines, "_reference_sha256", "")
+
+
+def test_no_internal_file_name_in_output_or_streams(
+    fresh_reference: None, run_out: tuple[Path, str, str]
+) -> None:
     out, stdout, stderr = run_out
     assert INTERNAL_FRAGMENT.search(stdout) is None
     assert INTERNAL_FRAGMENT.search(stderr) is None
