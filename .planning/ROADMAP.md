@@ -13,7 +13,7 @@ The first milestone makes Eureka operational by other users. The JHTV review on 
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Release Gate and Engine Parity** (completed 2026-10-23, one open owner item) - Settle unusual-pairs engine licensing and attribution, prove or choose its canonical path, recover the wording-and-meaning pairs engine command
-- [ ] **Phase 2: One-Command Run and Doctor** - `eureka run` builds a clean corpus, ranks unusual pairs and wording-and-meaning pairs, writes a manifest; `eureka doctor` checks the setup
+- [x] **Phase 2: One-Command Run and Doctor** - `eureka run` builds a clean corpus, ranks unusual pairs and wording-and-meaning pairs, writes a manifest; `eureka doctor` checks the setup
 - [ ] **Phase 2.1: Opportunity Hub in the mos-brand format** - One local page shows the opportunity bank, the connection graph and the full catalogue of an analyzed collection, styled by the mos-brand book
 - [ ] **Phase 3: Host Integration and Replay Rebuild** - `/mos:eureka` calls the run through the MCP server; the graph-derive replay is rebuilt or marked as a provenance gap
 - [ ] **Phase 4: Public Example and Reproduction Guide** - Small public dataset with expected hashes, plus a "reproduce the JHTV method" guide
@@ -101,7 +101,7 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Release Gate and Engine Parity | 6/6 | Complete (owner sign-off open) | 2026-10-23 |
-| 2. One-Command Run and Doctor | 1/6 | In progress | - |
+| 2. One-Command Run and Doctor | 6/6 | Complete (verification: human_needed) | 2026-10-24 |
 | 2.1. Opportunity Hub in the mos-brand format | 0/TBD | Not started | - |
 | 3. Host Integration and Replay Rebuild | 0/TBD | Not started | - |
 | 4. Public Example and Reproduction Guide | 0/TBD | Not started | - |
