@@ -164,3 +164,182 @@ def test_weights_work_with_a_loaded_run_folder(tmp_path: Path) -> None:
     weights = engine_weights(pairs)
     assert len(weights) == len(pairs)
     assert all(0.0 <= weight <= 1.0 for weight in weights.values())
+
+
+def _loaded_run(tmp_path: Path, *, n_records: int = 30, **options: object):
+    return load_run(make_run_folder(tmp_path, n_records=n_records, **options))
+
+
+def _pair_for(
+    engine: str, pair_id: str, left: str, right: str, score: float, rank: int
+) -> RunPair:
+    return RunPair(
+        engine=engine,
+        rank=rank,
+        pair_id=pair_id,
+        left_id=left,
+        right_id=right,
+        wording=0.4,
+        meaning=0.8,
+        rank_score=score,
+        percentile=None,
+        reading="Similar meaning, different wording.",
+    )
+
+
+def _bridge_run(tmp_path: Path, *, with_second_engine: bool = False):
+    from dataclasses import replace
+
+    from mindrian_eureka.hub.contracts import ENGINE_WORDING
+
+    run = _loaded_run(tmp_path, n_records=6, zero_pairs=True, clusters=2)
+    ids = [record.id for record in run.records]
+    unusual = (
+        _pair_for(ENGINE_UNUSUAL, "ab", ids[0], ids[1], 1.0, 1),
+        _pair_for(ENGINE_UNUSUAL, "ac", ids[0], ids[2], 0.9, 2),
+        _pair_for(ENGINE_UNUSUAL, "bc", ids[1], ids[2], 0.8, 3),
+        _pair_for(ENGINE_UNUSUAL, "de", ids[3], ids[4], 0.9, 4),
+        _pair_for(ENGINE_UNUSUAL, "df", ids[3], ids[5], 0.9, 5),
+        _pair_for(ENGINE_UNUSUAL, "ef", ids[4], ids[5], 0.8, 6),
+        _pair_for(ENGINE_UNUSUAL, "cd", ids[2], ids[3], 0.01, 7),
+    )
+    wording = (
+        _pair_for(ENGINE_WORDING, "ab", ids[0], ids[1], 1.0, 1),
+        _pair_for(ENGINE_WORDING, "ca", ids[2], ids[0], 0.05, 2),
+        _pair_for(ENGINE_WORDING, "ce", ids[2], ids[4], 0.001, 3),
+    ) if with_second_engine else ()
+    engines = dict(run.engines)
+    engines[ENGINE_UNUSUAL] = replace(engines[ENGINE_UNUSUAL], pairs=unusual)
+    engines[ENGINE_WORDING] = replace(engines[ENGINE_WORDING], pairs=wording)
+    return replace(run, engines=engines)
+
+
+def test_build_payload_bridges_into_two_neighborhoods(tmp_path: Path) -> None:
+    from mindrian_eureka.hub.model import build_payload
+
+    payload = build_payload(_bridge_run(tmp_path))
+    bridges = payload["bridges"]
+    assert bridges[0]["record_id"] == "doc002"
+    assert bridges[0]["rank"] == 1
+    assert bridges[0]["hoods"] == [1, 2]
+    assert bridges[0]["score"] == pytest.approx(0.91)
+    assert payload["records"][2]["bridge"] is True
+    assert payload["records"][2]["bridge_hoods"] == [1, 2]
+
+
+def test_bridge_uses_best_engine_per_record_and_ties_by_id(tmp_path: Path) -> None:
+    from mindrian_eureka.hub.model import build_payload
+
+    payload = build_payload(_bridge_run(tmp_path, with_second_engine=True))
+    chosen = next(item for item in payload["bridges"] if item["record_id"] == "doc002")
+    assert chosen["engine"] == ENGINE_UNUSUAL
+    assert [item["record_id"] for item in payload["bridges"][:2]] == ["doc002", "doc003"]
+
+
+def test_build_payload_reads_floors_and_excludes_weak_pairs(tmp_path: Path) -> None:
+    from mindrian_eureka.hub.contracts import ENGINE_WORDING
+    from mindrian_eureka.hub.model import build_payload
+
+    run = _loaded_run(tmp_path, unusual_floor=0.9, wording_floor=0.0)
+    payload = build_payload(run)
+    assert payload["engines"][ENGINE_UNUSUAL]["floor_text"] == "0.90"
+    assert payload["engines"][ENGINE_WORDING]["floor"] is None
+    assert payload["engines"][ENGINE_WORDING]["floor_text"] == ""
+
+    weak_run = _loaded_run(
+        tmp_path / "weak", wording_floor=0.5, percentile_below_floor=3
+    )
+    weak_payload = build_payload(weak_run)
+    weak_pairs = [pair for pair in weak_payload["pairs"] if pair["weak"]]
+    assert len(weak_pairs) == 3
+    assert weak_payload["counts"]["weak_pairs"] == 3
+    weak_ids = {pair["key"] for pair in weak_pairs}
+    assert all(pair["weight"] == 0.0 and pair["width"] == WIDTH_MIN for pair in weak_pairs)
+    visible_pairs = [pair for pair in weak_payload["pairs"] if not pair["weak"]]
+    visible_ids = {
+        record_id
+        for pair in visible_pairs
+        for record_id in (pair["left"]["id"], pair["right"]["id"])
+    }
+    hood_ids = {record_id for hood in weak_payload["hoods"] for record_id in hood["record_ids"]}
+    assert hood_ids == visible_ids
+    assert not any(pair["key"] in weak_ids for pair in visible_pairs)
+
+
+def test_build_payload_data_check_and_source_links(tmp_path: Path) -> None:
+    from mindrian_eureka.hub.model import build_payload
+
+    dropped = [
+        {"id": "lost-a", "reason": "empty text", "source_file": "a.md"},
+        {"id": "lost-b", "reason": "empty text", "source_file": "b.md"},
+        {"id": "lost-c", "reason": "short text", "source_file": "c.md"},
+    ]
+    run = _loaded_run(tmp_path, copies=3, empty_text=2, dropped=dropped)
+    payload = build_payload(run, file_links={"doc000": "./input/doc000.md"})
+    check = payload["data_check"]
+    assert check["identical_records"] == 4
+    assert check["identical_groups"] == [["doc000", "doc001", "doc002", "doc003"]]
+    assert check["no_text_records"] == 2
+    assert check["removed_count"] == 3
+    assert check["removed_text"] == "empty text (2); short text (1)"
+    assert check["boilerplate"] == "not_checked"
+    assert payload["records"][0]["identical_to"] == ["doc001", "doc002", "doc003"]
+    assert payload["records"][28]["no_text"] is True
+    assert payload["records"][0]["source_link"] == "./input/doc000.md"
+    assert payload["records"][1]["source_link"] == payload["records"][1]["catalogue_link"]
+    assert all(
+        pair["flag_identical"]
+        for pair in payload["pairs"]
+        if "doc000" in (pair["left"]["id"], pair["right"]["id"])
+    )
+
+
+def test_build_payload_graph_threshold_zero_pairs_and_exactly_fifteen(tmp_path: Path) -> None:
+    from mindrian_eureka.hub.model import build_payload
+
+    small = build_payload(_loaded_run(tmp_path / "small", n_records=14, pairs_per_engine=91))
+    assert small["graph"]["earned"] is False
+    assert small["graph"]["visible_records"] < 15
+
+    enough = build_payload(_loaded_run(tmp_path / "enough", n_records=15, pairs_per_engine=105))
+    assert enough["graph"]["earned"] is True
+    assert enough["graph"]["visible_records"] == 15
+
+    empty = build_payload(_loaded_run(tmp_path / "empty", zero_pairs=True))
+    assert empty["counts"]["records_in_visible_pairs"] == 0
+    assert empty["graph"]["earned"] is False
+
+
+def test_build_payload_is_byte_deterministic_and_keeps_hostile_text(tmp_path: Path) -> None:
+    from dataclasses import replace
+
+    from mindrian_eureka.hub.model import build_payload
+    from mindrian_eureka.run.output import canonical_json
+
+    run = _loaded_run(tmp_path, hostile=True)
+    first = canonical_json(build_payload(run))
+    second = canonical_json(build_payload(run))
+    shuffled_engines = dict(run.engines)
+    for key, engine in shuffled_engines.items():
+        shuffled_engines[key] = replace(engine, pairs=tuple(reversed(engine.pairs)))
+    shuffled = canonical_json(build_payload(replace(run, engines=shuffled_engines)))
+    assert first == second == shuffled
+    payload = build_payload(run)
+    hostile_record = next(record for record in payload["records"] if "</script>" in record["text"])
+    assert "<script>" in hostile_record["text"]
+
+
+def test_build_payload_refuses_a_pair_with_an_unknown_record(tmp_path: Path) -> None:
+    from dataclasses import replace
+
+    from mindrian_eureka.hub.model import build_payload
+
+    run = _bridge_run(tmp_path)
+    engines = dict(run.engines)
+    engine = engines[ENGINE_UNUSUAL]
+    engines[ENGINE_UNUSUAL] = replace(
+        engine,
+        pairs=(replace(engine.pairs[0], left_id="missing-record"), *engine.pairs[1:]),
+    )
+    with pytest.raises(ValueError, match="missing-record"):
+        build_payload(replace(run, engines=engines))
