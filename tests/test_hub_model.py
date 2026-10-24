@@ -5,17 +5,18 @@ from __future__ import annotations
 import random
 from pathlib import Path
 
+import pytest
+from hub_support import make_run_folder
 from mindrian_eureka.hub.contracts import (
     ENGINE_UNUSUAL,
     NEIGHBORHOOD_TINTS,
-    RunPair,
     WIDTH_CROSSING,
     WIDTH_MAX,
     WIDTH_MIN,
+    RunPair,
 )
 from mindrian_eureka.hub.model import engine_weights, label_propagation, number_hoods, pair_widths
 from mindrian_eureka.hub.reader import load_run
-from tests.hub_support import make_run_folder
 
 
 def _pair(
@@ -89,10 +90,10 @@ def test_two_triangles_joined_by_a_weak_edge_make_two_numbered_hoods() -> None:
 def test_equal_weight_path_has_a_fixed_labeling() -> None:
     edges = {("a", "b"): 1.0, ("b", "c"): 1.0, ("c", "d"): 1.0}
     assert label_propagation(edges, ["a", "b", "c", "d"]) == {
-        "a": "a",
-        "b": "a",
-        "c": "a",
-        "d": "a",
+        "a": "b",
+        "b": "b",
+        "c": "b",
+        "d": "b",
     }
 
 
@@ -108,7 +109,7 @@ def test_shuffling_pairs_does_not_change_hoods_or_widths() -> None:
     )
     expected_edges, expected_nodes = _edges(pairs)
     expected_labels = label_propagation(expected_edges, expected_nodes)
-    expected_widths = pair_widths(pairs, engine_weights(pairs), expected_labels)
+    expected_widths = pair_widths(pairs, expected_labels)
     for seed in range(20):
         shuffled = list(pairs)
         random.Random(seed).shuffle(shuffled)
@@ -116,7 +117,7 @@ def test_shuffling_pairs_does_not_change_hoods_or_widths() -> None:
         edges, nodes = _edges(shuffled_pairs)
         labels = label_propagation(edges, nodes)
         assert number_hoods(labels) == number_hoods(expected_labels)
-        assert pair_widths(shuffled_pairs, engine_weights(shuffled_pairs), labels) == expected_widths
+        assert pair_widths(shuffled_pairs, labels) == expected_widths
 
 
 def test_isolated_node_and_empty_edges_make_no_hoods() -> None:
@@ -134,24 +135,16 @@ def test_pair_widths_cover_crossing_normal_and_single_score() -> None:
     middle = _pair("middle", "b", "c", 0.5)
     last = _pair("last", "c", "d", 0.8)
     pairs = (first, middle, last)
-    widths = pair_widths(
-        pairs,
-        engine_weights(pairs),
-        {"a": "a", "b": "a", "c": "c", "d": "c"},
-    )
-    assert widths["unusual_pairs:first"] == WIDTH_CROSSING
+    widths = pair_widths(pairs, {"a": "a", "b": "a", "c": "c", "d": "c"})
+    assert widths["unusual_pairs:first"] == WIDTH_MIN
     assert widths["unusual_pairs:middle"] == WIDTH_CROSSING
-    assert widths["unusual_pairs:last"] == WIDTH_CROSSING
+    assert widths["unusual_pairs:last"] == WIDTH_MAX
 
-    normal = pair_widths(
-        pairs,
-        engine_weights(pairs),
-        {"a": "a", "b": "a", "c": "a", "d": "a"},
-    )
+    normal = pair_widths(pairs, {"a": "a", "b": "a", "c": "a", "d": "a"})
     assert normal["unusual_pairs:first"] == WIDTH_MIN
-    assert normal["unusual_pairs:middle"] == 0.3
+    assert normal["unusual_pairs:middle"] == pytest.approx(0.325)
     assert normal["unusual_pairs:last"] == WIDTH_MAX
-    assert pair_widths((middle,), engine_weights((middle,)), {"b": "b", "c": "b"})[
+    assert pair_widths((middle,), {"b": "b", "c": "b"})[
         "unusual_pairs:middle"
     ] == WIDTH_MAX
 
