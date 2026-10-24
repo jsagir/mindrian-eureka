@@ -81,7 +81,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02.1-11: Opportunity bank view
 - [x] 02.1-12: Catalogue view
 - [x] 02.1-13: Reading panel
-- [ ] 02.1-14: Password gate (`--password-env`): encryption, unlock script, gate record
+- [x] 02.1-14: Password gate (`--password-env`): encryption, unlock script, gate record
 - [ ] 02.1-15: Connection graph view: guide, legend, Find, small-collection diagram, pair list, bridge tour, fallbacks
 - [ ] 02.1-16: HUB-05 reproduction on the public fixture, JHTV view mapping, README section, copy and close tests
 - [ ] 02.1-17: Owner decision (brand stop) and its record
@@ -121,6 +121,6 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Release Gate and Engine Parity | 6/6 | Complete (owner sign-off open) | 2026-10-23 |
 | 2. One-Command Run and Doctor | 6/6 | Complete (verification: human_needed) | 2026-10-24 |
-| 2.1. Opportunity Hub in the mos-brand format | 13/19 | In progress | - |
+| 2.1. Opportunity Hub in the mos-brand format | 14/19 | In progress | - |
 | 3. Host Integration and Replay Rebuild | 0/TBD | Not started | - |
 | 4. Public Example and Reproduction Guide | 0/TBD | Not started | - |
