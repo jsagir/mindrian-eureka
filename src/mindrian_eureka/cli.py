@@ -8,6 +8,7 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
+from .hub.command import hub_command, register_hub
 from .run.command import (
     ENGINES_TEXT,
     EXIT_CODES_TEXT,
@@ -47,10 +48,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     schema.add_argument("--direction", choices=("input", "output", "both"), default="both")
     commands.add_parser("workflow", help="print the MindrianOS opportunity-discovery host contract")
     register_commands(commands)
+    register_hub(commands)
     raw = list(sys.argv[1:] if argv is None else argv)
     args = parser.parse_args(raw)
     if args.command == "run":
         return run_command(args, raw)
+    if args.command == "hub":
+        return hub_command(args)
     if args.command == "doctor":
         return doctor_cli(args)
 

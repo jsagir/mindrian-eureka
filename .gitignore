@@ -16,6 +16,7 @@ build/
 # Local job data, artifacts, and secrets
 .eureka-data/
 eureka-run/
+eureka-hub/
 .env
 .env.*
 !.env.example

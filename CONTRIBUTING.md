@@ -44,14 +44,16 @@ PYTHONPATH=src python3 -m pytest -q -p no:cacheprovider
 Check strict typing on the new modules:
 
 ```bash
-mypy --strict --ignore-missing-imports --follow-imports=silent --python-executable "$(command -v python3)" src/mindrian_eureka/run src/mindrian_eureka/doctor.py src/mindrian_eureka/models.py src/mindrian_eureka/limits.py
+mypy --strict --ignore-missing-imports --follow-imports=silent --python-executable "$(command -v python3)" src/mindrian_eureka/hub src/mindrian_eureka/run src/mindrian_eureka/doctor.py src/mindrian_eureka/models.py src/mindrian_eureka/limits.py
 ```
 
 Check the lint rules:
 
 ```bash
-ruff check src/mindrian_eureka/run src/mindrian_eureka/doctor.py src/mindrian_eureka/models.py src/mindrian_eureka/limits.py tests/test_run_*.py tests/test_doctor.py tests/test_models.py
+ruff check src/mindrian_eureka/hub src/mindrian_eureka/run src/mindrian_eureka/doctor.py src/mindrian_eureka/models.py src/mindrian_eureka/limits.py tests/test_run_*.py tests/test_doctor.py tests/test_models.py tests/test_hub_*.py tests/hub_*.py
 ```
+
+Browser tests need a Playwright install and otherwise skip; `EUREKA_REQUIRE_BROWSER=1` makes missing browser tools a failure.
 
 Strict typing is required for the new modules only. Older modules (`cli.py`, `runner.py`, `hsi_engine.py`) are known to fail it. Do not widen the strict command to them in the same change.
 
