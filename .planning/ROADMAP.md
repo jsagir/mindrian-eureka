@@ -74,7 +74,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02.1-04: Browser test harness and recorded probes (WebCrypto, CSP, WebGL, library facts, crypto dependency)
 - [x] 02.1-05: Hub model: neighborhoods, cut-offs, bridges, data check, payload, label and source link guard
 - [x] 02.1-06: Packaged book assets, vendored 3d-force-graph, package data and hub-gate extra (package legitimacy checkpoint)
-- [ ] 02.1-07: Public-data fixture with license record and a frozen real run (HUB-05 input)
+- [x] 02.1-07: Public-data fixture with license record and a frozen real run (HUB-05 input)
 - [ ] 02.1-08: Page shell with server-side lists, locked form of the page, and tests
 - [ ] 02.1-09: Hub writer, hub manifest, source links and the `eureka hub` command, static no-network scanners
 - [ ] 02.1-10: Front-end core: stylesheet, HubApp API, routing, shell behavior, static rule tests, browser tests
@@ -121,6 +121,6 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Release Gate and Engine Parity | 6/6 | Complete (owner sign-off open) | 2026-10-23 |
 | 2. One-Command Run and Doctor | 6/6 | Complete (verification: human_needed) | 2026-10-24 |
-| 2.1. Opportunity Hub in the mos-brand format | 6/19 | In progress | - |
+| 2.1. Opportunity Hub in the mos-brand format | 7/19 | In progress | - |
 | 3. Host Integration and Replay Rebuild | 0/TBD | Not started | - |
 | 4. Public Example and Reproduction Guide | 0/TBD | Not started | - |
