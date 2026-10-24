@@ -97,3 +97,15 @@
 - Inspected synthetic mark and Why captures at 1280 and 320; public fixture unchanged.
 - Deviations: use owner addendum; recompose narrowed bank rows; hidden opener returns focus to h1.
 - UNVERIFIED: tour, sphere/ink shell, screen reader, Safari and owner review. NEXT: Plan 14.
+
+## 02.1-14
+- Commits: 71001df, 6c12a72, e4aa1c8, cbe8a48.
+- Full suite: 1192 passed, 27 skipped, 45 subtests passed in 717.97 seconds.
+- Focused Python: 127 passed. Browser gate: 23 passed; 16 final targeted passed after face/copy checks.
+- Ruff: PASS. Strict mypy gate/writer/command: PASS. Node syntax: PASS.
+- Chromium and Firefox: Unicode unlock, wrong/tampered data, unavailable crypto, privacy and five widths pass.
+- Local observed unlock/startup: Chromium 79.2000 ms; Firefox 119.0000 ms; not a guarantee.
+- Public fixture unlock showed actual 36 records; locked phone/desktop and opened desktop captures inspected.
+- Deviations: required public run hash retained; passive JSON scanner fixes base64 false positives; distinctive privacy markers.
+- Risks: custom deterministic nonce unaudited, repeat equality and offline guessing; original sources remain outside gate.
+- UNVERIFIED: Safari, screen reader and owner review. NEXT: Plan 15, then Plan 18 in wave order.
