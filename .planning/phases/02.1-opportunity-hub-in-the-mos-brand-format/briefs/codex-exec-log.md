@@ -133,3 +133,15 @@
 - CSP: six blocked vendor style injections per browser; only style-src relaxed, fresh probe verifies requirement.
 - Captures at 320/1280 inspected; fixed stale fit matrices and panel occlusion; real public fixture unchanged.
 - UNVERIFIED: Safari, real touch, screen reader and owner review. NEXT: Plan 16, then 19; owner stop stays 17.
+
+## 02.1-16
+- Commits: 4ad6e48, 7cd77a2.
+- Full suite: 1247 passed, 27 skipped, 45 subtests passed in 446.77 seconds.
+- Focused: 17 public-example, copy, close and README checks passed in 10.00 seconds.
+- Ruff: PASS. Strict mypy page.py: PASS.
+- Public run: byte-identical builds, all source links, 36 records, 63/200 pairs and honest Gr09 none pass.
+- Chromium: leading 16 panels, three views, 3D, catalogue and locked unlock pass; synthetic positive route stays separate.
+- Deck runtime inventory and payload equality, script/style order, CSP, five records and packaging checks pass.
+- Mapping corrects the observed 2D Cytoscape reference; no private data, names, paths or narrative copied.
+- README adds 27 lines; page.py adds 12 comment lines only. Fixed a hidden-button loop in the draft test.
+- UNVERIFIED: Safari, touch, screen reader and owner review. NEXT: Plan 19; no approval or push.
