@@ -71,4 +71,19 @@ The fixture contains 36 explicit versioned identifiers, six in each of six subje
 
 ## Frozen run
 
-Pending the two real-model runs and byte comparison.
+Date: 2026-10-24.
+Eureka version: 0.1.0.
+Manifest SHA-256: `105a452b3c165e73407963a0062f940b6b7b7be23760281ccf80e2932e83608e`.
+Records: 36. Unusual-pairs engine: 63 pairs. Wording engine: 200 pairs.
+The run was made with the real local model `sentence-transformers/all-MiniLM-L6-v2`, snapshot `1110a243fdf4706b3f48f1d95db1a4f5529b4d41`, named in the manifest. No hashing stub was used. Model file hashes are in the manifest.
+
+Commands, from the repository root:
+
+```sh
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false UV_OFFLINE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 nice -n 19 uv run --no-sync eureka run tests/fixtures/hub_public/input --out build/hub-public-run
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false UV_OFFLINE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 nice -n 19 uv run --no-sync eureka run tests/fixtures/hub_public/input --out build/hub-public-run2
+```
+
+The second completed real-model run gave byte-identical files except run-info.json. The comparison covered all five frozen files. run-info.json is not copied because it holds times and local command paths.
+An earlier multithread attempt was stopped before publication. Both completed runs used the same one-thread settings, the default scoring settings, and the existing local model.
+Phase 4 owns the expected-hash check for a fresh checkout.
