@@ -86,3 +86,14 @@
 - Inspected public catalogue at 1280 and 320. No attempted remote request, page error or CSP violation.
 - Deviations: sticky header follows shared 1024 px breakpoint; serial recapture after load-related timeout.
 - UNVERIFIED: panel, graph, screen reader, Safari and owner brand review. NEXT: Plan 13 with the synthetic helper addendum.
+
+## 02.1-13
+- Commits: 14ff1bd, 2da60b6, e87ded2.
+- Full suite: 1147 passed, 27 skipped, 45 subtests passed in 315.02 seconds.
+- Focused: 77 integrated, 14 final panel, 25 width/static checks passed. Ruff: PASS. Node: PASS. Mypy: not applicable.
+- Chromium and Firefox: all 110 items keep status and sources; removed-chip negative case detected.
+- Required synthetic helper: chip, candidate status, source, Why heading and two neighborhoods verified in both browsers.
+- Five widths pass sheet/side-panel, target/font, overflow and uncovered-action checks; Unicode split is exact.
+- Inspected synthetic mark and Why captures at 1280 and 320; public fixture unchanged.
+- Deviations: use owner addendum; recompose narrowed bank rows; hidden opener returns focus to h1.
+- UNVERIFIED: tour, sphere/ink shell, screen reader, Safari and owner review. NEXT: Plan 14.
