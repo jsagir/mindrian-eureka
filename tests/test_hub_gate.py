@@ -60,7 +60,9 @@ def test_thousand_plaintexts_have_distinct_nonces() -> None:
     assert len({gate.derive_nonce(key, salt, message) for message in messages}) == 1000
 
 
-@pytest.mark.parametrize("mutation", ["password", "ciphertext", "nonce", "iterations", "schema", "base64"])
+@pytest.mark.parametrize(
+    "mutation", ["password", "ciphertext", "nonce", "iterations", "schema", "base64"]
+)
 def test_tampering_has_plain_error_without_passphrase(mutation: str) -> None:
     crypto()
     envelope = copy.deepcopy(EXPECTED)
