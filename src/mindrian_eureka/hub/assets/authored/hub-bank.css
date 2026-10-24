@@ -1,0 +1,39 @@
+.hub-bank-engines { border: 1px solid var(--mos-ink); padding: var(--hub-space-4); margin-block: var(--hub-space-5); }
+.hub-bank-engines legend { font-size: 16px; font-weight: 600; }
+.hub-bank-engines label, .hub-bank-weak { display: flex; align-items: center; gap: var(--hub-space-2); min-block-size: 44px; font-size: 16px; }
+.hub-bank-engines input, .hub-bank-weak input { margin: 0; accent-color: var(--mos-ink); }
+.hub-bank-list { list-style: none; padding: 0; margin: 0; }
+.hub-bank-row { display: grid; grid-template-columns: minmax(44px, 1fr) minmax(0, 3fr); gap: var(--hub-space-4); }
+.hub-bank-row > * { min-inline-size: 0; margin: 0; }
+.hub-bank-rank { grid-column: 1; grid-row: 1; }
+.hub-bank-labels { grid-column: 2; grid-row: 1; }
+.hub-bank-records, .hub-bank-scores, .hub-bank-reading, .hub-bank-read { grid-column: 1 / -1; }
+.hub-bank-row p { margin-block: var(--hub-space-2); }
+.hub-bank-title { font-size: 16px; font-weight: 600; line-height: 1.5; }
+.hub-bank-labels { display: flex; flex-wrap: wrap; align-items: center; gap: var(--hub-space-2); }
+.hub-bank-engine { font-size: 13px; }
+.hub-bank-scores, .hub-bank-reading, .hub-hidden-label { font-size: 13px; line-height: 1.5; }
+.hub-bank-scores p { font-family: var(--mos-font-code); font-size: 13px; font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+.hub-row--weak { background: var(--mos-quiet); color: var(--mos-soft); padding: var(--hub-space-4); }
+/* A flagged weak row gives the red flag its own approved paper surface. */
+.hub-bank-reading .hub-flag { background: var(--mos-paper); }
+#bank-more { margin-block: var(--hub-space-5); }
+@media (min-width: 768px) {
+  .hub-bank-engines { display: flex; flex-wrap: wrap; gap: var(--hub-space-5); }
+  .hub-bank-row { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--hub-space-5); }
+  .hub-bank-rank { grid-column: 1; grid-row: 1; }
+  .hub-bank-records { grid-column: 2 / 7; grid-row: 1; }
+  .hub-bank-scores { grid-column: 1 / 4; grid-row: 2; }
+  .hub-bank-labels { grid-column: 4 / 6; grid-row: 2; }
+  .hub-bank-read { grid-column: 6; grid-row: 2; }
+  .hub-bank-reading { grid-column: 1 / -1; grid-row: 3; }
+}
+@media (min-width: 1024px) {
+  .hub-bank-row { grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: start; }
+  .hub-bank-rank { grid-column: 1; grid-row: 1; }
+  .hub-bank-records { grid-column: 2 / 7; grid-row: 1; }
+  .hub-bank-scores { grid-column: 7 / 10; grid-row: 1; }
+  .hub-bank-labels { grid-column: 10 / 12; grid-row: 1; display: grid; }
+  .hub-bank-read { grid-column: 12; grid-row: 1; padding-inline: var(--hub-space-2); overflow-wrap: anywhere; }
+  .hub-bank-reading { grid-column: 2 / 10; grid-row: 2; }
+}
