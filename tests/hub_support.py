@@ -4,6 +4,7 @@ The folders are written with the Phase 2 writers (`corpus_lines`, `canonical_jso
 `render_ranked_markdown`, `StagedRun`, `build_manifest` and the two projectors), so each
 one passes `is_eureka_run_folder` and every output hash in its manifest is correct.
 The builder is deterministic: the same arguments give the same bytes.
+The Potential eureka helper is a synthetic test fixture, not a finding.
 """
 
 from __future__ import annotations
@@ -382,3 +383,158 @@ def _manifest_output(digest: FileDigest, doc: dict[str, Any]) -> dict[str, Any]:
     item["pairs"] = doc["counts"]["pairs"]
     item["top_k_reached"] = doc["counts"]["top_k_reached"]
     return item
+
+
+def build_run_folder_with_potential_eureka(
+    base: Path, *, name: str = "synthetic-potential-eureka"
+) -> Path:
+    """Write a synthetic test fixture, not a finding, with visible bridge records.
+
+    Two controlled dense groups and a connecting record exercise the unchanged
+    Plan 05 rule. Scores come from the existing hashing encoder stub and a fixed
+    synthetic gap, not a real research finding. No model or network is used.
+    All serialized paths are relative, and no clock or random state is read.
+
+    Args:
+        base: Temporary test directory receiving the synthetic run folder.
+        name: Run folder name; it never enters serialized data.
+
+    Returns:
+        A valid run folder for model and browser tests. It is never package data
+        or part of the public example.
+    """
+    from itertools import combinations
+
+    from hashing_stub import HashingEncoder
+
+    marker = "synthetic test fixture, not a finding"
+    topics = {"a": "alpha-synthetic-reservoir", "b": "beta-synthetic-antenna"}
+    records: list[Record] = []
+    groups: dict[str, list[int]] = {"a": [], "b": []}
+    for group in ("a", "b"):
+        for index in range(10):
+            record_id = f"synthetic-{group}-{index:03d}"
+            text = f"{marker}. " + (topics[group] + " ") * 64 + record_id
+            groups[group].append(len(records))
+            records.append(
+                Record(
+                    id=record_id,
+                    title=f"Synthetic test fixture {group.upper()} {index:03d}, not a finding",
+                    text=text,
+                    source_ref=record_id + ".md",
+                    source_file=record_id + ".md",
+                    text_sha256=sha256_text(text),
+                )
+            )
+    connector_id = "synthetic-z-connector"
+    connector_text = f"{marker}. " + ((topics["a"] + " " + topics["b"] + " ") * 64) + connector_id
+    connector = len(records)
+    records.append(
+        Record(
+            id=connector_id,
+            title="Synthetic test fixture connector, not a finding",
+            text=connector_text,
+            source_ref=connector_id + ".md",
+            source_file=connector_id + ".md",
+            text_sha256=sha256_text(connector_text),
+        )
+    )
+    vectors = HashingEncoder(marker, allow_download=False).encode(
+        [record.model_text for record in records]
+    )
+    edges = [edge for group in ("a", "b") for edge in combinations(groups[group], 2)]
+    edges.extend((anchor[0], connector) for anchor in (groups["a"], groups["b"]))
+    scored = []
+    for left, right in edges:
+        meaning = max(0.0, min(1.0, float(vectors[left] @ vectors[right])))
+        wording = meaning * 0.5
+        scored.append((meaning - wording, left, right, wording, meaning))
+    scored.sort(key=lambda row: (-row[0], records[row[1]].id, records[row[2]].id))
+    unusual_rows: list[dict[str, Any]] = []
+    wording_rows: list[dict[str, Any]] = []
+    for rank, (score, left, right, wording, meaning) in enumerate(scored, start=1):
+        unusual_rows.append(
+            {
+                "rank": rank,
+                "payload": {
+                    "left": {"artifact_id": records[left].id},
+                    "right": {"artifact_id": records[right].id},
+                    "structural_similarity": wording,
+                    "semantic_similarity": meaning,
+                    "signed_difference": score,
+                    "disagreement": score,
+                    "method_signals": {},
+                },
+            }
+        )
+        wording_rows.append(
+            {
+                "rank": rank,
+                "left_id": records[left].id,
+                "right_id": records[right].id,
+                "lsa_sim": wording,
+                "semantic_sim": meaning,
+                "hsi_score": score,
+                "hsi_percentile": (len(scored) - rank + 1) / (len(scored) + 1),
+            }
+        )
+    unusual_settings = {"min_percentile": 0.9, "scoring": "synthetic-controlled-gap"}
+    wording_settings = {"min_percentile": 0.0, "seed": 7}
+    top_k = len(scored)
+    unusual = project_unusual_pairs(
+        {"outputs": unusual_rows, "warnings": []},
+        records,
+        settings=unusual_settings,
+        top_k=top_k,
+        notes=[marker],
+    )
+    wording_doc = project_wording_and_meaning(
+        wording_rows,
+        records,
+        settings=wording_settings,
+        top_k=top_k,
+        notes=[marker],
+    )
+    out = base / name
+    with StagedRun(out) as staged:
+        corpus_digest = staged.write(OUTPUT_CORPUS, corpus_lines(records))
+        unusual_digest = staged.write(OUTPUT_UNUSUAL, canonical_json(unusual))
+        wording_digest = staged.write(OUTPUT_WORDING, canonical_json(wording_doc))
+        markdown_digest = staged.write(
+            OUTPUT_MARKDOWN,
+            render_ranked_markdown(unusual, wording_doc).encode(),
+        )
+        manifest = build_manifest(
+            engines={
+                "unusual_pairs": {"capability_id": "synthetic", "tie_break": "id"},
+                "wording_and_meaning": {"capability_id": "synthetic"},
+            },
+            inputs={"files": []},
+            corpus={
+                "records_read": len(records),
+                "records_used": len(records),
+                "dropped": [],
+                "caps_hit": [],
+                "corpus_digest": sha256_text(
+                    "\n".join(r.id + ":" + r.text_sha256 for r in records)
+                ),
+            },
+            settings={
+                "unusual_pairs": unusual_settings,
+                "wording_and_meaning": wording_settings,
+                "run": {"top_k": top_k, "max_artifacts": 5000, "objective": marker},
+            },
+            seeds={"unusual_pairs_svd_random_state": 7, "wording_and_meaning_lsa_seed": 7},
+            model={"name": marker + " (HashingEncoder)", "snapshot": None, "files": {}},
+            environment={"python": "synthetic"},
+            outputs=[
+                corpus_digest.as_dict(),
+                _manifest_output(unusual_digest, unusual),
+                _manifest_output(wording_digest, wording_doc),
+                markdown_digest.as_dict(),
+            ],
+            engine_notes=[marker],
+        )
+        staged.write(OUTPUT_MANIFEST, canonical_json(manifest))
+        staged.publish()
+    return out

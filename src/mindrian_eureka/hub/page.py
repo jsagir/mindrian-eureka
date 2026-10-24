@@ -263,6 +263,8 @@ def _views(payload: Payload) -> str:
     bank += _el("div", _engine_lists(payload), {"id": "bank-list"})
     graph = _el("h2", _copy("Gr01"), {"data-view-heading": True})
     graph += _el("p", _copy("Gr02")) + _el("p", _copy("Gr07"))
+    if not payload["bridges"]:
+        graph += _el("p", _copy("Gr09"), {"class": "hub-tour-empty"})
     graph += _el("div", _el("p", _copy("Gr12")), {"id": "graph-stage", "aria-label": DECK["Gr13"]})
     if any(not pair["weak"] for pair in payload["pairs"]):
         graph += _el("h3", _copy("Gr16"))
