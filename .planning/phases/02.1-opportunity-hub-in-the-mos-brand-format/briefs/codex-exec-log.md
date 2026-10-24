@@ -109,3 +109,15 @@
 - Deviations: required public run hash retained; passive JSON scanner fixes base64 false positives; distinctive privacy markers.
 - Risks: custom deterministic nonce unaudited, repeat equality and offline guessing; original sources remain outside gate.
 - UNVERIFIED: Safari, screen reader and owner review. NEXT: Plan 15, then Plan 18 in wave order.
+
+## 02.1-15
+- Commits: 4048838, f322c20, 01d53b7.
+- Full suite: 1213 passed, 27 skipped, 45 subtests passed in 609.29 seconds.
+- Focused: 52 static/page, 17 initial graph, 4 final diagram cases passed; full suite includes 19 graph cases.
+- Ruff: PASS. Node syntax: PASS. Mypy: not applicable to JS/CSS/test-only changes.
+- Chromium and Firefox: fallback, diagram, empty state, Find, tour, keyboard and hostile text pass.
+- Synthetic helper: both marked records tour in stable order, wrap, and open the labelled Why panel.
+- Real public fixture: honest Gr09 none and actual cut-off copy; every visible pair keeps label and both sources.
+- Five widths meet font/target floors and reflow; measured diagram glyph placement has no overlaps.
+- Inspected diagram/fallback captures at 320/1280; corrected initial overlaps and hidden/font measurement.
+- UNVERIFIED: 3D sphere/ink shell, Safari, screen reader and owner review. NEXT: Plan 18, then 16 and 19.
