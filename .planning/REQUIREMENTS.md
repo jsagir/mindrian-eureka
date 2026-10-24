@@ -37,7 +37,7 @@
 ### Hub (HUB)
 
 - [ ] **HUB-01**: The hub is generated from `eureka run` output (opportunity bank, connection graph and catalogue views, with search and filter on the catalogue). It makes no network call and no data leaves the machine.
-- [ ] **HUB-02**: Every design choice (colour, type, layout, motion, Theo face) is ruled by the mos-brand book through its CLI (`mos-brand context`, `mos-brand review`), with the ruling cited in a design-decisions file.
+- [x] **HUB-02**: Every design choice (colour, type, layout, motion, Theo face) is ruled by the mos-brand book through its CLI (`mos-brand context`, `mos-brand review`), with the ruling cited in a design-decisions file.
 - [ ] **HUB-03**: Every claim and opportunity on the hub shows its "candidate, not verified" status and its source link.
 - [ ] **HUB-04**: The hub can be password-gated by an option, and the page reads from a local file only (enclave-safe).
 - [ ] **HUB-05**: The existing JHTV hub (opportunity bank, idea graph, October leads page; reference files live in the partner room's solution-design folder) is reproduced in the new format from a public-data example, not from private room data.
@@ -82,7 +82,7 @@
 | HOST-01 | Phase 3 - Host Integration and Replay Rebuild | Pending |
 | HOST-02 | Phase 3 - Host Integration and Replay Rebuild | Pending |
 | HUB-01 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
-| HUB-02 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
+| HUB-02 | Phase 2.1 - Opportunity Hub in the mos-brand format | Complete |
 | HUB-03 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
 | HUB-04 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
 | HUB-05 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
@@ -90,6 +90,7 @@
 | EXM-02 | Phase 4 - Public Example and Reproduction Guide | Pending |
 
 **Coverage:**
+
 - v1 requirements: 21 total
 - Mapped to phases: 21 (Phase 1: 5, Phase 2: 7, Phase 2.1: 5, Phase 3: 2, Phase 4: 2)
 - Unmapped: 0

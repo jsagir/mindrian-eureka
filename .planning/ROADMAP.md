@@ -68,7 +68,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Every claim and every opportunity on the hub shows the label "candidate, not verified" and a link to its source record. A test fails when an item lacks either.
   4. The hub can be password-gated by an option, and the page reads from a local file only. The public-data example reproduces the existing JHTV hub (opportunity bank, idea graph, October leads page) in the new format, with no private room data in the repo.
 **Plans**: 19 plans in 10 waves (wave 1: 02.1-01 to 02.1-04 in parallel; wave 2: 02.1-05, 02.1-06, 02.1-07 in parallel; wave 3: 02.1-08; wave 4: 02.1-09; wave 5: 02.1-10; wave 6: 02.1-11 to 02.1-15 in parallel; wave 7: 02.1-18; wave 8: 02.1-16; wave 9: 02.1-19; wave 10: 02.1-17)
-- [ ] 02.1-01: Brand intake with mos-brand (init, owner checkpoint, configure, adopt), decisions file and silent-item register
+- [x] 02.1-01: Brand intake with mos-brand (init, owner checkpoint, configure, adopt), decisions file and silent-item register
 - [ ] 02.1-02: Phase 2 touch-ups: W1 engine note fix, staged-run hook for the hub, W2 README run and doctor section
 - [ ] 02.1-03: Hub package base: contracts, copy deck, run reader, run-folder test helper
 - [ ] 02.1-04: Browser test harness and recorded probes (WebCrypto, CSP, WebGL, library facts, crypto dependency)
@@ -121,6 +121,6 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Release Gate and Engine Parity | 6/6 | Complete (owner sign-off open) | 2026-10-23 |
 | 2. One-Command Run and Doctor | 6/6 | Complete (verification: human_needed) | 2026-10-24 |
-| 2.1. Opportunity Hub in the mos-brand format | 0/19 | Planned, not started | - |
+| 2.1. Opportunity Hub in the mos-brand format | 1/19 | In progress | - |
 | 3. Host Integration and Replay Rebuild | 0/TBD | Not started | - |
 | 4. Public Example and Reproduction Guide | 0/TBD | Not started | - |
