@@ -30,7 +30,7 @@ Layers:
 Every call of run_document passes a tmp embedding cache path.
 
 Decision: no negative-cosine clip in path C; the clip is a path B step and the canonical rule is the repo path.
-Decision: run_document keeps top_k at most 100 in Phase 1; Phase 2 must lift it to 200 for the one-command run.
+Decision: run_document accepted top_k at most 100 in Phase 1; Phase 2 lifted it to 200 (limits.MAX_TOP_K) for the one-command run.
 Fix (plan 01-04): path C orders the top 7 terms of each LSA topic with a stable descending sort, so ties keep the lower term index first.
 """
 
@@ -49,6 +49,7 @@ import numpy as np
 import pytest
 
 import mindrian_eureka.opportunity_pairs.runner as runner
+from mindrian_eureka.limits import MAX_TOP_K
 from mindrian_eureka.opportunity_pairs.algorithm import (
     Artifact,
     _bm25_cosine,
@@ -479,18 +480,26 @@ def test_layer3b_negative_cosine_is_a_known_difference(monkeypatch, tmp_path):
 
 
 def test_clip_and_cap_decisions_are_documented(monkeypatch, tmp_path):
-    """Pin the two Phase 1 decisions: no clip in path C, and top_k at most 100."""
+    """Pin two decisions: no clip in path C, and top_k at most limits.MAX_TOP_K."""
     m = _layer3b_negative_cosine(monkeypatch, tmp_path / "decisions.sqlite3")
     assert "known difference" in m["note"]
-    # This pins the current Phase 1 state. Phase 2 lifts the cap to 200 and must update this check.
     _install_stub(monkeypatch, "nonneg")
-    with pytest.raises(ValueError, match="top_k must be between 0 and 100"):
+    model = _vectors()["cases"]["nonneg"]["model"]
+    with pytest.raises(ValueError, match="top_k must be between 0 and 200"):
         runner.run_document(
             _document("hybrid_2026"), encoder_name="sentence-transformers",
-            model_path=_vectors()["cases"]["nonneg"]["model"],
-            top_k=101, scoring="hybrid_2026", min_percentile=0.9,
+            model_path=model,
+            top_k=MAX_TOP_K + 1, scoring="hybrid_2026", min_percentile=0.9,
             cache_path=tmp_path / "cap.sqlite3",
         )
+    result = runner.run_document(
+        _document("hybrid_2026"), encoder_name="sentence-transformers",
+        model_path=model,
+        top_k=MAX_TOP_K, scoring="hybrid_2026", min_percentile=0.9,
+        cache_path=tmp_path / "cap-ok.sqlite3",
+    )
+    assert isinstance(result["outputs"], list)
+    assert len(result["outputs"]) <= 200
 
 
 def test_plugin_legacy_leg_reports_finite_numbers(monkeypatch, tmp_path):

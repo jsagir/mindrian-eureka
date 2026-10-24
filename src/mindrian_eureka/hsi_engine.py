@@ -18,6 +18,7 @@ os.environ["HSI_NO_AUTO_INSTALL"] = "1"
 import numpy as np
 
 from . import hsi_reference as reference
+from .limits import MAX_ARTIFACTS, MAX_TOP_K
 from .opportunity_pairs.encoders import SentenceTransformerEncoder
 
 
@@ -31,8 +32,8 @@ def _cosine(vectors: np.ndarray) -> np.ndarray:
 
 def run_hsi(document: dict[str, Any]) -> dict[str, Any]:
     artifacts = document.get("artifacts") if isinstance(document, dict) else None
-    if not isinstance(artifacts, list) or not 2 <= len(artifacts) <= 2500:
-        raise HSIInputError("artifacts must contain 2..2500 source-linked records")
+    if not isinstance(artifacts, list) or not 2 <= len(artifacts) <= MAX_ARTIFACTS:
+        raise HSIInputError(f"artifacts must contain 2..{MAX_ARTIFACTS} source-linked records")
     normalized = []
     seen = set()
     for index, raw in enumerate(artifacts):
@@ -61,8 +62,8 @@ def run_hsi(document: dict[str, Any]) -> dict[str, Any]:
     min_percentile = document.get("min_percentile", 0.0)
     if lexical_mode not in {"hybrid", "lsa", "bm25"} or ranking not in {"percentile", "legacy"}:
         raise HSIInputError("lexical must be hybrid|lsa|bm25 and ranking must be percentile|legacy")
-    if isinstance(top_k, bool) or not isinstance(top_k, int) or not 1 <= top_k <= 100:
-        raise HSIInputError("top_k must be an integer from 1 to 100")
+    if isinstance(top_k, bool) or not isinstance(top_k, int) or not 1 <= top_k <= MAX_TOP_K:
+        raise HSIInputError(f"top_k must be an integer from 1 to {MAX_TOP_K}")
     if isinstance(min_percentile, bool) or not isinstance(min_percentile, (int, float)) or not 0 <= float(min_percentile) <= 1:
         raise HSIInputError("min_percentile must be a number from 0 to 1")
 

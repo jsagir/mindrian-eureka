@@ -130,10 +130,10 @@ B is the reference script and C is the repo path. The first column names the ite
 | Percentile gate | Needs 10 eligible pairs | Same | Same. |
 | Ranker | z-score gap, percentile with average rank for ties | Same math | Identical (layer 1). |
 | Tie order in output | Index order | Gap, then left id, then right id | Same when artifacts are in sorted id order. |
-| `top_k` | Any value | `run_document` raises above 100 | The JHTV file holds 200 pairs. Path C cannot write that count today. |
+| `top_k` | Any value | `run_document` accepts 0 to 200 (`limits.MAX_TOP_K`) | The JHTV file holds 200 pairs. Path C can write that count since Phase 2. The MCP schemas still cap at 100 until Phase 3. |
 | Seed | 256 for SVD | 256 for SVD | Same. |
 | Edge writes | Writes graph edges when `.mindrian/room.db` exists | None | Use a scratch copy for path B. |
-| Artifact cap | Keeps the first 2000 artifacts by default (env `RS_MAX_ARTIFACTS`) | Rejects more than 2500 artifacts | PROVEN, see section 6. The JHTV corpus holds 2117 files. |
+| Artifact cap | Keeps the first 2000 artifacts by default (env `RS_MAX_ARTIFACTS`) | Accepts up to 3000 artifacts by default (`limits.MAX_ARTIFACTS`); `eureka run --max-artifacts` raises the limit to 5000 | PROVEN for path B, see section 6. The JHTV corpus holds 2117 files, so it fits. Above the limit `eureka run` truncates and reports it. |
 
 ## 6. How the JHTV results relate
 
@@ -159,7 +159,7 @@ Facts from plan 01-02 that this record depends on:
 | top-7 term tie-break | Fixed in plan 01-04; evidence in section 3.1 (LSA max abs delta 3.371e-08, at most 1e-6). | Phase 1 plan 01-04 |
 | negative-cosine clip | Not applied in path C, because the canonical rule is the repo path. Documented as a known difference, covered by layer 3b. | Owner decision, recorded here |
 | dense-input rule | Repo rule: title plus body, chunk-mean. Locked by the owner on 2026-10-23. | Owner (Jonathan Sagir) |
-| top_k cap of 100 in `run_document` | Unchanged in Phase 1. Phase 2 must lift it to 200, so that the one-command run can match the stored JHTV file size (200 pairs). | Phase 2 |
+| top_k cap of 100 in `run_document` | Lifted to 200 in Phase 2 (`limits.MAX_TOP_K`) so the one-command run matches the stored JHTV file size (200 pairs). Pinned by `test_clip_and_cap_decisions_are_documented`. | Phase 2 |
 
 ## 8. How to run the parity test
 

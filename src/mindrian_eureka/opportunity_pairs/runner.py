@@ -13,6 +13,7 @@ from typing import Any
 
 import numpy as np
 
+from ..limits import HARD_MAX_ARTIFACTS, MAX_ARTIFACTS, MAX_TOP_K
 from . import CAPABILITY_ID, CAPABILITY_VERSION
 from .cache import EmbeddingCache, cached_encode, default_cache_path
 from .algorithm import (
@@ -35,8 +36,8 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
                  job_id: str = "local-rs-run", model_revision: str | None = None,
                  cache_path: str | Path | None = None, cancel_check=None,
                  stage_callback=None) -> dict[str, Any]:
-    if top_k < 0 or top_k > 100:
-        raise ValueError("top_k must be between 0 and 100")
+    if top_k < 0 or top_k > MAX_TOP_K:
+        raise ValueError(f"top_k must be between 0 and {MAX_TOP_K}")
     if allow_model_download and not (model_revision and re.fullmatch(r"[0-9a-fA-F]{40}", model_revision)):
         raise ValueError("Model downloads require a 40-character immutable commit hash via --model-revision")
     started = datetime.now(timezone.utc)
@@ -248,7 +249,9 @@ def load_input(path: str | Path) -> dict[str, Any]:
     return data
 
 
-def validate_document(data: dict[str, Any]) -> None:
+def validate_document(data: dict[str, Any], *, max_artifacts: int = MAX_ARTIFACTS) -> None:
+    if max_artifacts < 2 or max_artifacts > HARD_MAX_ARTIFACTS:
+        raise ValueError(f"max_artifacts must be between 2 and {HARD_MAX_ARTIFACTS}")
     if not isinstance(data, dict) or not isinstance(data.get("artifacts"), list):
         raise ValueError("Input must be a JSON object with an artifacts array")
     if len(data["artifacts"]) < 2:
@@ -278,8 +281,8 @@ def validate_document(data: dict[str, Any]) -> None:
             raise ValueError(f"Duplicate artifact id: {item['id']}")
         seen.add(item["id"])
         text_bytes += len(item["text"].encode("utf-8"))
-    if len(data["artifacts"]) > 2500:
-        raise ValueError("Artifact limit is 2,500 per run")
+    if len(data["artifacts"]) > max_artifacts:
+        raise ValueError(f"Artifact limit is {max_artifacts:,} per run")
     if text_bytes > 20 * 1024 * 1024:
         raise ValueError("Input text limit is 20 MiB per run")
     mode = data.get("mode", "local")
