@@ -29,6 +29,32 @@ uv run eureka capabilities
 
 For the local semantic encoder, install `--extra modern-encoder` and configure a model already present on disk. Do not add model downloads or network access to a capability without an approved architecture change.
 
+After `uv sync --extra modern-encoder`, run `eureka doctor`. It checks Python, uv, the encoder libraries, the local model, the cache folder, the data folder and the offline variables, and it prints the exact fix for each problem. For an install on a machine without internet, read [offline install](docs/offline-install.md).
+
+### Checks
+
+`pytest`, `mypy` and `ruff` are user-level tools (found on `PATH`). They are not project dependencies. A dev dependency group would change `uv.lock`, and the Docker image build uses `uv sync --frozen --no-dev`. The decision to add a dev group is made together with the next `uv lock` run that has network access.
+
+Run the tests:
+
+```bash
+PYTHONPATH=src python3 -m pytest -q -p no:cacheprovider
+```
+
+Check strict typing on the new modules:
+
+```bash
+mypy --strict --ignore-missing-imports --follow-imports=silent --python-executable "$(command -v python3)" src/mindrian_eureka/run src/mindrian_eureka/doctor.py src/mindrian_eureka/models.py src/mindrian_eureka/limits.py
+```
+
+Check the lint rules:
+
+```bash
+ruff check src/mindrian_eureka/run src/mindrian_eureka/doctor.py src/mindrian_eureka/models.py src/mindrian_eureka/limits.py tests/test_run_*.py tests/test_doctor.py tests/test_models.py
+```
+
+Strict typing is required for the new modules only. Older modules (`cli.py`, `runner.py`, `hsi_engine.py`) are known to fail it. Do not widen the strict command to them in the same change.
+
 Before opening a pull request, run the checks relevant to your change and describe their results. If a check cannot run, state why and identify what remains unverified. Never describe an unevaluated method as validated.
 
 ## Pull requests
