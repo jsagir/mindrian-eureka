@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import json
 import os
+import re
 import subprocess
 import sys
 from collections.abc import Callable
@@ -325,3 +326,242 @@ def test_hashing_encode_is_the_stub_used_by_the_fixture(
     stub_encoders: None, fake_model_dir: Path
 ) -> None:
     assert engines.load_local_encode(fake_model_dir) is hashing_encode
+
+
+# --- Wording-and-meaning call -----------------------------------------------
+
+PAIR_FIELDS = (
+    "left_id",
+    "right_id",
+    "rank",
+    "hsi_score",
+    "lsa_sim",
+    "semantic_sim",
+    "lexical_sim",
+    "bm25_sim",
+)
+ENGINE_CODES = re.compile(r"\b(R" + r"S|H" + r"SI)\b")
+
+
+def _fields(pairs: Any) -> list[tuple[Any, ...]]:
+    return [tuple(pair[name] for name in PAIR_FIELDS) for pair in pairs]
+
+
+def test_wording_params_hash_equals_the_recorded_rebuild() -> None:
+    assert engines.RECORDED_PARAMS_HASH == "7affae3c94c6bed9"
+    assert engines.wording_params_hash(200) == engines.RECORDED_PARAMS_HASH
+
+
+def test_wording_params_hash_matches_other_recorded_values() -> None:
+    assert engines.wording_params_hash(20).startswith("5b4b370a")
+    assert engines.wording_params_hash(100).startswith("0b2948b9")
+
+
+def test_wording_params_has_the_recorded_settings() -> None:
+    params = engines.wording_params(200)
+    assert params["tier"] == 1
+    assert params["threshold"] is None
+    assert params["ranking"] == "percentile"
+    assert params["lexical"] == "hybrid"
+    assert params["top_k"] == 200
+    assert params["min_percentile"] == 0.0
+    assert params["confirm_percentile"] == 0.75
+    assert params["seed"] == 42
+    assert params["model"] == "all-MiniLM-L6-v2"
+    assert params["chunking"] is True
+    assert params["dense_vectors"] is None
+    assert params["pinecone"] is False
+
+
+def test_wording_call_order_and_arguments(monkeypatch: pytest.MonkeyPatch) -> None:
+    import numpy as np
+
+    reference = engines._reference()
+    order: list[str] = []
+    args_seen: dict[str, tuple[Any, dict[str, Any]]] = {}
+    returned: dict[str, Any] = {}
+
+    def wrap(name: str) -> None:
+        original = getattr(reference, name)
+
+        def recorder(*args: Any, **kwargs: Any) -> Any:
+            order.append(name)
+            args_seen[name] = (args, kwargs)
+            value = original(*args, **kwargs)
+            returned[name] = value
+            return value
+
+        monkeypatch.setattr(reference, name, recorder)
+
+    for name in (
+        "compute_lsa_similarity",
+        "compute_bm25_similarity",
+        "compute_semantic_similarity_tier1",
+        "compute_hsi_matrix",
+    ):
+        wrap(name)
+    records = make_records(12)
+    outcome = engines.run_wording_and_meaning(records, encode=hashing_encode, top_k=200)
+    assert order == [
+        "compute_lsa_similarity",
+        "compute_bm25_similarity",
+        "compute_semantic_similarity_tier1",
+        "compute_hsi_matrix",
+    ]
+    texts = [record.model_text for record in records]
+    assert args_seen["compute_lsa_similarity"][0][0] == texts
+    assert args_seen["compute_lsa_similarity"][1] == {"seed": 42}
+    assert args_seen["compute_bm25_similarity"][0][0] == texts
+    tier1_args, tier1_kwargs = args_seen["compute_semantic_similarity_tier1"]
+    assert tier1_args[0] == texts
+    assert tier1_kwargs == {"encoder": hashing_encode, "chunk_words": 200}
+    matrix_args, matrix_kwargs = args_seen["compute_hsi_matrix"]
+    artifacts = matrix_args[0]
+    assert [item["id"] for item in artifacts] == [record.id for record in records]
+    assert [item["text"] for item in artifacts] == texts
+    assert artifacts[0]["section"] == ""
+    assert artifacts[0]["path"] == records[0].source_ref
+    assert artifacts[0]["content_hash"] == records[0].text_sha256
+    assert matrix_kwargs["threshold"] is None
+    assert matrix_kwargs["ranking"] == "percentile"
+    assert matrix_kwargs["top_k"] == 200
+    assert matrix_kwargs["min_percentile"] == 0.0
+    assert matrix_kwargs["confirm_percentile"] == 0.75
+    assert matrix_kwargs["computed_at"] == "1970-01-01T00:00:00+00:00"
+    expected_lexical = 0.5 * (
+        returned["compute_lsa_similarity"] + returned["compute_bm25_similarity"]
+    )
+    assert np.allclose(matrix_kwargs["lexical_matrix"], expected_lexical)
+    assert matrix_kwargs["bm25_matrix"] is returned["compute_bm25_similarity"]
+    assert outcome.settings.top_k == 200
+    assert outcome.params_hash == engines.RECORDED_PARAMS_HASH
+    assert len(outcome.pairs) == 66
+
+
+def test_wording_pairs_follow_engine_order_and_are_deterministic() -> None:
+    records = make_records(16)
+    first = engines.run_wording_and_meaning(records, encode=hashing_encode, top_k=30)
+    second = engines.run_wording_and_meaning(records, encode=hashing_encode, top_k=30)
+    assert first.pairs == second.pairs
+    assert [pair["rank"] for pair in first.pairs] == list(range(1, 31))
+    assert first.pairs[0]["source_trail"][0]["retrieved_at"] == "1970-01-01T00:00:00+00:00"
+
+
+def test_wording_needs_two_records() -> None:
+    with pytest.raises(RunError):
+        engines.run_wording_and_meaning(make_records(1), encode=hashing_encode, top_k=10)
+
+
+def test_wording_rejects_top_k_above_the_shared_limit() -> None:
+    with pytest.raises(UsageError):
+        engines.run_wording_and_meaning(make_records(4), encode=hashing_encode, top_k=201)
+
+
+def test_wording_progress_lines_are_plain_and_nothing_reaches_stderr(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    lines: list[str] = []
+    engines.run_wording_and_meaning(
+        make_records(8), encode=hashing_encode, top_k=5, progress=lines.append
+    )
+    assert capsys.readouterr().err == ""
+    assert lines
+    assert all(line.startswith("Wording-and-meaning engine: ") for line in lines)
+    assert not any(ENGINE_CODES.search(line) for line in lines)
+
+
+def test_import_time_note_is_captured_not_printed() -> None:
+    code = (
+        "import json, sys; sys.path.insert(0, sys.argv[1]);"
+        "from mindrian_eureka.run import engines;"
+        "engines._reference();"
+        "json.dump(list(engines._reference_notes), sys.stdout)"
+    )
+    done = subprocess.run(
+        [sys.executable, "-I", "-c", code, SRC_DIR], capture_output=True, text=True
+    )
+    assert done.returncode == 0, done.stderr
+    assert done.stderr == ""
+    notes = json.loads(done.stdout)
+    assert all(note.startswith("Wording-and-meaning engine: ") for note in notes)
+    assert not any(ENGINE_CODES.search(note) for note in notes)
+
+
+# --- Reference parity guard --------------------------------------------------
+
+
+def test_reference_parity_with_hsi_reference_main(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    reference = engines._reference()
+    data = json.loads(CORPUS_FIXTURE.read_text(encoding="utf-8"))["artifacts"][:20]
+    room = tmp_path / "room"
+    section = room / "synthetic"
+    section.mkdir(parents=True)
+    for item in data:
+        (section / f"{item['id']}.md").write_text(item["text"], encoding="utf-8")
+    out_json = tmp_path / "out" / "hsi.json"
+    out_json.parent.mkdir()
+    monkeypatch.setattr(
+        reference, "make_sentence_transformer_encoder", lambda model_name=None: hashing_encode
+    )
+    try:
+        reference.main([str(room), "--tier", "1", "--top-k", "200", "--output", str(out_json)])
+    except SystemExit as stop:
+        assert stop.code in (None, 0)
+    expected = json.loads(out_json.read_text(encoding="utf-8"))["hsi_pairs"]
+    records = [
+        Record(
+            id=f"synthetic/{item['id']}",
+            title="",
+            text=item["text"].strip(),
+            source_ref=f"synthetic/{item['id']}.md",
+            source_file=f"synthetic/{item['id']}.md",
+            text_sha256=sha256_text(item["text"].strip()),
+        )
+        for item in data
+    ]
+    outcome = engines.run_wording_and_meaning(records, encode=hashing_encode, top_k=200)
+    assert len(expected) == 190
+    assert _fields(outcome.pairs) == _fields(expected)
+    assert tmp_path in room.parents
+
+
+# --- Manifest sections --------------------------------------------------------
+
+
+def test_manifest_engine_sections(
+    stub_encoders: None, fake_model_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _restorable_env(monkeypatch, OFFLINE_NAMES)
+    records = make_records(20)
+    unusual = engines.run_unusual_pairs(
+        records,
+        model_dir=fake_model_dir,
+        top_k=10,
+        max_artifacts=3000,
+        cache_path=tmp_path / "cache.sqlite",
+    )
+    wording = engines.run_wording_and_meaning(records, encode=hashing_encode, top_k=10)
+    sections = engines.manifest_engine_sections(unusual, wording)
+    assert set(sections) == {"engines", "settings", "seeds", "engine_notes"}
+    assert set(sections["engines"]) == {"unusual_pairs", "wording_and_meaning"}
+    assert sections["engines"]["unusual_pairs"]["tie_break"] == engines.TIE_BREAK
+    assert sections["engines"]["unusual_pairs"]["scoring"] == "hybrid_2026"
+    unusual_engine = sections["engines"]["unusual_pairs"]
+    assert unusual_engine["capability_id"] == "opportunity.find_cross_domain_pairs"
+    wording_engine = sections["engines"]["wording_and_meaning"]
+    assert wording_engine["reference"] == "hsi_reference.py"
+    assert wording_engine["params_hash"] == engines.wording_params_hash(10)
+    assert len(wording_engine["reference_sha256"]) == 64
+    assert sections["settings"]["unusual_pairs"]["top_k"] == 10
+    assert sections["settings"]["unusual_pairs"]["svd_random_state"] == 256
+    assert sections["settings"]["wording_and_meaning"]["chunk_words"] == 200
+    assert sections["settings"]["wording_and_meaning"]["max_chunks"] == 12
+    assert sections["seeds"] == {
+        "unusual_pairs_svd_random_state": 256,
+        "wording_and_meaning_lsa_seed": 42,
+    }
+    notes = sections["engine_notes"]
+    assert notes == sorted(set(notes))
+    json.dumps(sections)
