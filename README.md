@@ -64,6 +64,40 @@ This repository packages bounded methods behind CLI and MCP interfaces, with a r
 
 Each catalogued algorithm or method is an independently callable service through CLI and MCP; Theo or MindrianOS may compose services when useful, but no single workflow is required to use them. These are not all complete source-engine workflows. Some catalog entries are blocked or planned; some callable services are experimental or need host-brokered research. The [engine jobs guide](docs/engine-jobs.md) explains when to use each family. The [algorithm origins and rationale register](docs/algorithm-origins-and-rationale.md) traces where each cataloged service came from and why it is exposed. The [capability catalog](docs/capability-catalog.md) and `eureka capabilities` command are authoritative for exact IDs, maturity, inputs, and limitations.
 
+## Run Eureka on your own folder
+
+`eureka run` reads a folder of Markdown and CSV files and writes a ranked list of candidate pairs. It uses two engines: Find Unusual Pairs Across a Research Collection and Rank Unusual Pairs by Wording and Meaning.
+
+Install the local meaning model support:
+
+```bash
+uv sync --extra modern-encoder
+```
+
+The meaning model must already be on disk. Eureka downloads nothing and makes no network call. See [Offline install](docs/offline-install.md) for how to place the model.
+
+Check your setup first:
+
+```bash
+uv run eureka doctor
+```
+
+The doctor checks Python, uv, the meaning model, the cache folder and the data folder. For each problem it prints the exact fix.
+
+Then run Eureka on your folder:
+
+```bash
+uv run eureka run ./my-sources --out ./eureka-run
+```
+
+A CSV file needs to know which column holds the text. Give a `--mapping` file or the column flags. Run `uv run eureka run --help` to see them.
+
+The run reads your folder and never writes into it. It writes these files into the `--out` folder: `unusual-pairs.json`, `wording-and-meaning-pairs.json`, `ranked-pairs.md`, `corpus/records.jsonl`, `manifest.json` and `run-info.json`.
+
+Two runs on the same input give the same ranked files. `run-info.json` is the only file that holds times.
+
+Every result is a candidate, not verified. It is a lead for human review.
+
 ## Quick start
 
 Install the package and inspect the available job contracts:
