@@ -45,3 +45,13 @@ The model supports these fixed fragments added around B05 and related UI copy:
 - `C06.one_pair`: `1 pair`
 
 ## Tested size
+
+Measured on 2026-10-24 with `PYTHONPATH=src python3 -m pytest tests/test_hub_writer.py::test_scale_3000 -s -q -p no:cacheprovider`.
+
+- Synthetic input: 3000 records; 200 unusual-pairs engine pairs and 200 wording engine pairs.
+- Hub build: 0.3087 seconds, measured with time.perf_counter around build_hub.
+- hub-data.js: 5021056 bytes. hub.html: 211006 bytes.
+- Machine: local Linux host, 12 logical CPUs (os.cpu_count), 18819248128 bytes physical memory (os.sysconf).
+- Two builds into different output folders were byte-identical; the file set matched a small run.
+
+No record cap is set for the page. This is the largest run tested. Browser load time for the same run is measured in plan 18.
