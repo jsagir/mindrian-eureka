@@ -7,7 +7,7 @@ writer. The run and source folders are read only. No model or network is used.
 from __future__ import annotations
 
 import hashlib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
@@ -42,6 +42,7 @@ class HubRequest:
     run_dir: Path
     out_dir: Path
     source_dir: Path | None = None
+    password: str | None = field(default=None, repr=False)
 
 
 @dataclass(frozen=True)
@@ -56,10 +57,11 @@ class HubSummary:
     pairs: dict[str, int]
     source_links: Literal["files", "catalogue"]
     warnings: tuple[str, ...]
+    gated: bool = False
 
     def to_json_dict(self) -> dict[str, Any]:
         """Return summary facts with labels and without machine paths."""
-        return {
+        data: dict[str, Any] = {
             "schema_version": HUB_SUMMARY_SCHEMA,
             "label": LABEL,
             "run_fingerprint": self.run_fingerprint,
@@ -70,6 +72,9 @@ class HubSummary:
             "warnings": list(self.warnings),
             "summary_line": SUMMARY_LINE,
         }
+        if self.gated:
+            data["gated"] = True
+        return data
 
     def lines(self) -> str:
         """Return the human CLI summary with the shared status as its last line."""
@@ -85,6 +90,8 @@ class HubSummary:
             f"(unusual-pairs engine), {self.pairs['wording_and_meaning']} (wording engine).",
             f"Hub manifest: hub-manifest.json (sha256 {self.manifest_sha256})",
             f"Source links: {source}",
+            *(["Gate: on. The data is stored encrypted. Keep the passphrase safe."]
+              if self.gated else []),
             SUMMARY_LINE,
         ))
 
@@ -129,6 +136,8 @@ def build_hub(request: HubRequest, console: Console) -> HubSummary:
             warnings.append(
                 f"Source files unavailable for {len(missing)} records; catalogue links used."
             )
+    if request.password is not None and len(request.password) < 12:
+        warnings.append("The passphrase is short. A longer one protects the file better.")
     for warning in warnings:
         console.warn(warning)
     payload = build_payload(run, file_links=links)
@@ -149,8 +158,19 @@ def build_hub(request: HubRequest, console: Console) -> HubSummary:
             )
         content[asset.output_path] = data
     content[OUTPUT_HUB_COPY] = deck_js_bytes()
-    content[OUTPUT_HUB_DATA] = js_assignment("HUB", payload)
-    content[OUTPUT_HUB_HTML] = render_page(payload, files=set(content) | {OUTPUT_HUB_HTML})
+    gated = request.password is not None
+    if gated:
+        from .gate import encrypt_payload
+
+        assert request.password is not None
+        envelope = encrypt_payload(canonical_json(payload), request.password, run.manifest_sha256)
+        content[OUTPUT_HUB_DATA] = js_assignment("HUB_ENVELOPE", envelope)
+        content[OUTPUT_HUB_HTML] = render_page(
+            None, gated=True, files=set(content) | {OUTPUT_HUB_HTML}
+        )
+    else:
+        content[OUTPUT_HUB_DATA] = js_assignment("HUB", payload)
+        content[OUTPUT_HUB_HTML] = render_page(payload, files=set(content) | {OUTPUT_HUB_HTML})
     source_kind: Literal["files", "catalogue"] = (
         "files" if request.source_dir is not None else "catalogue"
     )
@@ -158,15 +178,18 @@ def build_hub(request: HubRequest, console: Console) -> HubSummary:
     console.stage("Write the hub folder")
     with StagedRun(request.out_dir, replaceable=is_hub_folder, kind="Eureka hub") as staged:
         digests = [staged.write(name, data) for name, data in sorted(content.items())]
-        manifest = {
+        manifest: dict[str, Any] = {
             "schema_version": HUB_MANIFEST_SCHEMA,
             "label": LABEL,
             "tool": {"name": "mindrian-eureka", "version": tool_version()},
             "run": {"manifest_sha256": run.manifest_sha256, "schema_version": MANIFEST_SCHEMA},
             "source_links": source_kind,
-            "counts": {"records": len(run.records), "pairs": pair_counts},
             "files": [item.as_dict() for item in digests],
         }
+        if gated:
+            manifest["gated"] = True
+        else:
+            manifest["counts"] = {"records": len(run.records), "pairs": pair_counts}
         manifest_digest = staged.write(OUTPUT_HUB_MANIFEST, canonical_json(manifest))
         staged.publish()
     return HubSummary(
@@ -174,5 +197,5 @@ def build_hub(request: HubRequest, console: Console) -> HubSummary:
         manifest_sha256=manifest_digest.sha256,
         files=tuple(sorted([*digests, manifest_digest], key=lambda item: item.path)),
         records=len(run.records), pairs=pair_counts, source_links=source_kind,
-        warnings=tuple(warnings),
+        warnings=tuple(warnings), gated=gated,
     )

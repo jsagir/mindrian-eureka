@@ -2,7 +2,9 @@
 
 Vendored JS and binary fonts are skipped, since their canonical bytes and notices
 are separately checked. Record content is excluded from copy checks, not from
-executable-load checks. Unknown text file types still receive a network scan.
+executable-load checks. Known data scripts must parse wholly as passive JSON;
+actual link fields are validated, while source text and ciphertext are not loads.
+Unknown text file types still receive a network scan.
 """
 
 from __future__ import annotations
@@ -24,6 +26,8 @@ _JS = re.compile(
 )
 _SVG = "http://www.w3.org/2000/svg"
 _SKIP = {".woff", ".woff2", ".ttf", ".otf"}
+_ASSIGNMENTS = {"hub-data.js": {"HUB", "HUB_ENVELOPE"}, "hub-copy.js": {"HUB_COPY"}}
+_LINK_FIELDS = {"source_link", "file_link", "catalogue_link"}
 _SOURCE_FIELDS = {"title", "text", "source_ref", "source_file", "id", "pair_id", "key"}
 
 
@@ -58,6 +62,36 @@ def _files(folder: Path) -> Iterator[Path]:
             yield path
 
 
+
+def _invalid_constant(value: str) -> None:
+    raise ValueError("nonfinite JSON constant")
+
+
+def _assignment(text: str, name: str) -> tuple[str, Any]:
+    """Parse the whole data script; trailing executable code is never accepted."""
+    match = re.fullmatch(r"window\.(HUB|HUB_ENVELOPE|HUB_COPY) = ([\s\S]*);\n?", text)
+    if match is None or match.group(1) not in _ASSIGNMENTS[name]:
+        raise ValueError("not a passive data assignment")
+    value = json.loads(match.group(2), parse_constant=_invalid_constant)
+    if not isinstance(value, dict):
+        raise ValueError("data must be an object")
+    return match.group(1), value
+
+
+def _link_loads(value: Any) -> bool:
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if key in _LINK_FIELDS and item is not None:
+                if not isinstance(item, str) or not item or re.search(
+                    r"^[a-z][a-z0-9+.-]*:|^[\\/]|[\x00-\x20\x7f]", item, re.I
+                ):
+                    return True
+            elif _link_loads(item):
+                return True
+    elif isinstance(value, list):
+        return any(_link_loads(item) for item in value)
+    return False
+
 def scan_for_network(folder: Path) -> list[str]:
     """Return findings for remote loads in HTML, CSS, authored JS and unknown text."""
     findings: list[str] = []
@@ -68,6 +102,13 @@ def scan_for_network(folder: Path) -> list[str]:
             parser = _Loads()
             parser.feed(text)
             findings.extend(f"{name}: {item}" for item in parser.findings)
+        elif path.name in _ASSIGNMENTS:
+            try:
+                _, data = _assignment(text, path.name)
+                if _link_loads(data):
+                    findings.append(f"{name}: nonlocal data link")
+            except ValueError:
+                findings.append(f"{name}: data script is not a passive JSON assignment")
         elif path.suffix == ".js":
             without_namespace = re.sub(re.escape(_SVG) + r"(?=[\"'\s<>]|$)", "", text)
             if _JS.search(text) or _URL.search(without_namespace):
@@ -102,16 +143,21 @@ def _copy_findings(folder: Path, check: Callable[[str], bool]) -> list[str]:
             continue
         text = path.read_text(encoding="utf-8")
         if path.name == "hub-data.js":
-            data = json.loads(text.removeprefix("window.HUB = ").rstrip(";\n"))
-            values = list(_strings(data))
+            variable, data = _assignment(text, path.name)
+            if variable == "HUB_ENVELOPE":
+                # Ciphertext, salt and nonce are opaque bytes, never rendered copy or URLs.
+                values = [str(data.get("schema", "")), str(data.get("kdf", {}).get("name", "")),
+                          str(data.get("cipher", {}).get("name", ""))]
+            else:
+                values = list(_strings(data))
         elif path.suffix == ".html":
             # Strip the source text nodes using the already provenance-checked payload.
             data_path = folder / "hub-data.js"
             values = [text]
             if data_path.exists():
-                data = json.loads(data_path.read_text().removeprefix("window.HUB = ").rstrip(";\n"))
+                variable, data = _assignment(data_path.read_text(), data_path.name)
                 from html import escape
-                for record in data["records"]:
+                for record in data.get("records", []) if variable == "HUB" else []:
                     for key in _SOURCE_FIELDS:
                         value = record.get(key)
                         if isinstance(value, str) and value:
