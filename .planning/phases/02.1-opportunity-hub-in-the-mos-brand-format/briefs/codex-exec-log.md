@@ -75,3 +75,14 @@
 - Inspected real-public bank controls/rows at 1280 and 320; owner visual approval pending.
 - Deviations: fixed shared reduced-motion specificity, aligned engine default to both, adapted script-source safety check.
 - UNVERIFIED: reading panel and later Potential eureka UI features, screen reader, Safari, owner brand stop. NEXT: Plan 12.
+
+## 02.1-12
+- Commits: f76c96e, b27719f.
+- Full suite: 1131 passed, 27 skipped, 45 subtests passed in 327.64 seconds.
+- Focused checks: 33 catalogue/static and 43 core/static passed. Ruff: PASS. Node syntax: PASS. Mypy: not applicable.
+- Chromium and Firefox: all 120 sources, paging, token search, filters, selection and hostile data passed.
+- 3000-record search: 5.0000 ms, with 50 rows rendered; below 500 ms.
+- Five widths pass table semantics, font/target floors and overflow checks; long source file wraps.
+- Inspected public catalogue at 1280 and 320. No attempted remote request, page error or CSP violation.
+- Deviations: sticky header follows shared 1024 px breakpoint; serial recapture after load-related timeout.
+- UNVERIFIED: panel, graph, screen reader, Safari and owner brand review. NEXT: Plan 13 with the synthetic helper addendum.
