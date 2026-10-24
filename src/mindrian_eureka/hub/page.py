@@ -37,6 +37,18 @@ STYLE_ORDER = (
     "hub-graph.css",
     "hub-gate.css",
 )
+# Runtime inventory for view, engine, column, cut-off and legend key loops.
+# Payload-backed status and registered engine names are equality-checked by copy coverage.
+# deck keys: B03.both B03.unusual_pairs B03.wording_and_meaning
+# deck keys: B05.one.unusual_pairs B05.one.wording_and_meaning
+# deck keys: C06.file C06.id C06.pairs C06.title G01.catalogue G01.graph G08
+# deck keys: G09.bank.short G09.catalogue.long G09.catalogue.short G09.graph.long G09.graph.short
+# deck keys: G11.hoods G11.records G11.unusual_pairs G11.wording_and_meaning
+# deck keys: G15.unusual_pairs G15.unusual_pairs.short
+# deck keys: G15.wording_and_meaning G15.wording_and_meaning.short
+# deck keys: Gr03.crossing Gr03.eureka Gr03.record Gr03.selected
+# deck keys: Gr03.unusual_pairs Gr03.wording_and_meaning P06.source
+
 SCRIPT_ORDER = (
     "hub-copy.js",
     "hub-data.js",

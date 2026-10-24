@@ -57,3 +57,29 @@ def test_section_has_no_short_engine_code_and_no_dash_characters() -> None:
 def test_section_sits_before_the_quick_start() -> None:
     text = _text()
     assert text.index(HEADING) < text.index(NEXT_HEADING)
+
+
+HUB_HEADING = "## Open the results as one page"
+
+
+def _hub_section() -> str:
+    return _text().split(HUB_HEADING, 1)[1].split("\n## ", 1)[0]
+
+
+def test_hub_section_commands_position_and_limits() -> None:
+    text = _text()
+    assert text.count(HUB_HEADING) == 1
+    assert text.index(HEADING) < text.index(HUB_HEADING) < text.index(NEXT_HEADING)
+    section = _hub_section()
+    assert "uv run eureka hub ./eureka-run --out ./eureka-hub" in section
+    assert "uv sync --extra hub-gate" in section
+    assert "--password-env HUB_PASS" in section and "--source-dir ./my-sources" in section
+    assert "Every result is a candidate, not verified." in section
+    assert "It does not protect a computer that already has the passphrase." in section
+    assert "The data is readable in the browser after unlock." in section
+    assert "sends nothing over the internet" in section
+    assert "Original run folders, source files and older open exports remain readable." in section
+    assert SHORT_CODE.search(section) is None
+    assert not any(char in section for char in (chr(8211), chr(8212)))
+    for target in re.findall(r"\]\(([^)#]+)\)", section):
+        assert (ROOT / target).is_file(), target
