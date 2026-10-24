@@ -84,6 +84,7 @@ The owner answered on 2026-10-24 through the main session. All items were approv
   - All user-facing strings say "Potential eureka". The tour button says "Show me the potential eurekas". Code identifiers may keep the word bridge.
   - The yellow sphere and chip, the tour, and the strings Gr09 and P07 stay in plans 05, 13, 15 and 18.
 - D-17: keep the password gate as drafted. Owner approved on 2026-10-24. The gate uses AES-GCM, is an optional extra, and protects the file at rest only. It does not protect a machine that already holds the passphrase. The weakness is recorded honestly in the page (L07), in the README and in this file.
+  - D-07 uses derived salt and nonce, so repeated inputs produce the same encrypted file and can be linked. An offline guess costs the fixed 600,000 PBKDF2 rounds; the gate protects the hub at rest only. The [gate record](hub-gate-record.md) explains public provenance metadata and the other limits.
 - HUB-05 mapping of the October leads page: owner approved on 2026-10-24. The hub reproduces it as the first 16 pairs of the Opportunity bank with their reading panels, plus the "Show me the potential eurekas" tour. The narrative text stays out (CONTEXT deferred list).
 - Source-link choice: owner approved on 2026-10-24. The default links to the catalogue row. The optional `--source-dir` option gives file links.
 - Workflow reference: owner approved on 2026-10-24. `docs/brand/hub-workflow.md` receives the brand reference. `CLAUDE.md` is not touched.

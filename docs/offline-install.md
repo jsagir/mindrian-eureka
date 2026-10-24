@@ -45,6 +45,8 @@ Run the steps in order. Where the two systems differ, both lines are given.
 5. Test the input without a model load: `eureka run <folder> --dry-run`
 6. Run it: `eureka run <folder>`
 
+A locked hub needs `uv sync --extra hub-gate` before going offline, with its wheels or cache carried in. An install that also analyses collections keeps both extras with `uv sync --extra modern-encoder --extra hub-gate`. Opening the locked hub needs only a current browser.
+
 ## What the doctor checks
 
 `eureka doctor` checks Python 3.11 or newer, uv, the encoder libraries, the local model, the cache folder, the data folder and the offline variables. Add `--load-model` to load the model and encode one sentence. Add `--json` for a result that a program can read.
