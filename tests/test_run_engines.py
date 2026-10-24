@@ -493,8 +493,43 @@ def test_import_time_note_is_captured_not_printed() -> None:
     assert done.returncode == 0, done.stderr
     assert done.stderr == ""
     notes = json.loads(done.stdout)
-    assert all(note.startswith("Wording-and-meaning engine: ") for note in notes)
+    assert all(
+        note == engines.BUILTIN_EXCLUDE_NOTE or note.startswith("Wording-and-meaning engine: ")
+        for note in notes
+    )
     assert not any(ENGINE_CODES.search(note) for note in notes)
+    assert not any("rs_corpus" in note or ".py" in note for note in notes)
+
+
+def test_plain_lines_rewrite_internal_names_and_keep_plain_lines() -> None:
+    text = (
+        "HSI: warning: lib/core/rs_corpus_exclude.py not importable, using the "
+        "built-in fallback exclude-list\n"
+        "\n"
+        "  The corpus has 12 records.  \n"
+        "HSI: Loaded the fixed vocabulary\n"
+    )
+    assert engines._plain_lines(text) == [
+        engines.BUILTIN_EXCLUDE_NOTE,
+        "Wording-and-meaning engine: The corpus has 12 records.",
+        "Wording-and-meaning engine: Loaded the fixed vocabulary",
+    ]
+    assert engines.BUILTIN_EXCLUDE_NOTE == (
+        "The wording-and-meaning engine used its built-in exclude list."
+    )
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "see hsi_reference.py for detail",
+        "rs_helper failed",
+        "hsi_tokens missing",
+        "x/y/mod.py broke",
+    ],
+)
+def test_plain_lines_rewrite_each_internal_shape(line: str) -> None:
+    assert engines._plain_lines(line) == [engines.BUILTIN_EXCLUDE_NOTE]
 
 
 # --- Reference parity guard --------------------------------------------------

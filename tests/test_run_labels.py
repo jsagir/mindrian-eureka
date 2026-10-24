@@ -11,6 +11,7 @@ import pytest
 from conftest import InputSet
 from mindrian_eureka.cli import main
 from mindrian_eureka.run.contracts import LABEL, SCORE_MEANING, SUMMARY_LINE
+from mindrian_eureka.run.engines import BUILTIN_EXCLUDE_NOTE
 from mindrian_eureka.run.project import (
     READING_AGREE,
     READING_MEANING_HIGHER,
@@ -18,6 +19,7 @@ from mindrian_eureka.run.project import (
 )
 
 SHORT_CODE = re.compile(r"\b(R[S]|H[S]I)\b")
+INTERNAL_FRAGMENT = re.compile(r"\b(?:r[s]|h[s]i)_\w+|\b[\w/.-]+\.py\b")
 RANKED_JSON = {
     "unusual-pairs.json": "unusual_pairs",
     "wording-and-meaning-pairs.json": "wording_and_meaning",
@@ -186,6 +188,23 @@ def test_no_short_engine_code_in_output_or_streams(run_out: tuple[Path, str, str
             document = json.loads(path.read_text(encoding="utf-8"))
             for value in strings(document):
                 assert SHORT_CODE.search(value) is None, (path.name, value)
+
+
+def test_no_internal_file_name_in_output_or_streams(run_out: tuple[Path, str, str]) -> None:
+    out, stdout, stderr = run_out
+    assert INTERNAL_FRAGMENT.search(stdout) is None
+    assert INTERNAL_FRAGMENT.search(stderr) is None
+    manifest = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["engine_notes"].count(BUILTIN_EXCLUDE_NOTE) == 1
+    # The manifest records the reference script name as provenance (Phase 2 field, asserted
+    # in test_run_engines). It is not an engine note, so the scan skips only that one field.
+    del manifest["tool"]["engines"]["wording_and_meaning"]["reference"]
+    for path in output_files(out):
+        if path.name == "manifest.json":
+            text = json.dumps(manifest, ensure_ascii=False)
+        else:
+            text = path.read_text(encoding="utf-8")
+        assert INTERNAL_FRAGMENT.search(text) is None, path.name
 
 
 @pytest.mark.parametrize("command", [(), ("run",), ("doctor",)])

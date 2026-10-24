@@ -58,6 +58,10 @@ EXTRA_FIX = "uv sync --extra modern-encoder"
 
 _ENGINE_CODE_PREFIX = re.compile(r"^[A-Z]{2,4}:\s*")
 
+# One plain sentence replaces any engine note that names an internal file or identifier.
+BUILTIN_EXCLUDE_NOTE = "The wording-and-meaning engine used its built-in exclude list."
+_INTERNAL_NAME = re.compile(r"\b(?:rs|hsi)_\w+|\b[\w/.-]+\.py\b")
+
 
 @dataclass(frozen=True)
 class UnusualPairsSettings:
@@ -315,11 +319,24 @@ _reference_sha256: str = ""
 
 
 def _plain_lines(text: str) -> list[str]:
-    """Split captured engine output into plain lines with the engine code replaced."""
+    """Split captured engine output into plain lines with the engine code replaced.
+
+    A line that names an internal file or identifier becomes `BUILTIN_EXCLUDE_NOTE`.
+    The engine reports such a name only when it uses its built-in exclude list.
+
+    Args:
+        text: The text the engine wrote while it was imported.
+
+    Returns:
+        The plain lines, one for each non-empty input line.
+    """
     lines: list[str] = []
     for raw in text.splitlines():
         line = raw.strip()
         if not line:
+            continue
+        if _INTERNAL_NAME.search(line):
+            lines.append(BUILTIN_EXCLUDE_NOTE)
             continue
         lines.append(WORDING_NOTE_PREFIX + _ENGINE_CODE_PREFIX.sub("", line))
     return lines
