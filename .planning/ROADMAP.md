@@ -85,7 +85,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02.1-15: Connection graph view: guide, legend, Find, small-collection diagram, pair list, bridge tour, fallbacks
 - [ ] 02.1-16: HUB-05 reproduction on the public fixture, JHTV view mapping, README section, copy and close tests
 - [ ] 02.1-17: Owner decision (brand stop) and its record
-- [ ] 02.1-18: Connection graph 3D stage: loader, camera player, labels, CSP check with the library, 3,000-record scale test
+- [x] 02.1-18: Connection graph 3D stage: loader, camera player, labels, CSP check with the library, 3,000-record scale test
 - [ ] 02.1-19: `mos-brand review`, screenshots and measurements, review record, return of the gaps to the book
 **Scope notes**: The mos-brand book (`~/mos-brand`, CLI `bin/mos-brand.cjs`) is the design authority. A brand intake runs as the first plan. The JHTV reference files live in the partner room's solution-design folder; use them as a visual and structural reference only. The example must come from public data.
 
@@ -121,6 +121,6 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Release Gate and Engine Parity | 6/6 | Complete (owner sign-off open) | 2026-10-23 |
 | 2. One-Command Run and Doctor | 6/6 | Complete (verification: human_needed) | 2026-10-24 |
-| 2.1. Opportunity Hub in the mos-brand format | 15/19 | In progress | - |
+| 2.1. Opportunity Hub in the mos-brand format | 16/19 | In progress | - |
 | 3. Host Integration and Replay Rebuild | 0/TBD | Not started | - |
 | 4. Public Example and Reproduction Guide | 0/TBD | Not started | - |
