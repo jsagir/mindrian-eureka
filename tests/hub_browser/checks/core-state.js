@@ -74,7 +74,7 @@ return {
   graphRows: document.querySelectorAll('#graph-list li').length,
   catalogueRows: document.querySelectorAll('#catalogue-list tbody tr').length,
   injected: typeof window.__pwned !== 'undefined',
-  scripts: document.querySelectorAll('script').length,
+  scripts: Array.from(document.querySelectorAll("script"), node => node.getAttribute("src")),
   search: app.data ? app.search(args.query || 'doc003') : [],
   safe: checks,
   outline: getComputedStyle(document.activeElement).outlineWidth,

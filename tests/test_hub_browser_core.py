@@ -102,7 +102,9 @@ def test_hash_routes_and_hostile_data(tmp_path: Path, browser: str) -> None:
     assert result["unknown"]["active"] == result["record"]["active"]
     assert result["unknown"]["state"]["selection"] == result["record"]["state"]["selection"]
     assert not result["unknown"]["injected"]
-    assert result["unknown"]["scripts"] == 4
+    sources = result["unknown"]["scripts"]
+    assert sources and all(source and (out / source).is_file() for source in sources)
+    assert len(sources) == len(set(sources))
 
 
 @pytest.mark.parametrize("browser", ["chromium", "firefox"])
