@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 2.1 context gathered
-last_updated: "2026-10-24T13:13:11.619Z"
+stopped_at: Phase 2.1 UI-SPEC approved
+last_updated: "2026-10-24T13:24:58.902Z"
 last_activity: "2026-10-24 - Completed wave 3 (02-06 pipeline, CLI, run-twice and label tests). Full suite 668 passed, 27 skipped. Orchestrator re-ran the full suite and a real-model run twice: all files byte-identical except run-info.json."
 progress:
   total_phases: 5
@@ -100,6 +100,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-10-24T13:13:11.610Z
-Stopped at: Phase 2.1 context gathered
-Resume file: .planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/02.1-CONTEXT.md
+Last session: 2026-10-24T13:24:58.899Z
+Stopped at: Phase 2.1 UI-SPEC approved
+Resume file: .planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/02.1-UI-SPEC.md
