@@ -18,16 +18,16 @@
 
 ### One-command run (RUN)
 
-- [ ] **RUN-01**: User runs one command (`eureka run`) with a folder of CSV or Markdown sources and gets ranked pairs from the unusual-pairs engine and the wording-and-meaning pairs engine.
-- [ ] **RUN-02**: The command first builds a clean corpus with stable IDs, as `prepare_engine_corpus.py` does for JHTV.
-- [ ] **RUN-03**: The command writes a run manifest: input file hashes, record counts, settings, seeds, library and model versions, output hashes.
-- [ ] **RUN-04**: Running the command twice on the same input gives identical ranked output, and a test proves it.
-- [ ] **RUN-05**: Every output file keeps "candidate, not verified" labels and score-meaning notes.
+- [x] **RUN-01**: User runs one command (`eureka run`) with a folder of CSV or Markdown sources and gets ranked pairs from the unusual-pairs engine and the wording-and-meaning pairs engine.
+- [x] **RUN-02**: The command first builds a clean corpus with stable IDs, as `prepare_engine_corpus.py` does for JHTV.
+- [x] **RUN-03**: The command writes a run manifest: input file hashes, record counts, settings, seeds, library and model versions, output hashes.
+- [x] **RUN-04**: Running the command twice on the same input gives identical ranked output, and a test proves it.
+- [x] **RUN-05**: Every output file keeps "candidate, not verified" labels and score-meaning notes.
 
 ### First-run experience (DOC)
 
-- [ ] **DOC-01**: `eureka doctor` checks Python, `uv`, local model presence, cache directory and data directory permissions, and prints the exact fix for each failure.
-- [ ] **DOC-02**: A missing model gives a clear message, never a silent failure.
+- [x] **DOC-01**: `eureka doctor` checks Python, `uv`, local model presence, cache directory and data directory permissions, and prints the exact fix for each failure.
+- [x] **DOC-02**: A missing model gives a clear message, never a silent failure.
 
 ### Host integration (HOST)
 
@@ -72,13 +72,13 @@
 | ENG-01 | Phase 1 - Release Gate and Engine Parity | Complete |
 | ENG-02 | Phase 1 - Release Gate and Engine Parity | Complete |
 | ENG-03 | Phase 1 - Release Gate and Engine Parity | Complete |
-| RUN-01 | Phase 2 - One-Command Run and Doctor | Pending |
-| RUN-02 | Phase 2 - One-Command Run and Doctor | Pending |
-| RUN-03 | Phase 2 - One-Command Run and Doctor | Pending |
-| RUN-04 | Phase 2 - One-Command Run and Doctor | Pending |
-| RUN-05 | Phase 2 - One-Command Run and Doctor | Pending |
-| DOC-01 | Phase 2 - One-Command Run and Doctor | Pending |
-| DOC-02 | Phase 2 - One-Command Run and Doctor | Pending |
+| RUN-01 | Phase 2 - One-Command Run and Doctor | Complete |
+| RUN-02 | Phase 2 - One-Command Run and Doctor | Complete |
+| RUN-03 | Phase 2 - One-Command Run and Doctor | Complete |
+| RUN-04 | Phase 2 - One-Command Run and Doctor | Complete |
+| RUN-05 | Phase 2 - One-Command Run and Doctor | Complete |
+| DOC-01 | Phase 2 - One-Command Run and Doctor | Complete |
+| DOC-02 | Phase 2 - One-Command Run and Doctor | Complete |
 | HOST-01 | Phase 3 - Host Integration and Replay Rebuild | Pending |
 | HOST-02 | Phase 3 - Host Integration and Replay Rebuild | Pending |
 | HUB-01 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |

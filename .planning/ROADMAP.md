@@ -56,7 +56,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02-03: Typed engine facade for both engines
 - [x] 02-04: Projection, canonical writer, manifest and console
 - [x] 02-05: Model discovery, `eureka doctor` and offline install note
-- [ ] 02-06: Pipeline, CLI wiring, run-twice (RUN-04) and label (RUN-05) tests
+- [x] 02-06: Pipeline, CLI wiring, run-twice (RUN-04) and label (RUN-05) tests
 
 ### Phase 2.1: Opportunity Hub in the mos-brand format
 **Goal**: A user who ran `eureka run` can open one local page that shows the opportunity bank, the connection graph and the full catalogue of the analyzed collection, styled by the mos-brand book.
