@@ -45,6 +45,14 @@ if (args.negative && rows.length) {
 }
 const circles = Array.from(root.querySelectorAll('.hub-diagram-record'));
 const chords = Array.from(root.querySelectorAll('.hub-diagram-chord'));
+const labelBoxes = Array.from(root.querySelectorAll('.hub-diagram-record text')).map(n => {
+  const b=n.getBoundingClientRect(); return {x:b.x,y:b.y,width:b.width,height:b.height};
+});
+const labelOverlaps = [];
+labelBoxes.forEach((a,i) => labelBoxes.slice(i+1).forEach((b,j) => {
+  if (a.x < b.x+b.width && a.x+a.width > b.x && a.y < b.y+b.height && a.y+a.height > b.y)
+    labelOverlaps.push([i,i+j+1]);
+}));
 const stage = document.getElementById('graph-stage');
 return {mode:app.graphView.mode, instance:app.graphView.instance === null, fly:app.graphView.flyTo('missing'),
   legend:Array.from(root.querySelectorAll('#graph-legend li')).map(li => li.textContent),
@@ -62,7 +70,7 @@ return {mode:app.graphView.mode, instance:app.graphView.instance === null, fly:a
   circleData:circles.map(n => ({id:n.dataset.diagramRecord,selected:n.classList.contains('is-selected'),
     dimmed:n.classList.contains('is-dimmed'),fill:getComputedStyle(n.querySelector('circle')).fill,
     stroke:getComputedStyle(n.querySelector('circle')).strokeWidth})),
-  effectiveFonts:Array.from(root.querySelectorAll('.hub-diagram-record text')).map(n =>
+  labelOverlaps, effectiveFonts:Array.from(root.querySelectorAll('.hub-diagram-record text')).map(n =>
     parseFloat(getComputedStyle(n).fontSize) * n.getScreenCTM().a),
   chords:chords.map(n => ({dash:n.getAttribute('stroke-dasharray'),width:getComputedStyle(n).strokeWidth,
     crosses:n.classList.contains('hub-diagram-chord--crossing')})),

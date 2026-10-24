@@ -53,10 +53,11 @@ def test_fallback_legend_and_all_pair_provenance(tmp_path: Path, browser: str) -
 
 
 @pytest.mark.parametrize("browser", ["chromium", "firefox"])
-def test_small_diagram_selection_and_sources(tmp_path: Path, browser: str) -> None:
+@pytest.mark.parametrize("width", [320, 1280])
+def test_small_diagram_selection_and_sources(tmp_path: Path, browser: str, width: int) -> None:
     require_browser(browser)
     out = built_hub(tmp_path, n_records=12, pairs_per_engine=6, clusters=3)
-    states = scenario(out, browser, webgl=False, viewport={"width": 320, "height": 900},
+    states = scenario(out, browser, webgl=False, viewport={"width": width, "height": 900},
                       steps=[check("initial"), check("selected", circle=True),
                              check("pair", pair=True), check("clear", clear=True)])
     state = states["selected"]
@@ -71,7 +72,8 @@ def test_small_diagram_selection_and_sources(tmp_path: Path, browser: str) -> No
     assert any(c["dimmed"] for c in state["circleData"])
     assert all(c["fill"] == "rgb(216, 212, 200)" for c in state["circleData"] if c["dimmed"])
     assert next(c for c in state["circleData"] if c["selected"])["stroke"] == "3px"
-    assert state["scrollWidth"] <= 320
+    assert state["scrollWidth"] <= width
+    assert state["labelOverlaps"] == []
     assert states["pair"]["selection"]["type"] == "pair"
     assert sum(row["selected"] for row in states["pair"]["rows"]) == 1
     assert not any(row["selected"] for row in states["clear"]["rows"])

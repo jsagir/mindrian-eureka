@@ -110,8 +110,8 @@
     return node;
   }
   function drawDiagram() {
-    if (!diagram) return;
-    const width = Math.max(240, Math.floor(diagram.clientWidth || 280));
+    if (!diagram || !diagram.clientWidth) return;
+    const width = Math.max(240, Math.floor(diagram.clientWidth));
     if (width === lastWidth) return;
     lastWidth = width;
     const height = Math.max(360, Math.min(width, 560));
@@ -133,16 +133,18 @@
         class: "hub-diagram-chord" + (pair.crosses ? " hub-diagram-chord--crossing" : ""),
         "stroke-dasharray": "7 8", "data-pair-key": pair.key }));
     });
+    diagram.replaceChildren(image, controls);
+    const labels = [];
     records.forEach(function (record) {
       const p = points.get(record.id);
       const group = svg("g", { "data-diagram-record": record.id,
         class: "hub-diagram-record hub-diagram-hood-" + record.hood });
       group.appendChild(svg("circle", { cx: p.x, cy: p.y, r: 12 }));
       // IDs stay 13 CSS px: the SVG viewport is rebuilt at its measured width, never scaled down.
-      const onEnd = p.x > width / 2;
-      group.appendChild(svg("text", { x: p.x + (onEnd ? -18 : 18), y: p.y - 17,
-        "text-anchor": onEnd ? "end" : "start" }, record.id));
+      const label = svg("text", {}, record.id);
+      group.appendChild(label);
       image.appendChild(group);
+      labels.push({ node: label, point: p });
       const read = text("button", "P05.read", { ID: record.id }, {
         type: "button", class: "hub-diagram-hit", "data-diagram-record": record.id });
       read.style.insetInlineStart = (p.x - 22) + "px";
@@ -150,7 +152,39 @@
       read.addEventListener("click", function () { HubApp.select({ type: "record", id: record.id }, read); });
       controls.appendChild(read);
     });
-    diagram.replaceChildren(image, controls);
+    const occupied = Array.from(points.values()).map(function (p) {
+      return { x: p.x - 15, y: p.y - 15, width: 30, height: 30 };
+    });
+    function overlaps(a, b) {
+      return a.x < b.x + b.width + 3 && a.x + a.width + 3 > b.x
+        && a.y < b.y + b.height + 3 && a.y + a.height + 3 > b.y;
+    }
+    labels.forEach(function (item) {
+      const p = item.point;
+      const glyph = item.node.getBBox();
+      const length = Math.max(item.node.getComputedTextLength(), glyph.width) + 4;
+      const candidates = [p.x + 20, p.x - length - 20].map(function (x) {
+        return { x: Math.max(4, Math.min(width - length - 4, x)),
+          y: p.y - (glyph.height + 4) / 2, width: length, height: glyph.height + 4 };
+      });
+      for (let distance = 20; distance < height; distance += 18) {
+        [p.x + 18, p.x - length - 18, p.x - length / 2].forEach(function (x) {
+          [p.y - distance, p.y + distance].forEach(function (baseline) {
+            candidates.push({ x: Math.max(4, Math.min(width - length - 4, x)),
+              y: baseline + glyph.y - 2, width: length, height: glyph.height + 4 });
+          });
+        });
+      }
+      const box = candidates.find(function (candidate) {
+        return candidate.y >= 4 && candidate.y + candidate.height <= height - 4
+          && !occupied.some(function (other) { return overlaps(candidate, other); });
+      });
+      if (box) {
+        item.node.setAttribute("x", String(box.x - glyph.x + 2));
+        item.node.setAttribute("y", String(box.y - glyph.y + 2));
+        occupied.push(box);
+      }
+    });
     marks();
   }
   function drawSmall() {
@@ -159,6 +193,10 @@
     G.stageEl.replaceChildren(text("p", "Gr10", {}, { id: "graph-small" }), diagram);
     diagramObserver = new ResizeObserver(drawDiagram);
     diagramObserver.observe(diagram);
+    const current = diagram;
+    document.fonts.ready.then(function () {
+      if (diagram === current) { lastWidth = 0; drawDiagram(); }
+    });
     drawDiagram();
   }
   function guide() {
