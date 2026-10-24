@@ -2,17 +2,31 @@
 
 from __future__ import annotations
 
+import csv
 import hashlib
+import io
+import json
+import re
 import subprocess
 import sys
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 import pytest
 from conftest import InputSet
+from jsonschema import Draft202012Validator
 from mindrian_eureka.run import corpus as corpus_module
 from mindrian_eureka.run.contracts import RunError, UsageError, sha256_text
 from mindrian_eureka.run.corpus import build_corpus
+from mindrian_eureka.run.mapping import (
+    MAPPING_JSON_SCHEMA,
+    CsvMapping,
+    MappingConfig,
+    load_mapping_file,
+    mapping_from_flags,
+)
+from mindrian_eureka.run.textclean import html_to_text, looks_like_html
 
 SRC = Path(__file__).resolve().parents[1] / "src"
 SECRET = "Quartz lanterns drift beyond the orchard wall"
@@ -392,3 +406,463 @@ def test_module_does_not_import_numpy() -> None:
     )
     result = subprocess.run([sys.executable, "-I", "-c", code], check=False)
     assert result.returncode == 0
+
+
+# --- CSV helpers -------------------------------------------------------------
+
+DESC = "A synthetic description with enough words to pass the short body rule."
+
+
+def write_csv(folder: Path, name: str, rows: list[list[str]], newline: str = "\n") -> Path:
+    path = folder / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    buffer = io.StringIO()
+    csv.writer(buffer, lineterminator=newline).writerows(rows)
+    path.write_bytes(buffer.getvalue().encode("utf-8"))
+    return path
+
+
+def simple_rows(count: int = 6) -> list[list[str]]:
+    rows = [["case_id", "title", "description", "note"]]
+    for index in range(count):
+        rows.append([f"c{index}", f"Title {index}", f"{DESC} Row {index}.", f"n{index}"])
+    return rows
+
+
+def flags_mapping(**kwargs: Any) -> MappingConfig:
+    base: dict[str, Any] = {
+        "id_column": "case_id",
+        "title_column": "title",
+        "text_columns": ["description"],
+        "source_column": None,
+        "delimiter": None,
+    }
+    base.update(kwargs)
+    config = mapping_from_flags(**base)
+    assert config is not None
+    return config
+
+
+def entry_mapping(entry: dict[str, Any], key: str = "*") -> MappingConfig:
+    columns = entry.pop("text_columns")
+    config = MappingConfig(
+        files={key: CsvMapping(text_columns=tuple(columns), **entry)}, sha256="test"
+    )
+    return config
+
+
+# --- CSV ---------------------------------------------------------------------
+
+
+def test_csv_fixture_through_mapping_file(tmp_inputs: Callable[..., InputSet]) -> None:
+    inputs = tmp_inputs("csv")
+    assert inputs.mapping_file is not None
+    mapping = load_mapping_file(inputs.mapping_file)
+    corpus = build_corpus(inputs.folder, mapping=mapping)
+    assert [r.id for r in corpus.records] == inputs.ids
+    assert corpus.mapping_sha256 == mapping.sha256
+    assert corpus.manifest_inputs()["mapping_sha256"] == mapping.sha256
+    first = corpus.records[0]
+    assert "\n\nRegion: " not in first.text
+    assert "state_code: " in first.text
+    assert any(name in first.text for name in ("Northern Fictia", "Southern Fictia"))
+    assert first.source_ref == f"records.csv#{first.id.split('/', 1)[1]}"
+    assert first.source_file == "records.csv"
+
+
+def test_csv_mapping_file_and_flags_give_equal_corpus(
+    tmp_inputs: Callable[..., InputSet], tmp_path: Path
+) -> None:
+    inputs = tmp_inputs("csv")
+    file_path = tmp_path / "plain-map.json"
+    file_path.write_text(
+        json.dumps(
+            {
+                "schema_version": "eureka.run-mapping.v1",
+                "files": {
+                    "*": {
+                        "id_column": "case_id",
+                        "title_column": "title",
+                        "text_columns": ["description"],
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    by_file = build_corpus(inputs.folder, mapping=load_mapping_file(file_path))
+    by_flags = build_corpus(inputs.folder, mapping=flags_mapping())
+    assert by_file.records == by_flags.records
+    assert by_file.manifest_corpus() == by_flags.manifest_corpus()
+    assert len(by_file.records) == 32
+
+
+def test_csv_shuffled_rows_and_crlf_keep_ids_and_digest(tmp_path: Path) -> None:
+    rows = simple_rows(8)
+    shuffled = [rows[0], *reversed(rows[1:])]
+    a = tmp_path / "a"
+    b = tmp_path / "b"
+    c = tmp_path / "c"
+    write_csv(a, "records.csv", rows)
+    write_csv(b, "records.csv", shuffled)
+    write_csv(c, "records.csv", rows, newline="\r\n")
+    one = build_corpus(a, mapping=flags_mapping())
+    two = build_corpus(b, mapping=flags_mapping())
+    three = build_corpus(c, mapping=flags_mapping())
+    ids = [r.id for r in one.records]
+    assert ids == [r.id for r in two.records] == [r.id for r in three.records]
+    assert one.corpus_digest == two.corpus_digest == three.corpus_digest
+    assert one.folder_digest != two.folder_digest
+    assert one.folder_digest != three.folder_digest
+
+
+def test_csv_without_mapping_prints_headers_and_a_valid_skeleton(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    header = ["Case ID", "Title", "Description", "Zip"]
+    write_csv(folder, "data/partner.csv", [header, ["1", "t", "d", "z"]])
+    with pytest.raises(UsageError) as info:
+        build_corpus(folder, mapping=None)
+    message = info.value.message
+    assert info.value.exit_code == 2
+    for name in ("Case ID", "Title", "Description", "Zip"):
+        assert name in message
+    block = message[message.index("{") :]
+    data = json.loads(block)
+    assert list(Draft202012Validator(MAPPING_JSON_SCHEMA).iter_errors(data)) == []
+    assert data["files"]["data/partner.csv"]["id_column"] == "Case ID"
+
+
+def test_csv_without_matching_entry_is_unmapped(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    write_csv(folder, "a.csv", simple_rows())
+    other = entry_mapping({"text_columns": ["description"]}, key="other.csv")
+    with pytest.raises(UsageError):
+        build_corpus(folder, mapping=other)
+
+
+def test_csv_exact_key_wins_over_star(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    write_csv(folder, "a.csv", simple_rows())
+    mapping = MappingConfig(
+        files={
+            "*": CsvMapping(text_columns=("missing",)),
+            "a.csv": CsvMapping(text_columns=("description",), id_column="case_id"),
+        },
+        sha256="x",
+    )
+    assert len(build_corpus(folder, mapping=mapping).records) == 6
+
+
+def test_csv_semicolon_file_skeleton_has_delimiter(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    folder.mkdir()
+    (folder / "s.csv").write_text("id;title;description\n1;t;d\n", encoding="utf-8")
+    with pytest.raises(UsageError) as info:
+        build_corpus(folder, mapping=None)
+    data = json.loads(info.value.message[info.value.message.index("{") :])
+    assert data["files"]["s.csv"]["delimiter"] == ";"
+    assert "description" in info.value.message
+
+
+def test_csv_empty_file_is_reported(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    folder.mkdir()
+    (folder / "e.csv").write_bytes(b"")
+    with pytest.raises(UsageError) as info:
+        build_corpus(folder, mapping=None)
+    assert "empty" in info.value.message
+    with pytest.raises(RunError):
+        build_corpus(folder, mapping=flags_mapping())
+
+
+def test_csv_missing_column_lists_available_headers(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    write_csv(folder, "a.csv", simple_rows())
+    with pytest.raises(UsageError) as info:
+        build_corpus(folder, mapping=flags_mapping(text_columns=["nope", "description"]))
+    assert "nope" in info.value.message
+    assert "case_id, title, description, note" in info.value.message
+
+
+def test_csv_duplicate_header_names_raise(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    folder.mkdir()
+    (folder / "d.csv").write_text("a,a,b\n1,2,3\n", encoding="utf-8")
+    with pytest.raises(UsageError) as info:
+        mapping = flags_mapping(id_column=None, title_column=None, text_columns=["b"])
+        build_corpus(folder, mapping=mapping)
+    assert "a" in info.value.message
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("Case One!", "Case_One_"),
+        ("a/b\\c", "a_b_c"),
+        ("keep-this_1.2", "keep-this_1.2"),
+        ("  padded  ", "padded"),
+    ],
+)
+def test_csv_id_is_sanitized(tmp_path: Path, raw: str, expected: str) -> None:
+    folder = tmp_path / "in"
+    rows = simple_rows(5)
+    rows[1][0] = raw
+    write_csv(folder, "recs.csv", rows)
+    corpus = build_corpus(folder, mapping=flags_mapping())
+    assert f"recs/{expected}" in [r.id for r in corpus.records]
+
+
+def test_csv_empty_id_cell_names_file_and_data_row(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    rows = simple_rows(5)
+    rows[3][0] = "  "
+    write_csv(folder, "recs.csv", rows)
+    with pytest.raises(RunError) as info:
+        build_corpus(folder, mapping=flags_mapping())
+    assert "recs.csv row 3" in info.value.message
+
+
+@pytest.mark.parametrize("bad", [".", "..", "..."])
+def test_csv_dot_only_id_is_refused(tmp_path: Path, bad: str) -> None:
+    folder = tmp_path / "in"
+    rows = simple_rows(5)
+    rows[1][0] = bad
+    write_csv(folder, "recs.csv", rows)
+    with pytest.raises(RunError):
+        build_corpus(folder, mapping=flags_mapping())
+
+
+def test_csv_duplicate_id_values_collide(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    rows = simple_rows(5)
+    rows[2][0] = rows[1][0]
+    write_csv(folder, "recs.csv", rows)
+    with pytest.raises(RunError) as info:
+        build_corpus(folder, mapping=flags_mapping())
+    assert "recs/c0" in info.value.message
+    assert "row 1" in info.value.message
+    assert "row 2" in info.value.message
+
+
+def test_csv_without_id_column_uses_a_text_hash(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    write_csv(folder, "recs.csv", simple_rows(5))
+    mapping = flags_mapping(id_column=None, title_column=None)
+    corpus = build_corpus(folder, mapping=mapping)
+    for record in corpus.records:
+        stem, _, part = record.id.partition("/")
+        assert stem == "recs"
+        assert re.fullmatch(r"h[0-9a-f]{12}", part)
+        assert part == "h" + sha256_text(record.text)[:12]
+
+
+def test_csv_identical_rows_without_id_column_collide(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    rows = simple_rows(5)
+    rows[2] = list(rows[1])
+    write_csv(folder, "recs.csv", rows)
+    with pytest.raises(RunError) as info:
+        build_corpus(folder, mapping=flags_mapping(id_column=None, title_column=None))
+    assert "id column" in (info.value.fix or "")
+
+
+def test_csv_text_assembly_labels_extras_and_empty_cells(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    rows = [
+        ["id", "title", "problem", "need", "gap", "region"],
+        ["a", "T1", f"{DESC} A.", "Need A text.", "", "1"],
+        ["b", "T2", f"{DESC} B.", "", "", ""],
+    ]
+    write_csv(folder, "recs.csv", rows)
+    mapping = entry_mapping(
+        {
+            "text_columns": ["problem", "need", "gap"],
+            "id_column": "id",
+            "title_column": "title",
+            "labels": {"need": "Stated need", "region": "Region"},
+            "extra_fields": ["region"],
+            "value_maps": {"region": {"1": "North"}},
+        }
+    )
+    corpus = build_corpus(folder, mapping=mapping)
+    first, second = corpus.records
+    assert first.text == f"{DESC} A.\n\nStated need:\nNeed A text.\n\nRegion: North"
+    assert first.title == "T1"
+    assert second.text == f"{DESC} B."
+
+
+def test_csv_value_map_warning_gives_count_and_capped_examples(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    rows = [["id", "text", "code"]]
+    codes = ["1", "2", "x" * 60, "q1", "q2", "q3", "q4", "q5"]
+    for index, code in enumerate(codes):
+        rows.append([f"r{index}", f"{DESC} {index}.", code])
+    write_csv(folder, "recs.csv", rows)
+    mapping = entry_mapping(
+        {
+            "text_columns": ["text"],
+            "id_column": "id",
+            "extra_fields": ["code"],
+            "value_maps": {"code": {"1": "One", "2": "Two"}},
+        }
+    )
+    corpus = build_corpus(folder, mapping=mapping)
+    warns = [w for w in corpus.warnings if "value map" in w]
+    assert len(warns) == 1
+    assert "6 cell(s)" in warns[0]
+    examples = warns[0].split("Examples: ")[1].split(", ")
+    assert len(examples) == 5
+    assert all(len(example) <= 43 for example in examples)
+    texts = {r.id: r.text for r in corpus.records}
+    assert texts["recs/r0"].endswith("code: One")
+    assert texts["recs/r3"].endswith("code: q1")
+
+
+@pytest.mark.parametrize(
+    ("mode", "cell", "expected"),
+    [
+        ("auto", "x < 5 and y > 2", "x < 5 and y > 2"),
+        ("auto", "<p>Fish &amp; chips</p><p>Pie</p>", "Fish & chips\nPie"),
+        ("never", "<p>Fish</p>", "<p>Fish</p>"),
+        ("always", "x &lt; 5", "x < 5"),
+        ("auto", "plain text", "plain text"),
+    ],
+)
+def test_csv_html_modes(tmp_path: Path, mode: str, cell: str, expected: str) -> None:
+    folder = tmp_path / "in"
+    padding = " " + DESC
+    rows = [["id", "text"]] + [[f"r{i}", cell + padding] for i in range(2)]
+    write_csv(folder, "recs.csv", rows)
+    mapping = entry_mapping({"text_columns": ["text"], "id_column": "id", "html": mode})
+    corpus = build_corpus(folder, mapping=mapping)
+    assert corpus.records[0].text.startswith(expected)
+
+
+def test_csv_source_column_and_title(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    rows = [["id", "title", "text", "url"]]
+    rows.append(["a", "Alpha", f"{DESC} A.", "https://example.test/a"])
+    rows.append(["b", "", f"{DESC} B.", ""])
+    write_csv(folder, "recs.csv", rows)
+    mapping = flags_mapping(id_column="id", source_column="url", text_columns=["text"])
+    corpus = build_corpus(folder, mapping=mapping)
+    first, second = corpus.records
+    assert (first.title, first.source_ref) == ("Alpha", "https://example.test/a")
+    assert (second.title, second.source_ref) == ("", "recs.csv#b")
+
+
+def test_csv_bom_semicolon_and_quoted_newline(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    folder.mkdir()
+    lines = ["id;text"]
+    for index in range(4):
+        lines.append(f'r{index};"{DESC}\nSecond line {index}."')
+    (folder / "s.csv").write_bytes(b"\xef\xbb\xbf" + "\r\n".join(lines).encode("utf-8"))
+    mapping = flags_mapping(
+        id_column="id", title_column=None, text_columns=["text"], delimiter=";"
+    )
+    corpus = build_corpus(folder, mapping=mapping)
+    assert [r.id for r in corpus.records] == [f"s/r{i}" for i in range(4)]
+    assert "\nSecond line 0." in corpus.records[0].text
+
+
+def test_csv_blank_rows_are_skipped_with_a_warning(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    rows = simple_rows(5)
+    rows.insert(2, ["", "", "", ""])
+    write_csv(folder, "recs.csv", rows)
+    corpus = build_corpus(folder, mapping=flags_mapping())
+    assert len(corpus.records) == 5
+    assert any("blank row" in w for w in corpus.warnings)
+
+
+def test_csv_large_cell_is_read_and_field_limit_is_restored(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    rows = simple_rows(5)
+    rows[1][2] = "word " * 40_000
+    write_csv(folder, "recs.csv", rows)
+    before = csv.field_size_limit()
+    corpus = build_corpus(folder, mapping=flags_mapping())
+    assert csv.field_size_limit() == before
+    assert max(len(r.text) for r in corpus.records) == 199_999
+
+
+def test_csv_cell_above_the_record_limit_names_the_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    folder = tmp_path / "in"
+    rows = simple_rows(5)
+    rows[1][2] = "word " * 400
+    write_csv(folder, "big.csv", rows)
+    monkeypatch.setattr(corpus_module, "MAX_RECORD_CHARS", 1000)
+    before = csv.field_size_limit()
+    with pytest.raises(RunError) as info:
+        build_corpus(folder, mapping=flags_mapping())
+    assert "big.csv" in info.value.message
+    assert csv.field_size_limit() == before
+
+
+def test_csv_error_text_never_holds_cell_text(tmp_path: Path) -> None:
+    folder = tmp_path / "in"
+    rows = simple_rows(5)
+    rows[2][0] = ""
+    rows[2][2] = SECRET
+    write_csv(folder, "recs.csv", rows)
+    with pytest.raises(RunError) as info:
+        build_corpus(folder, mapping=flags_mapping())
+    assert SECRET not in info.value.message
+
+
+def test_csv_source_folder_is_not_changed(tmp_inputs: Callable[..., InputSet]) -> None:
+    inputs = tmp_inputs("csv")
+    before = tree_hash(inputs.folder)
+    build_corpus(inputs.folder, mapping=flags_mapping())
+    assert tree_hash(inputs.folder) == before
+
+
+def test_csv_and_markdown_in_one_folder(tmp_path: Path) -> None:
+    folder = make_folder(tmp_path, "in", count=3)
+    write_csv(folder, "table.csv", simple_rows(3))
+    corpus = build_corpus(folder, mapping=flags_mapping())
+    ids = [r.id for r in corpus.records]
+    assert ids == sorted(ids)
+    assert "table/c0" in ids and "sec/r0" in ids
+    assert len(corpus.records) == 6
+
+
+# --- textclean ---------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        ("<p>Fish &amp; chips</p><p>Pie</p>", "Fish & chips\nPie"),
+        ("<script>var a = 1;</script><p>Keep</p>", "Keep"),
+        ("<style>p {color: red}</style>Text", "Text"),
+        ("<head><title>Skip</title></head><body>Body</body>", "Body"),
+        ("one<br>two<br/>three", "one\ntwo\nthree"),
+        ("<ul><li>a</li><li>b</li></ul>", "a\nb"),
+        ("a   b\t\tc", "a b c"),
+        ("<p>a</p>\n\n\n\n<p>b</p>", "a\n\nb"),
+        ("x &lt; 5 &nbsp;&gt; 2", "x < 5 > 2"),
+        ("", ""),
+    ],
+)
+def test_html_to_text(value: str, expected: str) -> None:
+    assert html_to_text(value) == expected
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        ("<p>x</p>", True),
+        ("</div>", True),
+        ("<!-- c -->", True),
+        ("x < 5", False),
+        ("a<3 and b", False),
+        ("plain", False),
+        ("", False),
+    ],
+)
+def test_looks_like_html(value: str, expected: bool) -> None:
+    assert looks_like_html(value) is expected

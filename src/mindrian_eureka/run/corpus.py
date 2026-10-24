@@ -19,6 +19,9 @@ The module imports no numpy, so importing it is cheap.
 
 from __future__ import annotations
 
+import csv
+import io
+import json
 import re
 import unicodedata
 from dataclasses import dataclass
@@ -41,7 +44,8 @@ from .contracts import (
     sha256_bytes,
     sha256_text,
 )
-from .mapping import MappingConfig
+from .mapping import CsvMapping, MappingConfig, skeleton_mapping
+from .textclean import html_to_text, looks_like_html
 
 _SKIP_DIR_NAMES = frozenset({"node_modules"})
 _MIN_USABLE_RECORDS = 2
@@ -297,13 +301,199 @@ def _markdown_candidate(rel: str, text: str) -> _Candidate:
     )
 
 
-# --- CSV (filled in by the CSV step of this plan) ---------------------------
+# --- CSV --------------------------------------------------------------------
+
+_ID_UNSAFE = re.compile(r"[^A-Za-z0-9_.-]+")
+_GUESS_DELIMITERS = (",", ";", "\t", "|")
+_MAX_EXAMPLES = 5
+_EXAMPLE_CHARS = 40
+
+
+def _guess_headers(text: str) -> tuple[str, list[str]]:
+    """Return the best delimiter and the header names of a CSV text."""
+    first_line = text.split("\n", 1)[0]
+    best: tuple[str, list[str]] = (",", [])
+    for delimiter in _GUESS_DELIMITERS:
+        try:
+            row = next(csv.reader(io.StringIO(first_line, newline=""), delimiter=delimiter), [])
+        except csv.Error:
+            row = []
+        if len(row) > len(best[1]):
+            best = (delimiter, row)
+    return best
+
+
+def _unmapped_error(rel: str, text: str) -> UsageError:
+    if not text.strip():
+        return UsageError(
+            f"The CSV file {rel} is empty",
+            fix="Remove the file or add a header row and data rows",
+        )
+    delimiter, headers = _guess_headers(text)
+    skeleton_data = json.loads(skeleton_mapping(rel, headers))
+    if delimiter != ",":
+        skeleton_data["files"][rel]["delimiter"] = delimiter
+    skeleton = json.dumps(skeleton_data, indent=2, ensure_ascii=False)
+    shown = ", ".join(headers)
+    return UsageError(
+        f"The CSV file {rel} has no column mapping.\n"
+        f"Headers found: {shown}\n"
+        "Save this mapping, edit the column names, and run again with --mapping <file>:\n"
+        f"{skeleton}",
+        fix="Pass --mapping <file>, or pass --text-column <header> (and --id-column <header>)",
+    )
+
+
+def _sanitize_id(value: str) -> str:
+    return _ID_UNSAFE.sub("_", value)
+
+
+def _short(value: str) -> str:
+    return value if len(value) <= _EXAMPLE_CHARS else value[:_EXAMPLE_CHARS] + "..."
+
+
+def _check_headers(rel: str, headers: list[str], entry: CsvMapping) -> None:
+    duplicates = sorted({name for name in headers if headers.count(name) > 1})
+    if duplicates:
+        raise UsageError(
+            f"The CSV file {rel} repeats these header names: {', '.join(duplicates)}",
+            fix="Make every header name unique",
+        )
+    wanted = [
+        *entry.text_columns,
+        *entry.extra_fields,
+        *(c for c in (entry.id_column, entry.title_column, entry.source_column) if c),
+    ]
+    missing = [name for name in dict.fromkeys(wanted) if name not in headers]
+    if missing:
+        raise UsageError(
+            f"The CSV file {rel} has no column named {', '.join(missing)}. "
+            f"Available headers: {', '.join(headers)}",
+            fix="Correct the column names in the mapping",
+        )
 
 
 def _read_csv(
     rel: str, text: str, mapping: MappingConfig | None, warnings: list[str]
 ) -> list[_Candidate]:
-    raise NotImplementedError("CSV reading is added in the next step")
+    """Turn one CSV file into candidate records using its mapping."""
+    entry = mapping.for_file(rel) if mapping is not None else None
+    if entry is None:
+        raise _unmapped_error(rel, text)
+    id_base = rel[: -len(Path(rel).suffix)]
+    unmapped: dict[str, dict[str, int]] = {}
+
+    def cell(row: dict[str | None, Any], column: str) -> str:
+        value = row.get(column)
+        return value if isinstance(value, str) else ""
+
+    def clean(column: str, raw: str) -> str:
+        value = raw
+        table = entry.value_maps.get(column)
+        if table is not None and value.strip():
+            decoded = table.get(value.strip())
+            if decoded is None:
+                counts = unmapped.setdefault(column, {})
+                counts[value.strip()] = counts.get(value.strip(), 0) + 1
+            else:
+                value = decoded
+        if entry.html == "always" or (entry.html == "auto" and looks_like_html(value)):
+            value = html_to_text(value)
+        return normalize_text(value)
+
+    old_limit = csv.field_size_limit()
+    csv.field_size_limit(MAX_RECORD_CHARS)
+    candidates: list[_Candidate] = []
+    blank_rows = 0
+    try:
+        reader = csv.DictReader(
+            io.StringIO(text, newline=""), delimiter=entry.delimiter, restval=""
+        )
+        try:
+            headers = list(reader.fieldnames or [])
+            if not headers:
+                raise RunError(f"The CSV file {rel} is empty", fix="Add a header row and data rows")
+            _check_headers(rel, headers, entry)
+            for row_number, row in enumerate(reader, start=1):
+                if not any(
+                    isinstance(v, str) and v.strip() for k, v in row.items() if k is not None
+                ):
+                    blank_rows += 1
+                    continue
+                where = f"{rel} row {row_number}"
+                body_blocks: list[str] = []
+                for column in entry.text_columns:
+                    value = clean(column, cell(row, column))
+                    if not value:
+                        continue
+                    label = entry.labels.get(column)
+                    body_blocks.append(f"{label}:\n{value}" if label else value)
+                extra_lines: list[str] = []
+                for column in entry.extra_fields:
+                    value = clean(column, cell(row, column))
+                    if value:
+                        extra_lines.append(f"{entry.labels.get(column, column)}: {value}")
+                if extra_lines:
+                    body_blocks.append("\n".join(extra_lines))
+                body = "\n\n".join(body_blocks)
+                if entry.id_column is not None:
+                    raw_id = normalize_text(cell(row, entry.id_column))
+                    if not raw_id:
+                        raise RunError(
+                            f"The id cell is empty in {where}",
+                            fix="Fill the id cell, or remove the row",
+                        )
+                    id_part = _sanitize_id(raw_id)
+                    if not id_part.strip("."):
+                        raise RunError(
+                            f"The id value in {where} has no usable characters",
+                            fix="Use an id with letters, digits, underscore, dot or hyphen",
+                        )
+                else:
+                    id_part = "h" + sha256_text(unicodedata.normalize("NFC", body))[:12]
+                title = (
+                    clean(entry.title_column, cell(row, entry.title_column))
+                    if entry.title_column is not None
+                    else ""
+                )
+                source = (
+                    normalize_text(cell(row, entry.source_column))
+                    if entry.source_column is not None
+                    else ""
+                )
+                if len(body) > MAX_RECORD_CHARS:
+                    raise RunError(
+                        f"The text of {where} is longer than {MAX_RECORD_CHARS} characters",
+                        fix="Shorten the cell or split the record",
+                    )
+                candidates.append(
+                    _Candidate(
+                        id=unicodedata.normalize("NFC", f"{id_base}/{id_part}"),
+                        title=title,
+                        text=body,
+                        source_ref=source or f"{rel}#{id_part}",
+                        source_file=rel,
+                        where=where,
+                    )
+                )
+        except csv.Error as exc:
+            raise RunError(
+                f"The CSV file {rel} cannot be read at line {reader.line_num}: {exc}",
+                fix="Check the delimiter and the quotes, or a cell above the size limit",
+            ) from exc
+    finally:
+        csv.field_size_limit(old_limit)
+    if blank_rows:
+        warnings.append(f"Skipped {blank_rows} blank row(s) in {rel}.")
+    for column in entry.value_maps:
+        counts = unmapped.get(column)
+        if counts:
+            examples = ", ".join(_short(v) for v in sorted(counts)[:_MAX_EXAMPLES])
+            warnings.append(
+                f"In {rel}, column {column}: {sum(counts.values())} cell(s) have a value "
+                f"that is not in the value map. Examples: {examples}"
+            )
+    return candidates
 
 
 # --- Build ------------------------------------------------------------------
@@ -330,7 +520,11 @@ def _check_duplicates(candidates: list[_Candidate]) -> None:
             raise RunError(
                 f"Two records have the same id '{candidate.id}': "
                 f"{first.where} and {candidate.where}",
-                fix="Rename or remove one of the files",
+                fix=(
+                    "Add an id column to the mapping, or remove the duplicate row"
+                    if candidate.source_file.lower().endswith(".csv")
+                    else "Rename or remove one of the files"
+                ),
             )
         seen[candidate.id] = candidate
 
