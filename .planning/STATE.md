@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02.1-08-PLAN.md
-last_updated: "2026-10-24T20:21:57Z"
-last_activity: 2026-10-24 -- Completed 02.1-08 (escaped page shell and locked markup)
+stopped_at: Completed quick task 261024-v2h
+last_updated: "2026-10-24T20:31:59Z"
+last_activity: 2026-10-24 - Completed quick task 261024-v2h: synthetic Potential eureka coverage
 progress:
   total_phases: 5
   completed_phases: 2
@@ -27,8 +27,8 @@ See: .planning/PROJECT.md (updated 2026-10-23)
 
 Phase: 2.1 (Opportunity Hub in the mos-brand format) — EXECUTING
 Plan: 9 of 19
-Status: Quick Potential eureka fixture task queued before Plan 09
-Last activity: 2026-10-24 -- Completed 02.1-08 (escaped page shell and locked markup)
+Status: Ready to execute Plan 09
+Last activity: 2026-10-24 - Completed quick task 261024-v2h: synthetic Potential eureka coverage
 
 Progress: [██████░░░░] 65%
 
@@ -92,6 +92,7 @@ None yet.
 |----|------|--------|
 | 261023-py1 | File the JHTV market-signal record | complete |
 | 261023-q2c | Cleanup (names, paths, engine names) and Phase 1 close-out | complete |
+| 261024-v2h | [Synthetic Potential eureka coverage](quick/261024-v2h-add-deterministic-synthetic-potential-eu/261024-v2h-SUMMARY.md), implementation 0398f90 | complete |
 
 ### Blockers/Concerns
 
@@ -111,6 +112,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-10-24T20:21:57Z
-Stopped at: Completed 02.1-08-PLAN.md
+Last session: 2026-10-24T20:31:59Z
+Stopped at: Completed quick task 261024-v2h
 Resume file: .planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/02.1-09-PLAN.md

@@ -30,3 +30,15 @@
 - Deviations: reserve component and record: prefixes to fix shell/record collisions; contextual privacy checks for IDs identical to static chrome.
 - UNVERIFIED: encryption/unlock behavior and visual owner review remain in later plans.
 - NEXT: requested GSD quick task for synthetic Potential eureka coverage, before Plan 09.
+
+## Quick 261024-v2h
+- Implementation: 0398f90; completed after Plan 08 and before Plan 09.
+- Helper: build_run_folder_with_potential_eureka; 21 visible records, two neighborhoods, two Potential eurekas.
+- Stable IDs: synthetic-b-000, synthetic-z-connector. Two builds byte-identical.
+- Full suite: 1016 passed, 27 skipped, 45 subtests passed in 129.03 seconds.
+- Focused tests: 32 passed. Ruff: PASS for helper, new tests, and page.
+- Mypy strict: PASS for tests/hub_support.py and hub/page.py.
+- Real fixture unchanged; Gr09 and actual B05/B06 render. P06.hidden absent with zero weak pairs.
+- Deviations: dedicated regression module and minimal Gr09 render change implement the requested checks.
+- UNVERIFIED: chip, tour, panel, sphere and ink-shell browser checks belong to later plans per addendum.
+- NEXT: Plan 09. No threshold changes, existing PLAN edits, or push.
