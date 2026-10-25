@@ -14,7 +14,7 @@ PACKAGE = ROOT / "src/mindrian_eureka"
 AUTHORED = PACKAGE / "hub/assets/authored"
 RECORD_FILES = (
     "hub-model-rules.md", "hub-probe-results.md", "hub-vendor-record.md",
-    "hub-gate-record.md", "hub-jhtv-view-mapping.md",
+    "hub-gate-record.md", "hub-jhtv-view-mapping.md", "hub-review-result.md",
 )
 
 

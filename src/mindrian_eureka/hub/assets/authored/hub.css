@@ -149,6 +149,7 @@ input { caret-color: var(--mos-ink); }
 /* Red flag text is never placed on a quiet fill. */
 .hub-flag { color: var(--mos-red); }
 .hub-field { min-block-size: 44px; min-inline-size: 44px; padding: var(--hub-space-2); border: 1px solid var(--mos-ink); background: var(--mos-white); color: var(--mos-ink); }
+.hub-field::placeholder { color: var(--mos-soft); opacity: 1; }
 .hub-row, .hub-pair-row { padding-block: var(--hub-space-5); border-block-end: 2px solid var(--mos-quiet); }
 .hub-row--selected { background: var(--mos-white); border-inline-start: 3px solid var(--mos-blue); padding-inline-start: var(--hub-space-4); }
 .hub-evidence { border-inline-start: 3px solid var(--mos-blue); padding-inline-start: var(--hub-space-4); }

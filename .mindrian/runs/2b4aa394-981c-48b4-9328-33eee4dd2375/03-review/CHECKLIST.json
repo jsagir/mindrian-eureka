@@ -1,0 +1,562 @@
+{
+  "status": "human-review-required",
+  "consumer": "mindrian-eureka-hub",
+  "jtbd": "When I have run Eureka on a folder of sources and hold ranked pairs in files, I want to open one local page that shows the opportunity bank, the connection graph and the catalogue. Desired outcome: I can decide which pairs deserve a human look, and no data leaves my computer.",
+  "mandatoryRules": "references/brand-rules.md",
+  "contracts": [
+    {
+      "segment": "",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "CONTEXT.md"
+    },
+    {
+      "segment": "experience",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/experience/CONTEXT.md"
+    },
+    {
+      "segment": "experience/accessibility",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/experience/accessibility/CONTEXT.md"
+    },
+    {
+      "segment": "experience/css-capabilities",
+      "status": "active",
+      "owner": null,
+      "humanCheck": "Confirm each enhancement clarifies evidence, a relationship or a change of state, the same facts, labels, source status and actions remain with the enhancement off and in reduced motion, and no experimental feature carries essential content. Only interpolate-size and gap decorations are first-wave; the other eight stay lab, prototype, tracking or required-now. Active on 2026-10-23 because the base path of all three examples passed in Chromium 145 and 149 and Firefox 146 (WebKit could not be run on the host; iOS Safari and Android Chrome are pending human cells). The scoped compliance ruling stays proposed and no browser or human approval is implied.",
+      "source": "segments/experience/css-capabilities/CONTEXT.md"
+    },
+    {
+      "segment": "experience/faq",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/experience/faq/CONTEXT.md"
+    },
+    {
+      "segment": "experience/forms",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/experience/forms/CONTEXT.md"
+    },
+    {
+      "segment": "experience/forms/access",
+      "status": "active",
+      "owner": null,
+      "humanCheck": "Active brand directive, narrowed on 2026-10-21 by owner ruling: blog, articles, installation pages and documentation stay open; sign-in applies only to the account page, the Theo connection consent and letter preferences. Verify real server-side Google authentication on the surfaces in scope, protected content/data responses there, callback destination, expiry/sign-out, and optional post-login intro with separate unchecked marketing permission. Live implementation and security/accessibility/privacy review remain unverified.",
+      "source": "segments/experience/forms/access/CONTEXT.md"
+    },
+    {
+      "segment": "experience/forms/engagement",
+      "status": "proposed",
+      "owner": null,
+      "humanCheck": "PROPOSED, not active. Owner, content/research, UI/UX/accessibility, engineering and privacy/operations review remain pending. Verify real destinations, question-to-decision use, explicit unchecked marketing permission, safe data flow and server-confirmed states in an actual implementation before launch.",
+      "source": "segments/experience/forms/engagement/CONTEXT.md"
+    },
+    {
+      "segment": "experience/graph-visualization",
+      "status": "proposed",
+      "owner": null,
+      "humanCheck": "PROPOSED, not active. The owner has not ruled on this guide. Confirm the title asks the question the graph answers, every color has one named meaning, the data check result is on the page, every node opens plain text with a source link, every generated number was checked, and the page says that an engine link is similarity, not proof.",
+      "source": "segments/experience/graph-visualization/CONTEXT.md"
+    },
+    {
+      "segment": "experience/inner-pages",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/experience/inner-pages/CONTEXT.md"
+    },
+    {
+      "segment": "experience/layout",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/experience/layout/CONTEXT.md"
+    },
+    {
+      "segment": "experience/motion",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm movement clarifies a relationship or question, preserves the selected artwork and claim status, and remains understandable in the still version. React does not imply a replacement image sequence is implemented.",
+      "source": "segments/experience/motion/CONTEXT.md"
+    },
+    {
+      "segment": "experience/narrative",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/experience/narrative/CONTEXT.md"
+    },
+    {
+      "segment": "experience/visual-language",
+      "status": "active-directive",
+      "owner": null,
+      "humanCheck": "Check the actual visual, source status, encoding, label fit, finite motion and equivalent still. No recipe proves content truth or framework execution.",
+      "source": "segments/experience/visual-language/CONTEXT.md"
+    },
+    {
+      "segment": "experience/visual-language/framework",
+      "status": "active-directive",
+      "owner": null,
+      "humanCheck": "Check actual labels, quantities, source status, movement and equivalent still. This recipe does not validate content.",
+      "source": "segments/experience/visual-language/framework/CONTEXT.md"
+    },
+    {
+      "segment": "experience/visual-language/graph-data",
+      "status": "active-directive",
+      "owner": null,
+      "humanCheck": "Check actual labels, quantities, source status, movement and equivalent still. This recipe does not validate content.",
+      "source": "segments/experience/visual-language/graph-data/CONTEXT.md"
+    },
+    {
+      "segment": "experience/visual-language/graph-relationships",
+      "status": "active-directive",
+      "owner": null,
+      "humanCheck": "Check actual labels, quantities, source status, movement and equivalent still. This recipe does not validate content.",
+      "source": "segments/experience/visual-language/graph-relationships/CONTEXT.md"
+    },
+    {
+      "segment": "experience/visual-language/matrix-2x2",
+      "status": "active-directive",
+      "owner": null,
+      "humanCheck": "Check actual labels, quantities, source status, movement and equivalent still. This recipe does not validate content.",
+      "source": "segments/experience/visual-language/matrix-2x2/CONTEXT.md"
+    },
+    {
+      "segment": "experience/visual-language/pyramid",
+      "status": "active-directive",
+      "owner": null,
+      "humanCheck": "Check actual labels, quantities, source status, movement and equivalent still. This recipe does not validate content.",
+      "source": "segments/experience/visual-language/pyramid/CONTEXT.md"
+    },
+    {
+      "segment": "experience/visual-language/shaper",
+      "status": "initial-implementation",
+      "owner": null,
+      "humanCheck": "Review semantics, source status, actual label fit, reduced motion and device rendering. No component proves methodology execution.",
+      "source": "segments/experience/visual-language/shaper/CONTEXT.md"
+    },
+    {
+      "segment": "experience/visual-language/shaper/motion",
+      "status": "active-directive",
+      "owner": null,
+      "humanCheck": "Confirm meaningful relevance, accurate teaching move, readable labels, cancellation, reduced motion and the complete still. The parent declaration is not proof of compliance.",
+      "source": "segments/experience/visual-language/shaper/motion/CONTEXT.md"
+    },
+    {
+      "segment": "experience/visual-language/system",
+      "status": "active-directive",
+      "owner": null,
+      "humanCheck": "Check actual labels, quantities, source status, movement and equivalent still. This recipe does not validate content.",
+      "source": "segments/experience/visual-language/system/CONTEXT.md"
+    },
+    {
+      "segment": "family",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/family/CONTEXT.md"
+    },
+    {
+      "segment": "foundations",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/foundations/CONTEXT.md"
+    },
+    {
+      "segment": "foundations/color",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/foundations/color/CONTEXT.md"
+    },
+    {
+      "segment": "foundations/master-story",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/foundations/master-story/CONTEXT.md"
+    },
+    {
+      "segment": "foundations/positioning",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/foundations/positioning/CONTEXT.md"
+    },
+    {
+      "segment": "foundations/quest",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm that future possibilities stay conditional, current evidence stays dated and contextual, the person retains judgment and the next move remains practical. Do not claim prediction or elimination of uncertainty.",
+      "source": "segments/foundations/quest/CONTEXT.md"
+    },
+    {
+      "segment": "foundations/tokens",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/foundations/tokens/CONTEXT.md"
+    },
+    {
+      "segment": "foundations/typography",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/foundations/typography/CONTEXT.md"
+    },
+    {
+      "segment": "foundations/typography/dm-sans",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/foundations/typography/dm-sans/CONTEXT.md"
+    },
+    {
+      "segment": "foundations/typography/figtree",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/foundations/typography/figtree/CONTEXT.md"
+    },
+    {
+      "segment": "foundations/typography/heebo",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/foundations/typography/heebo/CONTEXT.md"
+    },
+    {
+      "segment": "foundations/typography/jetbrains-mono",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/foundations/typography/jetbrains-mono/CONTEXT.md"
+    },
+    {
+      "segment": "governance",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the workflow integration is actually adopted and do not confuse a plan with execution or pending rules with compliance.",
+      "source": "segments/governance/CONTEXT.md"
+    },
+    {
+      "segment": "governance/intake",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the workflow integration is actually adopted and do not confuse a plan with execution or pending rules with compliance.",
+      "source": "segments/governance/intake/CONTEXT.md"
+    },
+    {
+      "segment": "governance/tooling",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Review resolved scope and actual outputs. Verify memory is learning rather than authority, and do not claim automated design approval.",
+      "source": "segments/governance/tooling/CONTEXT.md"
+    },
+    {
+      "segment": "governance/tooling/production",
+      "status": "active-directive",
+      "owner": null,
+      "humanCheck": "Verify actual host tools, package compatibility, rendering, meaningful movement and evidence. Installation is not visual approval or factual verification.",
+      "source": "segments/governance/tooling/production/CONTEXT.md"
+    },
+    {
+      "segment": "identity",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/identity/CONTEXT.md"
+    },
+    {
+      "segment": "identity/logo",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/identity/logo/CONTEXT.md"
+    },
+    {
+      "segment": "identity/logo/favicons",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm distinct sibling silhouettes, tiny wink visibility, mask safety and the real deployed head. Proposed members remain proposed.",
+      "source": "segments/identity/logo/favicons/CONTEXT.md"
+    },
+    {
+      "segment": "identity/logo/variants",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/identity/logo/variants/CONTEXT.md"
+    },
+    {
+      "segment": "identity/theo",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/identity/theo/CONTEXT.md"
+    },
+    {
+      "segment": "identity/theo/framework-language",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/identity/theo/framework-language/CONTEXT.md"
+    },
+    {
+      "segment": "identity/theo/states",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/identity/theo/states/CONTEXT.md"
+    },
+    {
+      "segment": "teams",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/teams/CONTEXT.md"
+    },
+    {
+      "segment": "teams/documentation",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/teams/documentation/CONTEXT.md"
+    },
+    {
+      "segment": "teams/jtbd",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/teams/jtbd/CONTEXT.md"
+    },
+    {
+      "segment": "teams/marketing",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/teams/marketing/CONTEXT.md"
+    },
+    {
+      "segment": "teams/marketing/draft-content",
+      "status": "active-directive",
+      "owner": null,
+      "humanCheck": "Review the actual draft against inspected evidence and the reader job. No structural check verifies truth or grants publication approval.",
+      "source": "segments/teams/marketing/draft-content/CONTEXT.md"
+    },
+    {
+      "segment": "writing",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/writing/CONTEXT.md"
+    },
+    {
+      "segment": "writing/editorial-integrity",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Review the full draft and highlighted excerpts against the actual sources. Structural checks do not verify truth, permission, comprehension or human approval.",
+      "source": "segments/writing/editorial-integrity/CONTEXT.md"
+    },
+    {
+      "segment": "writing/editorial-integrity/callouts",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Review the full draft and highlighted excerpts against the actual sources. Structural checks do not verify truth, permission, comprehension or human approval.",
+      "source": "segments/writing/editorial-integrity/callouts/CONTEXT.md"
+    },
+    {
+      "segment": "writing/editorial-integrity/evidence",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Review the full draft and highlighted excerpts against the actual sources. Structural checks do not verify truth, permission, comprehension or human approval.",
+      "source": "segments/writing/editorial-integrity/evidence/CONTEXT.md"
+    },
+    {
+      "segment": "writing/editorial-integrity/quotations",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Review the full draft and highlighted excerpts against the actual sources. Structural checks do not verify truth, permission, comprehension or human approval.",
+      "source": "segments/writing/editorial-integrity/quotations/CONTEXT.md"
+    },
+    {
+      "segment": "writing/english-hebrew",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/writing/english-hebrew/CONTEXT.md"
+    },
+    {
+      "segment": "writing/punctuation",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "source": "segments/writing/punctuation/CONTEXT.md"
+    },
+    {
+      "segment": "writing/text-augmentation",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Critical handoff review: no walls of text. Confirm a useful scan path and full reading, meaningful rich text/visual explanation, visible qualifications and actions, contrast/reflow/spacing behavior and native Hebrew. Source checks do not pass editorial review.",
+      "source": "segments/writing/text-augmentation/CONTEXT.md"
+    },
+    {
+      "segment": "writing/voice",
+      "status": "working-baseline",
+      "owner": null,
+      "humanCheck": "Can a creator apply the teaching sequence without copying verbal tics or runtime mechanisms? Verify claim grounding, reader comprehension and native Hebrew separately.",
+      "source": "segments/writing/voice/CONTEXT.md"
+    }
+  ],
+  "ruleSets": [
+    {
+      "id": "brand-baseline",
+      "status": "active",
+      "version": "2.19.1",
+      "applies": true,
+      "source": "references/brand-rules.md",
+      "checks": [
+        "No em dashes",
+        "Exact parent identity",
+        "Mindrian leads, Theo supports",
+        "Preserve evidence status",
+        "Check relevant language/accessibility rules",
+        "Critical no-wall-of-text editorial review: hierarchy, rich text and useful visual explanation; human check required"
+      ],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "uiux-ruling-system",
+      "status": "planned",
+      "version": null,
+      "applies": true,
+      "source": null,
+      "checks": [],
+      "result": "not-implemented-not-passed"
+    },
+    {
+      "id": "content-production-pipeline",
+      "status": "active",
+      "version": "2.28.1",
+      "applies": true,
+      "source": "skills/draft-content/SKILL.md",
+      "checks": [
+        "Install the Mindrian drafting skill and actual selected instructions for the configured host",
+        "Complete the reader JTBD, scan outline, takeaway and evidence gaps before prose",
+        "Use a content run and current content preparation before advancing from the brief",
+        "Apply canonical voice, scannable hierarchy, callouts, quotations and evidence rules",
+        "Record actual editorial and rendered-page checks; no automated factual or publication approval"
+      ],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "blog-production-pipeline",
+      "status": "active",
+      "version": "2.28.1",
+      "applies": false,
+      "source": "segments/teams/editorial/blog/pipeline/entries/2026-10-20/GUIDE.md",
+      "checks": [],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "production-tool-preflight",
+      "status": "active",
+      "version": "2.29.0",
+      "applies": true,
+      "source": "segments/governance/tooling/production/entries/2026-10-20/GUIDE.md",
+      "checks": [
+        "Inspect the actual capabilities required by the deliverable",
+        "Install supported missing project skills and dependencies",
+        "Resolve unavailable provider or external-skill setup honestly",
+        "Apply actual brand instructions and rendering rationale before creation",
+        "Do not silently flatten required interaction because no packaged React components exist"
+      ],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "visual-explanation-grammar",
+      "status": "active",
+      "version": "2.33.0",
+      "applies": true,
+      "source": "segments/experience/visual-language/entries/2026-10-20/GUIDE.md",
+      "checks": [
+        "Choose values, relationships, two distinctions, hierarchy, system or lenses explicitly",
+        "Declare the encoding and keep its source status visible",
+        "Use Theo Faces as a thinking-motion language, not a compulsory face in every diagram",
+        "Perform one meaningful move and hold a complete readable still",
+        "Check labels, axes, levels, edge meaning, reduced motion and possible false inference",
+        "Select geometry from meaning; preserve valid curves, circles, organic contours, irregular boundaries and meaningful hard edges without forced brand geometry"
+      ],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "shaper-motion-ruling",
+      "status": "active",
+      "version": "2.33.0",
+      "applies": true,
+      "source": "segments/experience/visual-language/shaper/motion/entries/2026-10-20/GUIDE.md",
+      "checks": [
+        "Declare why this component is relevant to the current question",
+        "Use the registered thinking move and the shared relevance, manual or scroll driver",
+        "Only one shared explanation owns playback; no ambient loop",
+        "Cancel and settle on lost relevance, hidden tab, reduced motion and unmount",
+        "Keep labels, source status and the complete still readable",
+        "Review actual movement and the next question, not just a completed API call",
+        "Select geometry from meaning; preserve valid curves, circles, organic contours, irregular boundaries and meaningful hard edges without forced brand geometry"
+      ],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "website-google-access",
+      "status": "active",
+      "version": "2.37.0",
+      "applies": true,
+      "source": "segments/experience/forms/access/entries/2026-10-20/GUIDE.md",
+      "checks": [
+        "blog, article, installation and documentation requests stay open and need no sign-in",
+        "sign-in protects only the surfaces in the policy scope (account page, Theo connection consent, letter preferences); their content and data APIs are not shipped in public responses before authentication",
+        "valid Google identity and session are checked server-side; a cosmetic cookie or arbitrary session is insufficient",
+        "no client marker, query parameter or introduction skip can grant authentication",
+        "login rejection, cancellation and expired session remain gated",
+        "successful Google login preserves the internal return destination",
+        "introduction completion and skip preserve the same requested resource",
+        "empty or invalid optional introduction never blocks authenticated skip",
+        "unavailable intro storage and submission failure do not bypass Google authentication",
+        "sign-out clears stale intro progress and revokes access for later protected requests",
+        "marketing permission is separate, explicit and unchecked",
+        "no tokens, contact data or answer values in analytics, replay, URLs or application logs"
+      ],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "graph-visualization-ruling",
+      "status": "proposed",
+      "version": null,
+      "applies": true,
+      "source": "segments/experience/graph-visualization/entries/2026-10-21/GUIDE.md",
+      "checks": [],
+      "result": "not-implemented-not-passed"
+    },
+    {
+      "id": "css-capabilities-ruling",
+      "status": "proposed",
+      "version": null,
+      "applies": true,
+      "source": "segments/experience/css-capabilities/entries/2026-10-23/GUIDE.md",
+      "checks": [],
+      "result": "not-implemented-not-passed"
+    }
+  ],
+  "notices": [],
+  "approval": "Not provided. Inspect the rendered result and record actual evidence. Technical checks do not satisfy critical editorial review."
+}

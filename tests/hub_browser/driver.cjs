@@ -246,7 +246,8 @@ async function main() {
             await page.setViewportSize({ width: step.width, height: step.height });
             break;
           case "screenshot":
-            await page.screenshot({ path: step.path, fullPage: Boolean(step.fullPage) });
+            await page.screenshot({ path: step.path, fullPage: Boolean(step.fullPage),
+              ...(step.quality === undefined ? {} : { quality: step.quality }) });
             result.screenshots.push(step.path);
             break;
           case "visible":

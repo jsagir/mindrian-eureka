@@ -59,10 +59,10 @@ def test_decision_table_has_the_seven_areas():
 def test_silent_register_has_all_18_items():
     section = _section(_text(), "Book-silent register (D-03)")
     for n in range(1, 19):
-        line = next((l for l in section.splitlines() if re.match(rf"^{n}\. ", l)), None)
+        line = next((row for row in section.splitlines() if re.match(rf"^{n}\. ", row)), None)
         assert line, f"silent item {n} missing"
         assert "proposed segment" in line, f"item {n} lacks 'proposed segment'"
-    item10 = next(l for l in section.splitlines() if l.startswith("10. "))
+    item10 = next(row for row in section.splitlines() if row.startswith("10. "))
     assert "Stricter by choice, proposed segment." in item10
     assert "Hub applies 13 px at all widths." in item10
 
@@ -103,7 +103,7 @@ def test_superseded_block_in_readme_decisions():
 
 
 def test_gitignore_lists_machine_files():
-    lines = {l.strip() for l in GITIGNORE.read_text(encoding="utf-8").splitlines()}
+    lines = {row.strip() for row in GITIGNORE.read_text(encoding="utf-8").splitlines()}
     for entry in (
         ".mindrian/brand.lock.json",
         ".mindrian/WORKFLOW.md",

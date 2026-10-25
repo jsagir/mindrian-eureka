@@ -104,7 +104,8 @@
       if (panel) panel.hide();
       app.emit("clear", null);
       const target = opener && opener !== document.body && document.contains(opener)
-        && typeof opener.focus === "function" && opener.getClientRects().length
+        && typeof opener.focus === "function" && opener.matches("a[href],button,input,select,textarea,summary,[tabindex]")
+        && !opener.matches(":disabled") && opener.getClientRects().length
         && getComputedStyle(opener).visibility !== "hidden"
         ? opener : document.getElementById("hub-title");
       if (target) target.focus();

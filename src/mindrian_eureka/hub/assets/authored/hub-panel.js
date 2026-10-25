@@ -64,6 +64,26 @@
     panel.appendChild(strip);
     panel.appendChild(HubApp.el("h2", { id: "hub-panel-title", tabindex: "-1" }, title));
   }
+  function sourceProse(value, className) {
+    const chunks = [];
+    let buffer = "", count = 0, boundary = 0;
+    (value.match(/\S+\s*|\s+/gu) || []).forEach(function (token) {
+      buffer += token;
+      if (token.trim()) count++;
+      if (/[.!?][)"'\]]*\s*$/u.test(token)) boundary = buffer.length;
+      if (count >= 80 && boundary) {
+        chunks.push(buffer.slice(0, boundary));
+        buffer = buffer.slice(boundary);
+        count = buffer.trim() ? buffer.trim().split(/\s+/u).length : 0;
+        boundary = 0;
+      } else if (count >= 100) {
+        chunks.push(buffer); buffer = ""; count = 0; boundary = 0;
+      }
+    });
+    if (buffer) chunks.push(buffer);
+    return HubApp.el("div", { class: "hub-source-prose" + (className ? " " + className : "") },
+      chunks.map(function (chunk) { return HubApp.el("p", {}, chunk); }));
+  }
   function recordView(record) {
     header(record.title || HubApp.fmt("P02.record"), record.id, record.bridge);
     panel.appendChild(label(record.label));
@@ -78,9 +98,9 @@
     const characters = Array.from(record.text);
     const limit = HubApp.data.config.panel_text_chars;
     const content = HubApp.el("section", { class: "hub-panel-text" }, [heading("P03.text"),
-      HubApp.el("p", { class: "hub-panel-excerpt" }, characters.slice(0, limit).join(""))]);
+      sourceProse(characters.slice(0, limit).join(""), "hub-panel-excerpt")]);
     if (characters.length > limit) content.appendChild(HubApp.el("details", { class: "hub-panel-full" }, [
-      text("summary", "P05.full"), HubApp.el("p", {}, characters.slice(limit).join(""))
+      text("summary", "P05.full"), sourceProse(characters.slice(limit).join(""))
     ]));
     panel.appendChild(content);
     if (record.hood !== null) {

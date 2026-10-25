@@ -105,4 +105,4 @@ A person approves before anything publishes. Plan 17 records that approval.
 
 ## Review results
 
-Written by plan 19.
+Implementation complete; visual verification pending the owner. The [review record](hub-review-result.md) records seven CLI reviews with REVIEW-REQUIRED, no findings and exit 2, measured browser checks, every inspected capture and the remaining human checks. Raw results and public-only images are in the [evidence folder](../../.planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence). Approval remains pending Plan 17; no CLI run approval or publication is recorded.

@@ -1,0 +1,23 @@
+{
+  "evidence": {
+    "next": "Optionally supply --evidence with the declared-claim ledger; read the editorial-integrity contract.",
+    "status": "not-provided",
+    "truthVerification": "not-performed"
+  },
+  "exit_code": 2,
+  "file": "build/hub-review/snapshots/bank.html",
+  "findings": [],
+  "humanReview": {
+    "required": [
+      "Inspect hierarchy, emphasis and visual aids in the rendered result; framing text in a box is not a visual explanation.",
+      "Keep evidence, uncertainty, qualifications and next actions visible while scanning.",
+      "Verify exact fonts, identity assets, bilingual reading and relevant motion against selected contracts."
+    ],
+    "source": "references/brand-rules.md",
+    "status": "not-performed"
+  },
+  "limits": "Read-only heuristic prose scan. Code examples are excluded. HTML parsing is approximate; rendered text, CSS, JSX, links, truth and accessibility need separate review. No automatic rewriting or brand approval.",
+  "review_name": "bank",
+  "sha256": "1f88fe77ff9a91b98103b10542cdd622377e6b195932bc2a04e8fc793bc7e17e",
+  "status": "REVIEW-REQUIRED"
+}

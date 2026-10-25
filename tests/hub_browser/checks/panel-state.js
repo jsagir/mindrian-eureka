@@ -82,9 +82,13 @@ if (buttonBounds && buttonBounds.top >= 0 && buttonBounds.bottom <= innerHeight)
 const full = panel.querySelector('.hub-panel-full');
 const bridgeMark = panel.querySelector(".hub-role--bridge");
 const texts = [];
+const sourceGroups = new Set();
 const walker = document.createTreeWalker(panel, NodeFilter.SHOW_TEXT);
 while (walker.nextNode()) {
-  const value = walker.currentNode.textContent.trim();
+  const group = walker.currentNode.parentElement.closest('.hub-source-prose');
+  if (group && sourceGroups.has(group)) continue;
+  if (group) sourceGroups.add(group);
+  const value = (group ? group.textContent : walker.currentNode.textContent).trim();
   if (value) texts.push(value);
 }
 return {
@@ -111,7 +115,7 @@ return {
   scrollWidth: document.documentElement.scrollWidth, innerWidth: innerWidth,
   bodyScrollHeight: document.documentElement.scrollHeight, innerHeight: innerHeight,
   excerpt: panel.querySelector('.hub-panel-excerpt')?.textContent || '',
-  rest: full?.querySelector('p').textContent || '',
+  rest: full?.querySelector('.hub-source-prose')?.textContent || '',
   recordText: record?.text || '',
   why: panel.querySelector('.hub-panel-why')?.textContent || '',
   bridge: record?.bridge || false,

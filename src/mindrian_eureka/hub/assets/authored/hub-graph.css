@@ -64,10 +64,10 @@
   .hub-graph-stage--3d { block-size: 560px; }
 }
 @media (min-width: 1024px) {
-  .hub-graph-scene { grid-template-columns: repeat(12, minmax(0, 1fr)); }
-  .hub-graph-guide { grid-column: 1 / 5; align-self: start; max-block-size: 900px; overflow: auto; }
+  .hub-graph-scene { grid-template-columns: repeat(12, minmax(0, 1fr)); inline-size: min(1600px, calc(100vw - 64px)); margin-inline: calc((100% - min(1600px, calc(100vw - 64px))) / 2); }
+  .hub-graph-guide { grid-column: 1 / 5; align-self: start; max-block-size: max(560px, calc(100dvh - 64px)); overflow: auto; }
   .hub-graph-stage { grid-column: 5 / 13; }
-  .hub-graph-stage--3d { min-block-size: 560px; }
+  .hub-graph-stage--3d { block-size: calc(100dvh - 64px); min-block-size: 560px; max-block-size: none; }
 }
 .hub-stage-canvas { position: absolute; inset: 0; overflow: hidden; }
 .hub-stage-canvas canvas { display: block; }

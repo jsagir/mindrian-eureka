@@ -138,7 +138,7 @@
     const links = pairs.map(function (pair) {
       return { source: pair.left.id, target: pair.right.id, pair: pair };
     });
-    const labels = HubApp.el("div", { class: "hub-stage-labels", "aria-hidden": "true" });
+    const labels = HubApp.el("div", { class: "hub-stage-labels" });
     const chips = new Map();
     HubApp.data.bridges.forEach(function (bridge) {
       const record = HubApp.index.records.get(bridge.record_id);
@@ -431,7 +431,7 @@
   }
   function drawDiagram() {
     if (!diagram || !diagram.clientWidth) return;
-    const width = Math.max(240, Math.floor(diagram.clientWidth));
+    const width = Math.max(240, Math.floor(diagram.getBoundingClientRect().width));
     if (width === lastWidth) return;
     lastWidth = width;
     const height = Math.max(360, Math.min(width, 560));
