@@ -145,3 +145,16 @@
 - Mapping corrects the observed 2D Cytoscape reference; no private data, names, paths or narrative copied.
 - README adds 27 lines; page.py adds 12 comment lines only. Fixed a hidden-button loop in the draft test.
 - UNVERIFIED: Safari, touch, screen reader and owner review. NEXT: Plan 19; no approval or push.
+
+## 02.1-19
+- Commit: c1d8099.
+- Full suite: 1265 passed, 27 skipped, 45 subtests passed in 454.33 seconds.
+- Focused: 54 review/panel/CSS/JS checks; 4 diagram checks; all 22 stage checks passed.
+- Ruff: PASS on all hub code/tests/helpers and capture script. Strict mypy: PASS, 27 files. Doctor: PASS.
+- Seven final raw CLI reviews: REVIEW-REQUIRED, exit 2, zero findings; independent repeats match.
+- All 37 public-only images opened; 3,108,717 bytes. State projections preserve stored scores and cut-offs.
+- Fixed placeholder contrast, hidden source-label focus, opener fallback, source paragraphs and desktop graph geometry.
+- Fixed fractional SVG scaling; updated stale desktop-height assertion. Final reviewer scored corrections resolved.
+- Four book-stage draft outputs, 18 silent items and 24 new proposals filed; no stage approval or book write.
+- UNVERIFIED: Safari, touch, screen reader, read-aloud, human widths and RTL. NEXT: Claude review before Plan 17.
+
