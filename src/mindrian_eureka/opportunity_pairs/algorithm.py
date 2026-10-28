@@ -220,15 +220,37 @@ def _rs_tokens(text: str) -> list[str]:
     return [token for token in _RS_TOKEN_RE.findall((text or "").lower()) if token not in _RS_STOPWORDS]
 
 
+def _capped_vocabulary(df: dict[str, int], max_features: int) -> list[tuple[str, int]]:
+    """Select the BM25 vocabulary under a cap and return (term, df) pairs.
+
+    At or under the cap every term is kept. Over the cap, terms with df == 1
+    go first (they cannot link 2 documents), then the most common terms; the
+    rarest shared terms are kept. The result is ordered by (-df, term), the
+    same column order as before, so floating-point sums do not move when the
+    kept set is unchanged.
+    """
+    if len(df) <= max_features:
+        kept = list(df)
+    else:
+        kept = [term for term, count in df.items() if count >= 2]
+        if len(kept) > max_features:
+            kept = sorted(kept, key=lambda t: (df[t], t))[:max_features]
+    return [(t, df[t]) for t in sorted(kept, key=lambda t: (-df[t], t))]
+
+
 def _bm25_cosine(texts: Sequence[str], *, k1: float = 1.5, b: float = 0.75, max_features: int = 5000) -> np.ndarray:
-    """LATEST RS 2026 deterministic BM25-weighted document cosine signal."""
+    """LATEST RS 2026 deterministic BM25-weighted document cosine signal.
+
+    Over the vocabulary cap, df == 1 terms go first, then the most common
+    terms. The rarest shared terms are kept, whatever their spelling.
+    """
     docs = [_rs_tokens(text) for text in texts]
     n = len(docs)
     df: dict[str, int] = {}
     for doc in docs:
         for term in set(doc):
             df[term] = df.get(term, 0) + 1
-    ranked = sorted(df.items(), key=lambda item: (-item[1], item[0]))[:max_features]
+    ranked = _capped_vocabulary(df, max_features)
     index = {term: i for i, (term, _) in enumerate(ranked)}
     if not index:
         return np.eye(n, dtype=np.float64)

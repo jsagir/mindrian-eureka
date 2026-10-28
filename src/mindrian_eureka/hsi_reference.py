@@ -362,17 +362,35 @@ def tokenize(text, drop_stop=True):
     return toks
 
 
-def _term_count_matrix(texts, max_features=500):
-    """Documents x vocabulary raw counts, vocabulary capped to the max_features
-    most frequent terms (ties broken alphabetically so the result is stable)."""
+def _term_count_matrix(texts, max_features=500, cap_order='frequent_first'):
+    """Documents x vocabulary raw counts, vocabulary capped to max_features.
+
+    cap_order 'frequent_first' (default, LSA, unchanged): keep the most
+    frequent terms, ties broken alphabetically so the result is stable.
+    cap_order 'rare_first' (BM25): at or under the cap keep every term; over
+    the cap drop df == 1 terms first, then the most common terms, so the
+    rarest shared terms are kept whatever their spelling."""
     docs = [tokenize(t) for t in texts]
     total = {}
+    df = {}
     for d in docs:
         for t in d:
             total[t] = total.get(t, 0) + 1
+        for t in set(d):
+            df[t] = df.get(t, 0) + 1
     if not total:
         return np.zeros((len(texts), 0)), []
-    vocab = sorted(total, key=lambda t: (-total[t], t))[:max_features]
+    if cap_order == 'frequent_first':
+        vocab = sorted(total, key=lambda t: (-total[t], t))[:max_features]
+    elif cap_order == 'rare_first':
+        if len(total) <= max_features:
+            vocab = list(total)
+        else:
+            vocab = [t for t in total if df[t] >= 2]
+            if len(vocab) > max_features:
+                vocab = sorted(vocab, key=lambda t: (df[t], t))[:max_features]
+    else:
+        raise ValueError('cap_order must be frequent_first or rare_first')
     vocab = sorted(vocab)
     idx = {t: i for i, t in enumerate(vocab)}
     tf = np.zeros((len(texts), len(vocab)))
@@ -463,10 +481,12 @@ def compute_bm25_similarity(texts, k1=1.5, b=0.75):
     S[i, j] is the BM25 score of document i used as the query against document
     j; it is divided by the self-score S[i, i] so a document matches itself at
     1.0, then averaged with its transpose. Empty vocabulary or a single
-    document returns the identity matrix.
+    document returns the identity matrix. The vocabulary cap uses the
+    rare-first order: df == 1 terms are dropped first, then the most common
+    terms, so a rare identifier shared by 2 documents is kept.
     """
     n = len(texts)
-    tf, vocab = _term_count_matrix(texts, max_features=100000)
+    tf, vocab = _term_count_matrix(texts, max_features=100000, cap_order='rare_first')
     if n < 2 or tf.shape[1] == 0:
         return np.eye(n)
     df = (tf > 0).sum(axis=0)
