@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-23)
 Phase: 2.1 (Opportunity Hub in the mos-brand format) - AWAITING OWNER REVIEW
 Plan: 17 of 19
 Status: Implementation complete; visual verification pending the owner.
-Last activity: 2026-10-25 -- Completed 02.1-19 (measured review and owner handoff)
+Last activity: 2026-10-28 -- Completed quick task 261029-184: Fix BM25 vocab cap so rare identifiers are kept, not dropped
 
 Progress: [██████████] 97%
 
@@ -103,6 +103,7 @@ None yet.
 | 261023-py1 | File the JHTV market-signal record | complete |
 | 261023-q2c | Cleanup (names, paths, engine names) and Phase 1 close-out | complete |
 | 261024-v2h | [Synthetic Potential eureka coverage](quick/261024-v2h-add-deterministic-synthetic-potential-eu/261024-v2h-SUMMARY.md), implementation 0398f90 | complete |
+| 261029-184 | [Fix BM25 vocab cap so rare identifiers are kept](quick/261029-184-fix-bm25-vocab-cap-so-rare-identifiers-a/261029-184-SUMMARY.md), implementation 5165aba | complete |
 
 ### Blockers/Concerns
 
