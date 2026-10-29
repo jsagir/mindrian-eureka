@@ -1,0 +1,61 @@
+{
+  "schema_version": "eureka.run-mapping.v1",
+  "files": {
+    "*": {
+      "id_column": "case_number",
+      "title_column": "title",
+      "text_columns": [
+        "abstract",
+        "problem_solved",
+        "end_user",
+        "size_of_unmet_need",
+        "marginal_or_groundbreaking",
+        "target_companies",
+        "stage_work_required",
+        "topics"
+      ],
+      "labels": {
+        "problem_solved": "Problem solved",
+        "end_user": "End user",
+        "size_of_unmet_need": "Size of the unmet need",
+        "marginal_or_groundbreaking": "Marginal or groundbreaking",
+        "target_companies": "Target companies",
+        "stage_work_required": "Stage of work required",
+        "topics": "Topics"
+      },
+      "html": "always",
+      "outcome_rule": {
+        "licensed_when_any": [
+          {"column": "licensed_to_jh_startup", "equals": "Y"},
+          {"column": "licensed_externally", "equals": "Y"},
+          {"column": "licenses", "greater_than": 0},
+          {"column": "options", "greater_than": 0},
+          {"column": "had_corporate_research", "equals": "Y"},
+          {"column": "status", "equals": "Inactive- Licensed"}
+        ]
+      },
+      "carry_columns": [
+        "licensed_to_jh_startup",
+        "licensed_externally",
+        "had_corporate_research",
+        "had_translational_funding",
+        "had_any_funding",
+        "had_follow_on",
+        "licenses",
+        "options",
+        "ndas",
+        "mtas",
+        "licensing_deals_lost",
+        "funding_awards",
+        "translational_awards",
+        "follow_on_awards",
+        "sponsored_research_agreements",
+        "corporate_partnerships_won",
+        "first_license_or_option_date",
+        "first_translational_date",
+        "disclosure_date",
+        "status"
+      ]
+    }
+  }
+}
