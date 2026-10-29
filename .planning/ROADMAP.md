@@ -7,6 +7,7 @@ The first milestone makes Eureka operational by other users. The JHTV review on 
 ## Phases
 
 **Phase Numbering:**
+
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
@@ -21,36 +22,45 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Phase Details
 
 ### Phase 1: Release Gate and Engine Parity
+
 **Goal**: The maintainer knows whether Eureka may ship publicly, which unusual-pairs engine path is canonical, and which wording-and-meaning pairs engine command produced the JHTV `top_k 200` result.
 **Depends on**: Nothing (first phase)
 **Requirements**: REL-01, REL-02, ENG-01, ENG-02, ENG-03
 **Success Criteria** (what must be TRUE):
+
   1. The maintainer can open one written record that states the unusual-pairs engine source origin, author attribution and license status, and ends with a go / no-go for public distribution.
   2. Running the parity test on one fixed input prints the rank overlap and the score differences between plugin `rs-engine.py` and repo `eureka-pair-scout`.
   3. The project docs name one canonical unusual-pairs engine path, or explain why both stay, and cite the parity result as evidence.
   4. A reader can copy the exact wording-and-meaning pairs engine command and settings that produced `top_k 200` on the JHTV run, either found in the room history or rebuilt and recorded.
   5. The README and the package metadata state in plain words that unusual-pairs engine fidelity is not verified bit-for-bit.
+
 **Plans**: 6 plans, all complete
+
 - [x] 01-01: Release-gate record (decision stays draft no-go; owner sign-off pending)
 - [x] 01-02: Reproduction record for the JHTV pair results
 - [x] 01-03: Parity test for the unusual-pairs engine
 - [x] 01-04: Stable top-7 term order
 - [x] 01-05: Canonical path record for the unusual-pairs engine
 - [x] 01-06: Fidelity statement
+
 **Open owner item**: sign-off on the release decision (draft no-go). Phases 2 and 3 proceed; Phase 4 ships internal only until the owner changes it.
 **Scope notes**: The go / no-go gates public shipping in Phase 4 only. Phases 2 and 3 can proceed on a no-go. REL-02 wording depends on the REL-01 record and the ENG-01 result.
 
 ### Phase 2: One-Command Run and Doctor
+
 **Goal**: A non-author can check their setup, run one command on a folder of their own sources, and get the same ranked pairs every time, with a manifest that proves it.
 **Depends on**: Phase 1 (canonical unusual-pairs engine path and wording-and-meaning pairs engine command decide what `eureka run` calls)
 **Requirements**: RUN-01, RUN-02, RUN-03, RUN-04, RUN-05, DOC-01, DOC-02
 **Success Criteria** (what must be TRUE):
+
   1. User runs `eureka run` on a folder of CSV or Markdown sources and gets ranked pair files from both engines, built on a clean corpus with stable record IDs.
   2. Each run writes a manifest with input file hashes, record counts, settings, seeds, library and model versions, and output file hashes.
   3. Running the command twice on the same input gives identical ranked output, and a test in the suite proves it.
   4. Every output file carries the "candidate, not verified" label and a score-meaning note.
   5. `eureka doctor` checks Python, `uv`, local model presence, and cache and data directory permissions, and prints the exact fix for each failure. A missing model produces a clear message, never a silent failure.
+
 **Plans**: 6 plans in 3 waves (wave 1: 02-01; wave 2: 02-02, 02-03, 02-04, 02-05 in parallel; wave 3: 02-06)
+
 - [x] 02-01: Caps lift (top_k 200, 3,000 artifacts), shared contracts and test scaffold
 - [x] 02-02: Corpus builder with CSV mapping file and flags
 - [x] 02-03: Typed engine facade for both engines
@@ -58,16 +68,47 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02-05: Model discovery, `eureka doctor` and offline install note
 - [x] 02-06: Pipeline, CLI wiring, run-twice (RUN-04) and label (RUN-05) tests
 
+### Phase 02.3: Room seed hand-off to MindrianOS (INSERTED)
+
+**Goal:** A candidate intersection from a Eureka run becomes a seed bundle (`eureka.room-seed.v1`) that MindrianOS can open as a room through its own birth chokepoint: `eureka seed <run> --pair <id>` and `--cluster <record-id>` write the statement draft, the evidence with hashes, "what we know" and "what to feed next" per room section from the filled and blank columns, and `eureka seed --list` ranks candidates by pair class and node degree. The plugin-side `/mos:ignite --from-seed` is specified in a contract doc for its own phase in the plugin repo. Offline, deterministic, no model, no room write.
+**Requirements**: SEED-01 (seed contract and schema), SEED-02 (column-to-section map and not-in-export list as mapping data), SEED-03 (pair and cluster seeds with known and feed-next lists), SEED-04 (candidate list by class and degree), SEED-05 (hub action naming the seed command), SEED-06 (plugin consumption contract doc with the model boundary stated)
+**Depends on:** Phase 2.2 (pair_class, carried columns, mapping schema, hub chip row)
+**Context:** .planning/phases/02.3-room-seed-hand-off-to-mindrianos/02.3-CONTEXT.md
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run $gsd-plan-phase 02.3 to break down)
+
+### Phase 02.2: Partner export profile and package (INSERTED)
+
+**Goal:** A partner who holds a technology-portfolio CSV export (one row per case number, outcome flags and dates, abstract possibly blank) runs `eureka run` on their own offline machine with a shipped mapping, gets cross pairs (an open technology next to one with a commercial outcome) and open-open bundle candidates, sees the outcome columns beside every pair in the run output and the hub, fills thin text from a case-number side-car with the coverage stated in numbers, and installs it all from a one-page partner guide. The owner's ruling on partner-internal distribution is recorded in the release gate.
+**Requirements**: PKG-01 (mapping for the export, outcome and people columns never in text), PKG-02 (corpus rule from outcome columns, cross-corpus run, open-open list), PKG-03 (carry columns on pair payloads and in the hub, additive contract), PKG-04 (case-number text side-car with a coverage line and manifest hash), PKG-05 (partner run guide plus MINDRIAN_EUREKA_ROOT hookup), PKG-06 (owner ruling recorded in docs/rs-release-gate.md: partner-internal approved 2026-10-29, public stays no-go, G1 G2 G3 G5 open), PKG-07 (carry-in bundle and launcher: one folder per target with uv, wheels, model, source, mapping, guide, hashed manifest, start.sh and start.ps1 running doctor, run, hub, open; optional Docker-load variant)
+**Depends on:** Phase 2 (eureka run, mapping, doctor, offline install), Phase 2.1 (hub reader and contracts)
+**Context:** .planning/phases/02.2-partner-export-profile-and-package/02.2-CONTEXT.md
+**Plans:** 4 plans in 3 waves (wave 1: 02.2-01; wave 2: 02.2-02, 02.2-03 in parallel; wave 3: 02.2-04)
+
+Plans:
+
+- [ ] 02.2-01: Mapping schema (`outcome_rule`, `carry_columns`), outcome class on every pair at the projection layer, carried cells, per-engine class counts, manifest keys, conditional Class column, shipped mapping `examples/mappings/technology-audit-export.json`
+- [ ] 02.2-02: `--text-sidecar` join by raw id with the coverage line and manifest hash, `docs/partner-run-guide.md`, the dated partner-internal ruling in `docs/rs-release-gate.md`, host cross-link
+- [ ] 02.2-03: Brand token sheet refresh, hub contracts and reader (additive, unknown class refused), class chips and filter, 2,000-record scale check
+- [ ] 02.2-04: Carry-in bundle builder (`scripts/build-partner-bundle`, hashed manifest, uv and optional Docker variants) and the `start.sh` / `start.ps1` launchers
+
 ### Phase 2.1: Opportunity Hub in the mos-brand format
+
 **Goal**: A user who ran `eureka run` can open one local page that shows the opportunity bank, the connection graph and the full catalogue of the analyzed collection, styled by the mos-brand book.
 **Depends on**: Phase 2 (the hub reads the `eureka run` output and its manifest)
 **Requirements**: HUB-01, HUB-02, HUB-03, HUB-04, HUB-05
 **Success Criteria** (what must be TRUE):
+
   1. After `eureka run` on a folder of sources, one command writes a single local hub page with three views (opportunity bank, connection graph, full catalogue). The catalogue has search and filter. A check shows the page makes no network call and loads only local files.
   2. A design-decisions file lists every choice for colour, type, layout, motion and the Theo face, and cites the mos-brand ruling (`mos-brand context`, `mos-brand review`) for each. The review passes on the hub page.
   3. Every claim and every opportunity on the hub shows the label "candidate, not verified" and a link to its source record. A test fails when an item lacks either.
   4. The hub can be password-gated by an option, and the page reads from a local file only. The public-data example reproduces the existing JHTV hub (opportunity bank, idea graph, October leads page) in the new format, with no private room data in the repo.
+
 **Plans**: 19 plans in 10 waves (wave 1: 02.1-01 to 02.1-04 in parallel; wave 2: 02.1-05, 02.1-06, 02.1-07 in parallel; wave 3: 02.1-08; wave 4: 02.1-09; wave 5: 02.1-10; wave 6: 02.1-11 to 02.1-15 in parallel; wave 7: 02.1-18; wave 8: 02.1-16; wave 9: 02.1-19; wave 10: 02.1-17)
+
 - [x] 02.1-01: Brand intake with mos-brand (init, owner checkpoint, configure, adopt), decisions file and silent-item register
 - [x] 02.1-02: Phase 2 touch-ups: W1 engine note fix, staged-run hook for the hub, W2 README run and doctor section
 - [x] 02.1-03: Hub package base: contracts, copy deck, run reader, run-folder test helper
@@ -87,28 +128,35 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] 02.1-17: Owner decision (brand stop) and its record
 - [x] 02.1-18: Connection graph 3D stage: loader, camera player, labels, CSP check with the library, 3,000-record scale test
 - [x] 02.1-19: `mos-brand review`, screenshots and measurements, review record, return of the gaps to the book
+
 **Scope notes**: The mos-brand book (`~/mos-brand`, CLI `bin/mos-brand.cjs`) is the design authority. A brand intake runs as the first plan. The JHTV reference files live in the partner room's solution-design folder; use them as a visual and structural reference only. The example must come from public data.
 
 ### Phase 3: Host Integration and Replay Rebuild
+
 **Goal**: A MindrianOS user can start the one-command run from `/mos:eureka`, and the five JHTV candidates that cite the graph-derive replay have either a repeatable script or an honest provenance-gap mark.
 **Depends on**: Phase 2 (the MCP server calls the one-command run; the replay script reuses the manifest pattern)
 **Requirements**: HOST-01, HOST-02
 **Success Criteria** (what must be TRUE):
+
   1. In MindrianOS, `/mos:eureka` starts the one-command run through the Eureka MCP server and returns the ranked output with the host handoff block.
   2. The run respects room scope and approval rules: it does not start without the approval step, and Eureka writes nothing to the room graph.
   3. Either a recorded script rebuilds the graph-derive replay and two runs give the same output hashes, with its claim and pair counts compared to the cited 2,130 claims and 2,267,385 pairs, or OPP-027 to OPP-031 are marked "provenance gap" in the room.
+
 **Plans**: TBD
 **Scope notes**: HOST-01 touches the MindrianOS plugin repo, which has its own GSD-only rule. Plan-phase must split the Eureka side (MCP tool surface) from the plugin side (command wiring). Room marks for HOST-02 are host-owned writes and need approval.
 
 ### Phase 4: Public Example and Reproduction Guide
+
 **Goal**: A stranger can reproduce a documented run from public data and knows exactly what is and is not reproducible about the JHTV method.
 **Depends on**: Phase 2 (`eureka run` and manifest), Phase 3 (the guide reports the replay outcome), Phase 1 (public shipping needs a go decision)
 **Requirements**: EXM-01, EXM-02
 **Success Criteria** (what must be TRUE):
+
   1. A small public dataset ships in the repo, and `eureka run` on it finishes end to end on a fresh checkout.
   2. The output hashes of that run match the shipped expected hashes, and a check fails when they differ.
   3. A "reproduce the JHTV method" guide in plain English walks a non-author through the steps from install to ranked pairs.
   4. The guide states what is reproducible (the unusual-pairs and wording-and-meaning pairs engines, per the Phase 1 record), what is not (the replay outcome from Phase 3, unusual-pairs engine bit-for-bit fidelity), and keeps the "candidate, not verified" wording.
+
 **Plans**: TBD
 **Scope notes**: The dataset license must allow redistribution. If REL-01 ends in no-go, ship the example and guide as internal only and record the reason.
 
