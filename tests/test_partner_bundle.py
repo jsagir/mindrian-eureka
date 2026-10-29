@@ -236,3 +236,161 @@ def test_manifest_hashes_sizes_and_paths(
         assert not entry["path"].startswith("/")
     assert host_report.file_count == len(files)
     assert host_report.manifest_sha256 == sha256_file(host_bundle / "BUNDLE-MANIFEST.json")
+
+
+# --- launchers ----------------------------------------------------------------
+
+NETWORK_WORDS = ("curl", "wget", "http://", "https://", "Invoke-WebRequest")
+
+
+def _dry_run(bundle: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["bash", str(bundle / "start.sh"), *args, "--dry-run"],
+        cwd=bundle,
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=False,
+    )
+
+
+def _in_order(text: str, needles: tuple[str, ...]) -> None:
+    position = 0
+    for needle in needles:
+        found = text.find(needle, position)
+        assert found >= 0, f"{needle!r} missing after position {position}"
+        position = found + len(needle)
+
+
+def test_bundle_holds_launchers_and_sidecar_readme(host_bundle: Path) -> None:
+    start_sh = host_bundle / "start.sh"
+    assert start_sh.is_file()
+    assert start_sh.stat().st_mode & stat.S_IXUSR
+    assert (host_bundle / "start.ps1").is_file()
+    readme = (host_bundle / "sidecar" / "README.md").read_text(encoding="utf-8")
+    lines = [line for line in readme.splitlines() if line.strip()]
+    assert 8 <= len(lines) <= 12
+    assert "text" in readme
+    assert LABEL not in readme
+    assert not (host_bundle / "start-docker.sh").exists()
+    assert not (host_bundle / "eureka-image.tar").exists()
+
+
+def test_start_sh_dry_run(host_bundle: Path) -> None:
+    done = _dry_run(host_bundle)
+    assert done.returncode == 0, done.stderr
+    _in_order(
+        done.stdout,
+        (
+            "would run:",
+            "uv sync --offline",
+            "would run:",
+            "eureka doctor",
+            "would run:",
+            "eureka run",
+            "--mapping",
+            "technology-audit-export.json",
+            "would run:",
+            "eureka hub",
+            "hub.html",
+        ),
+    )
+    assert "--text-sidecar" not in done.stdout
+    assert not (host_bundle / "source" / ".venv").exists()
+    assert not (host_bundle / "output").exists()
+    assert not (host_bundle.parent / "output").exists()
+    assert not (host_bundle / ".uv-cache").exists()
+
+
+def test_start_sh_dry_run_with_a_dropped_sidecar(host_bundle: Path) -> None:
+    dropped = host_bundle / "sidecar" / "partner.csv"
+    dropped.write_text("case_number,text\nC00001,A synthetic sentence for the test.\n")
+    try:
+        done = _dry_run(host_bundle)
+    finally:
+        dropped.unlink()
+    assert done.returncode == 0, done.stderr
+    assert "--text-sidecar" in done.stdout
+    assert "partner.csv" in done.stdout
+
+
+def test_start_sh_dry_run_takes_input_and_output_folders(host_bundle: Path, tmp_path: Path) -> None:
+    done = _dry_run(host_bundle, str(tmp_path / "in"), str(tmp_path / "out"))
+    assert done.returncode == 0, done.stderr
+    assert str(tmp_path / "in") in done.stdout
+    assert str(tmp_path / "out") + "-hub" in done.stdout
+    assert not (tmp_path / "out").exists()
+
+
+def test_launchers_make_no_network_call(host_bundle: Path) -> None:
+    names = ("start.sh", "start.ps1", "start-docker.sh", "start-docker.ps1")
+    for name in names:
+        path = host_bundle / name
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8")
+        for word in NETWORK_WORDS:
+            assert word not in text, f"{name} holds {word!r}"
+
+
+def test_start_ps1_has_the_same_sequence(host_bundle: Path) -> None:
+    text = (host_bundle / "start.ps1").read_text(encoding="utf-8")
+    for needle in (
+        "eureka doctor",
+        "eureka run",
+        "--out",
+        "--mapping",
+        "technology-audit-export.json",
+        "eureka hub",
+        "Start-Process",
+        "DryRun",
+        "LASTEXITCODE",
+        "UV_OFFLINE",
+        "HF_HUB_OFFLINE",
+    ):
+        assert needle in text, needle
+    assert "--output " not in text
+
+
+def test_doctor_runs_from_inside_the_bundle(host_bundle: Path, tmp_path: Path) -> None:
+    if not models.discover_model(None).ok:
+        pytest.skip("local model absent")
+    env = dict(os.environ)
+    env["PATH"] = f"{host_bundle}{os.pathsep}{env.get('PATH', '')}"
+    env["UV_PROJECT_ENVIRONMENT"] = str(tmp_path / "venv")
+    env["UV_PYTHON"] = "3.12"
+    env.pop("VIRTUAL_ENV", None)
+    env["UV_OFFLINE"] = "1"
+    env["UV_NO_PROGRESS"] = "1"
+    env["HF_HUB_OFFLINE"] = "1"
+    env["TRANSFORMERS_OFFLINE"] = "1"
+    env.pop("MINDRIAN_EUREKA_RS_MODEL_PATH", None)
+    env.pop("MINDRIAN_EUREKA_HSI_MODEL_PATH", None)
+    source = host_bundle / "source"
+    synced = subprocess.run(
+        ["uv", "sync", "--offline", "--extra", "modern-encoder"],
+        cwd=source,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=600,
+        check=False,
+    )
+    assert synced.returncode == 0, synced.stderr.strip().splitlines()[:3]
+    done = subprocess.run(
+        ["uv", "run", "--offline", "eureka", "doctor", "--json", "--model-path",
+         str(host_bundle / "model")],
+        cwd=source,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=600,
+        check=False,
+    )
+    report = json.loads(done.stdout)
+    statuses = {check["id"]: check["status"] for check in report["checks"]}
+    assert statuses["D2"] == "PASS", report
+    assert statuses["D4"] == "PASS", report
+    assert done.returncode == 0, report
+    assert report["ok"] is True
+    assert not (source / ".venv").exists()
