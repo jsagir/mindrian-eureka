@@ -167,24 +167,36 @@ def _engine_section(projected: Mapping[str, Any]) -> list[str]:
     if notes:
         lines.extend(f"- {_cell(str(note))}" for note in notes)
         lines.append("")
-    lines.append("| Rank | Left record | Right record | Wording | Meaning | Rank score | Reading |")
-    lines.append("| --- | --- | --- | --- | --- | --- | --- |")
+    counts = projected.get("counts", {})
+    with_classes = isinstance(counts, Mapping) and "pair_classes" in counts
+    header = "| Rank | Left record | Right record | Wording | Meaning | Rank score | Reading |"
+    divider = "| --- | --- | --- | --- | --- | --- | --- |"
+    if with_classes:
+        header += " Class |"
+        divider += " --- |"
+    lines.append(header)
+    lines.append(divider)
     for pair in projected.get("pairs", []):
         scores = pair.get("scores", {})
+        cells = [
+            _cell(str(pair.get("rank", ""))),
+            _record_cell(pair.get("left", {})),
+            _record_cell(pair.get("right", {})),
+            _score(scores, "wording_similarity"),
+            _score(scores, "meaning_similarity"),
+            _score(scores, "rank_score"),
+            _cell(str(pair.get("reading", ""))),
+        ]
+        if with_classes:
+            cells.append(_cell(str(pair.get("pair_class", ""))))
+        lines.append("| " + " | ".join(cells) + " |")
+    if with_classes:
+        classes = counts["pair_classes"]
+        lines.append("")
         lines.append(
-            "| "
-            + " | ".join(
-                [
-                    _cell(str(pair.get("rank", ""))),
-                    _record_cell(pair.get("left", {})),
-                    _record_cell(pair.get("right", {})),
-                    _score(scores, "wording_similarity"),
-                    _score(scores, "meaning_similarity"),
-                    _score(scores, "rank_score"),
-                    _cell(str(pair.get("reading", ""))),
-                ]
-            )
-            + " |"
+            f"Classes: cross {classes.get('cross', 0)}, "
+            f"open_open {classes.get('open_open', 0)}, "
+            f"licensed_licensed {classes.get('licensed_licensed', 0)}."
         )
     lines.append("")
     return lines

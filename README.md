@@ -90,7 +90,7 @@ Then run Eureka on your folder:
 uv run eureka run ./my-sources --out ./eureka-run
 ```
 
-A CSV file needs to know which column holds the text. Give a `--mapping` file or the column flags. Run `uv run eureka run --help` to see them.
+A CSV file needs to know which column holds the text. Give a `--mapping` file or the column flags. Run `uv run eureka run --help` to see them. A mapping for a technology-portfolio export with outcome columns is at `examples/mappings/technology-audit-export.json`; see `docs/partner-run-guide.md`.
 
 The run reads your folder and never writes into it. It writes these files into the `--out` folder: `unusual-pairs.json`, `wording-and-meaning-pairs.json`, `ranked-pairs.md`, `corpus/records.jsonl`, `manifest.json` and `run-info.json`.
 

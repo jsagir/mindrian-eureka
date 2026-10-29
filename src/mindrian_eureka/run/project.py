@@ -17,6 +17,8 @@ from typing import Any
 
 from .contracts import (
     LABEL,
+    PAIR_CLASS_CROSS,
+    PAIR_CLASSES,
     PAIRS_SCHEMA,
     SCORE_MEANING,
     UNUSUAL_PAIRS_CAPABILITY,
@@ -276,6 +278,54 @@ def project_wording_and_meaning(
         records_scored=len(records),
         pairs=projected,
     )
+
+
+def attach_pair_classes(doc: dict[str, Any], records: Sequence[Record]) -> dict[str, Any]:
+    """Add the outcome class and the carried cells to every pair of a projected file.
+
+    The engines run on every record. This step classifies the pairs afterwards
+    (Phase 2.2, D-02 and D-03): `cross` when the two records differ in class, else
+    `<class>_<class>`. Every pair also gets `left_extras` and `right_extras`, the
+    trimmed cells of the mapping carry columns. `counts.pair_classes` holds the 3
+    counts. Nothing changes when no record carries a class, so a run without a
+    rule writes the same bytes as before.
+
+    Args:
+        doc: A projected pair file from `project_unusual_pairs` or
+            `project_wording_and_meaning`. It is changed in place.
+        records: The clean corpus. Classes and extras come from here.
+
+    Returns:
+        The same dictionary. It is unchanged when no record carries an outcome class.
+
+    Raises:
+        ValueError: A pair names a record id that is not in `records`, or some
+            records carry a class and others do not.
+    """
+    classes = {record.id: record.outcome_class for record in records}
+    if not any(classes.values()):
+        return doc
+    missing = sorted(record_id for record_id, value in classes.items() if value is None)
+    if missing:
+        raise ValueError(f"Record without an outcome class: {missing[0]}")
+    extras = {record.id: dict(record.extras) for record in records}
+    counts = {name: 0 for name in sorted(PAIR_CLASSES)}
+    for pair in doc["pairs"]:
+        left_id = str(pair["left"]["id"])
+        right_id = str(pair["right"]["id"])
+        for record_id in (left_id, right_id):
+            if record_id not in classes:
+                raise ValueError(f"Unknown record id in engine result: {record_id}")
+        left, right = classes[left_id], classes[right_id]
+        pair_class = PAIR_CLASS_CROSS if left != right else f"{left}_{left}"
+        if pair_class not in PAIR_CLASSES:
+            raise ValueError(f"Unknown pair class: {pair_class}")
+        pair["pair_class"] = pair_class
+        pair["left_extras"] = extras[left_id]
+        pair["right_extras"] = extras[right_id]
+        counts[pair_class] += 1
+    doc["counts"]["pair_classes"] = counts
+    return doc
 
 
 # --- Plain sentences --------------------------------------------------------

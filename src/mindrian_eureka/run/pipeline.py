@@ -13,7 +13,7 @@ import os
 import re
 import tempfile
 import time
-from collections.abc import Callable, Iterator, Sequence
+from collections.abc import Callable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -49,6 +49,7 @@ from .output import (
     render_ranked_markdown,
 )
 from .project import (
+    attach_pair_classes,
     describe_caps,
     describe_drops,
     filter_engine_warnings,
@@ -113,6 +114,8 @@ class RunSummary:
         files: The digest of every file written.
         manifest_sha256: The sha256 of manifest.json, or None for a dry run.
         warnings: The warnings shown during the run.
+        pair_classes: The pair class counts of each engine, keyed `unusual_pairs` and
+            `wording_and_meaning`, or None when the mapping has no outcome rule.
     """
 
     out_dir: Path
@@ -126,26 +129,41 @@ class RunSummary:
     files: tuple[FileDigest, ...] = ()
     manifest_sha256: str | None = None
     warnings: tuple[str, ...] = field(default_factory=tuple)
+    pair_classes: Mapping[str, Mapping[str, int]] | None = None
 
     def to_json_dict(self) -> dict[str, Any]:
         """Return the summary as a JSON-ready dictionary."""
+        counts: dict[str, Any] = {
+            "records_read": self.records_read,
+            "records_used": self.records_used,
+            "dropped": self.dropped_count,
+            "unusual_pairs": self.unusual_pairs,
+            "wording_and_meaning_pairs": self.wording_and_meaning_pairs,
+        }
+        if self.pair_classes is not None:
+            counts["pair_classes"] = {
+                key: dict(value) for key, value in self.pair_classes.items()
+            }
         return {
             "schema": RUN_SUMMARY_SCHEMA,
             "label": LABEL,
             "dry_run": self.dry_run,
             "out_dir": str(self.out_dir),
-            "counts": {
-                "records_read": self.records_read,
-                "records_used": self.records_used,
-                "dropped": self.dropped_count,
-                "unusual_pairs": self.unusual_pairs,
-                "wording_and_meaning_pairs": self.wording_and_meaning_pairs,
-            },
+            "counts": counts,
             "caps_hit": [dict(item) for item in self.caps_hit],
             "files": [item.as_dict() for item in self.files],
             "manifest_sha256": self.manifest_sha256,
             "summary_line": SUMMARY_LINE,
         }
+
+    def _class_line(self, name: str, key: str) -> str:
+        assert self.pair_classes is not None
+        counts = self.pair_classes[key]
+        return (
+            f"{name} classes: cross {counts.get('cross', 0)}, "
+            f"open_open {counts.get('open_open', 0)}, "
+            f"licensed_licensed {counts.get('licensed_licensed', 0)}"
+        )
 
     def lines(self) -> str:
         """Return the text for standard output. The last line is the label sentence."""
@@ -162,10 +180,14 @@ class RunSummary:
             out.append(
                 f"{UNUSUAL_PAIRS_NAME}: {self.unusual_pairs} pairs ({OUTPUT_UNUSUAL})"
             )
+            if self.pair_classes is not None:
+                out.append(self._class_line(UNUSUAL_PAIRS_NAME, "unusual_pairs"))
             out.append(
                 f"{WORDING_AND_MEANING_NAME}: {self.wording_and_meaning_pairs} pairs "
                 f"({OUTPUT_WORDING})"
             )
+            if self.pair_classes is not None:
+                out.append(self._class_line(WORDING_AND_MEANING_NAME, "wording_and_meaning"))
             out.append(f"Report: {OUTPUT_MARKDOWN}")
             out.append(f"Manifest: {OUTPUT_MANIFEST} (sha256 {self.manifest_sha256})")
         if self.caps_hit:
@@ -324,6 +346,14 @@ def _write_outputs(
         top_k=request.top_k,
         notes=wording_notes,
     )
+    unusual_doc = attach_pair_classes(unusual_doc, records)
+    wording_doc = attach_pair_classes(wording_doc, records)
+    pair_classes: dict[str, Any] | None = None
+    if "pair_classes" in unusual_doc["counts"]:
+        pair_classes = {
+            "unusual_pairs": unusual_doc["counts"]["pair_classes"],
+            "wording_and_meaning": wording_doc["counts"]["pair_classes"],
+        }
     _empty_warning(warn, UNUSUAL_PAIRS_NAME, unusual_doc["counts"]["pairs"])
     _empty_warning(warn, WORDING_AND_MEANING_NAME, wording_doc["counts"]["pairs"])
 
@@ -339,6 +369,21 @@ def _write_outputs(
         "top_k": request.top_k,
         "objective": request.objective,
     }
+    if request.mapping is not None:
+        rules = {
+            key: entry.outcome_rule.as_data()
+            for key, entry in request.mapping.files.items()
+            if entry.outcome_rule is not None
+        }
+        carried = {
+            key: list(entry.carry_columns)
+            for key, entry in request.mapping.files.items()
+            if entry.carry_columns
+        }
+        if rules:
+            settings["run"]["outcome_rules"] = rules
+        if carried:
+            settings["run"]["carry_columns"] = carried
     outputs = [
         corpus_digest.as_dict(),
         _manifest_output(unusual_digest, unusual_doc),
@@ -380,6 +425,7 @@ def _write_outputs(
         files=tuple(files),
         manifest_sha256=manifest_digest.sha256,
         warnings=tuple(warned),
+        pair_classes=pair_classes,
     )
 
 
