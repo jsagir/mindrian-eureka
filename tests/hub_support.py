@@ -12,10 +12,11 @@ from __future__ import annotations
 import hashlib
 import random
 from collections.abc import Sequence
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
-from mindrian_eureka.run.contracts import Record, sha256_text
+from mindrian_eureka.run.contracts import OUTCOME_LICENSED, OUTCOME_OPEN, Record, sha256_text
 from mindrian_eureka.run.manifest import build_manifest, build_run_info
 from mindrian_eureka.run.output import (
     OUTPUT_CORPUS,
@@ -30,7 +31,11 @@ from mindrian_eureka.run.output import (
     corpus_lines,
     render_ranked_markdown,
 )
-from mindrian_eureka.run.project import project_unusual_pairs, project_wording_and_meaning
+from mindrian_eureka.run.project import (
+    attach_pair_classes,
+    project_unusual_pairs,
+    project_wording_and_meaning,
+)
 
 THEMES: tuple[tuple[str, ...], ...] = (
     ("river", "flood", "dam", "channel", "delta", "silt"),
@@ -253,6 +258,9 @@ def make_run_folder(
     with_run_info: bool = True,
     dropped: Sequence[dict[str, Any]] | None = None,
     caps_hit: Sequence[dict[str, Any]] | None = None,
+    pair_classes: bool = False,
+    blank_titles: int = 0,
+    list_cells: int = 0,
 ) -> Path:
     """Write a valid Eureka run folder with synthetic data and return its path.
 
@@ -279,6 +287,11 @@ def make_run_folder(
         with_run_info: Write `run-info.json`.
         dropped: The dropped records for the corpus section of the manifest.
         caps_hit: The limits that were reached, for the corpus section of the manifest.
+        pair_classes: Give every record an outcome class and synthetic carried cells, and
+            every pair of both engines a pair class with the cells of both records.
+        blank_titles: The number of records at the start of the list with an empty title.
+        list_cells: The number of records whose text grows by a long list cell with `;`
+            and `>` separators (about 4,000 characters), starting at a third of the list.
 
     Returns:
         The path of the run folder.
@@ -298,6 +311,7 @@ def make_run_folder(
     records = _make_records(
         n_records, max(1, clusters), seed_text, copies, empty_text, hostile, long_text
     )
+    records = _decorate_records(records, pair_classes, blank_titles, list_cells)
     groups = [_group(i, n_records, max(1, clusters)) for i in range(n_records)]
 
     unusual_pairs = _pick_pairs(groups, unusual_count, "unusual")
@@ -323,6 +337,9 @@ def make_run_folder(
         top_k=top_k_wording,
         notes=plain_notes,
     )
+    if pair_classes:
+        unusual_doc = attach_pair_classes(unusual_doc, records)
+        wording_doc = attach_pair_classes(wording_doc, records)
 
     out_dir = base / name
     with StagedRun(out_dir) as staged:
@@ -376,6 +393,35 @@ def make_run_folder(
             staged.write(OUTPUT_RUN_INFO, canonical_json(info))
         staged.publish()
     return out_dir
+
+
+def _decorate_records(
+    records: list[Record], pair_classes: bool, blank_titles: int, list_cells: int
+) -> list[Record]:
+    """Apply the Phase 2.2 options to the records. Unchanged when every option is off."""
+    if not (pair_classes or blank_titles or list_cells):
+        return records
+    n_records = len(records)
+    long_cell = "; ".join(f"Parent {k} > Topic {k}" for k in range(200))
+    out: list[Record] = []
+    for i, record in enumerate(records):
+        changes: dict[str, Any] = {}
+        if i < blank_titles:
+            changes["title"] = ""
+        if n_records // 3 <= i < n_records // 3 + list_cells:
+            text = f"{record.text} {long_cell}".strip()
+            changes["text"] = text
+            changes["text_sha256"] = sha256_text(text)
+        if pair_classes:
+            licensed = i % 2 == 0
+            changes["outcome_class"] = OUTCOME_LICENSED if licensed else OUTCOME_OPEN
+            changes["extras"] = {
+                "status": "Inactive- Licensed" if licensed else "Active",
+                "licenses": "1" if licensed else "0",
+                "first_license_or_option_date": "2019-03-01" if licensed else "",
+            }
+        out.append(replace(record, **changes) if changes else record)
+    return out
 
 
 def _manifest_output(digest: FileDigest, doc: dict[str, Any]) -> dict[str, Any]:
