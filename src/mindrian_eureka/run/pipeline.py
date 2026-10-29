@@ -75,6 +75,8 @@ class RunRequest:
         input_dir: The folder with Markdown and CSV files. It is only read.
         out_dir: The output folder. An earlier Eureka run in it is replaced.
         mapping: The CSV mapping, or None when the input holds no CSV file.
+        text_sidecar: The side-car file keyed by the raw record id, or None. Its text is
+            added to records whose own text is thin.
         model_path: The folder given with --model-path, or None.
         max_artifacts: The most records to rank.
         top_k: The most pairs for each engine.
@@ -88,6 +90,7 @@ class RunRequest:
     input_dir: Path
     out_dir: Path
     mapping: MappingConfig | None = None
+    text_sidecar: Path | None = None
     model_path: Path | None = None
     max_artifacts: int = MAX_ARTIFACTS
     top_k: int = MAX_TOP_K
@@ -116,6 +119,8 @@ class RunSummary:
         warnings: The warnings shown during the run.
         pair_classes: The pair class counts of each engine, keyed `unusual_pairs` and
             `wording_and_meaning`, or None when the mapping has no outcome rule.
+        text_coverage: The 4 text coverage counts (`records_total`, `own_text_ok`,
+            `filled_from_sidecar`, `still_thin`), or None without a text side-car.
     """
 
     out_dir: Path
@@ -130,6 +135,7 @@ class RunSummary:
     manifest_sha256: str | None = None
     warnings: tuple[str, ...] = field(default_factory=tuple)
     pair_classes: Mapping[str, Mapping[str, int]] | None = None
+    text_coverage: Mapping[str, int] | None = None
 
     def to_json_dict(self) -> dict[str, Any]:
         """Return the summary as a JSON-ready dictionary."""
@@ -144,6 +150,8 @@ class RunSummary:
             counts["pair_classes"] = {
                 key: dict(value) for key, value in self.pair_classes.items()
             }
+        if self.text_coverage is not None:
+            counts["text_coverage"] = dict(self.text_coverage)
         return {
             "schema": RUN_SUMMARY_SCHEMA,
             "label": LABEL,
@@ -176,6 +184,14 @@ class RunSummary:
             f"Records: {self.records_used} used, {self.records_read} read, "
             f"{self.dropped_count} dropped"
         )
+        if self.text_coverage is not None:
+            coverage = self.text_coverage
+            out.append(
+                f"Text coverage: {coverage['records_total']} records, "
+                f"{coverage['own_text_ok']} with own text, "
+                f"{coverage['filled_from_sidecar']} filled from the side-car, "
+                f"{coverage['still_thin']} still thin and dropped"
+            )
         if not self.dry_run:
             out.append(
                 f"{UNUSUAL_PAIRS_NAME}: {self.unusual_pairs} pairs ({OUTPUT_UNUSUAL})"
@@ -213,6 +229,11 @@ def _validate(request: RunRequest) -> None:
             f"You gave {request.max_artifacts}.",
             fix=f"Use --max-artifacts with a number from {_MIN_ARTIFACTS} to "
             f"{HARD_MAX_ARTIFACTS}.",
+        )
+    if request.text_sidecar is not None and not request.text_sidecar.is_file():
+        raise UsageError(
+            f"The side-car file {request.text_sidecar.name} does not exist",
+            fix="Check the side-car path",
         )
 
 
@@ -426,6 +447,7 @@ def _write_outputs(
         manifest_sha256=manifest_digest.sha256,
         warnings=tuple(warned),
         pair_classes=pair_classes,
+        text_coverage=built.text_coverage,
     )
 
 
@@ -469,7 +491,10 @@ def run_pipeline(request: RunRequest, console: Console) -> RunSummary:
 
         console.stage("Reading sources")
         built = corpus.build_corpus(
-            request.input_dir, mapping=request.mapping, max_artifacts=request.max_artifacts
+            request.input_dir,
+            mapping=request.mapping,
+            max_artifacts=request.max_artifacts,
+            text_sidecar=request.text_sidecar,
         )
         manifest_corpus = built.manifest_corpus()
         for message in built.warnings:
@@ -488,6 +513,7 @@ def run_pipeline(request: RunRequest, console: Console) -> RunSummary:
                 dropped_count=len(built.dropped),
                 caps_hit=tuple(manifest_corpus["caps_hit"]),
                 warnings=tuple(warned),
+                text_coverage=built.text_coverage,
             )
 
         with StagedRun(request.out_dir) as staged:

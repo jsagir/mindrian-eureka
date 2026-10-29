@@ -119,6 +119,14 @@ def register_commands(subparsers: argparse._SubParsersAction[argparse.ArgumentPa
     )
     run.add_argument("--mapping", metavar="FILE", help="JSON file that maps CSV columns")
     run.add_argument(
+        "--text-sidecar",
+        metavar="FILE",
+        help=(
+            "CSV or JSON file keyed by the record id. "
+            "It adds text to records whose own text is thin."
+        ),
+    )
+    run.add_argument(
         "--id-column",
         metavar="C",
         help=(
@@ -232,6 +240,11 @@ def build_run_request(args: argparse.Namespace, argv: Sequence[str] = ()) -> Run
             "Use either --mapping or the column flags, not both.",
             fix="Remove --mapping, or remove the column flags and --delimiter.",
         )
+    if args.text_sidecar and not args.mapping:
+        raise UsageError(
+            "A text side-car needs a CSV mapping with an id column",
+            fix="Give --mapping with id_column",
+        )
     mapping: MappingConfig | None
     if args.mapping:
         mapping = load_mapping_file(Path(args.mapping).expanduser())
@@ -247,6 +260,7 @@ def build_run_request(args: argparse.Namespace, argv: Sequence[str] = ()) -> Run
         input_dir=Path(args.folder).expanduser().resolve(),
         out_dir=Path(args.out).expanduser().resolve(),
         mapping=mapping,
+        text_sidecar=Path(args.text_sidecar).expanduser() if args.text_sidecar else None,
         model_path=args.model_path.expanduser() if args.model_path else None,
         max_artifacts=args.max_artifacts,
         top_k=args.top_k,

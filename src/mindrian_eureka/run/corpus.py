@@ -75,6 +75,27 @@ class InputFile:
 
 
 @dataclass(frozen=True)
+class TextSidecar:
+    """A side-car file of text keyed by the raw record id.
+
+    Attributes:
+        entries: The text of each id. Ids and texts are normalized.
+        sha256: The sha256 of the raw file bytes.
+        bytes: The size of the file in bytes.
+        records: The number of entries kept.
+        id_header: The name of the id column, or `id` for a JSON object.
+        skipped: The number of rows with a blank id or a blank text.
+    """
+
+    entries: Mapping[str, str]
+    sha256: str
+    bytes: int
+    records: int
+    id_header: str
+    skipped: int
+
+
+@dataclass(frozen=True)
 class Dropped:
     """One record that was dropped before ranking.
 
@@ -125,6 +146,9 @@ class Corpus:
         folder_digest: The sha256 over the path and sha256 of every input file.
         mapping_sha256: The sha256 of the mapping that was used, or None.
         outcome_classes: The record count of each outcome class, or None without a rule.
+        text_coverage: The 4 text coverage counts (`records_total`, `own_text_ok`,
+            `filled_from_sidecar`, `still_thin`), or None without a text side-car.
+        text_sidecar: The side-car hash, size and match counts, or None without one.
     """
 
     records: tuple[Record, ...]
@@ -137,10 +161,12 @@ class Corpus:
     folder_digest: str
     mapping_sha256: str | None
     outcome_classes: Mapping[str, int] | None = None
+    text_coverage: Mapping[str, int] | None = None
+    text_sidecar: Mapping[str, Any] | None = None
 
     def manifest_inputs(self) -> dict[str, Any]:
         """Return the input section of the manifest as JSON-ready data."""
-        return {
+        data: dict[str, Any] = {
             "files": [
                 {"path": item.path, "bytes": item.bytes, "sha256": item.sha256}
                 for item in self.input_files
@@ -148,6 +174,9 @@ class Corpus:
             "mapping_sha256": self.mapping_sha256,
             "folder_digest": self.folder_digest,
         }
+        if self.text_sidecar is not None:
+            data["text_sidecar"] = dict(self.text_sidecar)
+        return data
 
     def manifest_corpus(self) -> dict[str, Any]:
         """Return the corpus section of the manifest as JSON-ready data."""
@@ -173,12 +202,19 @@ class Corpus:
         }
         if self.outcome_classes is not None:
             data["outcome_classes"] = dict(self.outcome_classes)
+        if self.text_coverage is not None:
+            data["text_coverage"] = dict(self.text_coverage)
         return data
 
 
 @dataclass(frozen=True)
 class _Candidate:
-    """A record before drops, caps and checks."""
+    """A record before drops, caps and checks.
+
+    `raw_id` is the id cell of a CSV row before the file-stem prefix and before
+    sanitizing. It is empty for Markdown records and for hash ids. The text side-car
+    joins on it.
+    """
 
     id: str
     title: str
@@ -188,6 +224,8 @@ class _Candidate:
     where: str
     outcome_class: str | None = None
     extras: Mapping[str, str] = field(default_factory=dict)
+    raw_id: str = ""
+    text_source: str | None = None
 
 
 # --- Discovery --------------------------------------------------------------
@@ -197,9 +235,16 @@ def _is_hidden(name: str) -> bool:
     return name.startswith(".") or name in _SKIP_DIR_NAMES
 
 
-def _discover(root: Path, warnings: list[str]) -> list[tuple[str, Path]]:
-    """Return (relative posix path, readable path) for every Markdown and CSV file."""
+def _discover(
+    root: Path, warnings: list[str], *, exclude: Path | None = None
+) -> list[tuple[str, Path]]:
+    """Return (relative posix path, readable path) for every Markdown and CSV file.
+
+    An entry whose resolved path equals `exclude` (the text side-car) is skipped
+    without a warning. The side-car is read once by its own loader, never as input.
+    """
     resolved_root = root.resolve()
+    excluded = exclude.resolve() if exclude is not None else None
     found: list[tuple[str, Path]] = []
 
     def walk(folder: Path) -> None:
@@ -214,6 +259,8 @@ def _discover(root: Path, warnings: list[str]) -> list[tuple[str, Path]]:
             if _is_hidden(entry.name):
                 continue
             rel = entry.relative_to(root).as_posix()
+            if excluded is not None and not entry.is_dir() and entry.resolve() == excluded:
+                continue
             if entry.is_symlink():
                 if entry.is_dir():
                     warnings.append(f"Skipped the folder link {rel}. It is not followed.")
@@ -266,6 +313,132 @@ def _read_file(rel: str, path: Path) -> tuple[bytes, str]:
             f"The file {rel} is not valid UTF-8 text", fix="Save the file as UTF-8"
         ) from exc
     return raw, text
+
+
+# --- Text side-car ----------------------------------------------------------
+
+_SIDECAR_TEXT_COLUMN = "text"
+_SIDECAR_SUFFIXES = (".csv", ".json")
+
+
+def _sidecar_csv_pairs(rel: str, text: str) -> tuple[str, list[tuple[str, str]]]:
+    """Return the id header and the (id, text) cells of a side-car CSV."""
+    old_limit = csv.field_size_limit()
+    csv.field_size_limit(MAX_RECORD_CHARS)
+    pairs: list[tuple[str, str]] = []
+    try:
+        reader = csv.DictReader(io.StringIO(text, newline=""), restval="")
+        try:
+            headers = list(reader.fieldnames or [])
+            if not headers:
+                raise UsageError(
+                    f"The side-car file {rel} is empty",
+                    fix=(
+                        "Add a header row with the id column first and a "
+                        f"{_SIDECAR_TEXT_COLUMN} column"
+                    ),
+                )
+            if _SIDECAR_TEXT_COLUMN not in headers or headers[0] == _SIDECAR_TEXT_COLUMN:
+                raise UsageError(
+                    f"The side-car file {rel} needs the id in the first column and a column "
+                    f"named {_SIDECAR_TEXT_COLUMN}. Headers found: {', '.join(headers)}",
+                    fix=f"Put the id column first and name the text column {_SIDECAR_TEXT_COLUMN}",
+                )
+            id_header = headers[0]
+            for row in reader:
+                key = row.get(id_header)
+                value = row.get(_SIDECAR_TEXT_COLUMN)
+                pairs.append(
+                    (key if isinstance(key, str) else "", value if isinstance(value, str) else "")
+                )
+        except csv.Error as exc:
+            raise RunError(
+                f"The side-car file {rel} cannot be read at line {reader.line_num}: {exc}",
+                fix="Check the delimiter and the quotes, or a cell above the size limit",
+            ) from exc
+    finally:
+        csv.field_size_limit(old_limit)
+    return id_header, pairs
+
+
+def _sidecar_json_pairs(rel: str, text: str) -> tuple[str, list[tuple[str, str]]]:
+    """Return the id header and the (id, text) items of a side-car JSON object."""
+    try:
+        document = json.loads(text)
+    except ValueError as exc:
+        raise UsageError(
+            f"The side-car file {rel} is not valid JSON", fix="Save one JSON object of id to text"
+        ) from exc
+    if not isinstance(document, dict) or not all(
+        isinstance(value, str) for value in document.values()
+    ):
+        raise UsageError(
+            f"The side-car file {rel} must hold one JSON object of id string to text string",
+            fix='Write the file as {"<id>": "<text>", ...}',
+        )
+    return "id", list(document.items())
+
+
+def load_text_sidecar(path: Path) -> TextSidecar:
+    """Read a side-car file of text keyed by the raw record id.
+
+    A `.csv` file gives the id in its first column and the text in the column named
+    `text`. A `.json` file holds one object of id string to text string. Ids and texts
+    are normalized. A row with a blank id or a blank text is skipped and counted.
+    Messages carry the file name, header names and counts, never an id or a text.
+
+    Args:
+        path: The side-car file. It is only read.
+
+    Returns:
+        The entries, the file hash and size, and the counts.
+
+    Raises:
+        UsageError: A suffix other than .csv or .json, a CSV without a `text` column,
+            or a JSON document that is not an object of strings.
+        RunError: A duplicate id, a size limit or a file that cannot be read.
+    """
+    rel = path.name
+    suffix = path.suffix.lower()
+    if suffix not in _SIDECAR_SUFFIXES:
+        raise UsageError(
+            f"The side-car file {rel} is not a .csv or .json file",
+            fix=(
+                "Give a CSV with the id in the first column and a text column, "
+                "or a JSON object of id to text"
+            ),
+        )
+    raw, text = _read_file(rel, path)
+    if suffix == ".csv":
+        id_header, pairs = _sidecar_csv_pairs(rel, text)
+    else:
+        id_header, pairs = _sidecar_json_pairs(rel, text)
+    entries: dict[str, str] = {}
+    duplicates = 0
+    skipped = 0
+    for raw_key, raw_value in pairs:
+        key = normalize_text(raw_key)
+        value = normalize_text(raw_value)
+        if not key or not value:
+            skipped += 1
+            continue
+        if key in entries:
+            duplicates += 1
+            continue
+        entries[key] = value
+    if duplicates:
+        raise RunError(
+            f"The side-car file {rel} repeats {duplicates} id(s)",
+            fix="Keep one row for each id",
+        )
+    return TextSidecar(
+        entries=entries,
+        sha256=sha256_bytes(raw),
+        bytes=len(raw),
+        records=len(entries),
+        id_header=id_header,
+        skipped=skipped,
+    )
 
 
 # --- Markdown ---------------------------------------------------------------
@@ -484,6 +657,7 @@ def _read_csv(
                             fix="Use an id with letters, digits, underscore, dot or hyphen",
                         )
                 else:
+                    raw_id = ""
                     id_part = "h" + sha256_text(unicodedata.normalize("NFC", body))[:12]
                 title = (
                     clean(entry.title_column, cell(row, entry.title_column))
@@ -514,6 +688,7 @@ def _read_csv(
                         where=where,
                         outcome_class=outcome_class,
                         extras=extras,
+                        raw_id=raw_id,
                     )
                 )
         except csv.Error as exc:
@@ -616,6 +791,7 @@ def build_corpus(
     *,
     mapping: MappingConfig | None,
     max_artifacts: int = MAX_ARTIFACTS,
+    text_sidecar: Path | None = None,
 ) -> Corpus:
     """Build the clean corpus from an input folder.
 
@@ -623,17 +799,22 @@ def build_corpus(
         input_dir: The folder with Markdown and CSV files. It is only read.
         mapping: The CSV mapping, or None when the input holds no CSV file.
         max_artifacts: The most records to keep. The first ids in sorted order win.
+        text_sidecar: A side-car file keyed by the raw record id, or None. Its text is
+            added after the own text of a record whose body is under the thin-text
+            limit. It is never read as an input file, even inside the input folder.
 
     Returns:
         The corpus with records sorted by id, the report and the digests.
 
     Raises:
-        UsageError: A bad argument, an empty folder or a CSV without a mapping.
+        UsageError: A bad argument, an empty folder, a CSV without a mapping or a
+            side-car in an unknown format.
         RunError: A duplicate id, a size limit, a bad file or too few records.
     """
     _check_arguments(input_dir, max_artifacts)
     warnings: list[str] = []
-    discovered = _discover(input_dir, warnings)
+    sidecar = load_text_sidecar(text_sidecar) if text_sidecar is not None else None
+    discovered = _discover(input_dir, warnings, exclude=text_sidecar)
     if not discovered:
         raise UsageError(
             f"The input folder {input_dir.name} holds no .md or .csv file",
@@ -655,18 +836,51 @@ def build_corpus(
 
     usable: list[_Candidate] = []
     dropped: list[Dropped] = []
+    coverage: dict[str, int] = {
+        "records_total": 0,
+        "own_text_ok": 0,
+        "filled_from_sidecar": 0,
+        "still_thin": 0,
+    }
+    matched: set[str] = set()
     for candidate in sorted(candidates, key=lambda item: item.id):
+        coverage["records_total"] += 1
+        thin_before = len(candidate.text) < MIN_BODY_CHARS
+        if sidecar is not None and candidate.raw_id and candidate.raw_id in sidecar.entries:
+            matched.add(candidate.raw_id)
+            if thin_before:
+                extra = sidecar.entries[candidate.raw_id]
+                joined = f"{candidate.text}\n\n{extra}".strip() if candidate.text else extra
+                candidate = replace(candidate, text=joined, text_source="sidecar")
         if len(candidate.text) < MIN_BODY_CHARS:
+            coverage["still_thin"] += 1
             dropped.append(
                 Dropped(candidate.id, f"body_under_{MIN_BODY_CHARS}_chars", candidate.source_file)
             )
         else:
+            coverage["filled_from_sidecar" if thin_before else "own_text_ok"] += 1
             usable.append(candidate)
     if dropped:
         warnings.append(
             f"Dropped {len(dropped)} record(s) with a body under {MIN_BODY_CHARS} characters. "
             "The ids are listed in the manifest."
         )
+    text_coverage: dict[str, int] | None = None
+    sidecar_report: dict[str, Any] | None = None
+    if sidecar is not None:
+        text_coverage = coverage
+        unmatched = sidecar.records - len(matched)
+        sidecar_report = {
+            "sha256": sidecar.sha256,
+            "bytes": sidecar.bytes,
+            "records": sidecar.records,
+            "matched": len(matched),
+            "unmatched": unmatched,
+        }
+        if not any(item.raw_id for item in candidates):
+            warnings.append("The side-car matched no record. The input holds no CSV record id.")
+        elif unmatched > 0:
+            warnings.append(f"{unmatched} side-car id(s) matched no record.")
     with_class = sum(1 for item in usable if item.outcome_class is not None)
     if 0 < with_class < len(usable):
         warnings.append(
@@ -717,6 +931,7 @@ def build_corpus(
             text_sha256=sha256_text(item.text),
             outcome_class=item.outcome_class,
             extras=dict(item.extras),
+            text_source=item.text_source,
         )
         for item in kept
     )
@@ -752,4 +967,6 @@ def build_corpus(
         folder_digest=folder_digest,
         mapping_sha256=mapping.sha256 if mapping is not None else None,
         outcome_classes=outcome_classes,
+        text_coverage=text_coverage,
+        text_sidecar=sidecar_report,
     )
