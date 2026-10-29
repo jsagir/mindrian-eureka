@@ -35,6 +35,8 @@ from mindrian_eureka import __version__, models
 from mindrian_eureka.run.contracts import LABEL
 from mindrian_eureka.run.manifest import sha256_file
 
+from . import launchers
+
 MANIFEST_SCHEMA = "eureka.partner-bundle.v1"
 MANIFEST_NAME = "BUNDLE-MANIFEST.json"
 BUNDLE_PREFIX = "eureka-partner-bundle-"
@@ -504,21 +506,37 @@ def _write_files(options: BundleOptions, bundle: Path) -> None:
     mappings = repo / "examples" / "mappings"
     shutil.copyfile(mappings / MAPPING_FILE, bundle / "mapping" / MAPPING_FILE)
     (bundle / "sidecar").mkdir()
-    shutil.copyfile(
-        repo / "examples" / "mappings" / SIDECAR_EXAMPLE, bundle / "sidecar" / SIDECAR_EXAMPLE
-    )
+    shutil.copyfile(mappings / SIDECAR_EXAMPLE, bundle / "sidecar" / SIDECAR_EXAMPLE)
+    (bundle / "sidecar" / "README.md").write_text(launchers.SIDECAR_README, encoding="utf-8")
     (bundle / "docs").mkdir()
     shutil.copyfile(repo / "docs" / GUIDE_FILE, bundle / "docs" / GUIDE_FILE)
 
 
+def _write_text(path: Path, text: str, *, executable: bool) -> None:
+    filled = text.replace("@PYTHON_SERIES@", launchers.PYTHON_SERIES)
+    path.write_text(filled, encoding="utf-8", newline="\n")
+    if executable:
+        path.chmod(0o755)
+
+
+def _write_launchers(bundle: Path) -> None:
+    _write_text(bundle / "start.sh", launchers.START_SH, executable=True)
+    _write_text(bundle / "start.ps1", launchers.START_PS1, executable=False)
+
+
 def _write_docker(options: BundleOptions, bundle: Path) -> str:
-    """Save the local image into the bundle. ASSUMED: docker is absent on this machine."""
+    """Save the local image and write the docker launcher pair.
+
+    ASSUMED: docker is absent on this machine, so this step was not run here.
+    """
     image = os.environ.get("MINDRIAN_EUREKA_IMAGE", DEFAULT_IMAGE)
     _run(["docker", "image", "inspect", image], what=f"docker image inspect {image}")
     _run(
         ["docker", "save", image, "-o", str(bundle / "eureka-image.tar")],
         what=f"docker save {image}",
     )
+    _write_text(bundle / "start-docker.sh", launchers.START_DOCKER_SH, executable=True)
+    _write_text(bundle / "start-docker.ps1", launchers.START_DOCKER_PS1, executable=False)
     return image
 
 
@@ -593,6 +611,7 @@ def build_bundle(options: BundleOptions) -> BundleReport:
     model = _write_model(options, bundle)
     python = _write_python(options, bundle)
     _write_files(options, bundle)
+    _write_launchers(bundle)
     docker_image: str | None = None
     if options.docker:
         docker_image = _write_docker(options, bundle)
