@@ -12,6 +12,10 @@ reopen_when:
   - G3
   - G5
 evidence_checked_on: 2026-10-23
+partner_internal_decision: approve
+partner_internal_scope: partner-internal distribution of the engine package to JHTV, on its own machine and for its own staff, not public, not redistributable
+partner_internal_decided_on: 2026-10-29
+partner_internal_decided_by: Jonathan Sagir (owner)
 ---
 
 # Release gate for the unusual-pairs engine source
@@ -93,3 +97,7 @@ To move to go, the owner needs: G1, G2, G3 and G5 closed, and condition C1 done.
 - Phases 2 and 3 proceed on a no-go.
 - Phase 4 ships the unusual-pairs example and guide as internal only on a no-go, and records the reason.
 - The decision gates public shipping in Phase 4 only.
+
+## 9. Partner-internal distribution ruling (2026-10-29)
+
+PROVEN (the owner's ruling, given in conversation on 2026-10-29): the owner approved partner-internal distribution of the engine package to JHTV on 2026-10-29. The scope is that partner's own machine and its own staff. The package is not public and not redistributable. Public distribution stays no-go, and the fields `decision`, `status` and `reopen_when` above are unchanged. G1, G2, G3 and G5 stay open. This ruling closes no gap. The partner guide is `docs/partner-run-guide.md`. The 4 front-matter keys that start with `partner_internal_` record this ruling, and `tests/test_release_gate_record.py` pins them.
