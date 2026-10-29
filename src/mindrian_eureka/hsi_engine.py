@@ -70,7 +70,11 @@ def run_hsi(document: dict[str, Any]) -> dict[str, Any]:
     texts = [row["text"] for row in normalized]
     lsa = reference.compute_lsa_similarity(texts, seed=42)
     bm25 = reference.compute_bm25_similarity(texts)
-    lexical = lsa if lexical_mode == "lsa" else bm25 if lexical_mode == "bm25" else 0.5 * (lsa + bm25)
+    lexical_fusion = "equal_spread_average" if lexical_mode == "hybrid" else "none"
+    if lexical_mode == "hybrid":
+        lexical = reference.fuse_lexical_hybrid(lsa, bm25)
+    else:
+        lexical = lsa if lexical_mode == "lsa" else bm25
     semantic_method = None
     dense = document.get("dense_vectors")
     encoder = None
@@ -99,6 +103,8 @@ def run_hsi(document: dict[str, Any]) -> dict[str, Any]:
             # Explicitly degraded; this compares two lexical representations.
             semantic = bm25
             lexical = lsa
+            # No fusion happens in the proxy: the lexical leg is LSA alone.
+            lexical_fusion = "none"
             semantic_method = "lexical-only-bm25-proxy"
 
     computed_at = datetime.now(timezone.utc).isoformat()
@@ -113,6 +119,7 @@ def run_hsi(document: dict[str, Any]) -> dict[str, Any]:
         "scope": {"scope_id": document.get("scope_id"), "snapshot_id": document.get("snapshot_id")},
         "metadata": {"artifact_count": len(normalized), "pair_count": len(normalized) * (len(normalized) - 1) // 2,
                      "reported_pair_count": len(pairs), "lexical_method": lexical_mode, "semantic_method": semantic_method,
+                     "lexical_fusion": lexical_fusion,
                      "ranking": ranking, "spectral_profiles": spectral, "generated_at": computed_at},
         "artifacts": [{"id": row["id"], "title": row["title"], "source_ref": row["path"], "content_hash": row["content_hash"]} for row in normalized],
         "hsi_pairs": pairs,

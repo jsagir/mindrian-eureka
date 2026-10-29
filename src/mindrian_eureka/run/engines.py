@@ -45,7 +45,9 @@ if TYPE_CHECKING:
 Encode = Callable[[list[str]], "NDArray[np.float64]"]
 Progress = Callable[[str], None]
 
-RECORDED_PARAMS_HASH = "7affae3c94c6bed9"
+# quick 261029-bfm: the settings dict gained "lexical_fusion", so the fingerprint moved from
+# 7affae3c94c6bed9. The frozen hub fixture manifest keeps the old value as the record of that run.
+RECORDED_PARAMS_HASH = "bea4c100c2013300"
 TIE_BREAK = "stable descending top-7 term sort (lower term index first on equal values)"
 REFERENCE_FILE_NAME = "hsi_reference.py"
 WORDING_NOTE_PREFIX = "Wording-and-meaning engine: "
@@ -100,7 +102,7 @@ class WordingSettings:
         top_k: The number of pairs the engine returns at most.
         tier: The embedding tier. Tier 1 is the local model.
         ranking: The ranking mode.
-        lexical: The wording signal. "hybrid" is the mean of two measures.
+        lexical: The wording signal. "hybrid" is the equal-spread mean of two measures.
         min_percentile: The percentile gate for pairs.
         confirm_percentile: The percentile at which the second signal confirms.
         chunk_words: The words in one chunk of the meaning signal.
@@ -375,6 +377,7 @@ def wording_params(top_k: int) -> dict[str, Any]:
         "threshold": None,
         "ranking": settings.ranking,
         "lexical": settings.lexical,
+        "lexical_fusion": "equal_spread_average" if settings.lexical == "hybrid" else "none",
         "top_k": settings.top_k,
         "min_percentile": settings.min_percentile,
         "confirm_percentile": settings.confirm_percentile,
@@ -418,7 +421,7 @@ def run_wording_and_meaning(
     """Run the wording-and-meaning engine as the recorded rebuild.
 
     The calls follow the order of `hsi_reference.main`: wording by LSA, wording by
-    BM25, the mean of both, the meaning signal in 200-word chunks, then the ranking.
+    BM25, the equal-spread mean of both, the meaning signal in 200-word chunks, then the ranking.
 
     Args:
         records: The clean records, in the order both engines must see.
@@ -459,7 +462,7 @@ def run_wording_and_meaning(
     ]
     lsa = _call_captured(progress, reference.compute_lsa_similarity, texts, seed=settings.seed)
     bm25 = _call_captured(progress, reference.compute_bm25_similarity, texts)
-    lexical = 0.5 * (lsa + bm25)
+    lexical = reference.fuse_lexical_hybrid(lsa, bm25)
     semantic = _call_captured(
         progress,
         reference.compute_semantic_similarity_tier1,

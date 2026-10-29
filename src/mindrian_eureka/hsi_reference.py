@@ -11,7 +11,7 @@ arxiv 2207.02296): the spectral gap of the thinking-mode Markov chain measures
 integrative thinking quality.
 
 2026 revision (schema_version 2.0, every pre-existing output key is kept):
-  - Lexical leg is a hybrid by default: mean of LSA (TF-IDF + seeded SVD) and
+  - Lexical leg is a hybrid by default: equal-spread mean of LSA (TF-IDF + seeded SVD) and
     BM25. The LSA path stays available and bit-identical in intent via
     --lexical lsa. LSA no longer needs scikit-learn (numpy fallback).
   - Pairs are ranked by corpus percentile (empirical percentile and z-score of
@@ -331,6 +331,41 @@ def zscores(values):
     if not np.isfinite(sd) or sd < 1e-12:
         return np.zeros_like(v)
     return (v - float(v.mean())) / sd
+
+
+def fuse_lexical_hybrid(lsa_matrix, bm25_matrix):
+    """Equal-spread average of the two lexical similarity matrices.
+
+    Both legs are cosines in [0, 1], but their spreads differ per corpus, so the
+    raw average 0.5 * (lsa + bm25) gives the vote to the leg with the larger
+    spread. Here each leg is standardised over the pairs (upper triangle, k=1),
+    the two z-scores are averaged, and the result is mapped back to the pooled
+    mean and pooled spread of the two legs, so each leg holds half the vote.
+    The result is clipped to [0, 1], made symmetric, and its diagonal is 1.0.
+
+    Guard: with fewer than 3 pairs, or when either leg has a spread below
+    1e-12 (a constant matrix), the raw average 0.5 * (lsa + bm25) is returned
+    unchanged, because a z-score is undefined there. Pure numpy, float64, no
+    randomness, no seed.
+    """
+    lsa = np.asarray(lsa_matrix, dtype=np.float64)
+    bm25 = np.asarray(bm25_matrix, dtype=np.float64)
+    raw = 0.5 * (lsa + bm25)
+    if lsa.ndim != 2 or lsa.shape[0] != lsa.shape[1]:
+        return raw
+    iu, ju = np.triu_indices(lsa.shape[0], k=1)
+    if iu.size < 3:
+        return raw
+    pairs_l, pairs_b = lsa[iu, ju], bm25[iu, ju]
+    mean_l, std_l = float(pairs_l.mean()), float(pairs_l.std())
+    mean_b, std_b = float(pairs_b.mean()), float(pairs_b.std())
+    if not np.isfinite([std_l, std_b]).all() or std_l < 1e-12 or std_b < 1e-12:
+        return raw
+    z = ((lsa - mean_l) / std_l + (bm25 - mean_b) / std_b) / 2.0
+    out = (mean_l + mean_b) / 2.0 + (std_l + std_b) / 2.0 * z
+    out = np.clip(0.5 * (out + out.T), 0.0, 1.0)
+    np.fill_diagonal(out, 1.0)
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -1204,7 +1239,8 @@ def build_arg_parser():
     parser.add_argument('--output', default=None,
                         help='Output JSON path (default: {room_dir}/.hsi-results.json)')
     parser.add_argument('--lexical', choices=['hybrid', 'lsa', 'bm25'], default='hybrid',
-                        help='Lexical leg: hybrid = mean(LSA, BM25) (default), lsa = the original '
+                        help='Lexical leg: hybrid = equal-spread mean of LSA and BM25 (default), '
+                             'lsa = the original '
                              'LSA-only behaviour, bm25 = BM25 only')
     parser.add_argument('--ranking', choices=['percentile', 'legacy'], default='percentile',
                         help='percentile (default): corpus-percentile ranking, no fixed cutoff. '
@@ -1303,6 +1339,7 @@ def main(argv=None):
             dense_sig = [args.dense_vectors, None, None]
     params = {
         'tier': args.tier, 'threshold': threshold, 'ranking': ranking, 'lexical': args.lexical,
+        'lexical_fusion': 'equal_spread_average' if args.lexical == 'hybrid' else 'none',
         'top_k': args.top_k, 'min_percentile': args.min_percentile,
         'confirm_percentile': args.confirm_percentile, 'claim_level': args.claim_level,
         'dense_vectors': dense_sig, 'model': args.model, 'seed': args.seed,
@@ -1327,7 +1364,7 @@ def main(argv=None):
     elif args.lexical == 'bm25':
         lexical_matrix = bm25_matrix
     else:
-        lexical_matrix = 0.5 * (lsa_matrix + bm25_matrix)
+        lexical_matrix = fuse_lexical_hybrid(lsa_matrix, bm25_matrix)
 
     # Step 4: dense (semantic) leg
     tier_used = args.tier

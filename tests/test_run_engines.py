@@ -358,13 +358,15 @@ def _fields(pairs: Any) -> list[tuple[Any, ...]]:
 
 
 def test_wording_params_hash_equals_the_recorded_rebuild() -> None:
-    assert engines.RECORDED_PARAMS_HASH == "7affae3c94c6bed9"
+    # quick 261029-bfm: the settings dict gained lexical_fusion; the frozen hub manifest
+    # keeps 7affae3c94c6bed9.
+    assert engines.RECORDED_PARAMS_HASH == "bea4c100c2013300"
     assert engines.wording_params_hash(200) == engines.RECORDED_PARAMS_HASH
 
 
 def test_wording_params_hash_matches_other_recorded_values() -> None:
-    assert engines.wording_params_hash(20).startswith("5b4b370a")
-    assert engines.wording_params_hash(100).startswith("0b2948b9")
+    assert engines.wording_params_hash(20).startswith("9412dcb5")
+    assert engines.wording_params_hash(100).startswith("9d8cd3b4")
 
 
 def test_wording_params_has_the_recorded_settings() -> None:
@@ -373,6 +375,7 @@ def test_wording_params_has_the_recorded_settings() -> None:
     assert params["threshold"] is None
     assert params["ranking"] == "percentile"
     assert params["lexical"] == "hybrid"
+    assert params["lexical_fusion"] == "equal_spread_average"
     assert params["top_k"] == 200
     assert params["min_percentile"] == 0.0
     assert params["confirm_percentile"] == 0.75
@@ -438,8 +441,9 @@ def test_wording_call_order_and_arguments(monkeypatch: pytest.MonkeyPatch) -> No
     assert matrix_kwargs["min_percentile"] == 0.0
     assert matrix_kwargs["confirm_percentile"] == 0.75
     assert matrix_kwargs["computed_at"] == "1970-01-01T00:00:00+00:00"
-    expected_lexical = 0.5 * (
-        returned["compute_lsa_similarity"] + returned["compute_bm25_similarity"]
+    # The facade fuses by equal spread (quick 261029-bfm), not by the raw average.
+    expected_lexical = reference.fuse_lexical_hybrid(
+        returned["compute_lsa_similarity"], returned["compute_bm25_similarity"]
     )
     assert np.allclose(matrix_kwargs["lexical_matrix"], expected_lexical)
     assert matrix_kwargs["bm25_matrix"] is returned["compute_bm25_similarity"]
