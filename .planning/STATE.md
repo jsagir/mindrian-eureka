@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-10-23)
 
 ## Current Position
 
-Phase: 2.1 (Opportunity Hub in the mos-brand format) - AWAITING OWNER REVIEW
-Plan: 17 of 19
-Status: Implementation complete; visual verification pending the owner.
-Last activity: 2026-10-29 -- Completed quick task 261029-bfm: Equal-spread lexical fusion so LSA and BM25 each hold half the vote
+Phase: 2.2 (Partner export profile and package) - VERIFIED, HUMAN ITEMS OPEN
+Plan: 4 of 4 complete (02.2-VERIFICATION.md: human_needed, 8/8 must-haves)
+Status: Implementation complete. Open for the owner: the visual pass of the hub chips and class filter; the brand-lock reconciliation (`refresh --apply` then `asset --replace` in the book); the online build of the linux-x86_64, windows-x86_64 and macos-arm64 bundles to prove the ASSUMED steps. Phase 2.1 visual review (plan 17) stays open. Phase 2.3 (room seed hand-off) has its context and waits for planning.
+Last activity: 2026-10-29 -- Completed Phase 2.2 execution (4 plans, 3 waves) and verification
 
 Progress: [██████████] 97%
 
