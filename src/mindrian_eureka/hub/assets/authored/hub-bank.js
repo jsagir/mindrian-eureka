@@ -9,10 +9,23 @@
   let list;
   let status;
   let radios = [];
+  let classRadios = [];
   let weak = null;
+  const classKeys = ["all", "cross", "open_open", "licensed_licensed"];
 
   function text(tag, key, values, attrs) {
     return HubApp.el(tag, attrs || {}, HubApp.fmt(key, values));
+  }
+  // The carried outcome cells of one record as ink-on-paper chips (Phase 2.2, D-03).
+  // Blank cells are skipped; keys are sorted; text nodes only.
+  function extrasRow(side, extras) {
+    const keys = Object.keys(extras || {}).filter(function (key) { return extras[key] !== ""; }).sort();
+    if (!keys.length) return null;
+    const chips = keys.map(function (key) {
+      return HubApp.el("span", { class: "hub-chip hub-bank-extra" }, key + ": " + extras[key]);
+    });
+    return HubApp.el("div", { class: "hub-bank-labels hub-bank-extras" },
+      [HubApp.el("span", { class: "hub-chip hub-bank-extra-id" }, side.id)].concat(chips));
   }
   function selection() {
     if (!list) return;
@@ -42,6 +55,9 @@
       HubApp.el("span", { class: "hub-chip hub-bank-status" }, pair.label)
     ]);
     if (pair.weak) role.appendChild(text("span", "P06.hidden", {}, { class: "hub-hidden-label" }));
+    if (pair.pair_class) {
+      role.appendChild(HubApp.el("span", { class: "hub-chip hub-bank-class" }, HubApp.fmt("P10." + pair.pair_class)));
+    }
     const records = HubApp.el("div", { class: "hub-bank-records" });
     [pair.left, pair.right].forEach(function (side) {
       records.appendChild(HubApp.el("div", { class: "hub-bank-record" }, [
@@ -69,16 +85,21 @@
     button.addEventListener("click", function () { HubApp.select({ type: "pair", key: pair.key }, button); });
     // Reading order stays rank, words/status, source records, scores, reading, action.
     // CSS places these fields in the prescribed responsive grid without focus reordering.
-    [rank, role, records, scores, reading, button].forEach(function (part) { item.appendChild(part); });
+    const extrasRows = [extrasRow(pair.left, pair.left_extras), extrasRow(pair.right, pair.right_extras)];
+    [rank, role].concat(extrasRows).concat([records, scores, reading, button]).forEach(function (part) {
+      if (part) item.appendChild(part);
+    });
     return item;
   }
   function update() {
     if (!list || !HubApp.data) return;
     const filter = HubApp.state.filters;
     radios.forEach(function (radio) { radio.checked = radio.value === filter.engine; });
+    classRadios.forEach(function (radio) { radio.checked = radio.value === filter.pairClass; });
     if (weak) weak.checked = Boolean(filter.weak);
     const pairs = HubApp.data.pairs.filter(function (pair) {
-      return (filter.engine === "both" || pair.engine === filter.engine) && (!pair.weak || filter.weak);
+      return (filter.engine === "both" || pair.engine === filter.engine) && (!pair.weak || filter.weak)
+        && (filter.pairClass === "all" || pair.pair_class === filter.pairClass);
     }).sort(function (a, b) {
       return a.rank - b.rank || engines.indexOf(a.engine) - engines.indexOf(b.engine)
         || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
@@ -160,6 +181,20 @@
     });
     controls.appendChild(about);
     controls.appendChild(filters);
+    classRadios = [];
+    if (HubApp.data.has_pair_classes === true) {
+      const classes = HubApp.el("fieldset", { class: "hub-bank-engines hub-bank-classes" },
+        text("legend", "B15.legend"));
+      classKeys.forEach(function (key) {
+        const input = HubApp.el("input", {
+          type: "radio", id: "bank-class-" + key, name: "bank-class", value: key
+        });
+        input.addEventListener("change", function () { if (input.checked) HubApp.setFilter("pairClass", key); });
+        classRadios.push(input);
+        classes.appendChild(HubApp.el("label", { for: input.id }, [input, text("span", "B15." + key)]));
+      });
+      controls.appendChild(classes);
+    }
     controls.appendChild(cutoffs());
     weak = null;
     if (HubApp.data.counts.weak_pairs > 0) {

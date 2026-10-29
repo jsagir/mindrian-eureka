@@ -123,6 +123,11 @@ DECK: dict[str, str] = {
     "B13.body": "Show both engines, or show weaker pairs.",
     "B13.button": "Show both engines",
     "B14": "The full list is in the file ranked-pairs.md in your run folder.",
+    "B15.legend": "Show pairs of class",
+    "B15.all": "All classes",
+    "B15.cross": "Open next to licensed",
+    "B15.open_open": "Both open",
+    "B15.licensed_licensed": "Both licensed",
     # --- 9.3 Connection graph -----------------------------------------------
     "Gr01": "Who sits next to whom, and where might the next lead be?",
     "Gr02": (
@@ -242,6 +247,9 @@ DECK: dict[str, str] = {
     "P08": "Neighborhood {k}, {n} records",
     "P09.identical": "Identical text to {ID}",
     "P09.no_text": "No text",
+    "P10.cross": "Open next to licensed",
+    "P10.open_open": "Both open",
+    "P10.licensed_licensed": "Both licensed",
     # --- 9.6 Data check -----------------------------------------------------
     "D01": "Data check",
     "D02.same": "Records with the same text as another record: {n}.",

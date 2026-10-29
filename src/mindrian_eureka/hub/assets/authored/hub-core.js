@@ -27,7 +27,7 @@
     copy: window.HUB_COPY || null,
     state: {
       view: "bank", selection: null,
-      filters: { engine: "both", weak: false, query: "", file: "all", inPair: "all" },
+      filters: { engine: "both", weak: false, query: "", file: "all", inPair: "all", pairClass: "all" },
       panelOpen: false
     },
     index: { records: new Map(), pairs: new Map(), hoods: new Map() },

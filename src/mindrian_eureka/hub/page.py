@@ -48,6 +48,8 @@ STYLE_ORDER = (
 # deck keys: G15.wording_and_meaning G15.wording_and_meaning.short
 # deck keys: Gr03.crossing Gr03.eureka Gr03.record Gr03.selected
 # deck keys: Gr03.unusual_pairs Gr03.wording_and_meaning P06.source
+# deck keys: B15.all B15.cross B15.licensed_licensed B15.open_open
+# deck keys: P10.cross P10.licensed_licensed P10.open_open
 
 SCRIPT_ORDER = (
     "hub-copy.js",
@@ -142,10 +144,25 @@ def _pair_row(pair: PayloadPair, records: Mapping[str, PayloadRecord]) -> str:
         _el("span", _copy("P06.proposed"), {"class": "hub-role hub-role-proposed"}),
         _el("span", _h(pair.get("label", "")), {"class": "hub-label"}),
     ]
+    if pair.get("pair_class"):
+        parts.append(
+            _el("span", _copy(f"P10.{pair['pair_class']}"), {"class": "hub-label hub-label-class"})
+        )
     for side in (pair["left"], pair["right"]):
         parts.append(
             _el("p", _source_anchor(side) + " " + _h(side["title"]), {"class": "hub-pair-record"})
         )
+    # Phase 2.2 (D-03): the carried outcome cells of each record, blank cells skipped.
+    sides = ((pair["left"], pair.get("left_extras")), (pair["right"], pair.get("right_extras")))
+    for side, extras in sides:
+        cells = [(key, value) for key, value in sorted((extras or {}).items()) if value != ""]
+        if not cells:
+            continue
+        chips = _el("span", _h(side["id"]), {"class": "hub-label"})
+        chips += "".join(
+            " " + _el("span", _h(f"{key}: {value}"), {"class": "hub-label"}) for key, value in cells
+        )
+        parts.append(_el("p", chips, {"class": "hub-pair-extras"}))
     scores = [
         _copy("B08.wording", x=pair["wording_text"]),
         _copy("B08.meaning", y=pair["meaning_text"]),
