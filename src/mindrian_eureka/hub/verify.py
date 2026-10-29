@@ -6,6 +6,7 @@ Import rule: the standard library and `.contracts` only. No numpy.
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from typing import NotRequired, get_origin, get_type_hints
 
 from ..run.contracts import LABEL
 from .contracts import (
@@ -27,9 +28,25 @@ from .contracts import (
 _BAD_LINK_PREFIXES = ("http:", "https:", "javascript:", "//")
 
 
-def _typed_dict_keys(shape: object) -> set[str]:
-    annotations = getattr(shape, "__annotations__", {})
-    return set(annotations) if isinstance(annotations, dict) else set()
+def _typed_dict_keys(shape: object) -> tuple[set[str], set[str]]:
+    """Return the required keys and the optional (`NotRequired`) keys of a TypedDict.
+
+    The contracts module keeps its annotations as strings, so `__optional_keys__` is
+    empty there; `get_type_hints` evaluates them and keeps the `NotRequired` wrapper.
+    """
+    try:
+        hints: Mapping[str, object] = get_type_hints(shape, include_extras=True)
+    except (NameError, TypeError):
+        annotations = getattr(shape, "__annotations__", {})
+        hints = annotations if isinstance(annotations, dict) else {}
+    required: set[str] = set()
+    optional: set[str] = set()
+    for key, hint in hints.items():
+        if get_origin(hint) is NotRequired:
+            optional.add(key)
+        else:
+            required.add(key)
+    return required, optional
 
 
 def _check_keys(
@@ -38,10 +55,10 @@ def _check_keys(
     if not isinstance(value, Mapping):
         problems.append(f"{path} is not an object with the required keys.")
         return None
-    expected = _typed_dict_keys(shape)
+    required, optional = _typed_dict_keys(shape)
     actual = set(value)
-    missing = sorted(expected - actual)
-    extra = sorted(actual - expected)
+    missing = sorted(required - actual)
+    extra = sorted(actual - required - optional)
     if missing or extra:
         details: list[str] = []
         if missing:

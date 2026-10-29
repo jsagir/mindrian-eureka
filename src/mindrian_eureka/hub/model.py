@@ -343,44 +343,51 @@ def build_payload(
         left = records_by_id[pair.left_id]
         right = records_by_id[pair.right_id]
         weak = _is_weak(pair, floors[pair.engine])
-        pairs.append(
-            {
-                "key": pair_key(pair),
-                "pair_id": pair.pair_id,
-                "engine": pair.engine,
-                "rank": pair.rank,
-                "left": {
-                    "id": left.id,
-                    "title": left.title,
-                    "source_file": left.source_file,
-                    "source_link": link_by_record[left.id],
-                },
-                "right": {
-                    "id": right.id,
-                    "title": right.title,
-                    "source_file": right.source_file,
-                    "source_link": link_by_record[right.id],
-                },
-                "wording": pair.wording,
-                "meaning": pair.meaning,
-                "rank_score": pair.rank_score,
-                "wording_text": score_text(pair.wording),
-                "meaning_text": score_text(pair.meaning),
-                "rank_score_text": score_text(pair.rank_score),
-                "percentile": pair.percentile,
-                "reading": pair.reading,
-                "label": LABEL,
-                "weak": weak,
-                "weight": 0.0 if weak else weights[pair_key(pair)],
-                "width": WIDTH_MIN if weak else widths[pair_key(pair)],
-                "crosses": (
-                    not weak
-                    and hood_by_record.get(pair.left_id) != hood_by_record.get(pair.right_id)
-                ),
-                "flag_identical": pair.left_id in identical_to or pair.right_id in identical_to,
-                "flag_no_text": pair.left_id in no_text_ids or pair.right_id in no_text_ids,
-            }
-        )
+        entry: PayloadPair = {
+            "key": pair_key(pair),
+            "pair_id": pair.pair_id,
+            "engine": pair.engine,
+            "rank": pair.rank,
+            "left": {
+                "id": left.id,
+                "title": left.title,
+                "source_file": left.source_file,
+                "source_link": link_by_record[left.id],
+            },
+            "right": {
+                "id": right.id,
+                "title": right.title,
+                "source_file": right.source_file,
+                "source_link": link_by_record[right.id],
+            },
+            "wording": pair.wording,
+            "meaning": pair.meaning,
+            "rank_score": pair.rank_score,
+            "wording_text": score_text(pair.wording),
+            "meaning_text": score_text(pair.meaning),
+            "rank_score_text": score_text(pair.rank_score),
+            "percentile": pair.percentile,
+            "reading": pair.reading,
+            "label": LABEL,
+            "weak": weak,
+            "weight": 0.0 if weak else weights[pair_key(pair)],
+            "width": WIDTH_MIN if weak else widths[pair_key(pair)],
+            "crosses": (
+                not weak
+                and hood_by_record.get(pair.left_id) != hood_by_record.get(pair.right_id)
+            ),
+            "flag_identical": pair.left_id in identical_to or pair.right_id in identical_to,
+            "flag_no_text": pair.left_id in no_text_ids or pair.right_id in no_text_ids,
+        }
+        # Phase 2.2 (D-02, D-03): the class and the carried cells are written only when
+        # the run has them, so a plain run keeps the same payload bytes.
+        if pair.pair_class is not None:
+            entry["pair_class"] = pair.pair_class
+        if pair.left_extras:
+            entry["left_extras"] = dict(pair.left_extras)
+        if pair.right_extras:
+            entry["right_extras"] = dict(pair.right_extras)
+        pairs.append(entry)
 
     removed_counts: dict[str, int] = {}
     for item in run.dropped:
@@ -417,7 +424,7 @@ def build_payload(
 
     visible_record_count = len(visible_ids)
     weak_count = sum(weak_by_engine.values())
-    return {
+    payload: Payload = {
         "schema": HUB_DATA_SCHEMA,
         "label": LABEL,
         "tool_version": run.tool_version,
@@ -452,3 +459,6 @@ def build_payload(
             "not_drawn": len(run.records) - visible_record_count,
         },
     }
+    if any(pair.pair_class is not None for pair in all_pairs):
+        payload["has_pair_classes"] = True
+    return payload

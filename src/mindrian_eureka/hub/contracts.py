@@ -12,10 +12,10 @@ from __future__ import annotations
 import json
 import re
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from types import MappingProxyType
-from typing import Any, TypedDict
+from typing import Any, NotRequired, TypedDict
 
 from ..run.contracts import Record
 from ..run.output import canonical_json
@@ -141,6 +141,10 @@ class RunPair:
         rank_score: The rank score.
         percentile: The percentile of the pair, or None when the engine gives none.
         reading: One of the fixed reading sentences of the run.
+        pair_class: The pair class of the run's outcome rule, or None when the run has
+            no rule (Phase 2.2, D-02).
+        left_extras: The carried cells of the left record; empty without carry columns.
+        right_extras: The carried cells of the right record; empty without carry columns.
     """
 
     engine: str
@@ -153,6 +157,9 @@ class RunPair:
     rank_score: float
     percentile: float | None
     reading: str
+    pair_class: str | None = None
+    left_extras: Mapping[str, str] = field(default_factory=dict)
+    right_extras: Mapping[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -241,6 +248,9 @@ class PayloadPair(TypedDict):
     crosses: bool
     flag_identical: bool
     flag_no_text: bool
+    pair_class: NotRequired[str]
+    left_extras: NotRequired[dict[str, str]]
+    right_extras: NotRequired[dict[str, str]]
 
 
 class PayloadRecord(TypedDict):
@@ -351,6 +361,7 @@ class Payload(TypedDict):
     bridges: list[PayloadBridge]
     data_check: PayloadDataCheck
     graph: PayloadGraph
+    has_pair_classes: NotRequired[bool]
 
 
 # --- Functions --------------------------------------------------------------

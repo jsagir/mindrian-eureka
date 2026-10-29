@@ -18,6 +18,9 @@ from typing import Any
 
 from ..run.contracts import (
     CORPUS_SCHEMA,
+    OUTCOME_LICENSED,
+    OUTCOME_OPEN,
+    PAIR_CLASSES,
     PAIRS_SCHEMA,
     UNUSUAL_PAIRS_NAME,
     WORDING_AND_MEANING_NAME,
@@ -49,6 +52,10 @@ _FIX_RERUN = "Run eureka run again to rebuild the run folder."
 
 # The hub shows only the reading sentences that a run can produce (D-08).
 _READINGS = frozenset({READING_MEANING_HIGHER, READING_WORDING_HIGHER, READING_AGREE})
+# The hub shows only the pair classes that a run's outcome rule can produce (D-08).
+_PAIR_CLASSES = frozenset(PAIR_CLASSES)
+# The hub shows only the outcome classes that a run's outcome rule can produce (D-08).
+_OUTCOME_CLASSES = frozenset({OUTCOME_LICENSED, OUTCOME_OPEN})
 
 # Engine key, pair file name and full engine name.
 _ENGINE_FILES: tuple[tuple[str, str, str], ...] = (
@@ -97,6 +104,18 @@ def _number(value: object, what: str) -> float:
     if isinstance(value, bool) or not isinstance(value, int | float):
         raise _damaged(f"{what} is missing or is not a number")
     return float(value)
+
+
+def _extras(value: object, what: str) -> dict[str, str]:
+    """Return the carried cells as a plain dictionary. Absent is empty; the text is never echoed."""
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise _damaged(f"{what} is not a mapping of text")
+    for key, cell in value.items():
+        if not isinstance(key, str) or not isinstance(cell, str):
+            raise _damaged(f"{what} is not a mapping of text")
+    return dict(value)
 
 
 def _integer(value: object, what: str) -> int:
@@ -206,6 +225,9 @@ def _read_records(data: bytes) -> tuple[Record, ...]:
         item = _mapping(_loads(line, OUTPUT_CORPUS), f"a line of {OUTPUT_CORPUS}")
         if item.get("record_type") != "record":
             raise _damaged(f"{OUTPUT_CORPUS} holds a line that is not a record")
+        outcome_class = item.get("outcome_class")
+        if outcome_class is not None and outcome_class not in _OUTCOME_CLASSES:
+            raise _damaged("the corpus holds an outcome class that the hub does not know")
         record = Record(
             id=_text(item.get("id"), "a record id"),
             title=_text(item.get("title"), "a record title"),
@@ -213,6 +235,8 @@ def _read_records(data: bytes) -> tuple[Record, ...]:
             source_ref=_text(item.get("source_ref"), "a record source reference"),
             source_file=_text(item.get("source_file"), "a record source file"),
             text_sha256=_text(item.get("text_sha256"), "a record text hash"),
+            outcome_class=outcome_class,
+            extras=_extras(item.get("extras"), f"the extras of a record in {OUTPUT_CORPUS}"),
         )
         if record.id in seen:
             raise _damaged(f"{OUTPUT_CORPUS} holds the record id {record.id} twice")
@@ -252,6 +276,9 @@ def _read_pair(engine: str, file_name: str, item: Any, record_ids: set[str]) -> 
     reading = _text(pair.get("reading"), f"the reading of a pair in {file_name}")
     if reading not in _READINGS:
         raise _damaged(f"{file_name} holds a reading sentence that the hub does not know")
+    pair_class = pair.get("pair_class")
+    if pair_class is not None and pair_class not in _PAIR_CLASSES:
+        raise _damaged(f"{file_name} holds a pair class that the hub does not know")
     return RunPair(
         engine=engine,
         rank=_integer(pair.get("rank"), f"a rank in {file_name}"),
@@ -263,6 +290,11 @@ def _read_pair(engine: str, file_name: str, item: Any, record_ids: set[str]) -> 
         rank_score=_number(scores.get("rank_score"), f"a rank score in {file_name}"),
         percentile=None if percentile is None else _number(percentile, "a percentile"),
         reading=reading,
+        pair_class=pair_class,
+        left_extras=_extras(pair.get("left_extras"), f"the left extras of a pair in {file_name}"),
+        right_extras=_extras(
+            pair.get("right_extras"), f"the right extras of a pair in {file_name}"
+        ),
     )
 
 
