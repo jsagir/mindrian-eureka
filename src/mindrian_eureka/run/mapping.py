@@ -52,6 +52,29 @@ _ENTRY_SCHEMA: Final[dict[str, Any]] = {
             },
         },
         "html": {"enum": ["auto", "always", "never"]},
+        "carry_columns": {"type": "array", "items": _NAME, "uniqueItems": True},
+        "outcome_rule": {
+            "type": "object",
+            "required": ["licensed_when_any"],
+            "additionalProperties": False,
+            "properties": {
+                "licensed_when_any": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "required": ["column"],
+                        "additionalProperties": False,
+                        "properties": {
+                            "column": _NAME,
+                            "equals": {"type": "string", "minLength": 1},
+                            "greater_than": {"type": "integer", "minimum": 0},
+                        },
+                        "oneOf": [{"required": ["equals"]}, {"required": ["greater_than"]}],
+                    },
+                }
+            },
+        },
     },
 }
 
@@ -72,6 +95,50 @@ MAPPING_JSON_SCHEMA: Final[dict[str, Any]] = {
 
 
 @dataclass(frozen=True)
+class OutcomeCondition:
+    """One condition of an outcome rule. Exactly one of `equals` or `greater_than` is set.
+
+    Attributes:
+        column: The header of the cell to test.
+        equals: The cell matches when it equals this text after strip and casefold.
+        greater_than: The cell matches when it parses as a whole number above this value.
+    """
+
+    column: str
+    equals: str | None = None
+    greater_than: int | None = None
+
+    def as_data(self) -> dict[str, Any]:
+        """Return the condition in the JSON shape of the mapping file."""
+        if self.equals is not None:
+            return {"column": self.column, "equals": self.equals}
+        return {"column": self.column, "greater_than": self.greater_than}
+
+
+@dataclass(frozen=True)
+class OutcomeRule:
+    """The rule that gives every CSV record an outcome class (Phase 2.2, D-02).
+
+    A record is `licensed` when any condition matches, else `open`. The class names
+    are fixed in `contracts`; the file never names them.
+
+    Attributes:
+        conditions: The conditions, in file order.
+    """
+
+    conditions: tuple[OutcomeCondition, ...]
+
+    @property
+    def columns(self) -> tuple[str, ...]:
+        """Return the header of every condition, in file order."""
+        return tuple(condition.column for condition in self.conditions)
+
+    def as_data(self) -> dict[str, Any]:
+        """Return the rule in the JSON shape of the mapping file, for the manifest."""
+        return {"licensed_when_any": [condition.as_data() for condition in self.conditions]}
+
+
+@dataclass(frozen=True)
 class CsvMapping:
     """How to read one CSV file.
 
@@ -85,6 +152,8 @@ class CsvMapping:
         extra_fields: Headers appended to the text as `label: value` lines.
         value_maps: Header to a map from coded cell values to plain text.
         html: Whether to clean HTML in cells: auto, always or never.
+        carry_columns: Headers whose trimmed cells ride along as record extras.
+        outcome_rule: The rule that classifies every record, or None.
     """
 
     text_columns: tuple[str, ...]
@@ -96,6 +165,8 @@ class CsvMapping:
     extra_fields: tuple[str, ...] = ()
     value_maps: Mapping[str, Mapping[str, str]] = field(default_factory=dict)
     html: HtmlMode = "auto"
+    carry_columns: tuple[str, ...] = ()
+    outcome_rule: OutcomeRule | None = None
 
 
 @dataclass(frozen=True)
@@ -137,7 +208,22 @@ def _entry_from_data(data: Mapping[str, Any]) -> CsvMapping:
         extra_fields=tuple(data.get("extra_fields", ())),
         value_maps={key: dict(val) for key, val in data.get("value_maps", {}).items()},
         html=cast(HtmlMode, data.get("html", "auto")),
+        carry_columns=tuple(data.get("carry_columns", ())),
+        outcome_rule=_rule_from_data(data["outcome_rule"]) if "outcome_rule" in data else None,
     )
+
+
+def _rule_from_data(data: Mapping[str, Any]) -> OutcomeRule:
+    """Build an OutcomeRule from validated JSON data."""
+    conditions = tuple(
+        OutcomeCondition(
+            column=str(item["column"]),
+            equals=item.get("equals"),
+            greater_than=item.get("greater_than"),
+        )
+        for item in data["licensed_when_any"]
+    )
+    return OutcomeRule(conditions=conditions)
 
 
 def _json_path(error: Any) -> str:

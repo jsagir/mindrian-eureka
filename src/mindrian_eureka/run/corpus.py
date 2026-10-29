@@ -24,7 +24,8 @@ import io
 import json
 import re
 import unicodedata
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
@@ -37,6 +38,9 @@ from ..limits import (
     MIN_BODY_CHARS,
 )
 from .contracts import (
+    OUTCOME_LICENSED,
+    OUTCOME_OPEN,
+    PAIR_CLASS_CROSS,
     Record,
     RunError,
     UsageError,
@@ -120,6 +124,7 @@ class Corpus:
         corpus_digest: The sha256 over the id and model text of every record.
         folder_digest: The sha256 over the path and sha256 of every input file.
         mapping_sha256: The sha256 of the mapping that was used, or None.
+        outcome_classes: The record count of each outcome class, or None without a rule.
     """
 
     records: tuple[Record, ...]
@@ -131,6 +136,7 @@ class Corpus:
     corpus_digest: str
     folder_digest: str
     mapping_sha256: str | None
+    outcome_classes: Mapping[str, int] | None = None
 
     def manifest_inputs(self) -> dict[str, Any]:
         """Return the input section of the manifest as JSON-ready data."""
@@ -145,7 +151,7 @@ class Corpus:
 
     def manifest_corpus(self) -> dict[str, Any]:
         """Return the corpus section of the manifest as JSON-ready data."""
-        return {
+        data: dict[str, Any] = {
             "records_read": self.records_read,
             "records_used": len(self.records),
             "dropped": [
@@ -165,6 +171,9 @@ class Corpus:
                 for hit in self.caps_hit
             ],
         }
+        if self.outcome_classes is not None:
+            data["outcome_classes"] = dict(self.outcome_classes)
+        return data
 
 
 @dataclass(frozen=True)
@@ -177,6 +186,8 @@ class _Candidate:
     source_ref: str
     source_file: str
     where: str
+    outcome_class: str | None = None
+    extras: Mapping[str, str] = field(default_factory=dict)
 
 
 # --- Discovery --------------------------------------------------------------
@@ -363,6 +374,8 @@ def _check_headers(rel: str, headers: list[str], entry: CsvMapping) -> None:
         *entry.text_columns,
         *entry.extra_fields,
         *(c for c in (entry.id_column, entry.title_column, entry.source_column) if c),
+        *entry.carry_columns,
+        *(entry.outcome_rule.columns if entry.outcome_rule is not None else ()),
     ]
     missing = [name for name in dict.fromkeys(wanted) if name not in headers]
     if missing:
@@ -382,10 +395,31 @@ def _read_csv(
         raise _unmapped_error(rel, text)
     id_base = rel[: -len(Path(rel).suffix)]
     unmapped: dict[str, dict[str, int]] = {}
+    bad_counts: dict[str, int] = {}
 
     def cell(row: dict[str | None, Any], column: str) -> str:
         value = row.get(column)
         return value if isinstance(value, str) else ""
+
+    def classify(row: dict[str | None, Any]) -> str | None:
+        """Return the outcome class of a row under the mapping rule, or None without one."""
+        rule = entry.outcome_rule
+        if rule is None:
+            return None
+        licensed = False
+        for condition in rule.conditions:
+            value = normalize_text(cell(row, condition.column))
+            if condition.equals is not None:
+                if value.strip().casefold() == condition.equals.strip().casefold():
+                    licensed = True
+            elif condition.greater_than is not None:
+                number = _whole_number(value)
+                if number is None:
+                    bad_counts[condition.column] = bad_counts.get(condition.column, 0) + 1
+                    number = 0
+                if number > condition.greater_than:
+                    licensed = True
+        return OUTCOME_LICENSED if licensed else OUTCOME_OPEN
 
     def clean(column: str, raw: str) -> str:
         value = raw
@@ -466,6 +500,10 @@ def _read_csv(
                         f"The text of {where} is longer than {MAX_RECORD_CHARS} characters",
                         fix="Shorten the cell or split the record",
                     )
+                outcome_class = classify(row)
+                extras = {
+                    column: normalize_text(cell(row, column)) for column in entry.carry_columns
+                }
                 candidates.append(
                     _Candidate(
                         id=unicodedata.normalize("NFC", f"{id_base}/{id_part}"),
@@ -474,6 +512,8 @@ def _read_csv(
                         source_ref=source or f"{rel}#{id_part}",
                         source_file=rel,
                         where=where,
+                        outcome_class=outcome_class,
+                        extras=extras,
                     )
                 )
         except csv.Error as exc:
@@ -493,7 +533,49 @@ def _read_csv(
                 f"In {rel}, column {column}: {sum(counts.values())} cell(s) have a value "
                 f"that is not in the value map. Examples: {examples}"
             )
+    for column in sorted(bad_counts):
+        warnings.append(
+            f"In {rel}, column {column}: {bad_counts[column]} cell(s) are not whole numbers. "
+            "They count as 0."
+        )
     return candidates
+
+
+def _whole_number(value: str) -> int | None:
+    """Parse a count cell. Blank is 0. A cell that is not a whole number gives None."""
+    text = value.strip()
+    if not text:
+        return 0
+    try:
+        return int(text)
+    except ValueError:
+        return None
+
+
+def _class_notes(candidates: list[_Candidate], warnings: list[str]) -> dict[str, int] | None:
+    """Count the outcome classes and add the plain-English notes on small classes.
+
+    Returns:
+        The count of each class, or None when no candidate carries a class.
+    """
+    classed = [item for item in candidates if item.outcome_class is not None]
+    if not classed:
+        return None
+    counts = {
+        OUTCOME_LICENSED: sum(1 for item in classed if item.outcome_class == OUTCOME_LICENSED),
+        OUTCOME_OPEN: sum(1 for item in classed if item.outcome_class == OUTCOME_OPEN),
+    }
+    for name in (OUTCOME_LICENSED, OUTCOME_OPEN):
+        if counts[name] < 2:
+            warnings.append(
+                f"The outcome class {name} holds {counts[name]} record(s). "
+                f"No {name}_{name} pair is possible."
+            )
+    if min(counts.values()) == 0:
+        warnings.append(
+            f"No {PAIR_CLASS_CROSS} pair is possible. One outcome class holds 0 record(s)."
+        )
+    return counts
 
 
 # --- Build ------------------------------------------------------------------
@@ -585,6 +667,13 @@ def build_corpus(
             f"Dropped {len(dropped)} record(s) with a body under {MIN_BODY_CHARS} characters. "
             "The ids are listed in the manifest."
         )
+    with_class = sum(1 for item in usable if item.outcome_class is not None)
+    if 0 < with_class < len(usable):
+        warnings.append(
+            "Records without an outcome class exist next to classed records. "
+            "The pair classes are not attached."
+        )
+        usable = [replace(item, outcome_class=None) for item in usable]
     if len(usable) < _MIN_USABLE_RECORDS:
         raise RunError(
             f"Only {len(usable)} usable record(s) found: {records_read} read, "
@@ -616,6 +705,7 @@ def build_corpus(
             f"The collection has {len(usable)} usable records. The cap is {max_artifacts}. "
             f"The first {max_artifacts} ids in sorted order were kept and {len(removed)} were cut."
         )
+    outcome_classes = _class_notes(kept, warnings)
 
     records = tuple(
         Record(
@@ -625,6 +715,8 @@ def build_corpus(
             source_ref=item.source_ref,
             source_file=item.source_file,
             text_sha256=sha256_text(item.text),
+            outcome_class=item.outcome_class,
+            extras=dict(item.extras),
         )
         for item in kept
     )
@@ -659,4 +751,5 @@ def build_corpus(
         corpus_digest=corpus_digest,
         folder_digest=folder_digest,
         mapping_sha256=mapping.sha256 if mapping is not None else None,
+        outcome_classes=outcome_classes,
     )

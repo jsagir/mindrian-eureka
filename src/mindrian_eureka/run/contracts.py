@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import hashlib
 import unicodedata
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 
 # --- Exit codes -------------------------------------------------------------
 
@@ -59,6 +60,14 @@ UNUSUAL_PAIRS_NAME = "Find Unusual Pairs Across a Research Collection"
 WORDING_AND_MEANING_NAME = "Rank Unusual Pairs by Wording and Meaning"
 UNUSUAL_PAIRS_CAPABILITY = "opportunity.find_cross_domain_pairs"
 WORDING_AND_MEANING_CAPABILITY = "portfolio.find_hybrid_similarity_pairs"
+
+# Outcome classes of a record and classes of a pair (Phase 2.2, D-02). Fixed names.
+OUTCOME_LICENSED = "licensed"
+OUTCOME_OPEN = "open"
+PAIR_CLASS_CROSS = "cross"
+PAIR_CLASS_OPEN_OPEN = "open_open"
+PAIR_CLASS_LICENSED_LICENSED = "licensed_licensed"
+PAIR_CLASSES = frozenset({PAIR_CLASS_CROSS, PAIR_CLASS_OPEN_OPEN, PAIR_CLASS_LICENSED_LICENSED})
 
 
 # --- Schema ids -------------------------------------------------------------
@@ -112,6 +121,9 @@ class Record:
         source_ref: A relative locator of the source. Never an absolute path.
         source_file: The relative path of the input file that holds the record.
         text_sha256: The sha256 of `text`, as lowercase hex.
+        outcome_class: `licensed` or `open` under a mapping outcome rule, else None.
+        extras: The trimmed cells of the mapping carry columns. Empty without them.
+        text_source: Where extra text came from (for example `sidecar`), else None.
     """
 
     id: str
@@ -120,6 +132,9 @@ class Record:
     source_ref: str
     source_file: str
     text_sha256: str
+    outcome_class: str | None = None
+    extras: Mapping[str, str] = field(default_factory=dict)
+    text_source: str | None = None
 
     @property
     def model_text(self) -> str:

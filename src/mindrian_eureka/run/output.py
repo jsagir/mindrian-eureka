@@ -103,19 +103,22 @@ def corpus_lines(records: Sequence[Record]) -> bytes:
     }
     lines = [_compact(header)]
     for record in records:
-        lines.append(
-            _compact(
-                {
-                    "record_type": "record",
-                    "id": record.id,
-                    "title": record.title,
-                    "text": record.text,
-                    "source_ref": record.source_ref,
-                    "source_file": record.source_file,
-                    "text_sha256": record.text_sha256,
-                }
-            )
-        )
+        item: dict[str, Any] = {
+            "record_type": "record",
+            "id": record.id,
+            "title": record.title,
+            "text": record.text,
+            "source_ref": record.source_ref,
+            "source_file": record.source_file,
+            "text_sha256": record.text_sha256,
+        }
+        if record.outcome_class is not None:
+            item["outcome_class"] = record.outcome_class
+        if record.extras:
+            item["extras"] = dict(record.extras)
+        if record.text_source is not None:
+            item["text_source"] = record.text_source
+        lines.append(_compact(item))
     return ("\n".join(lines) + "\n").encode("utf-8")
 
 
