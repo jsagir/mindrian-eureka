@@ -43,8 +43,8 @@ def spec_ids() -> list[str]:
 def test_every_spec_id_has_a_deck_key() -> None:
     ids = spec_ids()
     assert len(ids) == len(set(ids))
-    # G01-G16, B01-B14, Gr01-Gr19, C01-C11, P01-P09, D01-D03, L01-L08, E01-E05
-    assert len(ids) == 16 + 14 + 19 + 11 + 9 + 3 + 8 + 5
+    # G01-G16, B01-B15, Gr01-Gr19, C01-C11, P01-P10, D01-D03, L01-L08, E01-E05
+    assert len(ids) == 16 + 15 + 19 + 11 + 10 + 3 + 8 + 5
     missing = [
         spec_id
         for spec_id in ids
