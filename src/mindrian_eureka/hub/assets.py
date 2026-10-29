@@ -55,7 +55,7 @@ EXPECTED_STATIC: dict[str, str] = {
     "assets/fonts/jetbrainsmono-OFL.txt": (
         "25a5447330f5ce68637e21e6d200f4564ae92a7614accb4b8a79bc51a98720ad"
     ),
-    "tokens.css": ("28f12859744dc738cdddd593a1f5ab72119f6914166b4ec74d309df62ff1dc7b"),
+    "tokens.css": ("d70d4deaf730d6f336a51d5d9fd9e1d8cb39eda461f9b537dab45e3747a05ef1"),
     "vendor/3d-force-graph.min.js": (
         "fa365edfa625f055982ea9e41feac875bc1c46c6225318c420eed26646e78499"
     ),
