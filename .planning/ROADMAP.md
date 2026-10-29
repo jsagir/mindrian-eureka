@@ -93,7 +93,7 @@ Plans:
 - [x] 02.2-01: Mapping schema (`outcome_rule`, `carry_columns`), outcome class on every pair at the projection layer, carried cells, per-engine class counts, manifest keys, conditional Class column, shipped mapping `examples/mappings/technology-audit-export.json`
 - [x] 02.2-02: `--text-sidecar` join by raw id with the coverage line and manifest hash, `docs/partner-run-guide.md`, the dated partner-internal ruling in `docs/rs-release-gate.md`, host cross-link
 - [x] 02.2-03: Brand token sheet refresh, hub contracts and reader (additive, unknown class refused), class chips and filter, 2,000-record scale check
-- [ ] 02.2-04: Carry-in bundle builder (`scripts/build-partner-bundle`, hashed manifest, uv and optional Docker variants) and the `start.sh` / `start.ps1` launchers
+- [x] 02.2-04: Carry-in bundle builder (`scripts/build-partner-bundle`, hashed manifest, uv and optional Docker variants) and the `start.sh` / `start.ps1` launchers
 
 ### Phase 2.1: Opportunity Hub in the mos-brand format
 
