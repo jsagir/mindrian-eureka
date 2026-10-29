@@ -165,7 +165,9 @@ def test_section_2_hashes_have_hex_format():
     start = text.index("## 2. Origin facts")
     end = text.index("## 3. Author and citation facts")
     section = text[start:end]
-    cells = [c.strip() for line in section.splitlines() if line.startswith("|") for c in line.split("|")]
+    cells = [
+        c.strip() for line in section.splitlines() if line.startswith("|") for c in line.split("|")
+    ]
     candidates = [c for c in cells if re.fullmatch(r"[0-9a-fA-F]{40,}", c)]
     assert len(candidates) >= 12
     for value in candidates:
@@ -174,3 +176,19 @@ def test_section_2_hashes_have_hex_format():
 
 def test_licensing_note_links_to_record():
     assert "rs-release-gate.md" in LICENSING.read_text(encoding="utf-8")
+
+
+def test_partner_internal_ruling_is_recorded():
+    text = _text()
+    fm = parse_front_matter(text)
+    assert fm["partner_internal_decision"] == "approve"
+    assert fm["partner_internal_decided_on"] == "2026-10-29"
+    assert fm["partner_internal_decided_by"] == fm["decided_by"]
+    scope = fm["partner_internal_scope"]
+    assert scope
+    assert "not public" in scope
+    assert "not redistributable" in scope
+    assert fm["decision"] == "no-go"
+    assert fm["status"] == "draft"
+    assert fm["reopen_when"] == ["G1", "G2", "G3", "G5"]
+    assert "## 9. Partner-internal distribution ruling (2026-10-29)" in text
