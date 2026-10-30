@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.hsi-external-whitespace-output.v1",
+  "title": "portfolio.analyze_external_whitespace result",
+  "type": "object",
+  "required": ["schema_version", "capability_id", "capability_version", "status", "scope", "input_fingerprint", "research_grant_id", "metadata", "cross_domain_zones", "gap_filling_suggestions", "cross_domain_papers", "limitations"],
+  "properties": {
+    "schema_version": { "const": "eureka.hsi-external-whitespace.v1" },
+    "capability_id": { "const": "portfolio.analyze_external_whitespace" },
+    "capability_version": { "const": "0.1.0" },
+    "status": { "const": "completed_external_corpus_analysis" },
+    "scope": { "type": "object", "required": ["scope_id", "snapshot_id"], "properties": { "scope_id": { "type": ["string", "null"] }, "snapshot_id": { "type": ["string", "null"] } }, "additionalProperties": false },
+    "input_fingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "research_grant_id": { "type": "string", "minLength": 1 },
+    "metadata": { "type": "object" },
+    "cross_domain_zones": { "type": "array", "items": { "type": "object" } },
+    "gap_filling_suggestions": { "type": "array", "items": { "type": "object" } },
+    "cross_domain_papers": { "type": "array", "items": { "type": "object" } },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

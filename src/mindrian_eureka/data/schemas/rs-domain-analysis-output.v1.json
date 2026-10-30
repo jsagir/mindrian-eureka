@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian-os.com/schemas/eureka/rs-domain-analysis-output.v1.json",
+  "title": "RS host-projected domain-analysis result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "capability_id", "capability_version", "status", "scope_id", "snapshot_id", "domain_analysis", "ranked_domains", "input_fingerprint", "runtime", "limitations"],
+  "properties": {
+    "schema_version": {"const": "eureka.rs-domain-analysis.v1"},
+    "capability_id": {"const": "research.analyze_rs_domain_projection"},
+    "capability_version": {"const": "0.1.0"},
+    "status": {"enum": ["domain_analysis_ready", "domain_analysis_boundary"]},
+    "scope_id": {"type": "string"},
+    "snapshot_id": {"type": "string"},
+    "domain_analysis": {"type": "object", "additionalProperties": false,
+      "required": ["primary_domain", "concepts", "terminology", "methods", "breakthroughs", "boundary_flag", "adjacent_domains"],
+      "properties": {
+        "primary_domain": {"type": ["string", "null"], "maxLength": 500},
+        "concepts": {"type": "array", "maxItems": 10, "items": {"type": "string", "maxLength": 500}},
+        "terminology": {"type": "array", "maxItems": 10, "items": {"type": "string", "maxLength": 500}},
+        "methods": {"type": "array", "maxItems": 10, "items": {"type": "string", "maxLength": 500}},
+        "breakthroughs": {"type": "array", "maxItems": 10, "items": {"type": "string", "maxLength": 500}},
+        "boundary_flag": {"type": "boolean"},
+        "adjacent_domains": {"type": "array", "maxItems": 5, "items": {"type": "string", "maxLength": 500}},
+        "warning": {"type": "string", "maxLength": 1000}
+      }
+    },
+    "ranked_domains": {"type": "array", "maxItems": 500, "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["node_id", "framework_name", "score", "source_ids"],
+      "properties": {
+        "node_id": {"type": "string", "maxLength": 500},
+        "framework_name": {"type": "string", "maxLength": 500},
+        "score": {"type": "number"},
+        "source_ids": {"type": "array", "maxItems": 25, "uniqueItems": true, "items": {"type": "string", "maxLength": 500}}
+      }
+    }},
+    "input_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "runtime": {"type": "string"},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}

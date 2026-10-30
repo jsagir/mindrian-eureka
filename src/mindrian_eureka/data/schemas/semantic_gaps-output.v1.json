@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.semantic_gaps.v1",
+  "title": "Find Similar Graph Items Without a Link output",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "graph_access",
+    "scope_id",
+    "snapshot_id",
+    "input_fingerprint",
+    "graph_summary",
+    "run_config",
+    "limitations",
+    "compared_node_count",
+    "candidate_pairs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.graph-algorithm-result.v1"
+    },
+    "capability_id": {
+      "const": "graph.find_semantic_gaps"
+    },
+    "status": {
+      "const": "completed_analysis"
+    },
+    "graph_access": {
+      "const": "read_only_snapshot"
+    },
+    "scope_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "input_fingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "graph_summary": {
+      "type": "object",
+      "required": [
+        "node_count",
+        "edge_count"
+      ],
+      "properties": {
+        "node_count": {
+          "type": "integer"
+        },
+        "edge_count": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "method": {
+      "type": "string"
+    },
+    "run_config": {
+      "type": "object",
+      "required": [
+        "text_label",
+        "min_similarity",
+        "top"
+      ],
+      "properties": {
+        "text_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "min_similarity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.25
+        },
+        "top": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000,
+          "default": 200
+        }
+      },
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "compared_node_count": {
+      "type": "integer"
+    },
+    "candidate_pairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_node_id",
+          "target_node_id",
+          "similarity",
+          "common_neighbor_count"
+        ],
+        "properties": {
+          "source_node_id": {
+            "type": "string"
+          },
+          "target_node_id": {
+            "type": "string"
+          },
+          "similarity": {
+            "type": "number"
+          },
+          "common_neighbor_count": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

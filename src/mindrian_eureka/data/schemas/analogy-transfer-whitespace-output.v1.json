@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.analogy-whitespace-result.v1",
+  "title": "Analogy transfer whitespace result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "metadata",
+    "zones",
+    "limitations",
+    "capability_version",
+    "snapshot_id",
+    "input_fingerprint",
+    "run_config"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.analogy-whitespace-result.v1"
+    },
+    "capability_id": {
+      "const": "analogy.discover_transfer_whitespace"
+    },
+    "status": {
+      "enum": [
+        "completed_analysis",
+        "insufficient_input"
+      ]
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "zones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "zone_id",
+          "source_artifact",
+          "target_artifact",
+          "transfer_type",
+          "articulation_gap",
+          "gap_signal",
+          "verification"
+        ],
+        "properties": {
+          "zone_id": {
+            "type": "string"
+          },
+          "source_artifact": {
+            "type": "string"
+          },
+          "target_artifact": {
+            "type": "string"
+          },
+          "transfer_type": {
+            "type": "string"
+          },
+          "articulation_gap": {
+            "type": "number"
+          },
+          "gap_signal": {
+            "enum": [
+              "strong",
+              "moderate",
+              "weak"
+            ]
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "capability_version": {
+      "const": "0.1.0"
+    },
+    "scope_id": {"type": ["string", "null"]},
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "input_fingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "run_config": {
+      "type": "object",
+      "required": [
+        "mode",
+        "min_corpus"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "percentile",
+            "fixed"
+          ]
+        },
+        "min_corpus": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

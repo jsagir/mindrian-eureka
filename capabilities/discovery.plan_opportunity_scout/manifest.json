@@ -1,0 +1,30 @@
+{
+  "schema_version": "eureka.capability.v1",
+  "id": "discovery.plan_opportunity_scout",
+  "name": "Plan an Opportunity-Discovery Run",
+  "jtbd": "When a user states a decision objective and scope, prepare a selective method sequence with dependencies and explicit stops instead of running every engine.",
+  "status": "experimental",
+  "input_schema": "schemas/workflow-request.v1.schema.json",
+  "output_schema": "schemas/workflow-result.v1.schema.json",
+  "runtime": "Python >=3.11; local CLI and stdio MCP",
+  "network": "denied",
+  "data_classes": [
+    "host-supplied-scoped-records",
+    "source-identifiers"
+  ],
+  "requires": [
+    "Objective",
+    "Explicit capability selections"
+  ],
+  "side_effects": [],
+  "limitations": [
+    "Plan only; the user and Theo still select the methods, and unavailable or unapproved dependencies remain blocked.",
+    "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+  ],
+  "version": "0.1.0",
+  "source_revision": "src/mindrian_eureka/discovery_workflows.py::plan_opportunity_discovery",
+  "license_status": "unknown",
+  "max_runtime_seconds": 3600,
+  "max_input_bytes": 20971520,
+  "max_candidates": 50000
+}

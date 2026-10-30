@@ -1,0 +1,476 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.cross-domain-research-input.v1",
+  "title": "One stage of the host-brokered cross-domain research workflow",
+  "type": "object",
+  "required": [
+    "stage",
+    "request"
+  ],
+  "properties": {
+    "stage": {
+      "enum": [
+        "prepare_research_plan",
+        "validate_research_bundle",
+        "map_structures",
+        "finalize_assessments"
+      ]
+    },
+    "request": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "run_id",
+            "stage",
+            "scope_id",
+            "queries"
+          ],
+          "properties": {
+            "run_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "stage": {
+              "enum": [
+                "mechanism_discovery",
+                "inference_verification"
+              ]
+            },
+            "scope_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "queries": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "required": [
+                  "provider",
+                  "query",
+                  "intent"
+                ],
+                "properties": {
+                  "provider": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "query": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "intent": {
+                    "enum": [
+                      "find_support",
+                      "find_counterevidence",
+                      "check_novelty",
+                      "check_boundary",
+                      "find_mechanism"
+                    ]
+                  },
+                  "inference_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "additionalProperties": true
+              }
+            },
+            "parent_result_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "plan",
+            "bundle"
+          ],
+          "properties": {
+            "plan": {
+              "type": "object"
+            },
+            "bundle": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "run_id",
+            "scope_id",
+            "target",
+            "target_evidence",
+            "evidence_catalog",
+            "bases"
+          ],
+          "properties": {
+            "run_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "scope_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "target": {
+              "type": "object"
+            },
+            "target_evidence": {
+              "type": "object"
+            },
+            "evidence_catalog": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "bases": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 10,
+              "items": {
+                "type": "object"
+              }
+            },
+            "rules": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 2,
+              "items": {
+                "enum": [
+                  "AN",
+                  "LS",
+                  "MA"
+                ]
+              }
+            },
+            "max_maps_per_base": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "known_claims": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "required": [
+            "mapping_result",
+            "verification_plan",
+            "evidence_bundle",
+            "assessments"
+          ],
+          "properties": {
+            "mapping_result": {
+              "type": "object"
+            },
+            "verification_plan": {
+              "type": "object"
+            },
+            "evidence_bundle": {
+              "type": "object"
+            },
+            "assessments": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "stage": {
+            "const": "prepare_research_plan"
+          }
+        },
+        "required": [
+          "stage"
+        ]
+      },
+      "then": {
+        "properties": {
+          "request": {
+            "type": "object",
+            "required": [
+              "run_id",
+              "stage",
+              "scope_id",
+              "queries"
+            ],
+            "properties": {
+              "run_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "stage": {
+                "enum": [
+                  "mechanism_discovery",
+                  "inference_verification"
+                ]
+              },
+              "scope_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "queries": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 20,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "query_id",
+                    "provider",
+                    "query",
+                    "why",
+                    "intent"
+                  ],
+                  "properties": {
+                    "provider": {
+                      "enum": [
+                        "openalex",
+                        "arxiv",
+                        "pubmed",
+                        "tavily"
+                      ]
+                    },
+                    "query": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "intent": {
+                      "enum": [
+                        "find_support",
+                        "find_counterevidence",
+                        "check_novelty",
+                        "check_boundary",
+                        "find_mechanism"
+                      ]
+                    },
+                    "inference_ids": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "query_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "why": {
+                      "type": "string",
+                      "minLength": 3
+                    },
+                    "source_refs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "include_domains": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              },
+              "parent_result_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "stage": {
+            "const": "validate_research_bundle"
+          }
+        },
+        "required": [
+          "stage"
+        ]
+      },
+      "then": {
+        "properties": {
+          "request": {
+            "type": "object",
+            "required": [
+              "plan",
+              "bundle"
+            ],
+            "properties": {
+              "plan": {
+                "type": "object"
+              },
+              "bundle": {
+                "type": "object"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "stage": {
+            "const": "map_structures"
+          }
+        },
+        "required": [
+          "stage"
+        ]
+      },
+      "then": {
+        "properties": {
+          "request": {
+            "type": "object",
+            "required": [
+              "run_id",
+              "scope_id",
+              "target",
+              "target_evidence",
+              "evidence_catalog",
+              "bases"
+            ],
+            "properties": {
+              "run_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "scope_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "target": {
+                "type": "object"
+              },
+              "target_evidence": {
+                "type": "object"
+              },
+              "evidence_catalog": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "bases": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 10,
+                "items": {
+                  "type": "object"
+                }
+              },
+              "rules": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 2,
+                "items": {
+                  "enum": [
+                    "AN",
+                    "LS",
+                    "MA"
+                  ]
+                }
+              },
+              "max_maps_per_base": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              },
+              "known_claims": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "stage": {
+            "const": "finalize_assessments"
+          }
+        },
+        "required": [
+          "stage"
+        ]
+      },
+      "then": {
+        "properties": {
+          "request": {
+            "type": "object",
+            "required": [
+              "mapping_result",
+              "verification_plan",
+              "evidence_bundle",
+              "assessments"
+            ],
+            "properties": {
+              "mapping_result": {
+                "type": "object"
+              },
+              "verification_plan": {
+                "type": "object"
+              },
+              "evidence_bundle": {
+                "type": "object"
+              },
+              "assessments": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  ]
+}

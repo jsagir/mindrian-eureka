@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.genesis-local-plan-input.v1",
+  "title": "research.run_genesis_local_plan input",
+  "type": "object",
+  "properties": {
+    "scope_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "snapshot_id": { "type": ["string", "null"], "maxLength": 256 },
+    "objective": { "type": "string", "minLength": 1, "maxLength": 5000 },
+    "research_year": { "type": "integer", "minimum": 2000, "maximum": 2100 },
+    "artifacts": {
+      "type": "array", "minItems": 1, "maxItems": 2500,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 256 },
+          "source_ref": { "type": "string", "minLength": 1, "maxLength": 2048 },
+          "title": { "type": "string", "maxLength": 2000 },
+          "text": { "type": "string", "minLength": 1, "maxLength": 1000000 },
+          "sha256": { "type": ["string", "null"], "pattern": "^[a-fA-F0-9]{64}$" },
+          "corpus": { "type": "string", "maxLength": 64 },
+          "media_type": { "type": ["string", "null"], "maxLength": 128 }
+        },
+        "required": ["id", "source_ref", "text"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["scope_id", "objective", "artifacts"],
+  "additionalProperties": true
+}

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "consumer": {
+    "id": "mindrian-eureka-hub",
+    "name": "MindrianOS Eureka Opportunity Hub",
+    "kind": "product",
+    "team": "MindrianOS Eureka maintainers",
+    "project": "mindrian-eureka",
+    "owner": "Maintainer of mindrian-eureka"
+  },
+  "what": {
+    "deliverable": "One local page that shows the opportunity bank, the connection graph and the catalogue of an analyzed collection, built from the output of `eureka run`.",
+    "surfaces": [
+      "website",
+      "app-ui",
+      "graph-visualization"
+    ],
+    "languages": [
+      "en"
+    ],
+    "familyMember": null
+  },
+  "how": {
+    "approach": "Static HTML, CSS and JavaScript files written by Python. No framework. No network call. Deterministic output: two builds from the same run folder are byte-identical.",
+    "workflowFile": "docs/brand/hub-workflow.md",
+    "steps": [
+      {
+        "phase": "brief",
+        "action": "Read the output of `mos-brand context` for the hub job and the UI-SPEC copy deck before any page work."
+      },
+      {
+        "phase": "produce",
+        "action": "Write the hub files from the packet assets and tokens. Cite the book segment for every design choice."
+      },
+      {
+        "phase": "review",
+        "action": "Run `mos-brand review` on the built page and on rendered snapshots. Then a person looks at five widths."
+      },
+      {
+        "phase": "return-learning",
+        "action": "List every item where the book is silent as a proposed segment and return the list to the book."
+      }
+    ]
+  },
+  "why": {
+    "purpose": "A user who ran `eureka run` needs one local page to review ranked pairs, without any data leaving the machine.",
+    "evidence": "The 2026-10-23 review of the JHTV Fast Forward run, and the existing hub pages that were built by hand outside this repository.",
+    "success": "`mos-brand review` passes on the hub page. Every claim and every opportunity shows \"candidate, not verified\" and a source link. A person approves before anything publishes."
+  },
+  "jtbd": {
+    "when": "I have run Eureka on a folder of sources and hold ranked pairs in files",
+    "want": "open one local page that shows the opportunity bank, the connection graph and the catalogue",
+    "so": "I can decide which pairs deserve a human look, and no data leaves my computer"
+  }
+}

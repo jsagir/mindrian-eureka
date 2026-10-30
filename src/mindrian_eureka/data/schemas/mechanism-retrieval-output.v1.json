@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.mechanism-retrieval-result.v1",
+  "title": "analogy.retrieve_mechanism_candidates result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.mechanism-retrieval-result.v1"
+    },
+    "capability_id": {
+      "enum": [
+        "analogy.find_mechanisms",
+        "analogy.retrieve_mechanism_candidates"
+      ]
+    },
+    "status": {
+      "const": "completed_retrieval"
+    },
+    "scope_id": {"type": ["string", "null"]},
+    "snapshot_id": {"type": ["string", "null"]},
+    "retrieved": {
+      "type": "array"
+    },
+    "limitations": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true
+}

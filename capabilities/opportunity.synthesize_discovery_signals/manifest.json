@@ -1,0 +1,35 @@
+{
+  "schema_version": "eureka.capability.v1",
+  "id": "opportunity.synthesize_discovery_signals",
+  "name": "Run the Local Opportunity Signal Scout",
+  "jtbd": "When a scoped local catalog is ready, run RS and HSI over the same snapshot and return a source-linked union of candidate pairs for Theo and human review.",
+  "status": "experimental",
+  "input_schema": "schemas/opportunity-signal-scout-input.v1.schema.json",
+  "output_schema": "schemas/run-result.v1.schema.json",
+  "runtime": "Python >=3.11; SQLite-backed local job runner with bounded thread pool",
+  "network": "denied",
+  "data_classes": [
+    "authorized-local-artifact-text",
+    "source-identifiers",
+    "local-model-vectors"
+  ],
+  "requires": [
+    "2..2500 source-linked local artifacts",
+    "Configured local RS model or local model cache",
+    "Optional precomputed dense vectors or local HSI model; without these HSI uses labeled lexical-only degradation"
+  ],
+  "side_effects": [],
+  "limitations": [
+    "This combines two retrieval signals, not the full Eureka harvest/critic/qualification lifecycle.",
+    "No RS and HSI scores are fused; results are ordered by number of methods surfacing a pair and then best within-engine rank.",
+    "Pair signals do not establish technical complementarity, novelty, market value, or a breakthrough.",
+    "Theo review, graph tracing, external evidence, SME adjudication, and opportunity-bank writes are separate host actions.",
+    "HSI reference-source rights remain unresolved; local evaluation only."
+  ],
+  "version": "0.1.0",
+  "source_revision": "composes local RS runner and the HSI reference adapter; no host-owned portfolio writes",
+  "license_status": "unknown",
+  "max_runtime_seconds": 3600,
+  "max_input_bytes": 20971520,
+  "max_candidates": 200
+}

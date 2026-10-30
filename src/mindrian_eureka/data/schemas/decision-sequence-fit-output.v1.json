@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.decision-sequence-fit-output.v1",
+  "title": "decision.fit_sequence_patterns result",
+  "type": "object",
+  "properties": {
+    "schema_version": {"const": "eureka.decision-sequence-fit-result.v1"},
+    "capability_id": {"const": "decision.fit_sequence_patterns"},
+    "engine": {
+      "type": "object",
+      "properties": {
+        "name": {"const": "pomegranate"},
+        "version": {"const": "1.1.2"},
+        "algorithm": {"const": "Baum-Welch / expectation-maximization"}
+      },
+      "required": ["name", "version", "algorithm"],
+      "additionalProperties": false
+    },
+    "status": {"const": "exploratory_unvalidated_fit"},
+    "sequence_count": {"type": "integer", "minimum": 2, "maximum": 500},
+    "observation_count": {"type": "integer", "minimum": 32, "maximum": 1000000},
+    "max_iterations": {"type": "integer", "minimum": 1, "maximum": 1000},
+    "model": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "label": {"type": "string"},
+        "parameter_status": {"const": "exploratory_unvalidated"},
+        "parameter_origin": {"type": "string", "minLength": 1},
+        "states": {"$ref": "#/$defs/states"},
+        "features": {"$ref": "#/$defs/features"},
+        "initial_distribution": {"$ref": "#/$defs/vector"},
+        "transition_matrix": {"$ref": "#/$defs/matrix"},
+        "emission_probabilities": {"$ref": "#/$defs/matrix"}
+      },
+      "required": ["id", "label", "parameter_status", "parameter_origin", "states", "features", "initial_distribution", "transition_matrix", "emission_probabilities"],
+      "additionalProperties": false
+    },
+    "warnings": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 4}
+  },
+  "required": ["schema_version", "capability_id", "engine", "status", "sequence_count", "observation_count", "max_iterations", "model", "warnings"],
+  "additionalProperties": false,
+  "$defs": {
+    "probability": {"type": "number", "minimum": 0, "maximum": 1},
+    "vector": {"type": "array", "items": {"$ref": "#/$defs/probability"}, "minItems": 4, "maxItems": 4},
+    "matrix": {"type": "array", "items": {"$ref": "#/$defs/vector"}, "minItems": 4, "maxItems": 4},
+    "states": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "salience_recognition"}, {"const": "causality_mapping"},
+        {"const": "architecture_building"}, {"const": "resolution_creation"}
+      ],
+      "minItems": 4, "maxItems": 4
+    },
+    "features": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "complex_features"}, {"const": "multidirectional_causation"},
+        {"const": "holistic_view"}, {"const": "creative_synthesis"}
+      ],
+      "minItems": 4, "maxItems": 4
+    }
+  }
+}

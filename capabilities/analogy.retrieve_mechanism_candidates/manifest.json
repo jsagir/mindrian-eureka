@@ -1,0 +1,30 @@
+{
+  "schema_version": "eureka.capability.v1",
+  "id": "analogy.retrieve_mechanism_candidates",
+  "name": "Retrieve Candidate Mechanisms",
+  "jtbd": "When the target problem is framed and a local or host-approved mechanism corpus is available, retrieve source-linked mechanism descriptions to consider for structural mapping.",
+  "status": "experimental",
+  "input_schema": "schemas/workflow-request.v1.schema.json",
+  "output_schema": "schemas/workflow-result.v1.schema.json",
+  "runtime": "Python >=3.11; local CLI and stdio MCP",
+  "network": "denied",
+  "data_classes": [
+    "host-supplied-scoped-records",
+    "source-identifiers"
+  ],
+  "requires": [
+    "Target problem text",
+    "Mechanism records with domain, description, and source reference"
+  ],
+  "side_effects": [],
+  "limitations": [
+    "Lexical recall only, not the reviewed embedding recall/fitness pipeline; retrieval rank is not analogy fit.",
+    "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+  ],
+  "version": "0.1.0",
+  "source_revision": "src/mindrian_eureka/discovery_workflows.py::retrieve_mechanisms",
+  "license_status": "unknown",
+  "max_runtime_seconds": 3600,
+  "max_input_bytes": 20971520,
+  "max_candidates": 50000
+}

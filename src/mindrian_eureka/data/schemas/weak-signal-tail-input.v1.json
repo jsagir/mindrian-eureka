@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.weak-signal-tail-input.v1",
+  "title": "portfolio.classify_weak_signal_tail input",
+  "type": "object",
+  "properties": {
+    "scope_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "snapshot_id": { "type": ["string", "null"], "maxLength": 256 },
+    "attention_proxy": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "growth_proxy": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "attention_quantile": { "type": "number", "minimum": 0, "maximum": 1 },
+    "growth_quantile": { "type": "number", "minimum": 0, "maximum": 1 },
+    "min_cohort": { "type": "integer", "minimum": 0, "maximum": 100000 },
+    "max_tail_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
+    "items": {
+      "type": "array", "minItems": 1, "maxItems": 100000,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 256 },
+          "attention": { "type": "number", "minimum": 0, "maximum": 1 },
+          "growth": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "required": ["id", "attention", "growth"],
+        "additionalProperties": false
+      }
+    },
+    "brokerage": {
+      "type": "object", "maxProperties": 100000,
+      "additionalProperties": { "type": "number" }
+    }
+  },
+  "required": ["scope_id", "attention_proxy", "growth_proxy", "items"],
+  "additionalProperties": false
+}

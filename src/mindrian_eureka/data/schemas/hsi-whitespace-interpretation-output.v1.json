@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.hsi-whitespace-interpretation-output.v1",
+  "title": "portfolio.interpret_whitespace result",
+  "type": "object",
+  "required": ["schema_version", "capability_id", "capability_version", "status", "scope", "input_fingerprint", "metadata", "gaps", "hypothesis_candidates", "limitations"],
+  "properties": {
+    "schema_version": {"const": "eureka.hsi-whitespace-interpretation.v1"},
+    "capability_id": {"const": "portfolio.interpret_whitespace"},
+    "capability_version": {"const": "0.1.0"},
+    "status": {"const": "completed_whitespace_interpretation"},
+    "scope": {"type": "object", "required": ["scope_id", "snapshot_id"], "properties": {
+      "scope_id": {"type": ["string", "null"]}, "snapshot_id": {"type": ["string", "null"]}
+    }, "additionalProperties": false},
+    "input_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "metadata": {"type": "object", "required": ["problem_type_counts", "zones_total", "framework_mapping_count", "effectiveness_source", "validation_options"], "properties": {
+      "problem_type_counts": {"type": "object", "properties": {
+        "Un-Defined": {"type": "integer", "minimum": 0}, "Ill-Defined": {"type": "integer", "minimum": 0},
+        "Well-Defined": {"type": "integer", "minimum": 0}, "Wicked": {"type": "integer", "minimum": 0}
+      }, "additionalProperties": false},
+      "zones_total": {"type": "integer", "minimum": 0},
+      "framework_mapping_count": {"type": "integer", "minimum": 0},
+      "effectiveness_source": {"type": "string"}, "validation_options": {"type": "object"}
+    }, "additionalProperties": true},
+    "gaps": {"type": "array", "items": {"type": "object"}},
+    "hypothesis_candidates": {"type": "array", "items": {"type": "object"}},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

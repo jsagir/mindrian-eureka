@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.opportunity-harvest-output.v1",
+  "title": "opportunity.harvest_graph_events result",
+  "type": "object",
+  "required": ["schema_version", "capability_id", "capability_version", "status", "scope_id", "snapshot_id", "input_fingerprint", "run_config", "harvest", "limitations"],
+  "properties": {
+    "schema_version": { "const": "eureka.opportunity-harvest.v1" },
+    "capability_id": { "const": "opportunity.harvest_graph_events" },
+    "capability_version": { "type": "string" },
+    "status": { "const": "completed_analysis" },
+    "scope_id": { "type": "string", "minLength": 1 },
+    "snapshot_id": { "type": "string", "minLength": 1 },
+    "input_fingerprint": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+    "run_config": { "type": "object" },
+    "harvest": {
+      "type": "object",
+      "required": ["count", "top_band", "top_candidate_id", "candidates", "warnings"],
+      "properties": {
+        "count": { "type": "integer", "minimum": 0 },
+        "top_band": { "type": ["string", "null"], "enum": ["high", "medium", "low", null] },
+        "top_candidate_id": { "type": ["string", "null"] },
+        "candidates": { "type": "array", "maxItems": 50000, "items": { "$ref": "#/$defs/candidate" } },
+        "warnings": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  },
+  "$defs": {
+    "candidate": {
+      "type": "object",
+      "required": ["candidate_id", "node_handle", "source_event", "lens", "band", "score", "connection_count", "evidence_handles", "rubric", "components", "harvest_index", "engine_mode"],
+      "properties": {
+        "candidate_id": { "type": "string" },
+        "node_handle": { "type": ["string", "null"] },
+        "source_event": { "enum": ["bridge", "whitespace", "contradiction", "eureka_proposal", "meeting_filing"] },
+        "lens": { "enum": ["leveraging_resources", "challenging_orthodoxies", "understanding_needs", "harnessing_trends"] },
+        "band": { "enum": ["high", "medium", "low"] },
+        "score": { "type": "number", "minimum": 0, "maximum": 1 },
+        "connection_count": { "type": "integer", "minimum": 1 },
+        "evidence_handles": { "type": "array", "minItems": 1, "maxItems": 2, "items": { "type": "string" } },
+        "rubric": {
+          "type": "object",
+          "required": ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8"],
+          "properties": {
+            "q1": { "type": "number", "minimum": 0, "maximum": 1 }, "q2": { "type": "number", "minimum": 0, "maximum": 1 },
+            "q3": { "type": "number", "minimum": 0, "maximum": 1 }, "q4": { "type": "number", "minimum": 0, "maximum": 1 },
+            "q5": { "type": "number", "minimum": 0, "maximum": 1 }, "q6": { "type": "number", "minimum": 0, "maximum": 1 },
+            "q7": { "type": "number", "minimum": 0, "maximum": 1 }, "q8": { "type": "number", "minimum": 0, "maximum": 1 }
+          },
+          "additionalProperties": false
+        },
+        "components": { "$ref": "#/$defs/components" },
+        "harvest_index": { "$ref": "#/$defs/harvest_index" },
+        "engine_mode": { "const": "engine" }
+      },
+      "additionalProperties": false
+    },
+    "components": {
+      "type": "object",
+      "required": ["critic_gate", "compression_score", "portfolio_score", "tail_flag", "evidence_readiness", "follow_through_readiness"],
+      "properties": {
+        "critic_gate": { "enum": ["pass", "fail", "unknown"] },
+        "compression_score": { "oneOf": [{ "type": "number", "minimum": -1, "maximum": 1 }, { "const": "unknown" }] },
+        "portfolio_score": {
+          "oneOf": [
+            { "const": "unknown" },
+            {
+              "type": "object",
+              "required": ["strategic_fit", "validated_demand", "feasibility"],
+              "properties": {
+                "strategic_fit": { "type": "number", "minimum": 0, "maximum": 1 },
+                "validated_demand": { "type": "number", "minimum": 0, "maximum": 1 },
+                "feasibility": { "type": "number", "minimum": 0, "maximum": 1 }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "tail_flag": { "type": ["boolean", "string"], "enum": ["unknown", true, false] },
+        "evidence_readiness": { "type": "number", "minimum": 0, "maximum": 1 },
+        "follow_through_readiness": { "oneOf": [{ "type": "number", "minimum": 0, "maximum": 1 }, { "const": "unknown" }] }
+      },
+      "additionalProperties": false
+    },
+    "harvest_index": {
+      "type": "object",
+      "required": ["version", "status", "value", "weights"],
+      "properties": {
+        "version": { "const": "HarvestIndex_v1" },
+        "status": { "const": "EXPERIMENTAL" },
+        "value": { "oneOf": [{ "type": "number", "minimum": -1, "maximum": 1 }, { "const": "unknown" }] },
+        "weights": {
+          "type": "object",
+          "required": ["compression", "portfolio", "evidence", "follow_through"],
+          "properties": {
+            "compression": { "const": 0.3 }, "portfolio": { "const": 0.3 },
+            "evidence": { "const": 0.2 }, "follow_through": { "const": 0.2 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

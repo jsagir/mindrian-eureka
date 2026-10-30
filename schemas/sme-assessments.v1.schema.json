@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian.dev/schemas/eureka/sme-assessments.v1.schema.json",
+  "title": "SME Inference Review Assessments v1",
+  "type": "array",
+  "maxItems": 500,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["inference_id", "status", "reviewed_by", "rationale", "evidence_claim_ids"],
+    "properties": {
+      "inference_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+      "status": { "enum": ["supported", "contradicted", "untested"] },
+      "reviewed_by": { "type": "string", "minLength": 1, "maxLength": 256 },
+      "reviewed_at": { "type": ["string", "null"], "format": "date-time" },
+      "rationale": { "type": "string", "maxLength": 5000 },
+      "evidence_claim_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 256 } },
+      "analogy_mismatch": { "type": "string", "maxLength": 2000 },
+      "falsifier": { "type": ["string", "null"], "maxLength": 2000 }
+    }
+  }
+}

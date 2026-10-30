@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian.dev/schemas/eureka/decision-sequence-result.v1.schema.json",
+  "title": "Decision Sequence Pattern Comparison Result v1",
+  "type": "object",
+  "required": ["schema_version", "capability_id", "status", "observation_count", "model_results", "relative_fit_leader", "mean_log_likelihood_difference_per_step", "interpretation_limit", "warnings"],
+  "properties": {
+    "schema_version": { "const": "eureka.decision-sequence-result.v1" },
+    "capability_id": { "const": "decision.compare_sequence_patterns" },
+    "method_version": { "const": "pomegranate-1.1.2-four-state-bernoulli-hmm-v1" },
+    "engine": { "type": "object" },
+    "status": { "const": "completed_unvalidated_model_comparison" },
+    "scope": { "type": "object" },
+    "observation_count": { "type": "integer", "minimum": 1, "maximum": 2000 },
+    "feature_names": { "type": "array", "items": { "type": "string" } },
+    "state_names": { "type": "array", "items": { "type": "string" } },
+    "model_results": { "type": "array", "minItems": 2, "maxItems": 5 },
+    "relative_fit_leader": { "type": "string" },
+    "mean_log_likelihood_difference_per_step": { "type": "number" },
+    "step_posteriors": { "type": "array" },
+    "interpretation_limit": { "type": "string" },
+    "warnings": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

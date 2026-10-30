@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.genesis-research-plan.v1",
+  "title": "research.prepare_multidomain_plan result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.genesis-research-plan.v1"
+    },
+    "capability_id": {
+      "const": "research.prepare_multidomain_plan"
+    },
+    "status": {
+      "const": "plan_ready_for_host_review"
+    },
+    "research_tasks": {
+      "type": "array"
+    },
+    "limitations": {
+      "type": "array"
+    },
+    "scope_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

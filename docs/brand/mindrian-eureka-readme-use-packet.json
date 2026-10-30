@@ -1,0 +1,621 @@
+{
+  "schemaVersion": 1,
+  "status": "intake-valid-workflow-adoption-required",
+  "consumer": {
+    "id": "mindrian-eureka-readme",
+    "name": "MindrianOS Eureka README redesign",
+    "kind": "product",
+    "team": "MindrianOS product and engineering",
+    "project": "mindrian-eureka",
+    "owner": "Mindrian project owner"
+  },
+  "what": {
+    "deliverable": "Brand-aligned GitHub repository README and family-service endorsement",
+    "surfaces": [
+      "documentation",
+      "image"
+    ],
+    "languages": [
+      "en"
+    ],
+    "familyMember": "mindrian-eureka"
+  },
+  "how": {
+    "approach": "Keep Eureka's technical name and job distinct, use the exact parent logo master in a separate endorsement position, and inherit the M:OS palette, typography, evidence discipline and documentation conventions.",
+    "workflowFile": "docs/brand-application.md",
+    "steps": [
+      {
+        "phase": "brief",
+        "action": "Record the README reader, family relationship, job, evidence and selected brand segments."
+      },
+      {
+        "phase": "produce",
+        "action": "Use the canonical parent lockup and family/documentation rules while preserving exact CLI, MCP and capability identifiers."
+      },
+      {
+        "phase": "review",
+        "action": "Check repository links and hierarchy, preserve product facts and maturity labels, and verify the logo and asset provenance."
+      },
+      {
+        "phase": "return-learning",
+        "action": "Record unresolved family identity and product integration facts for follow-up in the Eureka repository."
+      }
+    ]
+  },
+  "why": {
+    "purpose": "Make Eureka legible as a distinct M:OS adjunct service and make its repository easy to understand and use.",
+    "evidence": "Owner request in this conversation: redesign using the M:OS brand book and identify Mindrian Eureka as an adjunct service for M:OS; repository README and capability catalog provide current technical scope.",
+    "success": "The README uses an exact parent lockup as endorsement, states Eureka's distinct job and boundary, and guides a reader to method, capabilities, setup and readiness without overstating integration."
+  },
+  "jtbd": {
+    "when": "a MindrianOS user or developer arrives at the Eureka repository to understand how it helps explore uncertainty",
+    "want": "see its role in the M:OS family, understand what work it supports, and find the right CLI or MCP entrypoint",
+    "so": "assess fit and make a grounded next move without confusing opportunity exploration with a solved problem or assuming host behavior that is not verified",
+    "statement": "When a MindrianOS user or developer arrives at the Eureka repository to understand how it helps explore uncertainty, I want to see its role in the M:OS family, understand what work it supports, and find the right CLI or MCP entrypoint, so I can assess fit and make a grounded next move without confusing opportunity exploration with a solved problem or assuming host behavior that is not verified."
+  },
+  "designSource": {
+    "version": "2.7.0",
+    "contextFingerprint": "5fe09209c6fc29ceefc5c6a56219143e297601da79433dbf8494587cb109311b"
+  },
+  "mandatoryRules": "references/brand-rules.md",
+  "segments": [
+    {
+      "path": "",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of governance",
+        "inherits-from governance",
+        "Ancestor of foundations",
+        "inherits-from foundations",
+        "Ancestor of writing",
+        "inherits-from writing",
+        "Ancestor of teams",
+        "inherits-from teams",
+        "Ancestor of experience",
+        "inherits-from experience",
+        "Ancestor of identity",
+        "inherits-from identity",
+        "Ancestor of family",
+        "inherits-from family"
+      ],
+      "id": "mos.design.",
+      "title": "Mindrian design system",
+      "status": "working-baseline",
+      "identity": "ROOM.md",
+      "contract": "CONTEXT.md",
+      "routing": "INDEX.md",
+      "artifacts": []
+    },
+    {
+      "path": "experience",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of experience/bidirectional-layout",
+        "inherits-from experience/bidirectional-layout",
+        "Ancestor of experience/layout",
+        "inherits-from experience/layout",
+        "Ancestor of experience/accessibility",
+        "inherits-from experience/accessibility",
+        "Ancestor of experience/architecture",
+        "inherits-from experience/architecture"
+      ],
+      "id": "mos.design.experience",
+      "title": "Experience",
+      "status": "working-baseline",
+      "identity": "segments/experience/ROOM.md",
+      "contract": "segments/experience/CONTEXT.md",
+      "routing": "segments/experience/INDEX.md",
+      "artifacts": []
+    },
+    {
+      "path": "experience/accessibility",
+      "kind": "dependency",
+      "reasons": [
+        "uses teams/documentation"
+      ],
+      "id": "mos.design.experience.accessibility",
+      "title": "Accessibility and quality",
+      "status": "working-baseline",
+      "identity": "segments/experience/accessibility/ROOM.md",
+      "contract": "segments/experience/accessibility/CONTEXT.md",
+      "routing": "segments/experience/accessibility/INDEX.md",
+      "artifacts": [
+        "segments/experience/accessibility/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "experience/architecture",
+      "kind": "dependency",
+      "reasons": [
+        "uses teams/image-creation"
+      ],
+      "id": "mos.design.experience.architecture",
+      "title": "The spatial visual language",
+      "status": "working-baseline",
+      "identity": "segments/experience/architecture/ROOM.md",
+      "contract": "segments/experience/architecture/CONTEXT.md",
+      "routing": "segments/experience/architecture/INDEX.md",
+      "artifacts": [
+        "segments/experience/architecture/entries/2026-10-19/content.html",
+        "segments/experience/architecture/entries/2026-10-19/asset-87861a0935.png"
+      ]
+    },
+    {
+      "path": "experience/bidirectional-layout",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: documentation"
+      ],
+      "id": "mos.design.experience.bidirectional-layout",
+      "title": "Bidirectional layout",
+      "status": "working-baseline",
+      "identity": "segments/experience/bidirectional-layout/ROOM.md",
+      "contract": "segments/experience/bidirectional-layout/CONTEXT.md",
+      "routing": "segments/experience/bidirectional-layout/INDEX.md",
+      "artifacts": [
+        "segments/experience/bidirectional-layout/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "experience/layout",
+      "kind": "dependency",
+      "reasons": [
+        "uses teams/documentation"
+      ],
+      "id": "mos.design.experience.layout",
+      "title": "Layout and components",
+      "status": "working-baseline",
+      "identity": "segments/experience/layout/ROOM.md",
+      "contract": "segments/experience/layout/CONTEXT.md",
+      "routing": "segments/experience/layout/INDEX.md",
+      "artifacts": [
+        "segments/experience/layout/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "family",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of family/architecture",
+        "inherits-from family/architecture"
+      ],
+      "id": "mos.design.family",
+      "title": "Family",
+      "status": "working-baseline",
+      "identity": "segments/family/ROOM.md",
+      "contract": "segments/family/CONTEXT.md",
+      "routing": "segments/family/INDEX.md",
+      "artifacts": []
+    },
+    {
+      "path": "family/architecture",
+      "kind": "task",
+      "reasons": [
+        "Declared family member"
+      ],
+      "id": "mos.design.family.architecture",
+      "title": "Adjacent products: a family with distinct identities",
+      "status": "working-baseline",
+      "identity": "segments/family/architecture/ROOM.md",
+      "contract": "segments/family/architecture/CONTEXT.md",
+      "routing": "segments/family/architecture/INDEX.md",
+      "artifacts": [
+        "segments/family/architecture/entries/2026-10-19/content.html",
+        "segments/family/architecture/entries/2026-10-19/asset-232768adb4.md",
+        "segments/family/architecture/entries/2026-10-19/asset-e9591fb38d.json",
+        "segments/family/architecture/entries/2026-10-19/asset-3fa8c92335.png",
+        "segments/family/architecture/entries/2026-10-19/asset-4015475711.html",
+        "segments/family/architecture/entries/2026-10-19/asset-00303f1b13.js"
+      ]
+    },
+    {
+      "path": "foundations",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of foundations/positioning",
+        "inherits-from foundations/positioning",
+        "Ancestor of foundations/master-story",
+        "inherits-from foundations/master-story",
+        "Ancestor of foundations/color",
+        "inherits-from foundations/color",
+        "Ancestor of foundations/typography",
+        "inherits-from foundations/typography"
+      ],
+      "id": "mos.design.foundations",
+      "title": "Foundations",
+      "status": "working-baseline",
+      "identity": "segments/foundations/ROOM.md",
+      "contract": "segments/foundations/CONTEXT.md",
+      "routing": "segments/foundations/INDEX.md",
+      "artifacts": []
+    },
+    {
+      "path": "foundations/color",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: image",
+        "uses teams/image-creation"
+      ],
+      "id": "mos.design.foundations.color",
+      "title": "Color and meaning",
+      "status": "working-baseline",
+      "identity": "segments/foundations/color/ROOM.md",
+      "contract": "segments/foundations/color/CONTEXT.md",
+      "routing": "segments/foundations/color/INDEX.md",
+      "artifacts": [
+        "segments/foundations/color/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "foundations/master-story",
+      "kind": "mandatory",
+      "reasons": [
+        "Shared baseline",
+        "uses writing/voice"
+      ],
+      "id": "mos.design.foundations.master-story",
+      "title": "The story architecture",
+      "status": "working-baseline",
+      "identity": "segments/foundations/master-story/ROOM.md",
+      "contract": "segments/foundations/master-story/CONTEXT.md",
+      "routing": "segments/foundations/master-story/INDEX.md",
+      "artifacts": [
+        "segments/foundations/master-story/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "foundations/positioning",
+      "kind": "mandatory",
+      "reasons": [
+        "Shared baseline"
+      ],
+      "id": "mos.design.foundations.positioning",
+      "title": "The brand in plain words",
+      "status": "working-baseline",
+      "identity": "segments/foundations/positioning/ROOM.md",
+      "contract": "segments/foundations/positioning/CONTEXT.md",
+      "routing": "segments/foundations/positioning/INDEX.md",
+      "artifacts": [
+        "segments/foundations/positioning/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "foundations/typography",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: image",
+        "uses teams/image-creation",
+        "uses family/architecture"
+      ],
+      "id": "mos.design.foundations.typography",
+      "title": "Typography in English and Hebrew",
+      "status": "working-baseline",
+      "identity": "segments/foundations/typography/ROOM.md",
+      "contract": "segments/foundations/typography/CONTEXT.md",
+      "routing": "segments/foundations/typography/INDEX.md",
+      "artifacts": [
+        "segments/foundations/typography/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "governance",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of governance/intake",
+        "inherits-from governance/intake"
+      ],
+      "id": "mos.design.governance",
+      "title": "Governance",
+      "status": "working-baseline",
+      "identity": "segments/governance/ROOM.md",
+      "contract": "segments/governance/CONTEXT.md",
+      "routing": "segments/governance/INDEX.md",
+      "artifacts": []
+    },
+    {
+      "path": "governance/intake",
+      "kind": "mandatory",
+      "reasons": [
+        "Mandatory first workflow"
+      ],
+      "id": "mos.design.governance.intake",
+      "title": "Consumer entry workflow",
+      "status": "working-baseline",
+      "identity": "segments/governance/intake/ROOM.md",
+      "contract": "segments/governance/intake/CONTEXT.md",
+      "routing": "segments/governance/intake/INDEX.md",
+      "artifacts": [
+        "segments/governance/intake/entries/2026-10-19/PROTOCOL.md",
+        "segments/governance/intake/entries/2026-10-19/intake.schema.json",
+        "segments/governance/intake/entries/2026-10-19/routing.json",
+        "segments/governance/intake/entries/2026-10-19/consumer-template.json",
+        "segments/governance/intake/entries/2026-10-19/consumer-entry.html"
+      ]
+    },
+    {
+      "path": "identity",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of identity/logo",
+        "inherits-from identity/logo",
+        "Ancestor of identity/theo",
+        "inherits-from identity/theo"
+      ],
+      "id": "mos.design.identity",
+      "title": "Identity",
+      "status": "working-baseline",
+      "identity": "segments/identity/ROOM.md",
+      "contract": "segments/identity/CONTEXT.md",
+      "routing": "segments/identity/INDEX.md",
+      "artifacts": []
+    },
+    {
+      "path": "identity/logo",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: image",
+        "uses teams/image-creation",
+        "uses family/architecture"
+      ],
+      "id": "mos.design.identity.logo",
+      "title": "The logo system",
+      "status": "working-baseline",
+      "identity": "segments/identity/logo/ROOM.md",
+      "contract": "segments/identity/logo/CONTEXT.md",
+      "routing": "segments/identity/logo/INDEX.md",
+      "artifacts": [
+        "segments/identity/logo/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "identity/theo",
+      "kind": "dependency",
+      "reasons": [
+        "uses teams/documentation",
+        "Ancestor of identity/theo/framework-language",
+        "inherits-from identity/theo/framework-language"
+      ],
+      "id": "mos.design.identity.theo",
+      "title": "Theo is one character",
+      "status": "working-baseline",
+      "identity": "segments/identity/theo/ROOM.md",
+      "contract": "segments/identity/theo/CONTEXT.md",
+      "routing": "segments/identity/theo/INDEX.md",
+      "artifacts": [
+        "segments/identity/theo/entries/2026-10-19/content.html",
+        "segments/identity/theo/entries/2026-10-19/asset-fa8504998f.json",
+        "segments/identity/theo/entries/2026-10-19/asset-d96217b320.js"
+      ]
+    },
+    {
+      "path": "identity/theo/framework-language",
+      "kind": "dependency",
+      "reasons": [
+        "uses teams/image-creation",
+        "uses family/architecture"
+      ],
+      "id": "mos.design.identity.theo.framework-language",
+      "title": "The avatar as a framework and concept language",
+      "status": "working-baseline",
+      "identity": "segments/identity/theo/framework-language/ROOM.md",
+      "contract": "segments/identity/theo/framework-language/CONTEXT.md",
+      "routing": "segments/identity/theo/framework-language/INDEX.md",
+      "artifacts": [
+        "segments/identity/theo/framework-language/entries/2026-10-19/content.html",
+        "segments/identity/theo/framework-language/entries/2026-10-19/asset-539f4c5541.json",
+        "segments/identity/theo/framework-language/entries/2026-10-19/asset-1cb7af6135.html",
+        "segments/identity/theo/framework-language/entries/2026-10-19/asset-6531fbbc7b.css",
+        "segments/identity/theo/framework-language/entries/2026-10-19/asset-7e5db2bc97.js",
+        "segments/identity/theo/framework-language/entries/2026-10-19/asset-11b301a662.html"
+      ]
+    },
+    {
+      "path": "teams",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of teams/documentation",
+        "inherits-from teams/documentation",
+        "Ancestor of teams/image-creation",
+        "inherits-from teams/image-creation",
+        "Ancestor of teams/jtbd",
+        "inherits-from teams/jtbd"
+      ],
+      "id": "mos.design.teams",
+      "title": "Teams",
+      "status": "working-baseline",
+      "identity": "segments/teams/ROOM.md",
+      "contract": "segments/teams/CONTEXT.md",
+      "routing": "segments/teams/INDEX.md",
+      "artifacts": []
+    },
+    {
+      "path": "teams/documentation",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: documentation",
+        "uses family/architecture"
+      ],
+      "id": "mos.design.teams.documentation",
+      "title": "Documentation: help someone complete the job",
+      "status": "working-baseline",
+      "identity": "segments/teams/documentation/ROOM.md",
+      "contract": "segments/teams/documentation/CONTEXT.md",
+      "routing": "segments/teams/documentation/INDEX.md",
+      "artifacts": [
+        "segments/teams/documentation/entries/2026-10-19/content.html",
+        "segments/teams/documentation/entries/2026-10-19/asset-b1727ce037.md",
+        "segments/teams/documentation/entries/2026-10-19/asset-1a2d50f160.md",
+        "segments/teams/documentation/entries/2026-10-19/asset-4d832ba27c.md",
+        "segments/teams/documentation/entries/2026-10-19/asset-ac5a311087.csv"
+      ]
+    },
+    {
+      "path": "teams/image-creation",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: image",
+        "Ancestor of teams/image-creation/generation",
+        "inherits-from teams/image-creation/generation"
+      ],
+      "id": "mos.design.teams.image-creation",
+      "title": "Image creators and art direction",
+      "status": "working-baseline",
+      "identity": "segments/teams/image-creation/ROOM.md",
+      "contract": "segments/teams/image-creation/CONTEXT.md",
+      "routing": "segments/teams/image-creation/INDEX.md",
+      "artifacts": [
+        "segments/teams/image-creation/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "teams/image-creation/generation",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: image"
+      ],
+      "id": "mos.design.teams.image-creation.generation",
+      "title": "Image generation, architecture and photographic storytelling",
+      "status": "working-baseline",
+      "identity": "segments/teams/image-creation/generation/ROOM.md",
+      "contract": "segments/teams/image-creation/generation/CONTEXT.md",
+      "routing": "segments/teams/image-creation/generation/INDEX.md",
+      "artifacts": [
+        "segments/teams/image-creation/generation/entries/2026-10-19/content.html",
+        "segments/teams/image-creation/generation/entries/2026-10-19/asset-0b5e2d02fb.png",
+        "segments/teams/image-creation/generation/entries/2026-10-19/asset-19f8a58c52.md",
+        "segments/teams/image-creation/generation/entries/2026-10-19/asset-20dcb0a739.json",
+        "segments/teams/image-creation/generation/entries/2026-10-19/asset-ca3e789af8.html"
+      ]
+    },
+    {
+      "path": "teams/jtbd",
+      "kind": "dependency",
+      "reasons": [
+        "uses teams/documentation"
+      ],
+      "id": "mos.design.teams.jtbd",
+      "title": "Mindrian uses its own method",
+      "status": "working-baseline",
+      "identity": "segments/teams/jtbd/ROOM.md",
+      "contract": "segments/teams/jtbd/CONTEXT.md",
+      "routing": "segments/teams/jtbd/INDEX.md",
+      "artifacts": [
+        "segments/teams/jtbd/entries/2026-10-19/content.html",
+        "segments/teams/jtbd/entries/2026-10-19/asset-6f6959b52f.md",
+        "segments/teams/jtbd/entries/2026-10-19/asset-5ec8d6d324.md"
+      ]
+    },
+    {
+      "path": "writing",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of writing/voice",
+        "inherits-from writing/voice",
+        "Ancestor of writing/punctuation",
+        "inherits-from writing/punctuation"
+      ],
+      "id": "mos.design.writing",
+      "title": "Writing",
+      "status": "working-baseline",
+      "identity": "segments/writing/ROOM.md",
+      "contract": "segments/writing/CONTEXT.md",
+      "routing": "segments/writing/INDEX.md",
+      "artifacts": []
+    },
+    {
+      "path": "writing/punctuation",
+      "kind": "mandatory",
+      "reasons": [
+        "Shared baseline",
+        "uses writing/voice"
+      ],
+      "id": "mos.design.writing.punctuation",
+      "title": "punctuation",
+      "status": "working-baseline",
+      "identity": "segments/writing/punctuation/ROOM.md",
+      "contract": "segments/writing/punctuation/CONTEXT.md",
+      "routing": "segments/writing/punctuation/INDEX.md",
+      "artifacts": [
+        "segments/writing/punctuation/entries/2026-10-19/asset-98b57a2843.json"
+      ]
+    },
+    {
+      "path": "writing/voice",
+      "kind": "mandatory",
+      "reasons": [
+        "Shared baseline",
+        "uses teams/documentation"
+      ],
+      "id": "mos.design.writing.voice",
+      "title": "The voice of Mindrian",
+      "status": "working-baseline",
+      "identity": "segments/writing/voice/ROOM.md",
+      "contract": "segments/writing/voice/CONTEXT.md",
+      "routing": "segments/writing/voice/INDEX.md",
+      "artifacts": [
+        "segments/writing/voice/entries/2026-10-19/content.html"
+      ]
+    }
+  ],
+  "ruleSets": [
+    {
+      "id": "brand-baseline",
+      "status": "active",
+      "version": "2.4.0",
+      "applies": true,
+      "source": "references/brand-rules.md",
+      "checks": [
+        "No em dashes",
+        "Exact parent identity",
+        "Mindrian leads, Theo supports",
+        "Preserve evidence status",
+        "Check relevant language/accessibility rules"
+      ],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "uiux-ruling-system",
+      "status": "planned",
+      "version": null,
+      "applies": false,
+      "source": null,
+      "checks": [],
+      "result": "not-implemented-not-passed"
+    }
+  ],
+  "notices": [
+    "Family member is not registered. Complete a family-member brief; do not infer its identity or capabilities."
+  ],
+  "workflowIntegration": {
+    "file": "docs/brand-application.md",
+    "status": "proposed-addition-generated-not-applied-to-external-workflow",
+    "requiredPhases": [
+      "brief",
+      "produce",
+      "review",
+      "return-learning"
+    ],
+    "steps": [
+      {
+        "phase": "brief",
+        "action": "Record the README reader, family relationship, job, evidence and selected brand segments."
+      },
+      {
+        "phase": "produce",
+        "action": "Use the canonical parent lockup and family/documentation rules while preserving exact CLI, MCP and capability identifiers."
+      },
+      {
+        "phase": "review",
+        "action": "Check repository links and hierarchy, preserve product facts and maturity labels, and verify the logo and asset provenance."
+      },
+      {
+        "phase": "return-learning",
+        "action": "Record unresolved family identity and product integration facts for follow-up in the Eureka repository."
+      }
+    ]
+  },
+  "reviewEvidence": {
+    "status": "not-provided",
+    "note": "Valid intake is not final design approval, identity authentication or proof of workflow adoption."
+  }
+}

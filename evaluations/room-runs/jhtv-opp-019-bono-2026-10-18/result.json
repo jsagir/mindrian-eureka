@@ -1,0 +1,170 @@
+{
+  "schema_version": "eureka.bono-debate-review.v1",
+  "capability_id": "deliberation.prepare_six_hat_review",
+  "status": "ready_for_human_ruling",
+  "scope_id": "jhtv-oliver-kuntz/OPP-019/2026-10-18-bono-review",
+  "topic": "Whether OPP-019 merits a deep dive as a confidence-aware cardiac procedure-planning opportunity",
+  "hypothesis": "A reliability envelope over plausible image and model variations could make patient-specific VT and CRT planning outputs safer to interpret; some foundational image-quality, anatomy, registration, and provenance components may be reusable, while indication-specific decision modules remain separate.",
+  "perspectives": {
+    "white": {
+      "arguments": [
+        {
+          "id": "white-01",
+          "argument": "The two JHTV records describe different workflows: CT+BSPM for CRT implantation planning and CT/inFAT-based personalized modeling for VT ablation. The VT record reports retrospective validation but also says further development is needed. Independent 2026 work supports examining uncertainty in CT-derived VT models; it does not validate these JHTV assets.",
+          "evidence": [
+            {
+              "id": "CT-UQ-2026",
+              "title": "Accounting for uncertainty in computational models of VT improves ablation guidance",
+              "source_ref": "https://pubmed.ncbi.nlm.nih.gov/42601469/"
+            },
+            {
+              "id": "JHTV-CRT",
+              "title": "JHTV technology 24301: CT and body-surface-potential-mapping CRT planning toolbox",
+              "source_ref": "https://jhu.technologypublisher.com/technology/24301"
+            },
+            {
+              "id": "JHTV-VT",
+              "title": "JHTV technology 42306: Personalized Heart Modeling Using Intramyocardial Fat Deposition on CT",
+              "source_ref": "https://jhu.technologypublisher.com/technology/42306"
+            }
+          ],
+          "grounding": "source_linked"
+        }
+      ],
+      "present": true
+    },
+    "red": {
+      "arguments": [
+        {
+          "id": "red-01",
+          "argument": "A clear reliability display may feel safer and more trustworthy to clinicians; it may also feel distracting or create false reassurance. This is an unmeasured user-reaction hypothesis, not an interview finding.",
+          "evidence": [],
+          "grounding": "no_sources_linked"
+        }
+      ],
+      "present": true
+    },
+    "black": {
+      "arguments": [
+        {
+          "id": "black-01",
+          "argument": "The strongest risk is that uncertainty is poorly calibrated or the two procedures require incompatible data and models. External CT research shows that small scar-reconstruction changes can alter VT predictions; CT+BSPM CRT planning has different inputs and endpoints. A shared product could add cost without enough shared infrastructure.",
+          "evidence": [
+            {
+              "id": "CT-UQ-2026",
+              "title": "Accounting for uncertainty in computational models of VT improves ablation guidance",
+              "source_ref": "https://pubmed.ncbi.nlm.nih.gov/42601469/"
+            },
+            {
+              "id": "JHTV-CRT",
+              "title": "JHTV technology 24301: CT and body-surface-potential-mapping CRT planning toolbox",
+              "source_ref": "https://jhu.technologypublisher.com/technology/24301"
+            },
+            {
+              "id": "JHTV-VT",
+              "title": "JHTV technology 42306: Personalized Heart Modeling Using Intramyocardial Fat Deposition on CT",
+              "source_ref": "https://jhu.technologypublisher.com/technology/42306"
+            }
+          ],
+          "grounding": "source_linked"
+        }
+      ],
+      "present": true
+    },
+    "yellow": {
+      "arguments": [
+        {
+          "id": "yellow-01",
+          "argument": "If a reliability envelope identifies unstable predictions and helps clinicians decide when to trust, review, or abstain from a model output, it could improve the usefulness of both planning workflows. The JHU MRI-based feasibility report makes patient-specific model-guided VT planning a credible area to investigate, but does not demonstrate value for the JHTV CT technologies or a shared platform.",
+          "evidence": [
+            {
+              "id": "JHTV-CRT",
+              "title": "JHTV technology 24301: CT and body-surface-potential-mapping CRT planning toolbox",
+              "source_ref": "https://jhu.technologypublisher.com/technology/24301"
+            },
+            {
+              "id": "JHTV-VT",
+              "title": "JHTV technology 42306: Personalized Heart Modeling Using Intramyocardial Fat Deposition on CT",
+              "source_ref": "https://jhu.technologypublisher.com/technology/42306"
+            },
+            {
+              "id": "JHU-MRI-2026",
+              "title": "Digital Twin-Guided Ablation for Ventricular Tachycardia",
+              "source_ref": "https://pubmed.ncbi.nlm.nih.gov/41931055/"
+            }
+          ],
+          "grounding": "source_linked"
+        }
+      ],
+      "present": true
+    },
+    "green": {
+      "arguments": [
+        {
+          "id": "green-01",
+          "argument": "Test a confidence-aware layer first on the VT module, where 2026 CT literature directly documents reconstruction sensitivity; then test the CRT module separately. Share only proven foundations such as image-quality checks, coordinates, provenance and review UI. If reuse is weak, keep two products and test the reliability layer on the stronger single indication.",
+          "evidence": [
+            {
+              "id": "CT-UQ-2026",
+              "title": "Accounting for uncertainty in computational models of VT improves ablation guidance",
+              "source_ref": "https://pubmed.ncbi.nlm.nih.gov/42601469/"
+            },
+            {
+              "id": "JHTV-CRT",
+              "title": "JHTV technology 24301: CT and body-surface-potential-mapping CRT planning toolbox",
+              "source_ref": "https://jhu.technologypublisher.com/technology/24301"
+            },
+            {
+              "id": "JHTV-VT",
+              "title": "JHTV technology 42306: Personalized Heart Modeling Using Intramyocardial Fat Deposition on CT",
+              "source_ref": "https://jhu.technologypublisher.com/technology/42306"
+            }
+          ],
+          "grounding": "source_linked"
+        }
+      ],
+      "present": true
+    },
+    "blue": {
+      "arguments": [
+        {
+          "id": "blue-01",
+          "argument": "Next: agree on clinically meaningful stability and abstention criteria before outcome review; run an exploratory, blinded retrospective feasibility study on separate VT and CRT cohorts; record image exclusions, output stability, clinician review, analyst time and runtime. Treat this as a protocol proposal, not a clinical recommendation or powered efficacy study.",
+          "evidence": [
+            {
+              "id": "JHTV-CRT",
+              "title": "JHTV technology 24301: CT and body-surface-potential-mapping CRT planning toolbox",
+              "source_ref": "https://jhu.technologypublisher.com/technology/24301"
+            },
+            {
+              "id": "JHTV-VT",
+              "title": "JHTV technology 42306: Personalized Heart Modeling Using Intramyocardial Fat Deposition on CT",
+              "source_ref": "https://jhu.technologypublisher.com/technology/42306"
+            }
+          ],
+          "grounding": "source_linked"
+        }
+      ],
+      "present": true
+    }
+  },
+  "missing_perspectives": [],
+  "unresolved_questions": [
+    "Which arguments are mutually inconsistent?",
+    "What evidence would change the ruling?",
+    "Are the perspectives grounded in independent sources or only different prompts?"
+  ],
+  "ruling": {
+    "required_from": "human navigator",
+    "value": null
+  },
+  "provenance": {
+    "method": "Six Thinking Hats argument organization and completeness checks",
+    "computed_at": "2026-10-18T19:43:58.667354+00:00"
+  },
+  "limitations": [
+    "Perspective labels do not create independent expertise or evidence.",
+    "This does not execute research, simulate actual BONO debate behavior, or write to a room graph.",
+    "The human navigator owns the ruling and any filing decision."
+  ]
+}

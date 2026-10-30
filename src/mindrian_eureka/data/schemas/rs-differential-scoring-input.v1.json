@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian-os.com/schemas/eureka/rs-differential-scoring-input.v1.json",
+  "title": "RS differential scoring request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["query_concept", "doc_concept", "query_vector", "doc_vector"],
+  "properties": {
+    "scope_id": {"type": ["string", "null"], "maxLength": 200},
+    "snapshot_id": {"type": ["string", "null"], "maxLength": 200},
+    "query_concept": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "doc_concept": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "query_vector": {"type": "array", "minItems": 1, "maxItems": 4096, "items": {"type": "number"}},
+    "doc_vector": {"type": "array", "minItems": 1, "maxItems": 4096, "items": {"type": "number"}},
+    "query_node_id": {"type": "string", "minLength": 1, "maxLength": 500},
+    "doc_node_id": {"type": "string", "minLength": 1, "maxLength": 500},
+    "query_source_ids": {"type": "array", "maxItems": 50, "items": {"type": "string", "minLength": 1, "maxLength": 500}},
+    "doc_source_ids": {"type": "array", "maxItems": 50, "items": {"type": "string", "minLength": 1, "maxLength": 500}}
+  }
+}

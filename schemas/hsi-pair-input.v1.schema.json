@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.hsi-pair-input.v1",
+  "title": "HSI host-supplied artifact bundle",
+  "type": "object",
+  "required": ["artifacts"],
+  "properties": {
+    "scope_id": {"type": "string", "minLength": 1},
+    "snapshot_id": {"type": "string"},
+    "artifacts": {"type": "array", "minItems": 2, "maxItems": 2500, "items": {"type": "object", "required": ["id", "text"], "properties": {"id": {"type": "string", "minLength": 1}, "title": {"type": "string"}, "source_ref": {"type": "string", "minLength": 1}, "url": {"type": "string"}, "path": {"type": "string"}, "section": {"type": "string"}, "text": {"type": "string", "minLength": 1, "maxLength": 1000000}}}},
+    "dense_vectors": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "number"}}},
+    "lexical": {"enum": ["hybrid", "lsa", "bm25"]},
+    "ranking": {"enum": ["percentile", "legacy"]},
+    "top_k": {"type": "integer", "minimum": 1, "maximum": 100},
+    "min_percentile": {"type": "number", "minimum": 0, "maximum": 1}
+  },
+  "additionalProperties": false
+}

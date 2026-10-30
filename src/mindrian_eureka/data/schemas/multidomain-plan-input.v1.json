@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.multidomain-plan-input.v1",
+  "title": "research.prepare_multidomain_plan input",
+  "type": "object",
+  "properties": {
+    "scope_id": {
+      "type": "string"
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 12000
+    },
+    "approved_domains": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "rationale": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": true
+          }
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 12
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0
+    },
+    "snapshot_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    }
+  },
+  "required": [
+    "objective",
+    "approved_domains"
+  ],
+  "additionalProperties": false
+}

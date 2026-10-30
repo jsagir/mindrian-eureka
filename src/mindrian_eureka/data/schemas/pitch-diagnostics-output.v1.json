@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.pitch-diagnostics-result.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "pitch_diagnostics",
+    "claim_traceability",
+    "decision",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.pitch-diagnostics-result.v1"
+    },
+    "capability_id": {
+      "const": "analysis.critique_pitch"
+    },
+    "status": {
+      "const": "completed_local_diagnostics"
+    },
+    "pitch_diagnostics": {
+      "type": "object"
+    },
+    "claim_traceability": {
+      "type": "object"
+    },
+    "decision": {
+      "const": "not_assessed"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "scope_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

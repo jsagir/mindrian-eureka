@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.decision-sequence-input.v1",
+  "title": "decision.compare_sequence_patterns input",
+  "type": "object",
+  "properties": {
+    "scope_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "snapshot_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "sequence_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "observations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/observation"},
+      "minItems": 1,
+      "maxItems": 2000
+    },
+    "models": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/model"},
+      "minItems": 2,
+      "maxItems": 5
+    }
+  },
+  "required": ["scope_id", "sequence_id", "observations", "models"],
+  "additionalProperties": false,
+  "$defs": {
+    "observation": {
+      "type": "object",
+      "properties": {
+        "step_id": {"type": "string", "minLength": 1},
+        "features": {
+          "type": "object",
+          "properties": {
+            "complex_features": {"type": "boolean"},
+            "multidirectional_causation": {"type": "boolean"},
+            "holistic_view": {"type": "boolean"},
+            "creative_synthesis": {"type": "boolean"}
+          },
+          "required": ["complex_features", "multidirectional_causation", "holistic_view", "creative_synthesis"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["step_id", "features"],
+      "additionalProperties": false
+    },
+    "probability": {"type": "number", "minimum": 0, "maximum": 1},
+    "probabilityVector": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/probability"},
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "matrix": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/probabilityVector"},
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "model": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "label": {"type": "string"},
+        "initial_distribution": {"$ref": "#/$defs/probabilityVector"},
+        "transition_matrix": {"$ref": "#/$defs/matrix"},
+        "emission_probabilities": {"$ref": "#/$defs/matrix"}
+      },
+      "required": ["id", "initial_distribution", "transition_matrix", "emission_probabilities"],
+      "additionalProperties": false
+    }
+  }
+}

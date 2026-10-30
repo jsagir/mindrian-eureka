@@ -1,0 +1,26 @@
+{
+  "schema_version": "eureka.capability.v1",
+  "id": "analogy.cross_domain_research",
+  "name": "Research and Test Cross-Domain Reframes",
+  "jtbd": "When a decision is stuck in its familiar framing, find sourced mechanisms from other fields, test their structural fit and check proposed inferences against supporting and contradictory evidence so I can choose what deserves a deeper investigation.",
+  "status": "experimental",
+  "input_schema": "schemas/cross-domain-research-request.v1.schema.json",
+  "output_schema": "schemas/cross-domain-research-result.v1.schema.json",
+  "runtime": "MindrianOS host research broker plus local Python SME worker",
+  "network": "denied",
+  "data_classes": ["user-provided-derived-structure", "approved-search-strings", "external-source-metadata", "bounded-source-excerpts"],
+  "requires": ["MindrianOS-approved exact-query grant", "host-returned research bundle", "traceable target and base encodings", "reviewer assessment of each inference"],
+  "side_effects": [],
+  "limitations": [
+    "The Scout does not execute network requests or verify host grants; it checks only query and source lineage.",
+    "External source coverage depends on enabled host providers and accessible source content.",
+    "Evidence statuses are reviewer conclusions with citations, not a truth guarantee.",
+    "MindrianOS retains filing and portfolio authority."
+  ],
+  "version": "0.1.0",
+  "source_revision": "workflow contract eureka.external-research-plan.v1 + eureka.external-research-bundle.v1",
+  "license_status": "unknown",
+  "max_runtime_seconds": 600,
+  "max_input_bytes": 20971520,
+  "max_candidates": 100
+}

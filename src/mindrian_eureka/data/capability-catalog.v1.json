@@ -1,0 +1,3024 @@
+{
+  "schema_version": "eureka.capability-catalog.v1",
+  "catalog_version": "2026-10-20+standalone-graph-algorithm-services-host-handoff-capability-chains-rs-thesis-expert-search-genesis-ip-finance-domain-service",
+  "readiness_key": {
+    "experimental": "A runnable local implementation exists; its method fidelity or decision value still requires evaluation.",
+    "host_brokered": "A runnable local step exists, but MindrianOS must provide approved external research and/or review.",
+    "blocked": "The research package describes this job, but this repository does not yet provide a verified runnable implementation.",
+    "planned": "A design role only; do not offer it as a runnable engine."
+  },
+  "capabilities": [
+    {
+      "id": "graph.prepare_artifact_bundle",
+      "name": "Prepare Graph Knowledge for the Opportunity Scout",
+      "engine_family": "Graph-to-engine handoff",
+      "jtbd": "Use when an authorized graph snapshot contains node descriptions that should be screened by the existing Screen One Local Snapshot for Opportunity Pair Leads engine. Project eligible nodes into its source-linked local artifact bundle.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/graph_relations/runner.py::prepare_artifact_bundle",
+      "input_schema": "schemas/graph-artifact-bundle-input.v1.json",
+      "output_schema": "schemas/graph-artifact-bundle-output.v1.json",
+      "runtime": "python>=3.11",
+      "resource_limits": {
+        "max_nodes": 10000,
+        "max_edges": 50000,
+        "max_artifacts": 2500,
+        "max_text_bytes": 20971520
+      },
+      "requires": [
+        "MindrianOS-authorized graph snapshot",
+        "User objective",
+        "Host-approved scope reference"
+      ],
+      "network": "No external research/model calls; MCP and workflow CLI handlers use only the supplied snapshot. The standalone graph CLI can additionally read its separately configured Neo4j store.",
+      "side_effects": [],
+      "limitations": [
+        "Graph nodes become analysis artifacts, not source evidence or Holons.",
+        "Fallback mindrian-graph references require host resolution.",
+        "The returned bundle can be passed to opportunity.synthesize_discovery_signals; MindrianOS retains authorization and review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "graph.prepare_artifact_bundle",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "graph.prepare_artifact_bundle",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "graph.explore_local_relationships",
+      "name": "Find Candidate Links in a Local Mindrian Graph",
+      "engine_family": "Holonic graph discovery",
+      "jtbd": "Use when MindrianOS has authorized a local graph snapshot and you want structural gaps, bridges, unusual category links, and semantic candidates. Optionally center the analysis on a focal node and bounded semantic neighborhood.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/graph_relations",
+      "input_schema": "schemas/graph-explore-input.v1.json",
+      "output_schema": "schemas/graph-explore-output.v1.json",
+      "runtime": "python>=3.11",
+      "resource_limits": {
+        "snapshot_file_bytes": 104857600,
+        "max_nodes": 10000,
+        "max_edges": 50000,
+        "max_focus_hops": 5,
+        "max_focus_nodes": 10000,
+        "max_null_rounds": 20,
+        "max_output_proposals": 1000
+      },
+      "requires": [
+        "For MindrianOS use: host-authorized projection from the room-local graph, mapped to this snapshot contract",
+        "Node IDs, labels, names, semantic relations, and optional text/category attributes",
+        "An authorized focal node ID if bounded focus is requested"
+      ],
+      "network": "No external research/model calls. MCP and workflow CLI analyze caller-supplied snapshots; standalone eureka-graph can read a separately configured Neo4j store for development, not the room-local SQLite graph.",
+      "side_effects": [],
+      "limitations": [
+        "Outputs are unevidenced candidates, not accepted knowledge or validated discoveries.",
+        "The historical backtest found zero of 30 later edges in the top 200, including baseline; ranking quality is unvalidated.",
+        "The MindrianOS navigation-owned projection and room-graph-to-snapshot mapping are not implemented in this repository; do not reuse the visualization-only graph export.",
+        "Standalone CLI Neo4j labels and relationship types target a separate configured graph and are not the room-local MindrianOS schema.",
+        "Focus uses undirected semantic-edge radius, not a canonical Holon boundary; MindrianOS must authorize and scope input, supply source evidence, conduct review, and perform any graph write."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "graph.explore_local_relationships",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "graph.explore_local_relationships",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "graph.map_neighbourhoods",
+      "name": "Map Structural Analogies Between Graph Neighborhoods",
+      "engine_family": "Graph-backed structural analogy",
+      "jtbd": "Use when two MindrianOS graph nodes represent a source mechanism and a target problem, and you want the bundled SME method to compare their bounded relational neighborhoods and return candidate inferences to investigate.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/graph_relations/sme_bridge.py",
+      "input_schema": "schemas/graph-sme-bridge-input.v1.json",
+      "output_schema": "schemas/graph-sme-bridge-output.v1.json",
+      "runtime": "python>=3.11",
+      "resource_limits": {
+        "max_nodes_per_neighborhood": 60,
+        "max_hops": 4,
+        "max_match_hypotheses": 200,
+        "max_returned_matches": 3
+      },
+      "requires": [
+        "MindrianOS-authorized graph snapshot",
+        "Distinct source/base and target node IDs",
+        "Relevant typed relations in both neighborhoods"
+      ],
+      "network": "No network calls; uses the bundled SME implementation.",
+      "side_effects": [],
+      "limitations": [
+        "SME correspondence and SES are structural hypotheses, not proof of transfer.",
+        "Source evidence, target constraints, and empirical testing are not assessed.",
+        "The host must resolve source references and route candidate inferences through its human review path."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "graph.map_neighbourhoods",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "graph.map_neighbourhoods",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "graph.backtest_relationship_methods",
+      "name": "Backtest Graph Relationship Methods",
+      "engine_family": "Graph algorithm evaluation",
+      "jtbd": "Use when the local graph has dated relationships and you need to compare candidate-ranking methods with temporal holdouts and simple baselines.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/graph_relations/backtest.py",
+      "input_schema": "schemas/graph-backtest-input.v1.json",
+      "output_schema": "schemas/graph-backtest-output.v1.json",
+      "runtime": "python>=3.11",
+      "requires": [
+        "Dated graph snapshot",
+        "Temporal cutoff or sufficient dated edges"
+      ],
+      "network": "No external calls; the capability uses only the caller-supplied MindrianOS projection or data bundle.",
+      "side_effects": [],
+      "limitations": [
+        "The historical Mindrian graph backtest found zero of 30 later edges in the top 200 for all methods and baseline.",
+        "A failed or underpowered backtest is not a method validation.",
+        "MCP and workflow CLI use the same bounded handler; caller scope and snapshot IDs are returned for host traceability and do not grant access."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "graph.backtest_relationship_methods",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "graph.backtest_relationship_methods",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "graph.score_bayesian_surprise",
+      "name": "Score Evidence-Related Belief Change",
+      "engine_family": "Bayesian surprise triage",
+      "jtbd": "Use after an authorized research process supplies closed-book prior and evidence-informed posterior probabilities for the same claim across model reviewers.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/graph_relations/surprise.py",
+      "input_schema": "schemas/graph-surprise-input.v1.json",
+      "output_schema": "schemas/graph-surprise-output.v1.json",
+      "runtime": "python>=3.11",
+      "resource_limits": {
+        "input_file_bytes": 20971520,
+        "max_claims": 1000,
+        "max_reviewers_per_probability_set": 100
+      },
+      "requires": [
+        "Caller-supplied prior and posterior probabilities"
+      ],
+      "network": "No external calls; the capability uses only the caller-supplied MindrianOS projection or data bundle.",
+      "side_effects": [],
+      "limitations": [
+        "This method does not retrieve evidence or query models.",
+        "Surprise and entropy prioritize review; neither establishes truth.",
+        "MCP and workflow CLI use the same bounded handler; caller scope and snapshot IDs are returned for host traceability and do not grant access."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "graph.score_bayesian_surprise",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "graph.score_bayesian_surprise",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "graph.compare_bidirectional_topics",
+      "name": "Find Topics Distinctive to One Corpus",
+      "engine_family": "Bidirectional topic matching",
+      "jtbd": "Use when comparing two supplied corpora to identify topics in one corpus that are poorly represented in the other.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/graph_relations/textsim.py::btm_unique",
+      "input_schema": "schemas/graph-btm-input.v1.json",
+      "output_schema": "schemas/graph-btm-output.v1.json",
+      "runtime": "python>=3.11",
+      "resource_limits": {
+        "input_file_bytes": 20971520,
+        "max_documents_per_corpus": 2500,
+        "max_clusters": 100,
+        "max_seeds": 50
+      },
+      "requires": [
+        "Two text corpora",
+        "Explicit clustering parameters"
+      ],
+      "network": "No external calls; the capability uses only the caller-supplied MindrianOS projection or data bundle.",
+      "side_effects": [],
+      "limitations": [
+        "Outlier topics depend on corpus, tokenization, seeds, and thresholds; they are not validated opportunities.",
+        "MCP and workflow CLI use the same bounded handler; caller scope and snapshot IDs are returned for host traceability and do not grant access."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "graph.compare_bidirectional_topics",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "graph.compare_bidirectional_topics",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "graph.rank_evidence_paths",
+      "name": "Rank Supplied Graph Evidence Paths",
+      "engine_family": "Graph traversal diagnostics",
+      "jtbd": "Use when MindrianOS has already retrieved candidate paths and you need them ordered by hop count, unknown-confidence edges, and quoted evidence coverage.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/graph_relations/traversal.py",
+      "input_schema": "schemas/graph-traversal-input.v1.json",
+      "output_schema": "schemas/graph-traversal-output.v1.json",
+      "runtime": "python>=3.11",
+      "resource_limits": {
+        "input_file_bytes": 20971520,
+        "max_path_records": 5000
+      },
+      "requires": [
+        "Authorized path records from the host"
+      ],
+      "network": "No external calls; the capability uses only the caller-supplied MindrianOS projection or data bundle.",
+      "side_effects": [],
+      "limitations": [
+        "The engine ranks supplied path records and does not retrieve graph paths or manufacture missing evidence.",
+        "MCP and workflow CLI use the same bounded handler; caller scope and snapshot IDs are returned for host traceability and do not grant access."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "graph.rank_evidence_paths",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "graph.rank_evidence_paths",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "opportunity.find_cross_domain_pairs",
+      "name": "Find Unusual Pairs Across a Research Collection",
+      "engine_family": "Cross-domain pair discovery",
+      "jtbd": "Use when a scoped, source-linked collection is ready and you want pairs whose semantic and structural signals differ, with source links for follow-up.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/opportunity_pairs",
+      "requires": [
+        "Two or more source-linked artifacts",
+        "Locally available semantic model"
+      ],
+      "network": "denied by the engine; model must be supplied locally",
+      "side_effects": [],
+      "limitations": [
+        "Pair signals are discovery leads, not evidence of novelty, value, or opportunity.",
+        "MindrianOS must resolve room references, review connections, research evidence, and file decisions.",
+        "Reference equivalence to the original unusual-pairs package and model evaluation remain open.",
+        "The ranking of the unusual-pairs engine is not verified bit-for-bit against the original package; the default hybrid_2026 scoring adds steps the original does not have.",
+        "The default LATEST unusual-pairs hybrid 2026 scorer needs at least ten eligible pairs; use legacy scoring for smaller corpora.",
+        "For graph-derived input, MindrianOS supplies the bounded, authorized artifact projection and resolves returned IDs; Eureka does not query or own the local graph."
+      ],
+      "input_schema": "schemas/cross-domain-pairs-input.v1.json",
+      "output_schema": "schemas/cross-domain-pairs-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-pair-scout",
+          "arguments": [
+            "<request.json>"
+          ],
+          "required_options": [
+            "--model-path <local-model-path>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_start",
+          "arguments": {
+            "request": "<cross-domain-pairs-input.v1>"
+          },
+          "environment": {
+            "MINDRIAN_EUREKA_RS_MODEL_PATH": "<local-model-path>",
+            "MINDRIAN_EUREKA_RS_ENCODER": "sentence-transformers"
+          },
+          "follow_up_tools": [
+            "scout_status",
+            "scout_result"
+          ]
+        }
+      }
+    },
+    {
+      "id": "analogy.map_structure",
+      "name": "Map a Source Mechanism to a Target Problem",
+      "engine_family": "Structural analogy mapping",
+      "jtbd": "Use when you have source-linked descriptions of a mechanism and a target problem and want their relationships mapped into hypotheses for later evidence checks.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/structure_mapping",
+      "requires": [
+        "Traceable target and source structures",
+        "Claim-linked source evidence"
+      ],
+      "network": "denied",
+      "side_effects": [],
+      "limitations": [
+        "Mapping outputs are hypotheses, not evidence validation.",
+        "Imported SME source/license clearance remains unresolved."
+      ],
+      "input_schema": "schemas/structure-mapping-input.v1.json",
+      "output_schema": "schemas/structure-mapping-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-structure-mapping",
+          "arguments": [
+            "map",
+            "<mapping-input.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_sme_map",
+          "arguments": {
+            "request": "<structure-mapping-input.v1>"
+          }
+        }
+      }
+    },
+    {
+      "id": "analogy.cross_domain_research",
+      "name": "Research and Test a New Problem Framing",
+      "engine_family": "Host-brokered mechanism research",
+      "jtbd": "Use when a decision is stuck in its familiar framing and Mindrian can supply approved research, source-linked findings, and reviewer assessments for mapping and inference checks.",
+      "status": "host_brokered",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/structure_mapping/workflow.py",
+      "requires": [
+        "MindrianOS-approved exact queries",
+        "Host-returned research bundle",
+        "Reviewer assessment"
+      ],
+      "network": "host broker required; this repository makes no network requests",
+      "side_effects": [],
+      "limitations": [
+        "The host owns approval, provider calls, source access, and final evidence judgment.",
+        "SME source/license clearance remains unresolved."
+      ],
+      "input_schema": "schemas/cross-domain-research-input.v1.json",
+      "output_schema": "schemas/cross-domain-research-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "analogy.cross_domain_research",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "analogy.cross_domain_research",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "decision.compare_sequence_patterns",
+      "name": "Compare Decision-Sequence Models",
+      "engine_family": "Decision-sequence analysis",
+      "jtbd": "Use when decision traces have been explicitly coded and at least two models are fully specified, and you want to compare their relative fit for research.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "loopback web",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/decision_patterns",
+      "requires": [
+        "Explicitly coded observations",
+        "At least two fully specified HMMs"
+      ],
+      "network": "denied",
+      "side_effects": [],
+      "limitations": [
+        "OMM interpretation and feature rubric are unvalidated.",
+        "This is not an opportunity-generation engine or a measure of user ability."
+      ],
+      "input_schema": "schemas/decision-sequence-input.v1.json",
+      "output_schema": "schemas/decision-sequence-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-decision-sequences",
+          "arguments": [
+            "analyze",
+            "<decision-sequence.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "decision_compare_sequence_patterns",
+          "arguments": {
+            "request": "<decision-sequence-input.v1>"
+          }
+        }
+      }
+    },
+    {
+      "id": "decision.fit_sequence_patterns",
+      "name": "Fit Exploratory Decision-Sequence Models",
+      "engine_family": "Decision-sequence model fitting",
+      "jtbd": "Use only when at least two independently coded decision traces and an explicit seed HMM are available, and you want an exploratory Baum-Welch fit for research review.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/decision_patterns",
+      "requires": [
+        "At least two independently coded sequences",
+        "At least 32 total coded observations",
+        "A fully specified seed HMM",
+        "The optional pomegranate HMM dependency"
+      ],
+      "network": "denied",
+      "side_effects": [],
+      "limitations": [
+        "The result is an unvalidated exploratory fit; the 32-step guard does not establish statistical sufficiency.",
+        "Unsupervised fitting may permute state identity; held-out evaluation and expert review are required.",
+        "Do not use the result to assess, rank, or diagnose people."
+      ],
+      "input_schema": "schemas/decision-sequence-fit-input.v1.json",
+      "output_schema": "schemas/decision-sequence-fit-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-decision-sequences",
+          "arguments": [
+            "fit",
+            "<training-bundle.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "decision_fit_sequence_patterns",
+          "arguments": {
+            "request": "<decision-sequence-fit-input.v1>"
+          }
+        }
+      }
+    },
+    {
+      "id": "opportunity.discover_breakthroughs",
+      "name": "Find and Challenge Opportunity Leads",
+      "engine_family": "Opportunity discovery and review",
+      "jtbd": "Use when you want a room or portfolio searched for candidate changes, with their evidence and assumptions prepared for human review. This full workflow is not yet runnable here.",
+      "status": "blocked",
+      "surface": [],
+      "implementation": null,
+      "requires": [
+        "Verified engine port",
+        "Room-grounded evidence contract",
+        "Critic and evaluation evidence"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "The supplied Eureka package has multiple routines, but this repo has not migrated or verified them as a single user-facing capability.",
+        "Do not equate legacy candidate grades with validated opportunity quality."
+      ],
+      "host_handoff": {
+        "type": "related_partial",
+        "capabilities": [
+          "discovery.plan_opportunity_scout",
+          "opportunity.synthesize_discovery_signals",
+          "portfolio.prepare_candidate_critic",
+          "portfolio.inspect_candidate_grounding",
+          "portfolio.prepare_critic_rubric",
+          "portfolio.evaluate_critic_rubric"
+        ],
+        "mcp": "eureka_capability_run or eureka_capability_start for listed stages; eureka_graph_opportunity_scout for graph-scoped pair leads",
+        "cli": "eureka-workflow for listed stages; eureka-scout for a prepared graph artifact bundle",
+        "limitation": "These are independently callable stages, not a verified end-to-end critic, evidence, and human-review workflow. Outputs remain hypotheses and proposals."
+      }
+    },
+    {
+      "id": "portfolio.classify_weak_signal_tail",
+      "name": "Find Low-Attention, High-Growth Areas",
+      "engine_family": "Emerging-area signal screening",
+      "jtbd": "Use when MindrianOS has comparable attention and growth measurements for a local graph cohort and wants to spot areas receiving little attention despite rising activity. Sparse, flat, and noisy cohorts are flagged; the host supplies and interprets both measures.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/data/eureka/tail-runner.cjs via src/mindrian_eureka/workflow_handlers.py",
+      "input_schema": "schemas/weak-signal-tail-input.v1.json",
+      "output_schema": "schemas/weak-signal-tail-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "max_items": 100000,
+        "execution_timeout_seconds": 30
+      },
+      "requires": [
+        "MindrianOS-authorized cohort of stable node IDs and precomputed [0,1] attention/growth signals",
+        "Explicit attention and growth proxy labels",
+        "Authorized snapshot and scope"
+      ],
+      "network": "None; caller-supplied numeric signals only.",
+      "side_effects": [],
+      "limitations": [
+        "The classifier is a pure deterministic method over supplied signals; it does not compute the attention/growth axes or read the graph.",
+        "The tail is a cohort-relative lead, not a validated opportunity, causal relationship, novelty finding, or evidence judgment.",
+        "Sparse or flat cohorts return no candidates; noisy cohorts retain candidates with an explicit suspect-noise status.",
+        "The source carries Mindrian BSL 1.1 headers; integration is local-evaluation-only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "portfolio.classify_weak_signal_tail",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "portfolio.classify_weak_signal_tail",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "portfolio.find_coverage_gaps",
+      "name": "Check Which Portfolio Themes Are Underrepresented",
+      "engine_family": "Portfolio coverage-gap discovery",
+      "jtbd": "Use when portfolio records and a sourced taxonomy are available and you want thin categories inventoried; optionally add host-computed wording-and-meaning pairs and shared-model vectors for a room-relative whitespace scan.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::find_coverage_gaps",
+      "input_schema": "schemas/portfolio-coverage-gaps-input.v1.json",
+      "output_schema": "schemas/portfolio-coverage-gaps-output.v1.json",
+      "runtime": "python>=3.11",
+      "resource_limits": {
+        "input_bytes": 20971520,
+        "artifacts_max": 25000,
+        "taxonomy_categories_max": 5000,
+        "hsi_pairs_max": 50000
+      },
+      "requires": [
+        "Sourced taxonomy and explicit artifact category assignments",
+        "Same-model vectors and wording-and-meaning seed pairs if whitespace analysis is requested"
+      ],
+      "network": "denied for local analysis",
+      "side_effects": [],
+      "limitations": [
+        "Taxonomy coverage is a count inventory; optional whitespace is relative only to supplied room artifacts and baselines.",
+        "The workflow does not run the wording-and-meaning pairs engine, embed content, search literature, measure market demand, or establish novelty.",
+        "A gap in room material does not establish external demand or commercial whitespace."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "portfolio.find_coverage_gaps",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "portfolio.find_coverage_gaps",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "analogy.find_mechanisms",
+      "name": "Find Mechanisms That Could Reframe a Problem",
+      "engine_family": "Mechanism discovery",
+      "jtbd": "Use when a curated, source-linked mechanism corpus is available and you want lexical candidate recall for a new framing before structural mapping. This does not search external literature.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::retrieve_mechanisms (lexical recall stage)",
+      "input_schema": "schemas/mechanism-retrieval-input.v1.json",
+      "output_schema": "schemas/mechanism-retrieval-output.v1.json",
+      "runtime": "python>=3.11",
+      "resource_limits": {
+        "mechanisms_max": 20000,
+        "top_k_max": 100
+      },
+      "requires": [
+        "Verified local recall/index path",
+        "Approved external research broker for fresh sources"
+      ],
+      "network": "host broker required for remote sources",
+      "side_effects": [],
+      "limitations": [
+        "This is lexical recall over caller-supplied records, not expert discovery or external research.",
+        "Retrieved analogies require structural mapping and evidence review; relevance and transferability are unvalidated."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "analogy.find_mechanisms",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "analogy.find_mechanisms",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.orchestrate_multidomain",
+      "name": "Plan Research Across Multiple Fields",
+      "engine_family": "Multidomain research orchestration",
+      "jtbd": "Use when a question needs several disciplines and confirmed domains should be turned into bounded research tasks with clear evidence handoffs. This capability plans; the host performs the research.",
+      "status": "planned",
+      "surface": [],
+      "implementation": null,
+      "requires": [
+        "Evidence-grounded domain selection",
+        "Host research execution",
+        "Source and disagreement handoff"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "The reviewed Genesis implementation is stronger at planning/persona generation than verified execution.",
+        "Perspectives are analytical lenses, not simulated authorities.",
+        "No minimum breakthrough count is valid regardless of evidence."
+      ],
+      "host_handoff": {
+        "type": "related_partial",
+        "capabilities": [
+          "research.run_genesis_local_plan",
+          "research.prepare_multidomain_plan",
+          "research.group_multidomain_findings"
+        ],
+        "mcp": "eureka_graph_genesis_plan for a bound graph projection; otherwise eureka_capability_run for each listed stage; research_run for approved external searches",
+        "cli": "eureka-workflow for each listed stage; MindrianOS /mos:research for approved search execution",
+        "limitation": "Theo or the host must review and hand off between stages. No single orchestrator verifies domain coverage, executes research, and groups results end to end."
+      }
+    },
+    {
+      "id": "analysis.critique_pitch",
+      "name": "Check a Pitch's Restatements and Evidence Trail",
+      "engine_family": "Pitch and solution critique",
+      "jtbd": "Use when a pitch needs text-difference diagnostics plus a claim/evidence completeness review. This local stage requires a supplied pitch, comparisons, claims, and evidence records; it does not generate a substantive critique.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::critique_pitch (Jason diagnostics + claim traceability)",
+      "input_schema": "schemas/pitch-diagnostics-input.v1.json",
+      "output_schema": "schemas/pitch-diagnostics-output.v1.json",
+      "runtime": "python>=3.11",
+      "resource_limits": {
+        "input_bytes": 20971520,
+        "pitch_chars_max": 200000,
+        "comparisons_max": 5000,
+        "claims_max": 500
+      },
+      "requires": [
+        "Pitch text and comparison records",
+        "Claim IDs with evidence/counterevidence references and falsifiers"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "This is a local descriptive diagnostic, not the original full generative critique workflow.",
+        "No external evidence search, graph traversal, or substantive truth adjudication is performed.",
+        "Percentile and similarity signals are not calibrated market or novelty scores."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "analysis.critique_pitch",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "analysis.critique_pitch",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "deliberation.structure",
+      "name": "Structure a Review of Competing Interpretations",
+      "engine_family": "Governed perspective review",
+      "jtbd": "Use when a bounded decision has credible, source-linked competing interpretations and a human needs to review the arguments and record an unresolved or final ruling. The full debate workflow is not yet runnable here.",
+      "status": "blocked",
+      "surface": [],
+      "implementation": null,
+      "requires": [
+        "Source/package audit",
+        "Verified governance and reviewer behavior",
+        "Human decision capture"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "The LATEST BONO source flow has been inventoried, but the shared MindrianOS graph, egress, human-gate, run-state, and close-loop dependencies are not integrated here; no full-debate behavior is asserted.",
+        "A multi-perspective debate does not create independent evidence."
+      ],
+      "host_handoff": {
+        "type": "related_partial",
+        "capabilities": ["deliberation.prepare_six_hat_review"],
+        "mcp": "eureka_capability_run with deliberation.prepare_six_hat_review",
+        "cli": "eureka-workflow deliberation.prepare_six_hat_review; MindrianOS /mos:bono for its separate governed debate",
+        "limitation": "The Eureka stage organizes supplied arguments but does not run a debate or issue a ruling. BONO is a separate host workflow, not this blocked Eureka capability."
+      }
+    },
+    {
+      "id": "graph.propose_relationships",
+      "name": "Find and Explain Relationships Between Portfolio Items",
+      "engine_family": "Portfolio relationship discovery",
+      "jtbd": "Use when MindrianOS has authorized a local graph snapshot and you want unevidenced structural or semantic relationship leads returned for later evidence gathering and human review.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/graph_relations/runner.py::explore (stable capability alias)",
+      "input_schema": "schemas/graph-explore-input.v1.json",
+      "output_schema": "schemas/graph-explore-output.v1.json",
+      "runtime": "python>=3.11",
+      "resource_limits": {
+        "max_nodes": 10000,
+        "max_edges": 50000,
+        "max_focus_hops": 5,
+        "max_null_rounds": 20,
+        "max_output_proposals": 1000
+      },
+      "requires": [
+        "MindrianOS-authorized graph snapshot",
+        "Source evidence resolution and human review in MindrianOS"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "Candidates are not evidence-backed relationships, accepted knowledge, novelty claims, or opportunity decisions.",
+        "Historical dated backtest found 0 of 30 future edges in the top 200 for every method and baseline; ranking remains unvalidated.",
+        "No graph write or approval path is enabled here; MindrianOS retains both."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "graph.propose_relationships",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "graph.propose_relationships",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "bottleneck.diagnose",
+      "name": "Diagnose What Is Limiting Progress",
+      "engine_family": "Bottleneck diagnosis",
+      "jtbd": "Use when progress is stalled and room evidence is available, but the limiting subsystem or next constraint to investigate is unclear. This remains a MindrianOS-host workflow.",
+      "status": "planned",
+      "surface": [
+        "MindrianOS host only"
+      ],
+      "implementation": null,
+      "requires": [
+        "MindrianOS room context",
+        "Native host workflow"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "Not implemented in this repository; the host owns room analysis and native command invocation."
+      ],
+      "host_handoff": {
+        "type": "host_native",
+        "mcp": "research_run with op=perspective_recall and perspective=rs",
+        "cli": "/mos:find-bottlenecks",
+        "limitation": "This runs MindrianOS Reverse Salient analysis directly; it is not dispatched through Eureka."
+      }
+    },
+    {
+      "id": "claims.compare",
+      "name": "Compare Competing Explanations",
+      "engine_family": "Competing-explanation review",
+      "jtbd": "Use when two explanations or mechanisms would lead to different decisions and you need their evidence, assumptions, predictions, and counterevidence compared. This review is not yet implemented here.",
+      "status": "planned",
+      "surface": [],
+      "implementation": null,
+      "requires": [
+        "Explicit competing claims",
+        "Source-linked evidence"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "This is not a truth classifier and is not implemented in this repository."
+      ],
+      "host_handoff": {
+        "type": "related_partial",
+        "capabilities": ["analysis.compare_text_differences", "analysis.audit_claim_traceability"],
+        "mcp": "eureka_capability_run with each listed capability; claim_read and claim_verify for separate host claim checks",
+        "cli": "eureka-workflow with each listed capability",
+        "limitation": "Text differences and evidence-link completeness do not compare explanatory mechanisms, predictions, or counterevidence and do not produce a comparative verdict."
+      }
+    },
+    {
+      "id": "evidence.fetch_for_question",
+      "name": "Gather Evidence for a Focused Question",
+      "engine_family": "Approved evidence retrieval",
+      "jtbd": "Use when a selected candidate has a specific unresolved claim and an approved host research provider can return supporting and contradictory sources with metadata. This repository does not fetch evidence.",
+      "status": "blocked",
+      "surface": [
+        "MindrianOS host only"
+      ],
+      "implementation": null,
+      "requires": [
+        "Approved exact queries",
+        "Configured host research provider",
+        "Egress and source policy checks"
+      ],
+      "network": "host broker required",
+      "side_effects": [],
+      "limitations": [
+        "This repository does not fetch sources; it can validate lineage in a host-returned bundle."
+      ],
+      "host_handoff": {
+        "type": "host_native_partial",
+        "mcp": "research_run plan, grant_request, run_quick, and filing operations",
+        "cli": "/mos:research",
+        "limitation": "The host research workflow fetches only searches approved under its own plan and grant; it is not a direct Eureka fetcher."
+      }
+    },
+    {
+      "id": "experts.find_for_topic",
+      "name": "Find Experts for a Documented Knowledge Gap",
+      "engine_family": "Expert discovery",
+      "jtbd": "Use when reviewed evidence identifies a specialized knowledge gap and Mindrian has an authorized, source-grounded expert directory. Lookup is not yet implemented here.",
+      "status": "blocked",
+      "surface": [],
+      "implementation": null,
+      "requires": [
+        "Evidence-backed topic",
+        "Authorized source or directory",
+        "Privacy and outreach policy"
+      ],
+      "network": "host broker required",
+      "side_effects": [],
+      "limitations": [
+        "No expert directory lookup or outreach is implemented here."
+      ],
+      "host_handoff": {
+        "type": "related_partial",
+        "capabilities": ["research.extract_experts_from_papers"],
+        "mcp": "MindrianOS host-native rs_experts_find searches literal topic terms in Paper titles/abstracts already stored in the bound room; Eureka eureka_capability_run with research.extract_experts_from_papers extracts candidates from host-approved supplied paper records",
+        "cli": "MindrianOS /mos:rs-experts <topic> searches the selected room's local paper corpus; Eureka eureka-workflow research.extract_experts_from_papers",
+        "limitation": "The host route is room-local and corpus-bounded; neither route searches an external expert directory, validates current expertise, or authorizes outreach. The Eureka capability remains blocked."
+      }
+    },
+    {
+      "id": "thesis.read_prior",
+      "name": "Revisit the Room's Previous Bottleneck Thesis",
+      "engine_family": "Prior-thesis retrieval",
+      "jtbd": "Use before a new discovery pass when the room may already contain a bottleneck thesis whose evidence and status should shape the next investigation. This remains a MindrianOS-host workflow.",
+      "status": "planned",
+      "surface": [
+        "MindrianOS host only"
+      ],
+      "implementation": null,
+      "requires": [
+        "Authorized room context",
+        "Existing thesis record"
+      ],
+      "network": "MindrianOS-host controlled",
+      "side_effects": [],
+      "limitations": [
+        "Not implemented in this repository; retrieval and status are host-owned."
+      ],
+      "host_handoff": {
+        "type": "host_native",
+        "cli": "/mos:rs-thesis <discovery_id>",
+        "mcp": "MindrianOS rs_thesis_read with discovery_id; bound-room, local-only read. This host tool is not an Eureka route.",
+        "limitation": "Reads an existing local Reverse Salient thesis. The Eureka capability remains planned and has no Eureka MCP route."
+      }
+    },
+    {
+      "id": "portfolio.inventory_taxonomy_coverage",
+      "name": "Count Coverage Across a Supplied Taxonomy",
+      "engine_family": "Portfolio taxonomy inventory",
+      "jtbd": "Use when source records already have categories from a supplied taxonomy and you need counts of well-covered and thin areas before investigating possible gaps.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::portfolio_coverage",
+      "requires": [
+        "Source-linked artifacts with category_ids",
+        "Explicit taxonomy and taxonomy provenance"
+      ],
+      "network": "denied by the engine; no external research.",
+      "side_effects": [],
+      "limitations": [
+        "Counts representation only; it does not run original wording-and-meaning embedding, PCA/UMAP, or demand analysis, and does not establish market whitespace.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ],
+      "input_schema": "schemas/portfolio-coverage-input.v1.json",
+      "output_schema": "schemas/portfolio-coverage-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "portfolio.inventory_taxonomy_coverage",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "portfolio.inventory_taxonomy_coverage",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "portfolio.discover_hsi_whitespace",
+      "name": "Check Whether an Innovation Pair Sits in an Underexplored Area",
+      "engine_family": "Innovation-pair gap analysis",
+      "jtbd": "Use after a pair scan when MindrianOS can supply room and reference-framework vectors from the same snapshot. Compare the pair’s surrounding concept coverage and return room-relative gaps for further investigation; this does not establish a literature or market gap.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::discover_hsi_whitespace",
+      "requires": [
+        "At least 2 room artifact vectors and 1 reference framework vector",
+        "Wording-and-meaning pair results for the same snapshot",
+        "Vectors generated with one shared embedding model"
+      ],
+      "network": "Denied; host supplies vectors and reference frameworks.",
+      "side_effects": [],
+      "limitations": [
+        "Reports room-relative sparsity only, not a literature gap, novelty, demand, or commercial whitespace.",
+        "No embedding generation or external retrieval is performed.",
+        "Results depend on supplied baseline choice, vector quality, and corpus size; validate against labeled examples."
+      ],
+      "input_schema": "schemas/hsi-whitespace-input.v1.json",
+      "output_schema": "schemas/hsi-whitespace-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "portfolio.discover_hsi_whitespace",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "portfolio.discover_hsi_whitespace",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "portfolio.analyze_baseline_whitespace",
+      "name": "Find Gaps Against a Supplied Knowledge Baseline",
+      "engine_family": "Knowledge-baseline gap analysis",
+      "jtbd": "Use when MindrianOS can provide an authorized local graph projection, same-model vectors, and a source-linked knowledge baseline. Identify baseline concepts least represented in the room for follow-up research; room-relative sparsity is not external novelty.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/hsi_baseline_whitespace.py::analyze_baseline_whitespace (adapted LATEST HSI hybrid whitespace detector)",
+      "input_schema": "schemas/hsi-baseline-whitespace-input.v1.json",
+      "output_schema": "schemas/hsi-baseline-whitespace-output.v1.json",
+      "runtime": "python>=3.11; NumPy",
+      "resource_limits": {
+        "max_artifacts": 2500,
+        "max_baselines": 1000,
+        "max_vector_dimensions": 4096,
+        "max_results": 500,
+        "network": "none"
+      },
+      "requires": [
+        "MindrianOS-authorized artifact projection",
+        "Artifact and baseline vectors from the same named embedding model",
+        "Source-linked baseline records"
+      ],
+      "network": "None; all graph-derived content, vectors, and baseline records are caller supplied.",
+      "side_effects": [],
+      "limitations": [
+        "Uses deterministic PCA fallback; does not run the source UMAP path.",
+        "Relative sparsity against supplied baselines does not establish literature novelty, demand, or opportunity quality.",
+        "MindrianOS owns authorization, embedding generation, source resolution, review, and any graph write.",
+        "Source rights and human-rated corpus evaluation remain unresolved; output is experimental."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "portfolio.analyze_baseline_whitespace",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "portfolio.analyze_baseline_whitespace",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "portfolio.analyze_external_whitespace",
+      "name": "Find Retrieved Papers That May Address Room Gaps",
+      "engine_family": "Retrieved-literature gap analysis",
+      "jtbd": "Use after MindrianOS has approved a focused literature search and supplies same-model vectors for room artifacts and retrieved papers. Rank papers distant from room coverage, relevant to known baseline gaps, or near the room corpus across fields. Results cover only the supplied search set.",
+      "status": "host_brokered",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/hsi_external_whitespace.py::analyze_external_whitespace (adapted LATEST HSI external-whitespace analysis)",
+      "input_schema": "schemas/hsi-external-whitespace-input.v1.json",
+      "output_schema": "schemas/hsi-external-whitespace-output.v1.json",
+      "runtime": "python>=3.11; NumPy",
+      "resource_limits": {
+        "max_artifacts": 2500,
+        "max_external_papers": 2000,
+        "max_vector_dimensions": 4096,
+        "max_known_gaps": 500,
+        "max_suggestions_per_gap": 20,
+        "network": "none"
+      },
+      "requires": [
+        "MindrianOS authorization and approved research-grant lineage",
+        "MindrianOS-projected room artifact vectors",
+        "Host-retrieved external paper metadata, abstracts, source references, and vectors",
+        "Same embedding model and preprocessing for room and external vectors"
+      ],
+      "network": "None; MindrianOS retrieves approved papers and computes or supplies vectors.",
+      "side_effects": [],
+      "limitations": [
+        "Grant ID is lineage metadata, not proof of authorization; MindrianOS is responsible for applying research and source policies before submission.",
+        "Outputs compare only the retrieved paper set; they do not establish exhaustive literature novelty or market demand.",
+        "The capability performs no embedding, retrieval, graph reads/writes, or LLM interpretation.",
+        "Abstracts and all other source text are untrusted input and are returned only as bounded source-linked evidence previews.",
+        "Source rights and external-corpus evaluation remain unresolved; results are experimental leads."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "portfolio.analyze_external_whitespace",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "portfolio.analyze_external_whitespace",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "portfolio.interpret_whitespace",
+      "name": "Route a Knowledge Gap to a Suitable Problem-Solving Method",
+      "engine_family": "Problem-type and method routing",
+      "jtbd": "Use after a whitespace analysis when MindrianOS can supply the graph links between frameworks and problem types. Classify the supplied zone as Un-Defined, Ill-Defined, Well-Defined, or Wicked, then return the matching next question and framework route for Theo.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/hsi_interpret_whitespace.py::interpret_whitespace (adapted LATEST HSI interpretation stage)",
+      "input_schema": "schemas/hsi-whitespace-interpretation-input.v1.json",
+      "output_schema": "schemas/hsi-whitespace-interpretation-output.v1.json",
+      "runtime": "python>=3.11; standard library",
+      "resource_limits": {
+        "max_zones": 500,
+        "max_framework_edges": 5000,
+        "max_projection_points": 2500,
+        "max_hypothesis_candidates": 50,
+        "network": "none"
+      },
+      "requires": [
+        "MindrianOS-produced wording-and-meaning whitespace zones and 2D projection",
+        "MindrianOS-authorized framework ADDRESSES_PROBLEM_TYPE and FEEDS_INTO edges with stable graph IDs and display names",
+        "Stable scope and snapshot identifiers where available"
+      ],
+      "network": "None; graph-derived framework edges and wording-and-meaning zones are supplied by MindrianOS.",
+      "side_effects": [],
+      "limitations": [
+        "Problem type is inherited from the supplied framework graph; raw text classification is not performed.",
+        "Wicked classification is only available when the MindrianOS framework graph maps a relevant framework to Wicked.",
+        "The 2D anchor validation gate is a heuristic; it does not prove that a gap is an opportunity.",
+        "MindrianOS remains responsible for graph authorization, evidence, Theo orchestration, human review, and graph writes."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "portfolio.interpret_whitespace",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "portfolio.interpret_whitespace",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "portfolio.discover_rs_whitespace",
+      "name": "Find Underexplored Areas Beyond a Bottleneck",
+      "engine_family": "Bottleneck-seeded gap discovery",
+      "jtbd": "Use when MindrianOS has identified a bottleneck and can supply the affected section, its source-linked artifacts, and same-model framework vectors. Find low-coverage areas downstream that may merit research; these are room-relative leads, not external novelty claims.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/hsi_rs_whitespace.py::discover_rs_whitespace (adapted LATEST HSI RS-seeded whitespace method)",
+      "input_schema": "schemas/hsi-rs-whitespace-input.v1.json",
+      "output_schema": "schemas/hsi-rs-whitespace-output.v1.json",
+      "runtime": "python>=3.11; NumPy",
+      "resource_limits": {
+        "max_artifacts": 2500,
+        "max_frameworks": 1000,
+        "max_reverse_salients": 500,
+        "max_vector_dimensions": 4096,
+        "max_input_bytes": 20971520,
+        "network": "none"
+      },
+      "requires": [
+        "MindrianOS-authorized artifacts with stable IDs, sections, source refs, supplied text, and same-model vectors",
+        "MindrianOS reverse-salient records with source and target sections",
+        "MindrianOS-projected framework baseline vectors from the same embedding model"
+      ],
+      "network": "None; graph-derived bottlenecks, room artifacts, and framework records are caller supplied.",
+      "side_effects": [],
+      "limitations": [
+        "The result is relative to supplied sections and frameworks and is not proof of an actual bottleneck, market need, or opportunity.",
+        "The lexical second signal only compares supplied section text with the nearest framework name.",
+        "No external literature or demand search occurs in Eureka.",
+        "MindrianOS owns graph authorization, source resolution, Theo review, human qualification, and all writes."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "portfolio.discover_rs_whitespace",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "portfolio.discover_rs_whitespace",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "analogy.retrieve_mechanism_candidates",
+      "name": "Retrieve Source-Linked Mechanisms from a Supplied Corpus",
+      "engine_family": "Mechanism retrieval",
+      "jtbd": "Use when the target problem is framed and a local or host-approved corpus of sourced mechanisms is available, and you need candidates for structural mapping. Retrieval is lexical, not a measure of analogy fit.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::retrieve_mechanisms",
+      "requires": [
+        "Target problem text",
+        "Mechanism records with domain, description, and source reference"
+      ],
+      "network": "denied by the engine; remote records must be supplied by MindrianOS after approval.",
+      "side_effects": [],
+      "limitations": [
+        "Lexical recall only, not the reviewed embedding recall/fitness pipeline; retrieval rank is not analogy fit.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ],
+      "input_schema": "schemas/mechanism-retrieval-input.v1.json",
+      "output_schema": "schemas/mechanism-retrieval-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "analogy.retrieve_mechanism_candidates",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "analogy.retrieve_mechanism_candidates",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.generate_rs_query_matrix",
+      "name": "Explore a Research Domain from Multiple Angles",
+      "engine_family": "Research-domain query planning",
+      "jtbd": "Use after local domain analysis when a host-approved research pass needs structured questions about what two fields share, how they may influence each other in either direction, and what adjacent fields may contribute. MindrianOS performs the search.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST rs-query-matrix.cjs deterministic 4-category, 60-query method adapted to a caller-supplied domain-analysis projection",
+      "input_schema": "schemas/rs-query-matrix-input.v1.json",
+      "output_schema": "schemas/rs-query-matrix-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "queries_max": 60,
+        "input_bytes_max": 20971520,
+        "execution_timeout_seconds": 15,
+        "domain_field_chars_max": 500
+      },
+      "requires": [
+        "Source-linked MindrianOS domain-analysis result with primary domain, concepts, and adjacent domains",
+        "Host authorization and egress policy before provider use"
+      ],
+      "network": "None; query context is caller supplied.",
+      "side_effects": [],
+      "limitations": [
+        "This generates deterministic query drafts; it does not retrieve evidence, validate search terms, or rank likely returns.",
+        "The source uses only the primary domain and first adjacent domain when constructing its four fixed categories.",
+        "The local hygiene filter does not replace MindrianOS authorization or its canonical egress gate before provider requests.",
+        "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "research.generate_rs_query_matrix",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.generate_rs_query_matrix",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.run_genesis_local_plan",
+      "name": "Build a Genesis Multidomain Research Plan from Graph Context",
+      "engine_family": "Genesis research planning",
+      "jtbd": "Use when an authorized MindrianOS graph projection needs to be decomposed into lexical domain signals, simulated analytical lenses, bounded research phases, and a broker-ready handoff. Review domains and plan before any external research.",
+      "status": "host_brokered",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/data/genesis/runner.cjs via src/mindrian_eureka/workflow_handlers.py",
+      "input_schema": "schemas/genesis-local-plan-input.v1.json",
+      "output_schema": "schemas/genesis-local-plan-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "max_artifacts": 2500,
+        "max_artifact_text_bytes": 20971520,
+        "max_analysis_context_chars": 200000,
+        "execution_timeout_seconds": 30
+      },
+      "requires": [
+        "MindrianOS-authorized graph projection with stable IDs and host-resolvable source references",
+        "Investigation objective",
+        "MindrianOS review and approved research broker for search execution"
+      ],
+      "network": "No network access in the engine. The plan and generic domain queries are returned to MindrianOS for authorization and execution.",
+      "side_effects": [],
+      "limitations": [
+        "Rule-based context decomposition and domain indicators are lexical heuristics, not semantic classification or calibrated probabilities.",
+        "Personas are simulated analytical lenses, not real experts or independent evidence.",
+        "This capability plans research only; it does not search, generate findings, persist an ICM run, or write to the MindrianOS graph.",
+        "Analysis is capped at 200,000 characters; included artifact IDs, source refs, hashes, and truncation/omission counts are returned.",
+        "Source reuse rights remain unresolved; use is experimental and local-evaluation-only."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "research.run_genesis_local_plan",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.run_genesis_local_plan",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.classify_ip_finance_domain_signals",
+      "name": "Detect IP Finance Signals in Research Text",
+      "engine_family": "Genesis domain identification",
+      "jtbd": "Use when a supplied research collection may involve IP strategy, patents, credit risk, finance, or their intersections. Return lexical domain signals with source-linked segment results to help choose a follow-up research method.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": ["CLI", "MCP"],
+      "implementation": "src/mindrian_eureka/data/genesis/ip-finance-domain-runner.cjs via src/mindrian_eureka/workflow_handlers.py",
+      "input_schema": "schemas/ip-finance-domain-input.v1.json",
+      "output_schema": "schemas/ip-finance-domain-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "max_segments": 2500,
+        "max_text_bytes": 20971520,
+        "execution_timeout_seconds": 15
+      },
+      "requires": [
+        "Host-authorized source-linked text segments with stable IDs",
+        "Scope and snapshot identifiers"
+      ],
+      "network": "none; all text is supplied by the caller.",
+      "side_effects": [],
+      "limitations": [
+        "Classification is lexical pattern matching; domain scores are hit-count heuristics, not calibrated probabilities.",
+        "Only the highest-scoring domain and up to three secondary domains are returned for each segment; ties follow source lexicon order.",
+        "A domain signal does not verify a claim, establish creditworthiness, assess legal status, or demonstrate an opportunity.",
+        "Acronym patterns are case-sensitive and can still be ambiguous in context; ambiguous short-acronym hits are returned as explicit warnings.",
+        "Source authorship and reuse rights are unresolved; local evaluation only."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": ["research.classify_ip_finance_domain_signals", "<request.json>"]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.classify_ip_finance_domain_signals",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.prepare_multidomain_plan",
+      "name": "Turn Confirmed Fields into Research Tasks",
+      "engine_family": "Multidomain research planning",
+      "jtbd": "Use when the user or host has confirmed which fields matter and needs bounded questions that specify evidence, counterevidence, and a possible falsifier for each task.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::plan_multidomain_research",
+      "requires": [
+        "Objective",
+        "User-confirmed domains and rationales"
+      ],
+      "network": "none; research execution is external to this planner.",
+      "side_effects": [],
+      "limitations": [
+        "Planning stage only; it does not search, generate findings, persist an ICM run, or automatically select evidence-grounded domains.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ],
+      "input_schema": "schemas/multidomain-plan-input.v1.json",
+      "output_schema": "schemas/multidomain-plan-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "research.prepare_multidomain_plan",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.prepare_multidomain_plan",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.group_multidomain_findings",
+      "name": "Group Repeated and Conflicting Research Findings",
+      "engine_family": "Research-finding synthesis",
+      "jtbd": "Use when parallel research has returned source-linked findings and you need identical claims grouped with their stated support or contradiction positions preserved.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::synthesize_research_findings",
+      "requires": [
+        "Source-linked findings with explicit host-provided positions"
+      ],
+      "network": "none",
+      "side_effects": [],
+      "limitations": [
+        "Groups exact normalized claim text only; it does not merge paraphrases, validate claims, or decide consensus.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ],
+      "input_schema": "schemas/finding-groups-input.v1.json",
+      "output_schema": "schemas/finding-groups-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "research.group_multidomain_findings",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.group_multidomain_findings",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "analysis.audit_claim_traceability",
+      "name": "Check Claims Against Their Evidence and Falsifiers",
+      "engine_family": "Claim traceability review",
+      "jtbd": "Use before a substantive critique when a proposal has declared claims and you need to check that each links to evidence, counterevidence review, and a falsifying observation.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::critique_proposal",
+      "requires": [
+        "Proposal, claim list, evidence records"
+      ],
+      "network": "none",
+      "side_effects": [],
+      "limitations": [
+        "Completeness audit only; this is not the reviewed Jason differential-analysis model and makes no factual or market judgment.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ],
+      "input_schema": "schemas/claim-traceability-input.v1.json",
+      "output_schema": "schemas/claim-traceability-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "analysis.audit_claim_traceability",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "analysis.audit_claim_traceability",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "deliberation.prepare_six_hat_review",
+      "name": "Prepare a Six Thinking Hats Review",
+      "engine_family": "Perspective-review preparation",
+      "jtbd": "Use when a bounded question already has source-linked arguments and you need perspective coverage and open questions organized for a human ruling. This prepares a review; it does not run a debate.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::structure_debate",
+      "requires": [
+        "Confirmed topic and hypothesis",
+        "Arguments with perspective labels and source references"
+      ],
+      "network": "none",
+      "side_effects": [],
+      "limitations": [
+        "Does not execute BONO research fan-out or debate, does not make a ruling, and perspective labels do not create independent evidence.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ],
+      "input_schema": "schemas/six-hat-review-input.v1.json",
+      "output_schema": "schemas/six-hat-review-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "deliberation.prepare_six_hat_review",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "deliberation.prepare_six_hat_review",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "graph.package_relationship_proposals",
+      "name": "Validate and Package Candidate Portfolio Links",
+      "engine_family": "Relationship proposal handoff",
+      "jtbd": "Use after a separate process has proposed links from an approved snapshot, when you need node and evidence references checked and the proposals packaged for human review before any graph write.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::propose_graph_relationships",
+      "requires": [
+        "Approved node snapshot",
+        "Candidate relations with evidence IDs and rationale"
+      ],
+      "network": "none",
+      "side_effects": [],
+      "limitations": [
+        "Packages caller-proposed links; it does not discover/rank them or write graph edges.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ],
+      "input_schema": "schemas/relationship-packaging-input.v1.json",
+      "output_schema": "schemas/relationship-packaging-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "graph.package_relationship_proposals",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "graph.package_relationship_proposals",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "discovery.plan_opportunity_scout",
+      "name": "Plan a Selective Opportunity-Discovery Run",
+      "engine_family": "Opportunity-discovery planning",
+      "jtbd": "Use when the user has stated a decision objective and scope and needs a selective method sequence with dependencies and stop points before any capability is run.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/discovery_workflows.py::plan_opportunity_discovery",
+      "requires": [
+        "Objective",
+        "Explicit capability selections"
+      ],
+      "network": "none",
+      "side_effects": [],
+      "limitations": [
+        "Plan only; the user and Theo still select the methods, and unavailable or unapproved dependencies remain blocked.",
+        "This stage never writes to a MindrianOS room, graph, or canonical portfolio."
+      ],
+      "input_schema": "schemas/opportunity-plan-input.v1.json",
+      "output_schema": "schemas/opportunity-plan-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "discovery.plan_opportunity_scout",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "discovery.plan_opportunity_scout",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "portfolio.find_hybrid_similarity_pairs",
+      "name": "Rank Unusual Pairs by Wording and Meaning",
+      "engine_family": "Hybrid similarity pair screening",
+      "jtbd": "Use when a scoped, source-linked collection has vectors or a local encoder available and you want pairs whose wording and semantic similarity signals differ ranked for investigation.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/hsi_engine.py and src/mindrian_eureka/hsi_reference.py",
+      "requires": [
+        "Two or more source-linked artifacts",
+        "Optional dense vectors or a locally configured sentence-transformer model for the semantic leg; no dense leg uses explicitly labeled lexical-only degradation"
+      ],
+      "network": "denied; model loading is local-only and no embeddings are fetched",
+      "side_effects": [],
+      "limitations": [
+        "Wording-and-meaning and spectral outputs are exploratory portfolio-relative signals, not probability, quality, market, or novelty estimates.",
+        "Without a configured local encoder or supplied vectors, the engine explicitly falls back to a lexical-only comparison.",
+        "The copied wording-and-meaning reference source has unresolved redistribution rights and is local-evaluation only.",
+        "The whitespace-to-taxonomy workflow is not included in this capability."
+      ],
+      "input_schema": "schemas/hsi-pairs-input.v1.json",
+      "output_schema": "schemas/hsi-pairs-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "portfolio.find_hybrid_similarity_pairs",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "portfolio.find_hybrid_similarity_pairs",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "analysis.compare_text_differences",
+      "name": "Compare Claims for Restatement and Overlap",
+      "engine_family": "Text-difference analysis",
+      "jtbd": "Use when descriptions or claim sets may repeat the same idea in different words and you need sentence pairs surfaced for human review. Similarity is a diagnostic signal, not a novelty score.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/pitch_analysis/algorithm.py",
+      "requires": [
+        "One or more text pairs with stable IDs; five or more pairs are needed for corpus percentiles"
+      ],
+      "network": "denied; optional sentence model must be provided locally; otherwise the output labels its character n-gram proxy",
+      "side_effects": [],
+      "limitations": [
+        "The semantic/text gap is a paraphrase diagnostic, not novelty, opportunity, or innovation score.",
+        "Dense sentence-transformer behavior was not run or validated on this deployment.",
+        "Source/package redistribution rights remain unresolved; local evaluation only."
+      ],
+      "input_schema": "schemas/text-differences-input.v1.json",
+      "output_schema": "schemas/text-differences-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "analysis.compare_text_differences",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "analysis.compare_text_differences",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "opportunity.synthesize_discovery_signals",
+      "name": "Screen One Local Snapshot for Opportunity Pair Leads",
+      "engine_family": "Local opportunity-pair screening",
+      "jtbd": "Use when a scoped local catalog and local semantic model are ready and you want unusual-pairs and wording-and-meaning pair leads from the same snapshot for Theo and human review. The result is a shortlist, not a qualification.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/opportunity_discovery.py; JobManager durable run lifecycle",
+      "requires": [
+        "2..2500 source-linked local artifacts",
+        "MindrianOS scope and snapshot identity when the bundle is graph-derived",
+        "Configured local unusual-pairs model or local model cache",
+        "Optional precomputed dense vectors or local wording-and-meaning model; without these that engine uses labeled lexical-only degradation"
+      ],
+      "network": "denied; both methods use local supplied material and local models only",
+      "side_effects": [],
+      "limitations": [
+        "This combines two retrieval signals, not the full Eureka harvest/critic/qualification lifecycle.",
+        "No unusual-pairs and wording-and-meaning scores are fused; results are ordered by number of methods surfacing a pair and then best within-engine rank.",
+        "Pair signals do not establish technical complementarity, novelty, market value, or a breakthrough.",
+        "Theo review, graph tracing, external evidence, SME adjudication, and opportunity-bank writes are separate host actions.",
+        "Wording-and-meaning reference-source rights remain unresolved; local evaluation only.",
+        "The complete graph.prepare_artifact_bundle result is accepted directly by eureka-signal-scout (legacy alias: eureka-scout) and scout_start_opportunity_signal_scout; the host remains responsible for authorizing the projection."
+      ],
+      "input_schema": "schemas/discovery-signals-input.v1.json",
+      "output_schema": "schemas/discovery-signals-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-signal-scout",
+          "arguments": [
+            "<request.json>"
+          ],
+          "environment": {
+            "MINDRIAN_EUREKA_RS_MODEL_PATH": "<local-model-path>",
+            "MINDRIAN_EUREKA_DATA_DIR": "<local-job-data-directory>"
+          }
+        },
+        "mcp": {
+          "tool": "scout_start_opportunity_signal_scout",
+          "arguments": {
+            "request": "<discovery-signals-input.v1>"
+          },
+          "environment": {
+            "MINDRIAN_EUREKA_RS_MODEL_PATH": "<local-model-path>"
+          },
+          "follow_up_tools": [
+            "scout_status",
+            "scout_result"
+          ]
+        }
+      }
+    },
+    {
+      "id": "analogy.assess_structural_fitness",
+      "name": "Compare the Structure of a Mechanism and a Target",
+      "engine_family": "Structural analogy comparison",
+      "jtbd": "Use when a source mechanism and target problem are each encoded in seven sourced relational layers and you need to prioritize possible correspondences for SME and evidence review.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/analogy_fitness.py",
+      "requires": [
+        "One source-linked target description group",
+        "1..100 source-linked mechanism description groups",
+        "Operator-supplied local sentence-transformer model"
+      ],
+      "network": "denied; encoder model must be available locally",
+      "side_effects": [],
+      "limitations": [
+        "The layer correspondence and bands are embedding heuristics, not validated transfer or opportunity-quality scores.",
+        "Per-layer corpus thresholds are descriptive and uncalibrated; pools under five use fixed 0.5 correspondence thresholds.",
+        "Text/structure fusion and restatement lifting prioritize review; the local sentence-transformer path is not numerically equivalent to the LATEST embedding spine.",
+        "A high structural band is an SME handoff hypothesis and must be reviewed against counterevidence and boundary conditions.",
+        "No external mechanism retrieval is performed in this capability."
+      ],
+      "input_schema": "schemas/analogy-fitness-input.v1.json",
+      "output_schema": "schemas/analogy-fitness-output.v1.json",
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "analogy.assess_structural_fitness",
+            "<request.json>"
+          ],
+          "environment": {
+            "MINDRIAN_EUREKA_ANALOGY_MODEL_PATH": "<local-model-path>"
+          }
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "analogy.assess_structural_fitness",
+            "request": "<capability input schema>"
+          },
+          "environment": {
+            "MINDRIAN_EUREKA_ANALOGY_MODEL_PATH": "<local-model-path>"
+          }
+        }
+      }
+    },
+    {
+      "id": "analogy.discover_transfer_whitespace",
+      "name": "Find Unarticulated Transfer Mechanisms",
+      "engine_family": "Analogy-seeded whitespace discovery",
+      "jtbd": "Use after source and target mechanisms have been linked and the host has supplied same-model vectors for the room artifacts and a relevant baseline. Identify analogy regions that appear under-articulated in this room for further research.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/analogy_whitespace.py::analyze",
+      "input_schema": "schemas/analogy-transfer-whitespace-input.v1.json",
+      "output_schema": "schemas/analogy-transfer-whitespace-output.v1.json",
+      "runtime": "python>=3.11",
+      "resource_limits": {
+        "max_artifacts": 25000,
+        "max_baselines": 5000,
+        "max_edges": 5000,
+        "max_hsi_pairs": 50000,
+        "max_vector_dimension": 20000
+      },
+      "requires": [
+        "Authorized artifact vectors and baseline framework vectors from one embedding model",
+        "Host-supplied analogy edges or wording-and-meaning pairs with section labels"
+      ],
+      "network": "none; all graph records and vectors are caller supplied",
+      "side_effects": [],
+      "limitations": [
+        "This is a local articulation-gap heuristic, not a literature novelty check or validated opportunity score.",
+        "Percentile ranking falls back to fixed thresholds when the scored corpus is below min_corpus.",
+        "Source code rights remain unresolved; local evaluation only.",
+        "MindrianOS owns authorization, source resolution, review, and all graph writes."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "analogy.discover_transfer_whitespace",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "analogy.discover_transfer_whitespace",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "portfolio.assess_candidate_dimensions",
+      "name": "Assess Eureka Candidate Dimensions",
+      "engine_family": "Eureka portfolio assessment",
+      "jtbd": "Use when MindrianOS has a source-linked candidate pair, a comparable authorized cohort, the unusual-pairs signal, and explicit criterion judgments; inspect separate portfolio dimensions and their consistency-gated AHP-weighted signal before human review.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST Eureka portfolio-dimensions.cjs and ahp-weights.cjs through isolated Node worker",
+      "input_schema": "schemas/portfolio-dimension-assessment-input.v1.json",
+      "output_schema": "schemas/portfolio-dimension-assessment-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "cohort_items_max": 10000,
+        "source_refs_per_candidate_max": 100,
+        "execution_timeout_seconds": 30,
+        "input_bytes_max": 20971520
+      },
+      "requires": [
+        "MindrianOS-authorized node cohort from one graph snapshot",
+        "Stable candidate IDs and source references for both candidate nodes",
+        "MindrianOS-supplied unusual-pairs direction, absolute difference, and source reference",
+        "A reciprocal 3x3 pairwise judgment matrix over strategic fit, validated demand, and technical-economic feasibility with consistency ratio <=0.1"
+      ],
+      "network": "None; all node/cohort data and unusual-pairs signals are caller supplied.",
+      "side_effects": [],
+      "limitations": [
+        "Dimension values are heuristic cohort-relative signals, not calibrated probabilities or independently verified facts.",
+        "AHP consistency measures internal consistency of supplied judgments, not their correctness.",
+        "The weighted result is a portfolio-priority signal only; it is not an opportunity verdict, breakthrough score, market validation, or graph fact.",
+        "The host must ensure cohort fields are comparable and authorized within the same scope/snapshot.",
+        "The source carries Mindrian BSL 1.1 headers; this integration is for local evaluation pending distribution review.",
+        "MindrianOS retains authorization, source resolution, review, and all graph writes."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "portfolio.assess_candidate_dimensions",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "portfolio.assess_candidate_dimensions",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "opportunity.prepare_statement",
+      "name": "Draft a Reviewable Opportunity Statement",
+      "engine_family": "Eureka opportunity framing",
+      "jtbd": "Use after a source-linked candidate pair has separate dimension signals and a MindrianOS-supplied portfolio rank; turn it into a concise opportunity hypothesis with explicit unmet needs, risk, and next validation steps for Theo and human review.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST Eureka opportunity-statement.cjs through isolated Node worker; dimension weakness derived by packaged portfolio-dimensions.cjs",
+      "input_schema": "schemas/opportunity-statement-input.v1.json",
+      "output_schema": "schemas/opportunity-statement-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "candidate_text_chars_max": 20000,
+        "source_refs_per_item_max": 100,
+        "execution_timeout_seconds": 30,
+        "input_bytes_max": 20971520
+      },
+      "requires": [
+        "Two distinct MindrianOS graph candidates with source references and SAP-style problem/section descriptions",
+        "The prior portfolio dimension result and its stable reference",
+        "A host-supplied ordinal rank and its distinct source reference",
+        "At least one cited shared-problem statement and source reference",
+        "MindrianOS-authorized scope and snapshot IDs"
+      ],
+      "network": "None; all candidate descriptions, dimensions, rank, and source references are caller supplied.",
+      "side_effects": [],
+      "limitations": [
+        "Returns a structured hypothesis draft only; critic is deliberately not invoked, status is pending, and banked is always false.",
+        "Priority signal and rank are supplied by MindrianOS and echoed for provenance; this capability does not validate or recompute them.",
+        "The source template uses generic technology-transfer language and requires Theo/human editing for other domains or audiences.",
+        "This is not opportunity qualification, market validation, evidence verification, or an accepted graph fact.",
+        "The source carries Mindrian BSL 1.1 headers; this integration is for local evaluation pending distribution review.",
+        "MindrianOS owns authorization, source resolution, human review, persistence, and all graph writes."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "opportunity.prepare_statement",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "opportunity.prepare_statement",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "opportunity.harvest_graph_events",
+      "name": "Harvest Connected Opportunity Signals",
+      "engine_family": "Eureka opportunity harvest",
+      "jtbd": "Use when MindrianOS can provide a complete authorized-scope graph projection and portfolio dedup state; surface connected bridge, contradiction, whitespace, candidate-opportunity, and meeting signals as ranked leads for Theo and human review.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST Eureka opportunity-harvest.cjs adapted to caller-supplied snapshots through isolated Node worker",
+      "input_schema": "schemas/opportunity-harvest-input.v1.json",
+      "output_schema": "schemas/opportunity-harvest-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "max_nodes": 10000,
+        "max_edges": 50000,
+        "max_portfolio_rows": 10000,
+        "max_bank_names": 100000,
+        "execution_timeout_seconds": 45,
+        "input_bytes_max": 20971520
+      },
+      "requires": [
+        "MindrianOS-authorized complete graph projection for one scope and snapshot",
+        "All nodes, all edges in the selected authorized scope, and zero omitted counts",
+        "MindrianOS-computed complete opportunity-bank name list for Q7 deduplication",
+        "Optional prior portfolio dimension rows for D-18 components"
+      ],
+      "network": "None; all graph, bank, and portfolio data is caller supplied.",
+      "side_effects": [],
+      "limitations": [
+        "Returns source-event candidate handles only; no source prose or evidence verification is returned.",
+        "The host must provide a complete authorized-scope graph and bank name set; incomplete projections cannot support this harvest contract.",
+        "Q1 timing, Q5 actor fit, and Q8 desirability use source defaults, not measured user or market evidence.",
+        "HarvestIndex_v1 is advisory and experimental; neither its weights nor candidate ranking are calibrated against outcomes.",
+        "Candidates are not qualified opportunities or accepted graph facts. MindrianOS owns evidence resolution, human review, persistence, and every graph write.",
+        "The source carries Mindrian BSL 1.1 headers; this integration is for local evaluation pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "opportunity.harvest_graph_events",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "opportunity.harvest_graph_events",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "portfolio.prepare_candidate_critic",
+      "name": "Prepare Candidate Grounding Check",
+      "engine_family": "Eureka grounding critic",
+      "jtbd": "Use when MindrianOS wants to run the Eureka deterministic critic gates and needs the exact source-defined mechanism variants to embed with its own local model.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/data/eureka/critic/critic-runner.cjs via src/mindrian_eureka/workflow_handlers.py",
+      "input_schema": "schemas/critic-prepare-input.v1.json",
+      "output_schema": "schemas/critic-prepare-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "mechanism_text_chars": 20000,
+        "execution_timeout_seconds": 30
+      },
+      "requires": [
+        "A candidate with a mechanismText field"
+      ],
+      "network": "None.",
+      "side_effects": [],
+      "limitations": [
+        "Returns exact deterministic perturbations; MindrianOS must embed them locally and preserve the returned order and SHA-256 hashes.",
+        "No graph access, embedding computation, nearest-neighbor query, model call, or graph write occurs.",
+        "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "portfolio.prepare_candidate_critic",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "portfolio.prepare_candidate_critic",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "portfolio.inspect_candidate_grounding",
+      "name": "Check Candidate Grounding and Novelty Signals",
+      "engine_family": "Eureka grounding critic",
+      "jtbd": "Use after MindrianOS locally embeds the prepared mechanism variants and queries nearest neighbors in its authorized graph snapshot; run the source's deterministic Stage A grounding gates before deciding whether a candidate merits deeper review.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST Eureka eureka-critic.cjs Stage A via isolated Node worker; MindrianOS supplies local embeddings and graph neighbors",
+      "input_schema": "schemas/critic-evaluate-input.v1.json",
+      "output_schema": "schemas/critic-evaluate-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "embedding_dimension_max": 4096,
+        "embedding_rows_max": 32,
+        "nearest_neighbors_max": 1000,
+        "execution_timeout_seconds": 30
+      },
+      "requires": [
+        "MindrianOS-prepared exact mechanism variant embeddings from its identified local model",
+        "MindrianOS-authorized nearest-neighbor records from the same graph snapshot",
+        "Stable candidate, node, room-scope, and snapshot identifiers"
+      ],
+      "network": "None; caller-supplied vectors and neighbors only.",
+      "side_effects": [],
+      "limitations": [
+        "Runs deterministic Stage A only: fabricated-quantity, domain-swap, nearest-neighbor delta, and entity-specificity gates.",
+        "A pass only means Stage A passed; this capability performs no Stage B rubric, calibrated confidence, opportunity validation, or graph write.",
+        "Eureka cannot verify that the supplied vectors and neighbors truthfully correspond to the stated local model and snapshot; exact perturbation hashes are checked.",
+        "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "portfolio.inspect_candidate_grounding",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "portfolio.inspect_candidate_grounding",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "portfolio.prepare_critic_rubric",
+      "name": "Prepare the Two-Pass Candidate Review",
+      "engine_family": "Eureka grounding critic",
+      "jtbd": "Use after candidate Stage A passes when MindrianOS wants source-authored neutral and adversarial rubric prompts for its approved local judge.",
+      "status": "host_brokered",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST Eureka eureka-critic.cjs prompt builders via isolated Node worker",
+      "input_schema": "schemas/critic-rubric-prepare-input.v1.json",
+      "output_schema": "schemas/critic-rubric-prepare-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "prompt_max_chars": 20000,
+        "execution_timeout_seconds": 30
+      },
+      "requires": [
+        "Candidate and snapshot IDs",
+        "Candidate passed deterministic Stage A",
+        "Approved local judge in MindrianOS"
+      ],
+      "network": "None in Eureka; prompts contain candidate text and must only be sent to MindrianOS's approved local judge.",
+      "side_effects": [],
+      "limitations": [
+        "Returns raw candidate-grounded prompts; the host must keep them within its approved local model boundary.",
+        "This stage prepares prompts only and does not call any model.",
+        "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "portfolio.prepare_critic_rubric",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "portfolio.prepare_critic_rubric",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "portfolio.evaluate_critic_rubric",
+      "name": "Evaluate Neutral and Adversarial Critic Responses",
+      "engine_family": "Eureka grounding critic",
+      "jtbd": "Use after MindrianOS runs both prepared rubric prompts through its approved local judge; parse the responses and derive the source rubric verdict by code.",
+      "status": "host_brokered",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST Eureka eureka-critic.cjs runRubric/parser via isolated Node worker",
+      "input_schema": "schemas/critic-rubric-evaluate-input.v1.json",
+      "output_schema": "schemas/critic-rubric-evaluate-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "response_chars_max": 50000,
+        "execution_timeout_seconds": 30
+      },
+      "requires": [
+        "A passing Stage A result for the same candidate and graph snapshot",
+        "Source-generated prompt hashes",
+        "Neutral and adversarial local judge responses",
+        "Local judge model identity"
+      ],
+      "network": "None in Eureka; judge execution remains host-owned.",
+      "side_effects": [],
+      "limitations": [
+        "Verdict is code-derived from two supplied judge responses; locality and response integrity are host-attested.",
+        "Agreement is not calibration; confidence remains not_calibrated.",
+        "A rubric verdict does not establish a validated transfer or opportunity, and it is not accepted graph knowledge.",
+        "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "portfolio.evaluate_critic_rubric",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "portfolio.evaluate_critic_rubric",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.generate_rs_thesis",
+      "name": "Draft an Evidence-Linked Innovation Hypothesis",
+      "engine_family": "Innovation hypothesis drafting",
+      "jtbd": "Use when a problem/method pair has been classified and scored, and MindrianOS can supply its supporting evidence. Create a deterministic hypothesis for human review; this does not validate the evidence or retrieve prior room records.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/workflow_handlers.py::generate_rs_thesis; adapted from LATEST rs-thesis-generator.cjs",
+      "input_schema": "schemas/rs-thesis-input.v1.json",
+      "output_schema": "schemas/rs-thesis-output.v1.json",
+      "requires": [
+        "Classified pair with supported classification",
+        "Optional dominant breakthrough dimension",
+        "Caller-supplied source-linked evidence"
+      ],
+      "network": "None; the host supplies all pair and evidence data.",
+      "side_effects": [],
+      "limitations": [
+        "Template generation and fixed confidence arithmetic do not validate the thesis or evidence.",
+        "The capability does not read prior room records, search externally, or write graph knowledge.",
+        "Confidence is a heuristic and not a calibrated probability.",
+        "The upstream source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "research.generate_rs_thesis",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.generate_rs_thesis",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.extract_experts_from_papers",
+      "name": "Extract Source-Linked Expert Candidates from Papers",
+      "engine_family": "Reverse Salient expert extraction",
+      "jtbd": "Use after an approved host research fetch returns paper records with author metadata. Deduplicate authors, preserve paper evidence, and estimate identity confidence over this supplied corpus before any host directory lookup.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST rs-fetcher-experts.cjs through isolated Node worker and local-only content filter",
+      "input_schema": "schemas/rs-expert-extraction-input.v1.json",
+      "output_schema": "schemas/rs-expert-extraction-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "papers_max": 10000,
+        "input_bytes_max": 20971520,
+        "execution_timeout_seconds": 30
+      },
+      "requires": [
+        "Paper records returned by MindrianOS's approved research provider",
+        "Source IDs and paper metadata preserved by the host"
+      ],
+      "network": "None; MindrianOS performs retrieval and supplies the bounded paper bundle.",
+      "side_effects": [],
+      "limitations": [
+        "This extracts author candidates from the supplied papers; it does not search or resolve names against the local room/Aura directory.",
+        "Citation counts and h-index estimates describe only supplied, deduplicated papers, not the authors' careers.",
+        "Confidence measures identity resolution, not expertise, relevance, or outreach suitability.",
+        "Author, affiliation, and permitted public contact data remain user artifacts; MindrianOS must not forward these records to the remote Brain.",
+        "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "research.extract_experts_from_papers",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.extract_experts_from_papers",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.analyze_rs_domain_projection",
+      "name": "Find Relevant Fields in the Local Knowledge Graph",
+      "engine_family": "Local knowledge-domain analysis",
+      "jtbd": "Use when a research question needs relevant fields or frameworks identified from an authorized MindrianOS graph projection before document analysis. Treat the ranked fields as investigation leads, not validated domain judgments.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST rs-domain-analyzer.cjs ranking rules adapted to a host-supplied MindrianOS projection; no Brain substrate loader",
+      "input_schema": "schemas/rs-domain-analysis-input.v1.json",
+      "output_schema": "schemas/rs-domain-analysis-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "substrate_records_max": 500,
+        "input_bytes_max": 20971520,
+        "execution_timeout_seconds": 30,
+        "topic_chars_max": 512
+      },
+      "requires": [
+        "MindrianOS-authorized, source-linked framework projection",
+        "Stable room scope and graph snapshot IDs"
+      ],
+      "network": "None; topic and graph projection are caller supplied.",
+      "side_effects": [],
+      "limitations": [
+        "Lexical n-gram overlap weighted by host-supplied scores is a ranking lead, not semantic understanding or causal evidence.",
+        "Eureka does not read the MindrianOS graph; host controls projection, authorization, and any outbound egress policy.",
+        "The upstream Brain egress helper is absent from LATEST; local hygiene checks do not substitute for the host canonical egress guard.",
+        "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "research.analyze_rs_domain_projection",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.analyze_rs_domain_projection",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.preprocess_rs_documents",
+      "name": "Extract Research Signals from Approved Documents",
+      "engine_family": "Approved-document analysis",
+      "jtbd": "Use after MindrianOS has approved and retrieved source-linked documents. Extract technical terms, matching concepts, methods, relevance clues, and boundary signals before comparing candidate pairs.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST rs-preprocessor.cjs through isolated Node worker; canonical cross-room egress helper replaced by bounded local RS hygiene policy",
+      "input_schema": "schemas/rs-preprocessing-input.v1.json",
+      "output_schema": "schemas/rs-preprocessing-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "documents_max": 2000,
+        "input_bytes_max": 20971520,
+        "execution_timeout_seconds": 30,
+        "source_text_chars_max": 100000
+      },
+      "requires": [
+        "A bounded host-supplied document bundle with stable IDs",
+        "Domain-analysis output or an explicit host-supplied domain context"
+      ],
+      "network": "None; documents and domain context are caller supplied.",
+      "side_effects": [],
+      "limitations": [
+        "Concepts are matched lexically against the supplied domain list; this is not semantic classification or relevance validation.",
+        "The source truncates text to 100,000 characters and extracts at most 20 technical terms, 10 concepts, and 5 methods per document.",
+        "This worker uses a smaller local content-hygiene filter because the canonical cross-room pattern source is absent from LATEST; MindrianOS must apply its authoritative egress guard before sending any derived text or concepts externally.",
+        "The capability does not fetch papers, open a room, write to the graph, or validate source truth.",
+        "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "research.preprocess_rs_documents",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.preprocess_rs_documents",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.score_rs_differential_pair",
+      "name": "Compare a Problem and Method Across Wording and Meaning",
+      "engine_family": "Problem/method comparison",
+      "jtbd": "Use when MindrianOS has supplied same-model vectors and source-linked descriptions for a problem/method pair. Compare their lexical and semantic signals to flag an unusual difference for later review; this is not a quality or opportunity verdict.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST rs-differential-scorer.cjs score() with its local TF-IDF leg and MindrianOS-supplied semantic vectors; room/cache/embedding bridge bypassed",
+      "input_schema": "schemas/rs-differential-scoring-input.v1.json",
+      "output_schema": "schemas/rs-differential-scoring-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "vector_dimensions_max": 4096,
+        "input_bytes_max": 20971520,
+        "execution_timeout_seconds": 30,
+        "concept_chars_max": 2000
+      },
+      "requires": [
+        "Problem and method concepts from a host-authorized source bundle",
+        "Two same-model embeddings produced by the MindrianOS-approved local encoder",
+        "Stable scope and snapshot identifiers when the pair comes from the graph"
+      ],
+      "network": "None; concepts and vectors are caller supplied.",
+      "side_effects": [],
+      "limitations": [
+        "Semantic cosine is computed from host-supplied vectors; their model identity, normalization, and authorization are controlled by MindrianOS.",
+        "Uses the source legacy fixed dual-floor thresholds and pair-wise TF-IDF LSA; these are uncalibrated and do not establish novelty, causality, or opportunity value.",
+        "The source Pinecone/cache bridge and embedding spine are not invoked.",
+        "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "research.score_rs_differential_pair",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.score_rs_differential_pair",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.assess_rs_pair_set_quality",
+      "name": "Check Candidate Pair Data Before Ranking",
+      "engine_family": "Candidate-set quality check",
+      "jtbd": "Use after candidate pairs have been scored and before selecting or ranking them. Flag degenerate scores, constant dimensions, invalid numbers, or too few candidates for a meaningful ranking.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST rs-corpus-quality-gate.cjs with source score fields adapted to semantic cosine, LSA cosine, and signed semantic-minus-LSA differential",
+      "input_schema": "schemas/rs-pair-set-quality-input.v1.json",
+      "output_schema": "schemas/rs-pair-set-quality-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "scored_pairs_max": 5000,
+        "input_bytes_max": 20971520,
+        "execution_timeout_seconds": 30
+      },
+      "requires": [
+        "A bounded cohort of source-linked unusual-pairs differential scores from one authorized MindrianOS scope and snapshot"
+      ],
+      "network": "None; scores and lineage are caller supplied.",
+      "side_effects": [],
+      "limitations": [
+        "The gate is a fixed deterministic detector, not an adaptive calibration system; do not tune away its flags.",
+        "Passing indicates only that the set avoids these known collapse and small-sample conditions; it does not validate pair truth, rank quality, novelty, or opportunity value.",
+        "For research.score_rs_differential_pair output, signed differential is derived as semantic cosine minus lexical score.",
+        "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "research.assess_rs_pair_set_quality",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.assess_rs_pair_set_quality",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.classify_rs_pair",
+      "name": "Classify How a Method Relates to a Problem",
+      "engine_family": "Problem/method classification",
+      "jtbd": "Use after a problem/method comparison when you need to distinguish a possible structural transfer, semantic implementation, hybrid signal, or no clear signal before further review.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST rs-innovation-classifier.cjs through isolated Node worker; missing direction-convention dependency adapted from documented RS Convention A",
+      "input_schema": "schemas/rs-classifier-input.v1.json",
+      "output_schema": "schemas/rs-classifier-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "input_bytes_max": 1048576,
+        "execution_timeout_seconds": 15
+      },
+      "requires": [
+        "Unusual-pairs differential scores with LSA, BERT, differential, and pass state"
+      ],
+      "network": "None; scored-pair inputs are caller supplied.",
+      "side_effects": [],
+      "limitations": [
+        "Classification uses fixed thresholds (strictly greater than 0.3 by default) and is not a validated assessment of transfer value.",
+        "The source direction-convention module is absent from LATEST; Eureka follows Convention A as documented in the unusual-pairs math source.",
+        "A none classification means neither axis cleared its floor and must not be passed to the thesis generator.",
+        "No graph access, retrieval, room lookup, or persistence occurs.",
+        "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "research.classify_rs_pair",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.classify_rs_pair",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.assess_rs_commercial_case",
+      "name": "Draft a Commercial Hypothesis for an Innovation Lead",
+      "engine_family": "Commercial hypothesis drafting",
+      "jtbd": "Use when a supported problem/method pair has been classified and scored. Draft a value proposition, coarse signal bucket, and source-linked partner candidates for human investigation; these are not validated demand or a business case.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST rs-commercial-assessor.cjs through isolated Node worker; host-supplied resolved names and source IDs are reattached by adapter",
+      "input_schema": "schemas/rs-commercial-assessment-input.v1.json",
+      "output_schema": "schemas/rs-commercial-assessment-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "input_bytes_max": 1048576,
+        "execution_timeout_seconds": 15
+      },
+      "requires": [
+        "A classified supported unusual pair",
+        "Optional breakthrough score and industry-signal count from an authorized host workflow",
+        "Optional host-resolved authors and institutions with source IDs"
+      ],
+      "network": "None; all concepts, scores, signal counts, names, and source IDs are caller supplied.",
+      "side_effects": [],
+      "limitations": [
+        "The market_size_estimate is a fixed two-signal bucket string, not a TAM/SAM estimate or verified demand measure.",
+        "Value propositions are deterministic source templates, not customer-tested claims or a complete business case.",
+        "Partnership target ordering scores follow input order; names, identity, expertise, consent, and availability are not independently checked.",
+        "The host must resolve and authorize names and evidence before sending this local payload; this capability performs no directory access or persistence.",
+        "The upstream direction-independent egress helper is replaced by the local unusual-pairs content-hygiene filter; MindrianOS host egress governance remains authoritative.",
+        "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "research.assess_rs_commercial_case",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.assess_rs_commercial_case",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "research.score_rs_breakthrough",
+      "name": "Score an Innovation Lead for Further Review",
+      "engine_family": "Innovation-lead assessment",
+      "jtbd": "Use after a problem/method pair has been compared and classified. Break out feasibility, market, magnitude, advantage, and impact signals to help decide what deserves further investigation; the heuristic is not calibrated.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "LATEST rs-breakthrough-scorer.cjs through isolated Node worker and local-only content filter",
+      "input_schema": "schemas/rs-breakthrough-input.v1.json",
+      "output_schema": "schemas/rs-breakthrough-output.v1.json",
+      "runtime": "python>=3.11; Node.js>=22",
+      "resource_limits": {
+        "input_bytes_max": 1048576,
+        "execution_timeout_seconds": 15
+      },
+      "requires": [
+        "A classified unusual pair with diff, LSA, BERT, and pass state",
+        "Host-supplied market signal count and/or corpus-relative pair signals where available"
+      ],
+      "network": "None; all pair and substrate signals are caller supplied.",
+      "side_effects": [],
+      "limitations": [
+        "The five 0–2 rubric values sum to a 0–10 heuristic score; the result is not a calibrated probability or opportunity verdict.",
+        "Market signal count, pair density, substrate tier, and percentile are host supplied and not validated by this stage.",
+        "A high score does not establish novelty, user need, commercial viability, or that a wicked challenge has been solved.",
+        "No graph access, research retrieval, room lookup, or persistence occurs.",
+        "Source carries Mindrian BSL 1.1; local evaluation only pending distribution review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "research.score_rs_breakthrough",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "research.score_rs_breakthrough",
+            "request": "<capability input schema>"
+          }
+        }
+      }
+    },
+    {
+      "id": "graph.find_structural_gaps",
+      "name": "Find Missing Links Between Shared Neighbors",
+      "engine_family": "Holonic graph discovery algorithms",
+      "jtbd": "Use when you want to find unconnected graph node pairs that share several neighbors, then review the candidate links against source evidence.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/graph_relations/services.py::find_structural_gaps",
+      "input_schema": "schemas/graph-structural-gaps-input.v1.json",
+      "output_schema": "schemas/structural_gaps-output.v1.json",
+      "runtime": "python>=3.11",
+      "requires": [
+        "MindrianOS-authorized graph snapshot"
+      ],
+      "network": "No external calls; analyzes the caller-supplied snapshot only.",
+      "side_effects": [],
+      "limitations": [
+        "Outputs are candidate research signals, not accepted knowledge or validated discoveries.",
+        "MindrianOS remains responsible for authorization, evidence resolution, and human review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "graph.find_structural_gaps",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "graph.find_structural_gaps",
+            "request": "<capability input schema>"
+          }
+        }
+      },
+      "resource_limits": {
+        "max_nodes": 10000,
+        "max_edges": 50000,
+        "max_top": 1000,
+        "hub_cap_default": 150
+      }
+    },
+    {
+      "id": "graph.find_network_holes",
+      "name": "Find Unclosed Cycles in the Knowledge Graph",
+      "engine_family": "Holonic graph discovery algorithms",
+      "jtbd": "Use when you want to find induced four-cycles and their missing diagonals as structural leads, with a degree-preserving rewiring comparison.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/graph_relations/services.py::find_network_holes",
+      "input_schema": "schemas/graph-network-holes-input.v1.json",
+      "output_schema": "schemas/network_holes-output.v1.json",
+      "runtime": "python>=3.11",
+      "requires": [
+        "MindrianOS-authorized graph snapshot"
+      ],
+      "network": "No external calls; analyzes the caller-supplied snapshot only.",
+      "side_effects": [],
+      "limitations": [
+        "Outputs are candidate research signals, not accepted knowledge or validated discoveries.",
+        "MindrianOS remains responsible for authorization, evidence resolution, and human review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "graph.find_network_holes",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "graph.find_network_holes",
+            "request": "<capability input schema>"
+          }
+        }
+      },
+      "resource_limits": {
+        "max_nodes": 1200,
+        "max_edges": 6000,
+        "max_cycle_records": 20000,
+        "max_null_rounds": 10,
+        "persistence_node_limit": 1200
+      }
+    },
+    {
+      "id": "graph.find_bridge_pairs",
+      "name": "Find Candidate Links Across Graph Communities",
+      "engine_family": "Holonic graph discovery algorithms",
+      "jtbd": "Use when you want to identify unconnected node pairs whose neighborhoods meet at a structurally important bridge node across detected communities.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/graph_relations/services.py::find_bridge_pairs",
+      "input_schema": "schemas/graph-bridge-pairs-input.v1.json",
+      "output_schema": "schemas/bridge_pairs-output.v1.json",
+      "runtime": "python>=3.11",
+      "requires": [
+        "MindrianOS-authorized graph snapshot"
+      ],
+      "network": "No external calls; analyzes the caller-supplied snapshot only.",
+      "side_effects": [],
+      "limitations": [
+        "Outputs are candidate research signals, not accepted knowledge or validated discoveries.",
+        "MindrianOS remains responsible for authorization, evidence resolution, and human review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "graph.find_bridge_pairs",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "graph.find_bridge_pairs",
+            "request": "<capability input schema>"
+          }
+        }
+      },
+      "resource_limits": {
+        "max_nodes": 2500,
+        "max_edges": 12000,
+        "max_top": 1000,
+        "max_pairs_per_bridge": 100
+      }
+    },
+    {
+      "id": "graph.assess_edge_atypicality",
+      "name": "Assess How Unusual Existing Category Links Are",
+      "engine_family": "Holonic graph discovery algorithms",
+      "jtbd": "Use when you want to assess how often existing graph edges connect node categories compared with degree-preserving rewired graphs; this describes current edges, not missing opportunities.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/graph_relations/services.py::assess_edge_atypicality",
+      "input_schema": "schemas/graph-edge-atypicality-input.v1.json",
+      "output_schema": "schemas/edge_atypicality-output.v1.json",
+      "runtime": "python>=3.11",
+      "requires": [
+        "MindrianOS-authorized graph snapshot"
+      ],
+      "network": "No external calls; analyzes the caller-supplied snapshot only.",
+      "side_effects": [],
+      "limitations": [
+        "Outputs are candidate research signals, not accepted knowledge or validated discoveries.",
+        "MindrianOS remains responsible for authorization, evidence resolution, and human review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "graph.assess_edge_atypicality",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "graph.assess_edge_atypicality",
+            "request": "<capability input schema>"
+          }
+        }
+      },
+      "resource_limits": {
+        "max_nodes": 10000,
+        "max_edges": 20000,
+        "max_rewire_shuffles": 50
+      }
+    },
+    {
+      "id": "graph.find_semantic_gaps",
+      "name": "Find Similar Graph Items Without a Link",
+      "engine_family": "Holonic graph discovery algorithms",
+      "jtbd": "Use when you want to find text-bearing graph nodes that look lexically similar but are not connected, as candidates for source-backed investigation.",
+      "status": "experimental",
+      "version": "0.1.0",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/graph_relations/services.py::find_semantic_gaps",
+      "input_schema": "schemas/graph-semantic-gaps-input.v1.json",
+      "output_schema": "schemas/semantic_gaps-output.v1.json",
+      "runtime": "python>=3.11",
+      "requires": [
+        "MindrianOS-authorized graph snapshot"
+      ],
+      "network": "No external calls; analyzes the caller-supplied snapshot only.",
+      "side_effects": [],
+      "limitations": [
+        "Outputs are candidate research signals, not accepted knowledge or validated discoveries.",
+        "MindrianOS remains responsible for authorization, evidence resolution, and human review."
+      ],
+      "routes": {
+        "cli": {
+          "executable": "eureka-workflow",
+          "arguments": [
+            "graph.find_semantic_gaps",
+            "<request.json>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_run_workflow",
+          "arguments": {
+            "capability_id": "graph.find_semantic_gaps",
+            "request": "<capability input schema>"
+          }
+        }
+      },
+      "resource_limits": {
+        "max_nodes": 10000,
+        "max_edges": 50000,
+        "max_text_nodes": 3000,
+        "max_top": 1000
+      }
+    }
+  ]
+}

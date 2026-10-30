@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.bridge_pairs.v1",
+  "title": "Find Candidate Links Across Graph Communities output",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "graph_access",
+    "scope_id",
+    "snapshot_id",
+    "input_fingerprint",
+    "graph_summary",
+    "run_config",
+    "limitations",
+    "community_count",
+    "bridge_nodes",
+    "candidate_pairs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.graph-algorithm-result.v1"
+    },
+    "capability_id": {
+      "const": "graph.find_bridge_pairs"
+    },
+    "status": {
+      "const": "completed_analysis"
+    },
+    "graph_access": {
+      "const": "read_only_snapshot"
+    },
+    "scope_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "input_fingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "graph_summary": {
+      "type": "object",
+      "required": [
+        "node_count",
+        "edge_count"
+      ],
+      "properties": {
+        "node_count": {
+          "type": "integer"
+        },
+        "edge_count": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "method": {
+      "type": "string"
+    },
+    "run_config": {
+      "type": "object",
+      "required": [
+        "seed",
+        "top",
+        "per_node",
+        "min_betweenness"
+      ],
+      "properties": {
+        "seed": {
+          "type": "integer",
+          "default": 7
+        },
+        "top": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000,
+          "default": 200
+        },
+        "per_node": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        },
+        "min_betweenness": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "community_count": {
+      "type": "integer"
+    },
+    "bridge_nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "node_id",
+          "community",
+          "betweenness",
+          "participation"
+        ],
+        "properties": {
+          "node_id": {
+            "type": "string"
+          },
+          "community": {
+            "type": "integer"
+          },
+          "betweenness": {
+            "type": "number"
+          },
+          "participation": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "candidate_pairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_node_id",
+          "target_node_id",
+          "bridge_node_id",
+          "score"
+        ],
+        "properties": {
+          "source_node_id": {
+            "type": "string"
+          },
+          "target_node_id": {
+            "type": "string"
+          },
+          "bridge_node_id": {
+            "type": "string"
+          },
+          "score": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

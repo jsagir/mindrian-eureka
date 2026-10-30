@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.graph-relationship-result.v1",
+  "title": "Graph relationship exploration result",
+  "type": "object",
+  "required": ["schema_version", "capability_id", "capability_version", "status", "graph_access", "scope_id", "snapshot_id", "input_fingerprint", "run_config", "summary", "proposals", "name_issues", "limitations"],
+  "properties": {
+    "schema_version": {"const": "eureka.graph-relationship-result.v1"},
+    "capability_id": {"enum": ["graph.explore_local_relationships", "graph.propose_relationships"]},
+    "capability_version": {"const": "0.1.0"},
+    "status": {"const": "completed_analysis"},
+    "graph_access": {"const": "read_only_snapshot"},
+    "scope_id": {"type": ["string", "null"]},
+    "snapshot_id": {"type": ["string", "null"]},
+    "input_fingerprint": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "run_config": {"type": "object", "required": ["top", "seed", "attr", "text_label", "min_common", "null_rounds", "focus_node_id", "focus_hops"], "properties": {"top": {"type": "integer"}, "seed": {"type": "integer"}, "attr": {"type": "string"}, "text_label": {"type": ["string", "null"]}, "min_common": {"type": "integer"}, "null_rounds": {"type": "integer"}, "focus_node_id": {"type": ["string", "null"]}, "focus_hops": {"type": "integer"}}, "additionalProperties": false},
+    "summary": {"type": "object"},
+    "focus_projection": {"type": ["object", "null"], "properties": {"focus_node_id": {"type": "string"}, "focus_hops": {"type": "integer"}, "included_node_ids": {"type": "array", "items": {"type": "string"}}, "included_node_count": {"type": "integer"}, "source_node_count": {"type": "integer"}, "omitted_node_count": {"type": "integer"}, "included_edge_count": {"type": "integer"}, "omitted_edge_count": {"type": "integer"}, "boundary_policy": {"type": "string"}}, "required": ["focus_node_id", "focus_hops", "included_node_ids", "omitted_node_count", "boundary_policy"]},
+    "proposals": {"type": "array", "items": {"type": "object", "required": ["id", "s", "t", "suggested_type", "direction", "status", "evidence"], "properties": {"id": {"type": "string"}, "s": {"type": "string"}, "t": {"type": "string"}, "suggested_type": {"type": "string"}, "direction": {"const": "undetermined"}, "status": {"const": "proposed"}, "evidence": {"type": "array", "maxItems": 0}, "detail": {"type": "object"}}, "additionalProperties": true}},
+    "name_issues": {"type": "array", "items": {"type": "object"}},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

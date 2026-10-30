@@ -1,0 +1,101 @@
+{
+ "layers": {
+  "layer1_ranker": {
+   "max_abs_gap_delta": 4.8650679146167164e-05,
+   "order_equal": true,
+   "pairs_compared": 50,
+   "set_equal": true
+  },
+  "layer2_bm25": {
+   "max_abs_delta": 2.399999997626523e-07
+  },
+  "layer2_lsa": {
+   "max_abs_delta": 3.3713527858303394e-08,
+   "spearman": 1.0
+  },
+  "layer3_end_to_end": {
+   "abs_gap_delta": {
+    "max": 4.901550303415547e-05,
+    "mean": 2.8174377751595258e-05,
+    "median": 3.0811353139315045e-05
+   },
+   "overlap_at_10": 1.0,
+   "overlap_at_20": 1.0,
+   "overlap_at_full": 1.0,
+   "pairs_reference": 50,
+   "pairs_repo": 50,
+   "pairs_shared": 50,
+   "sign_agreement": 1.0,
+   "spearman_rank": 0.9999999999999999,
+   "spearman_signed_gap": 0.9999999999999999,
+   "top10_set_equal": true
+  },
+  "layer3b_negative_cosine": {
+   "clip_injected_set_equal": true,
+   "negative_cosines_in_fixture": 250,
+   "note": "negative cosine: path B clips to 0, path C does not; known difference, not applied in path C",
+   "overlap_unclipped": 0.86,
+   "overlap_with_clip_injected": 1.0
+  },
+  "layer4_real_model": {
+   "abs_gap_delta": {
+    "max": 0.6370771364727907,
+    "mean": 0.2215661566224765,
+    "median": 0.21915128722375576
+   },
+   "model": "sentence-transformers/all-MiniLM-L6-v2",
+   "note": "Difference comes from the dense-input rule: path B embeds the body text once and truncates; path C embeds title and body, chunks and averages. The owner decided the path C rule is canonical. Phase 1 does not change it.",
+   "overlap_at_10": 0.6,
+   "overlap_at_20": 0.7,
+   "overlap_at_full": 0.74,
+   "pairs_reference": 50,
+   "pairs_repo": 50,
+   "pairs_shared": 37,
+   "sign_agreement": 1.0,
+   "spearman_rank": 0.62375533428165,
+   "spearman_signed_gap": 0.8937885253674726,
+   "top10_set_equal": false
+  },
+  "plugin_legacy_leg": {
+   "abs_score_delta": {
+    "max": 0.33913712195417456,
+    "mean": 0.25791417416070755,
+    "median": 0.2576497731929501
+   },
+   "note": "path A supports legacy scoring only; thresholds are report only",
+   "overlap_at_10": 0.7,
+   "overlap_at_full": 0.51,
+   "spearman_rank": 0.7760180995475112
+  }
+ },
+ "libraries": {
+  "current": {
+   "numpy": "2.2.6",
+   "python": "3.12.3",
+   "scikit_learn": "1.8.0"
+  },
+  "golden": {
+   "numpy": "2.2.6",
+   "python": "3.12.3",
+   "scikit_learn": "1.8.0"
+  }
+ },
+ "paths": {
+  "A": {
+   "description": "shipped plugin rs-engine.py, legacy scoring only",
+   "id": "A",
+   "sha256": "57c18df558d83fbffc8e9f7fda905729d0c0fbfe18a1c370b1db816efa3937f1"
+  },
+  "B": {
+   "description": "LATEST reference rs-engine.py, made the JHTV result file",
+   "id": "B",
+   "sha256": "044b9ae6b807617f32dc029ff310b73653efa40e245e5bcf7750ef811c9fde45"
+  },
+  "C": {
+   "description": "repo eureka-pair-scout, hybrid_2026",
+   "id": "C",
+   "sha256": "9e663ab"
+  }
+ },
+ "verdict": "ranker equal; bm25 max abs delta 2.4e-07, lsa max abs delta 3.4e-08; end to end overlap 1.00 with shared dense vectors; dense input differs on real models (see layer 4)"
+}

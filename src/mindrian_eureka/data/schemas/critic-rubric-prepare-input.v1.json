@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.critic-rubric-prepare-input.v1",
+  "type": "object",
+  "required": ["candidate_id", "source_node_id", "scope_id", "snapshot_id", "candidate", "stage_a_result"],
+  "properties": {
+    "candidate_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "source_node_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "scope_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "snapshot_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "stage_a_result": {"type": "object", "required": ["status", "pass", "host_context"], "properties": {"status": {"const": "passed_deterministic_gates"}, "pass": {"const": true}, "host_context": {"type": "object"}}, "additionalProperties": true},
+    "candidate": {"type": "object", "required": ["mechanismText", "mappingStatement"], "properties": {"mechanismText": {"type": "string", "minLength": 1, "maxLength": 20000}, "mappingStatement": {"type": "string", "minLength": 1, "maxLength": 20000}}, "additionalProperties": true},
+    "prompt_max_chars": {"type": "integer", "minimum": 0, "maximum": 20000}
+  },
+  "additionalProperties": false
+}

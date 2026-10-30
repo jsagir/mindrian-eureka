@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.portfolio-dimension-assessment-output.v1",
+  "title": "portfolio.assess_candidate_dimensions result",
+  "type": "object",
+  "required": ["schema_version", "capability_id", "capability_version", "status", "scope_id", "snapshot_id", "input_fingerprint", "run_config", "assessment", "limitations"],
+  "properties": {
+    "schema_version": { "const": "eureka.portfolio-dimension-assessment.v1" },
+    "capability_id": { "const": "portfolio.assess_candidate_dimensions" },
+    "capability_version": { "type": "string" },
+    "status": { "const": "completed_analysis" },
+    "scope_id": { "type": "string", "minLength": 1 },
+    "snapshot_id": { "type": "string", "minLength": 1 },
+    "input_fingerprint": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+    "run_config": { "type": "object" },
+    "assessment": {
+      "type": "object",
+      "required": ["candidate_ids", "source_refs", "criteria", "a_dimensions", "b_dimensions", "pair_dimensions", "weak_dimensions", "complementary", "weighting", "portfolio_priority_signal"],
+      "properties": {
+        "candidate_ids": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "string" } },
+        "source_refs": { "type": "object", "additionalProperties": { "type": ["array", "string"], "items": { "type": "string" } } },
+        "criteria": { "const": ["strategic_fit", "validated_demand", "tech_econ_feasibility"] },
+        "a_dimensions": { "$ref": "#/$defs/dimensions" },
+        "b_dimensions": { "$ref": "#/$defs/dimensions" },
+        "pair_dimensions": { "$ref": "#/$defs/dimensions" },
+        "weak_dimensions": { "type": "object", "additionalProperties": { "type": "array", "items": { "enum": ["strategic_fit", "validated_demand", "tech_econ_feasibility"] } } },
+        "complementary": { "type": "boolean" },
+        "weighting": {
+          "type": "object",
+          "required": ["method", "weights", "lambda_max", "consistency_index", "consistency_ratio", "consistency_limit", "consistent", "out_of_scale"],
+          "properties": {
+            "method": { "const": "geometric-mean" },
+            "weights": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number", "minimum": 0, "maximum": 1 } },
+            "lambda_max": { "type": "number" },
+            "consistency_index": { "type": "number", "minimum": 0 },
+            "consistency_ratio": { "type": "number", "minimum": 0 },
+            "consistency_limit": { "const": 0.1 },
+            "consistent": { "const": true },
+            "out_of_scale": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "portfolio_priority_signal": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  },
+  "$defs": {
+    "dimensions": {
+      "type": "object",
+      "required": ["strategic_fit", "validated_demand", "tech_econ_feasibility"],
+      "properties": {
+        "strategic_fit": { "type": "number", "minimum": 0, "maximum": 1 },
+        "validated_demand": { "type": "number", "minimum": 0, "maximum": 1 },
+        "tech_econ_feasibility": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

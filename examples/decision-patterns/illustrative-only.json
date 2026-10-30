@@ -1,0 +1,47 @@
+{
+  "scope_id": "example-fictional-scope",
+  "sequence_id": "example-fictional-sequence",
+  "observations": [
+    { "step_id": "step-1", "features": { "complex_features": true, "multidirectional_causation": false, "holistic_view": false, "creative_synthesis": false } },
+    { "step_id": "step-2", "features": { "complex_features": true, "multidirectional_causation": true, "holistic_view": false, "creative_synthesis": false } },
+    { "step_id": "step-3", "features": { "complex_features": true, "multidirectional_causation": true, "holistic_view": true, "creative_synthesis": false } },
+    { "step_id": "step-4", "features": { "complex_features": true, "multidirectional_causation": true, "holistic_view": true, "creative_synthesis": true } },
+    { "step_id": "step-5", "features": { "complex_features": false, "multidirectional_causation": true, "holistic_view": true, "creative_synthesis": true } }
+  ],
+  "models": [
+    {
+      "id": "toy-integrative-hypothesis",
+      "label": "Illustrative integrative-pattern hypothesis (not validated)",
+      "initial_distribution": [0.4, 0.3, 0.2, 0.1],
+      "transition_matrix": [
+        [0.4, 0.3, 0.2, 0.1],
+        [0.2, 0.3, 0.4, 0.1],
+        [0.1, 0.2, 0.4, 0.3],
+        [0.3, 0.2, 0.2, 0.3]
+      ],
+      "emission_probabilities": [
+        [0.7, 0.5, 0.5, 0.2],
+        [0.8, 0.7, 0.5, 0.3],
+        [0.8, 0.7, 0.8, 0.5],
+        [0.8, 0.8, 0.8, 0.8]
+      ]
+    },
+    {
+      "id": "toy-conventional-hypothesis",
+      "label": "Illustrative conventional-pattern hypothesis (not validated)",
+      "initial_distribution": [0.4, 0.3, 0.2, 0.1],
+      "transition_matrix": [
+        [0.6, 0.3, 0.1, 0.0],
+        [0.1, 0.6, 0.3, 0.0],
+        [0.0, 0.1, 0.6, 0.3],
+        [0.0, 0.0, 0.2, 0.8]
+      ],
+      "emission_probabilities": [
+        [0.3, 0.2, 0.2, 0.1],
+        [0.3, 0.2, 0.3, 0.1],
+        [0.2, 0.2, 0.3, 0.2],
+        [0.2, 0.1, 0.2, 0.3]
+      ]
+    }
+  ]
+}

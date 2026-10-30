@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian-os.com/schemas/eureka/rs-query-matrix-output.v1.json",
+  "title": "RS research query matrix result",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "capability_id", "capability_version", "status", "scope_id", "snapshot_id", "categories", "query_count", "input_fingerprint", "runtime", "limitations"],
+  "properties": {
+    "schema_version": {"const": "eureka.rs-query-matrix.v1"},
+    "capability_id": {"const": "research.generate_rs_query_matrix"},
+    "capability_version": {"const": "0.1.0"},
+    "status": {"const": "query_matrix_ready"},
+    "scope_id": {"type": "string", "maxLength": 200},
+    "snapshot_id": {"type": "string", "maxLength": 200},
+    "categories": {
+      "type": "object", "additionalProperties": false,
+      "required": ["a_intersect_b", "a_leads_to_b", "b_leads_to_a", "adjacent"],
+      "properties": {
+        "a_intersect_b": {"type": "array", "minItems": 15, "maxItems": 15, "items": {"type": "string"}},
+        "a_leads_to_b": {"type": "array", "minItems": 15, "maxItems": 15, "items": {"type": "string"}},
+        "b_leads_to_a": {"type": "array", "minItems": 15, "maxItems": 15, "items": {"type": "string"}},
+        "adjacent": {"type": "array", "minItems": 15, "maxItems": 15, "items": {"type": "string"}}
+      }
+    },
+    "query_count": {"const": 60},
+    "input_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "runtime": {"type": "string", "pattern": "^v[0-9]+\\."},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}

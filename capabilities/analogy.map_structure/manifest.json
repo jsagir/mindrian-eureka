@@ -1,0 +1,26 @@
+{
+  "schema_version": "eureka.capability.v1",
+  "id": "analogy.map_structure",
+  "name": "Test a Structural Analogy",
+  "jtbd": "When I have a sourced mechanism from another field and a target problem, map their relationships and surface testable candidate inferences so I can see whether the mechanism may transfer.",
+  "status": "experimental",
+  "input_schema": "schemas/structure-mapping-input.v1.schema.json",
+  "output_schema": "schemas/structure-mapping-result.v1.schema.json",
+  "runtime": "Python >=3.11; standard-library mapping core",
+  "network": "denied",
+  "data_classes": ["user-provided-derived-structure", "source-identifiers", "bounded-source-excerpts"],
+  "requires": ["traceable target description group", "one or more source description groups", "claim-level evidence catalog"],
+  "side_effects": [],
+  "limitations": [
+    "Mapping quality depends on the supplied representations and rule set.",
+    "Candidate inferences are hypotheses and require separate evidence review.",
+    "Structural scores rank maps; they do not measure truth, usefulness, or commercial value.",
+    "This initial integration uses the user-provided 09102026 SME implementation; source-license clearance is unresolved, so the capability is experimental and must not be redistributed until cleared."
+  ],
+  "version": "0.1.0",
+  "source_revision": "user-provided 09102026/engines/sme-agent/lib/sme.py sha256:145bfaa52d825b9099a6e28eb7660aa1e33d94172e4454963b8267f464625f69",
+  "license_status": "unknown",
+  "max_runtime_seconds": 120,
+  "max_input_bytes": 20971520,
+  "max_candidates": 100
+}

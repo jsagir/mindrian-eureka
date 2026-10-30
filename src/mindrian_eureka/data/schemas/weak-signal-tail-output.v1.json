@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.weak-signal-tail-output.v1",
+  "title": "portfolio.classify_weak_signal_tail result",
+  "type": "object",
+  "required": ["schema_version", "capability_id", "capability_version", "status", "snapshot_id", "scope_id", "input_fingerprint", "run_config", "classification", "limitations"],
+  "properties": {
+    "schema_version": { "const": "eureka.weak-signal-tail.v1" },
+    "capability_id": { "const": "portfolio.classify_weak_signal_tail" },
+    "capability_version": { "type": "string" },
+    "status": { "enum": ["completed_analysis", "insufficient_structure", "suspect_noise"] },
+    "snapshot_id": { "type": ["string", "null"] },
+    "scope_id": { "type": "string" },
+    "input_fingerprint": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+    "run_config": { "type": "object" },
+    "classification": { "type": "object" },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

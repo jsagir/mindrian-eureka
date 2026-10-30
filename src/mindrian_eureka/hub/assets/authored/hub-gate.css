@@ -1,0 +1,8 @@
+#hub-locked { background: var(--mos-white); border: 1px solid var(--mos-ink); padding: var(--hub-space-5); margin-block: var(--hub-space-5); }
+#hub-locked-form { display: flex; flex-wrap: wrap; align-items: center; gap: var(--hub-space-4); }
+#hub-locked-form label { flex-basis: 100%; font-size: 16px; font-weight: 600; }
+#hub-passphrase { min-block-size: 44px; min-inline-size: 44px; inline-size: 100%; background: var(--mos-white); border: 1px solid var(--mos-ink); padding: var(--hub-space-3); }
+#hub-passphrase-toggle, #hub-unlock { min-inline-size: 44px; min-block-size: 44px; padding: var(--hub-space-3); }
+#hub-locked-status { flex-basis: 100%; }
+.hub-gate-error { color: var(--mos-red); border-inline-start: 3px solid var(--mos-red); padding-inline-start: var(--hub-space-3); background: var(--mos-white); }
+#hub-counts[hidden], #hub-nav[hidden], #hub-results[hidden], #hub-panel[hidden], #hub-data-check[hidden], [data-view][hidden] { display: none; }

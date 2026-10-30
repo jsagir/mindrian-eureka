@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.finding-groups-input.v1",
+  "title": "research.group_multidomain_findings input",
+  "type": "object",
+  "properties": {
+    "scope_id": {
+      "type": "string"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "artifact_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "claim": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 12000
+          },
+          "source_ref": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "locator": {
+            "type": "string"
+          },
+          "evidence_quote": {
+            "type": "string"
+          },
+          "position": {
+            "enum": [
+              "supports",
+              "contradicts",
+              "context",
+              "unspecified"
+            ]
+          }
+        },
+        "required": [
+          "claim"
+        ],
+        "additionalProperties": true
+      },
+      "minItems": 1,
+      "maxItems": 5000
+    },
+    "snapshot_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    }
+  },
+  "required": [
+    "findings"
+  ],
+  "additionalProperties": false
+}

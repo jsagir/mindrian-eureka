@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian.dev/schemas/eureka/cross-domain-research-request.v1.schema.json",
+  "title": "Cross-Domain Research Request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "scope_id", "objective", "target", "local_material_refs", "constraints"],
+  "properties": {
+    "run_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "scope_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "objective": { "type": "string", "minLength": 1, "maxLength": 10000 },
+    "target": { "$ref": "structure-mapping-input.v1.schema.json#/properties/target" },
+    "local_material_refs": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 256 } },
+    "constraints": { "type": "array", "items": { "type": "string", "maxLength": 2000 } },
+    "initial_discovery_queries": {
+      "type": "array", "minItems": 1, "maxItems": 20,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["query_id", "intent", "query", "provider", "why", "source_refs"],
+        "properties": {
+          "query_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+          "intent": { "const": "find_mechanism" },
+          "query": { "type": "string", "minLength": 3, "maxLength": 1000 },
+          "provider": { "enum": ["openalex", "arxiv", "pubmed", "tavily"] },
+          "include_domains": { "type": "array", "items": { "type": "string", "maxLength": 253 } },
+          "why": { "type": "string", "minLength": 3, "maxLength": 1000 },
+          "source_refs": { "type": "array", "items": { "type": "string", "maxLength": 256 } }
+        }
+      }
+    },
+    "privacy_policy": { "type": "string", "enum": ["query_text_only", "user_selected_excerpts", "host_configured"] }
+  }
+}
