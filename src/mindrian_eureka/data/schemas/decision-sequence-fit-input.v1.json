@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.decision-sequence-fit-input.v1",
+  "title": "decision.fit_sequence_patterns input",
+  "type": "object",
+  "properties": {
+    "training_mode": {"const": "exploratory_unlabeled_baum_welch"},
+    "seed_model": {"$ref": "#/$defs/model"},
+    "sequences": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/sequence"},
+      "minItems": 2,
+      "maxItems": 500
+    },
+    "model_id": {"type": "string", "maxLength": 128},
+    "label": {"type": "string", "maxLength": 256},
+    "max_iterations": {"type": "integer", "minimum": 1, "maximum": 1000, "default": 100},
+    "tolerance": {"type": "number", "minimum": 0, "default": 0.001}
+  },
+  "required": ["training_mode", "seed_model", "sequences"],
+  "additionalProperties": false,
+  "$defs": {
+    "probability": {"type": "number", "minimum": 0, "maximum": 1},
+    "probabilityVector": {
+      "type": "array", "items": {"$ref": "#/$defs/probability"},
+      "minItems": 4, "maxItems": 4
+    },
+    "matrix": {
+      "type": "array", "items": {"$ref": "#/$defs/probabilityVector"},
+      "minItems": 4, "maxItems": 4
+    },
+    "model": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "label": {"type": "string"},
+        "initial_distribution": {"$ref": "#/$defs/probabilityVector"},
+        "transition_matrix": {"$ref": "#/$defs/matrix"},
+        "emission_probabilities": {"$ref": "#/$defs/matrix"}
+      },
+      "required": ["id", "initial_distribution", "transition_matrix", "emission_probabilities"],
+      "additionalProperties": false
+    },
+    "features": {
+      "type": "object",
+      "properties": {
+        "complex_features": {"type": "boolean"},
+        "multidirectional_causation": {"type": "boolean"},
+        "holistic_view": {"type": "boolean"},
+        "creative_synthesis": {"type": "boolean"}
+      },
+      "required": ["complex_features", "multidirectional_causation", "holistic_view", "creative_synthesis"],
+      "additionalProperties": false
+    },
+    "observation": {
+      "type": "object",
+      "properties": {
+        "step_id": {"type": "string", "minLength": 1},
+        "features": {"$ref": "#/$defs/features"}
+      },
+      "required": ["step_id", "features"],
+      "additionalProperties": false
+    },
+    "sequence": {
+      "type": "object",
+      "properties": {
+        "observations": {
+          "type": "array", "items": {"$ref": "#/$defs/observation"},
+          "minItems": 1, "maxItems": 2000
+        }
+      },
+      "required": ["observations"],
+      "additionalProperties": false
+    }
+  },
+  "description": "Runtime additionally requires at least 32 total coded steps across the sequences."
+}

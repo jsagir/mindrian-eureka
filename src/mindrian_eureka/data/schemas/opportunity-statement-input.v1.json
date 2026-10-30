@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.opportunity-statement-input.v1",
+  "title": "opportunity.prepare_statement input",
+  "type": "object",
+  "properties": {
+    "scope_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "snapshot_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "candidate": {
+      "type": "object",
+      "properties": {
+        "a": { "$ref": "#/$defs/endpoint" },
+        "b": { "$ref": "#/$defs/endpoint" },
+        "shared_problems": { "type": "array", "minItems": 1, "maxItems": 20, "items": { "type": "string", "minLength": 1, "maxLength": 2000 } },
+        "shared_problem_source_refs": { "$ref": "#/$defs/source_refs" },
+        "priority_signal": { "type": "number", "minimum": 0, "maximum": 1 },
+        "priority_signal_source_ref": { "$ref": "#/$defs/source_ref" },
+        "rank": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+        "rank_source_ref": { "$ref": "#/$defs/source_ref" },
+        "tail": { "type": "boolean" }
+      },
+      "required": ["a", "b", "shared_problems", "shared_problem_source_refs", "priority_signal", "priority_signal_source_ref", "rank", "rank_source_ref", "tail"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["scope_id", "snapshot_id", "candidate"],
+  "additionalProperties": false,
+  "$defs": {
+    "source_ref": { "type": "string", "minLength": 1, "maxLength": 2048 },
+    "source_refs": { "type": "array", "minItems": 1, "maxItems": 100, "items": { "$ref": "#/$defs/source_ref" } },
+    "dimensions": {
+      "type": "object",
+      "properties": {
+        "strategic_fit": { "type": "number", "minimum": 0, "maximum": 1 },
+        "validated_demand": { "type": "number", "minimum": 0, "maximum": 1 },
+        "tech_econ_feasibility": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "required": ["strategic_fit", "validated_demand", "tech_econ_feasibility"],
+      "additionalProperties": false
+    },
+    "endpoint": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "primary_problem": { "type": "string", "minLength": 1, "maxLength": 4000 },
+        "section": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "dimensions": { "$ref": "#/$defs/dimensions" },
+        "source_refs": { "$ref": "#/$defs/source_refs" }
+      },
+      "required": ["id", "title", "primary_problem", "section", "dimensions", "source_refs"],
+      "additionalProperties": false
+    }
+  }
+}

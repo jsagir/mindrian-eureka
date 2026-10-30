@@ -1,0 +1,49 @@
+html { scroll-padding-block-end: var(--hub-sheet-height, 0px); }
+#hub-panel.hub-panel-empty { display: none; }
+#hub-panel[data-panel-open] {
+  position: fixed;
+  inset-block-end: 0;
+  inset-inline: 0;
+  inline-size: 100%;
+  max-block-size: 62vh;
+  max-block-size: 62dvh;
+  overflow-y: auto;
+  background: var(--mos-white);
+  border: 1px solid var(--mos-ink);
+  margin: 0;
+  z-index: 10;
+}
+#hub-panel[hidden] { display: none; }
+.hub-panel-header { display: flex; flex-wrap: wrap; align-items: center; gap: var(--hub-space-2); }
+#hub-panel-close { margin-inline-start: auto; }
+#hub-panel h2, #hub-panel h3, #hub-panel h4 { margin-block-start: var(--hub-space-5); }
+#hub-panel a, #hub-panel button, #hub-panel summary { overflow-wrap: anywhere; }
+#hub-panel .hub-panel-source p.hub-mono { color: var(--mos-soft); }
+.hub-panel-source { margin-block: var(--hub-space-5); }
+.hub-panel-source a, .hub-panel-pair-block a { display: flex; }
+.hub-panel-source h4, .hub-panel-source p, .hub-panel-scores p { font-size: 13px; line-height: 1.5; }
+.hub-panel-scores p { font-family: var(--mos-font-code); font-variant-numeric: tabular-nums; }
+.hub-panel-pair-block { padding-block: var(--hub-space-5); border-block-end: 2px solid var(--mos-quiet); }
+.hub-panel-actions { display: flex; flex-wrap: wrap; gap: var(--hub-space-3); }
+.hub-panel-full p, .hub-panel-excerpt { white-space: pre-wrap; }
+@media (min-width: 1024px) {
+  #hub-panel.hub-panel-empty { display: block; }
+  #hub-panel.hub-panel-empty img { inline-size: 48px; block-size: 48px; }
+  #hub-panel[data-panel-open] {
+    inset-block-start: var(--hub-space-9);
+    inset-block-end: auto;
+    inset-inline-start: auto;
+    inset-inline-end: max(32px, calc((100vw - 1200px) / 2));
+    inline-size: 400px;
+    max-block-size: calc(100vh - 128px);
+    max-block-size: calc(100dvh - 128px);
+  }
+  html[data-panel-open] #hub-title-band,
+  html[data-panel-open] #hub-counts,
+  html[data-panel-open] #hub-nav,
+  html[data-panel-open] #hub-data-check,
+  html[data-panel-open] #hub-footer,
+  html[data-panel-open]:not([data-panel-view="graph"]) #hub-results {
+    margin-inline-end: calc(400px + var(--hub-space-5));
+  }
+}

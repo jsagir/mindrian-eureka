@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian.dev/schemas/eureka/run-result.v1.schema.json",
+  "title": "Mindrian Eureka Run Result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "job_id", "capability_id", "capability_version", "status", "runner", "scope", "egress", "outputs", "limitations", "warnings", "resource_use", "failure"],
+  "properties": {
+    "schema_version": { "const": "eureka.result.v1" },
+    "job_id": { "type": "string", "minLength": 1 },
+    "capability_id": { "type": "string", "minLength": 1 },
+    "capability_version": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["completed", "completed_empty", "partial", "blocked", "failed", "cancelled", "expired"] },
+    "runner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_digest", "runtime", "dependency_lock_digest", "started_at", "finished_at", "exit_code"],
+      "properties": {
+        "artifact_digest": { "type": ["string", "null"] },
+        "runtime": { "type": "string" },
+        "dependency_lock_digest": { "type": ["string", "null"] },
+        "model_provider": { "type": ["string", "null"] },
+        "started_at": { "type": "string", "format": "date-time" },
+        "finished_at": { "type": "string", "format": "date-time" },
+        "exit_code": { "type": ["integer", "null"] },
+        "termination_reason": { "type": ["string", "null"] }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshot_id", "read_artifact_ids"],
+      "properties": {
+        "scope_id": { "type": ["string", "null"] },
+        "grant_id": { "type": ["string", "null"] },
+        "snapshot_id": { "type": "string" },
+        "read_artifact_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "egress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["events", "authoritative_source"],
+      "properties": {
+        "events": { "type": "array", "items": { "type": "object" } },
+        "authoritative_source": { "const": "runner" }
+      }
+    },
+    "outputs": { "type": "array", "items": { "type": "object" } },
+    "host_handoff": {
+      "type": "object",
+      "description": "Non-authoritative next-step guidance for MindrianOS; never a command execution or approval.",
+      "required": ["state", "owner", "next_action"],
+      "properties": {
+        "state": { "type": "string" },
+        "owner": { "const": "mindrianos" },
+        "next_action": { "type": "string" },
+        "recommended_command": { "type": "string" },
+        "recommended_tool": { "type": "string" },
+        "candidate_ids": { "type": "array", "items": { "type": "string" } },
+        "sequence": { "type": "array", "items": { "type": "object" } },
+        "warning": { "type": "string" },
+        "automatic_retry": { "type": "boolean" }
+      }
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "resource_use": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["duration_ms"],
+      "properties": {
+        "duration_ms": { "type": "integer", "minimum": 0 },
+        "tokens": { "type": ["integer", "null"], "minimum": 0 },
+        "estimated_cost": { "type": ["number", "null"], "minimum": 0 }
+      }
+    },
+    "failure": { "type": ["object", "null"] },
+    "method_details": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["encoder", "structural_signal", "semantic_signal", "selection", "mode", "input_objective"],
+      "properties": {
+        "encoder": { "type": "object" },
+        "structural_signal": { "type": "object" },
+        "semantic_signal": { "type": "object" },
+        "selection": { "type": "string" },
+        "mode": { "enum": ["local", "external", "hybrid"] },
+        "research_grant_id": { "type": ["string", "null"] },
+        "input_objective": { "type": "string" }
+      }
+    }
+  }
+}

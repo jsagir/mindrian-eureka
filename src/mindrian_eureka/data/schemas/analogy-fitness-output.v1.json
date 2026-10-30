@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.analogy-fitness-result.v1",
+  "title": "analogy.assess_structural_fitness result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.analogy-fitness-result.v1"
+    },
+    "capability_id": {
+      "const": "analogy.assess_structural_fitness"
+    },
+    "status": {
+      "const": "completed_experimental"
+    },
+    "scope_id": {"type": ["string", "null"]},
+    "snapshot_id": {"type": ["string", "null"]},
+    "candidates": {
+      "type": "array"
+    },
+    "limitations": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true
+}

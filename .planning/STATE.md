@@ -1,0 +1,129 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: verifying
+stopped_at: Plan 19 complete; stop before Plan 17 and any push.
+last_updated: "2026-10-29T07:07:06.078Z"
+last_activity: "2026-10-29 -- Completed quick task 261029-bfm: Equal-spread lexical fusion so LSA and BM25 each hold half the vote"
+progress:
+  total_phases: 6
+  completed_phases: 2
+  total_plans: 31
+  completed_plans: 30
+  percent: 33
+---
+
+# Project State
+
+## Project Reference
+
+See: .planning/PROJECT.md (updated 2026-10-23)
+
+**Core value:** A user who is not the author can install Eureka, run it on their own collection with one command, and get the same ranked candidates every time, with hashes and settings that prove it. Output stays labeled "candidate, not verified".
+**Current focus:** Phase 2.1 — Opportunity Hub in the mos-brand format
+
+## Current Position
+
+Phase: 2.2 (Partner export profile and package) - VERIFIED, HUMAN ITEMS OPEN
+Plan: 4 of 4 complete (02.2-VERIFICATION.md: human_needed, 8/8 must-haves)
+Status: Implementation complete. Open for the owner: the visual pass of the hub chips and class filter; the brand-lock reconciliation (`refresh --apply` then `asset --replace` in the book); the online build of the linux-x86_64, windows-x86_64 and macos-arm64 bundles to prove the ASSUMED steps. Phase 2.1 visual review (plan 17) stays open. Phase 2.3 (room seed hand-off) has its context and waits for planning.
+Last activity: 2026-10-29 -- Completed Phase 2.2 execution (4 plans, 3 waves) and verification
+
+Progress: [██████████] 97%
+
+## Performance Metrics
+
+**Velocity:**
+
+- Total plans completed: 30
+- Average duration: - min
+- Total execution time: 0.0 hours
+
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| - | - | - | - |
+
+**Recent Trend:**
+
+- Last 5 plans: -
+- Trend: -
+
+*Updated after each plan completion*
+| Phase 02.1 P01 | 22min | 3 tasks | 11 files |
+| Phase 02.1 P02 | 35min | 3 tasks | 7 files |
+| Phase 02.1 P03 | 15min | 2 tasks | 8 files |
+| Phase 02.1 P04 | 37min | 3 tasks | 8 files |
+| Phase 02.1 P05 | about 13min | 2 tasks | 5 files |
+| Phase 02.1 P06 | recorded in summary | 3 tasks | 27 files |
+| Phase 02.1 P07 | recorded in summary | 2 tasks | 43 files |
+| Phase 02.1 P08 | recorded in summary | 3 tasks | 5 files |
+| Phase 02.1 P09 | recorded in summary | 3 tasks | 11 files |
+| Phase 02.1 P10 | recorded in summary | 3 tasks | 8 files |
+| Phase 02.1 P11 | recorded in summary | 2 tasks | 8 files |
+| Phase 02.1 P12 | recorded in summary | 2 tasks | 4 files |
+| Phase 02.1 P13 | recorded in summary | 2 tasks | 6 files |
+| Phase 02.1 P14 | recorded in summary | 3 tasks | 12 files |
+| Phase 02.1 P15 | recorded in summary | 2 tasks | 5 files |
+| Phase 02.1 P18 | recorded in summary | 3 tasks | 9 files |
+| Phase 02.1 P16 | recorded in summary | 2 tasks | 7 files |
+| Phase 02.1 P19 | 1265 passed; 27 skipped; 45 subtests; 454.33 s |
+
+## Accumulated Context
+
+### Decisions
+
+Decisions are logged in PROJECT.md Key Decisions table.
+Recent decisions affecting current work:
+
+- [Roadmap]: Suggested order kept (REL/ENG, then RUN/DOC, then HOST, then EXM). No dependency forced a change.
+- [Roadmap]: REL-01 go / no-go gates public shipping in Phase 4 only. Phases 2 and 3 proceed either way.
+- [Roadmap]: Domain research skipped on purpose at init. Domain is internal and documented in repo docs.
+- [Phase 02.1-01]: D-14 owner ruling 2026-10-24: keep, label Potential eureka. D-17 password gate kept as drafted.
+- [Phase 02.1-03]: Hub JS data file escapes characters inside JSON strings only (and also < and >); the word eureka is allowed only as the product name, Potential eureka, and the command eureka hub; the reader refuses unknown reading sentences and files whose hash differs from the manifest.
+- [Phase 02.1-04]: CSP decision = default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none' (Firefox does not enforce a meta CSP on local file loads, so the static scan stays a required control). cryptography becomes the optional extra hub-gate. 3d-force-graph@1.79.1 passes the 14 day rule (MIT, 262 days old). Browser tests skip without tools; EUREKA_REQUIRE_BROWSER=1 makes them fail.
+
+### Pending Todos
+
+None yet.
+
+### Carry-over items
+
+- Owner sign-off on the release decision (draft no-go) in `docs/rs-release-gate.md`. Only the owner sets `decided_on`.
+- `top_k` cap 100 to 200 and artifact cap 2500 to 3000: DONE in plan 02-01 (`limits.py`). The MCP schemas still cap at 2,500 artifacts and 100 pairs (Phase 3 item).
+- Engine version must be recorded in the run manifest (the tie-break change in plan 01-04 changes the top-7 term order).
+- Open item O1: older comments in `rs-differential-scorer.cjs` still cite the original author. Editing the file changes its sha256 in the ledger. Owner decides later.
+
+### Quick Tasks Completed
+
+| ID | Task | Status |
+|----|------|--------|
+| 261023-py1 | File the JHTV market-signal record | complete |
+| 261023-q2c | Cleanup (names, paths, engine names) and Phase 1 close-out | complete |
+| 261024-v2h | [Synthetic Potential eureka coverage](quick/261024-v2h-add-deterministic-synthetic-potential-eu/261024-v2h-SUMMARY.md), implementation 0398f90 | complete |
+| 261029-184 | [Fix BM25 vocab cap so rare identifiers are kept](quick/261029-184-fix-bm25-vocab-cap-so-rare-identifiers-a/261029-184-SUMMARY.md), implementation 5165aba | complete |
+| 261029-bfm | [Equal-spread lexical fusion so LSA and BM25 each hold half the vote](quick/261029-bfm-equal-spread-lexical-fusion-so-lsa-and-b/261029-bfm-SUMMARY.md), implementation b405fe7 | complete |
+
+### Blockers/Concerns
+
+- [Phase 1] Unusual-pairs engine original `similarity_code` package is not in the repo. REL-01 may stay open if the source cannot be traced.
+- [Phase 1] The JHTV wording-and-meaning pairs engine command may not be recoverable. ENG-03 allows a rebuild with recorded settings.
+- [Phase 3] HOST-01 needs edits in the MindrianOS plugin repo. That repo is GSD-only and has its own commit rules.
+- [Phase 3] The graph-derive replay input and script were not found. HOST-02 may end as a provenance-gap mark.
+- [All] Peer uncommitted edits exist under `story/`. Use `--only` or explicit file lists for every commit. Never stage or revert them.
+
+## Deferred Items
+
+Items acknowledged and carried forward from previous milestone close:
+
+| Category | Item | Status | Deferred At |
+|----------|------|--------|-------------|
+| *(none)* | | | |
+
+## Session Continuity
+
+Last session: 2026-10-25T00:34:49Z
+Stopped at: Plan 19 complete; stop before Plan 17 and any push.
+Resume file: .planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/02.1-17-PLAN.md

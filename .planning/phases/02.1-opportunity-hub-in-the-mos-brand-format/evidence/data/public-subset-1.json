@@ -1,0 +1,10 @@
+{
+  "cutoffs_changed": false,
+  "purpose": "Public subset for state review; stored scores preserved; no model run or finding.",
+  "records": [
+    "arxiv-0704-0744v1"
+  ],
+  "scores_recomputed": false,
+  "source_manifest_sha256": "105a452b3c165e73407963a0062f940b6b7b7be23760281ccf80e2932e83608e",
+  "subset_manifest_sha256": "8bbe8a11a3a61d2b2b43ed76915e55046eeb433eb3f3f66e09ff7b19286c714f"
+}

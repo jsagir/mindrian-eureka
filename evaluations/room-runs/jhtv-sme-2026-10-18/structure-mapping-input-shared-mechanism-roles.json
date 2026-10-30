@@ -1,0 +1,235 @@
+{
+  "run_id": "jhtv-sme-c15631-vs-c14402-shared-mechanism-roles-2026-10-18",
+  "scope_id": "JHTV Fast Forward / Oliver Kuntz / 2026-07-06 catalog / C15631 target and C14402 comparison",
+  "target": {
+    "name": "C15631: controlled release through suprachoroidal delivery",
+    "entities": [
+      "cargo",
+      "carrier",
+      "SCS",
+      "posterior_eye",
+      "therapeutic_effect"
+    ],
+    "expressions": [
+      {
+        "name": "cargo_in_carrier",
+        "functor": "contains",
+        "args": [
+          "carrier",
+          "cargo"
+        ]
+      },
+      {
+        "name": "carrier_administered_to_SCS",
+        "functor": "administers_to",
+        "args": [
+          "carrier",
+          "SCS"
+        ]
+      },
+      {
+        "name": "carrier_targets_posterior_eye",
+        "functor": "targets",
+        "args": [
+          "carrier",
+          "posterior_eye"
+        ]
+      },
+      {
+        "name": "carrier_releases_cargo",
+        "functor": "releases_over_time",
+        "args": [
+          "carrier",
+          "cargo"
+        ]
+      },
+      {
+        "name": "cargo_yields_therapeutic_effect",
+        "functor": "produces",
+        "args": [
+          "cargo",
+          "therapeutic_effect"
+        ]
+      }
+    ]
+  },
+  "target_evidence": {
+    "cargo_in_carrier": [
+      "t1"
+    ],
+    "carrier_administered_to_SCS": [
+      "t1"
+    ],
+    "carrier_targets_posterior_eye": [
+      "t3"
+    ],
+    "carrier_releases_cargo": [
+      "t1",
+      "t2"
+    ],
+    "cargo_yields_therapeutic_effect": [
+      "t2"
+    ]
+  },
+  "bases": [
+    {
+      "base_id": "C14402",
+      "domain": "ocular nonviral gene transfer (same JHTV catalog; comparator, not a distant-domain analogy)",
+      "description": {
+        "name": "C14402: nonviral gene transfer through suprachoroidal delivery",
+        "entities": [
+          "cargo",
+          "carrier",
+          "SCS",
+          "posterior_eye",
+          "durable_expression"
+        ],
+        "expressions": [
+          {
+            "name": "cargo_in_carrier",
+            "functor": "contains",
+            "args": [
+              "carrier",
+              "cargo"
+            ]
+          },
+          {
+            "name": "carrier_administered_to_SCS",
+            "functor": "administers_to",
+            "args": [
+              "carrier",
+              "SCS"
+            ]
+          },
+          {
+            "name": "carrier_targets_posterior_eye",
+            "functor": "targets",
+            "args": [
+              "carrier",
+              "posterior_eye"
+            ]
+          },
+          {
+            "name": "carrier_transfects_cells",
+            "functor": "transfects",
+            "args": [
+              "carrier",
+              "posterior_eye"
+            ]
+          },
+          {
+            "name": "cargo_yields_durable_expression",
+            "functor": "produces",
+            "args": [
+              "cargo",
+              "durable_expression"
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "cargo_in_carrier": [
+          "b1"
+        ],
+        "carrier_administered_to_SCS": [
+          "b1"
+        ],
+        "carrier_targets_posterior_eye": [
+          "b4"
+        ],
+        "carrier_transfects_cells": [
+          "b3",
+          "b5"
+        ],
+        "cargo_yields_durable_expression": [
+          "b3",
+          "b4"
+        ]
+      }
+    }
+  ],
+  "known_claims": [
+    "C15631 uses polymeric microparticles for drug loading and prolonged release after suprachoroidal administration.",
+    "C14402 uses polymeric particles carrying expression constructs; the described functional path is cell proximity, transfection, and transgene expression.",
+    "Both catalog entries concern posterior ocular delivery through the suprachoroidal space, but the payload and effect-producing mechanism differ."
+  ],
+  "evidence_catalog": [
+    {
+      "claim_id": "t1",
+      "source_id": "C15631",
+      "source_ref": "https://jhu.technologypublisher.com/technology/43809",
+      "locator": "technologies.csv / description_full",
+      "quote_sha256": "26372c63e46483598cb40fc2acdb4c3d3cf140abe405fa3aabf3774d9dc270a6",
+      "origin": "room"
+    },
+    {
+      "claim_id": "t2",
+      "source_id": "C15631",
+      "source_ref": "https://jhu.technologypublisher.com/technology/43809",
+      "locator": "technologies.csv / description_full",
+      "quote_sha256": "d4ff77e993b85ad5ccabb40c30125ffc6bc10de171bb13ddd8f635cebfedf165",
+      "origin": "room"
+    },
+    {
+      "claim_id": "t3",
+      "source_id": "C15631",
+      "source_ref": "https://jhu.technologypublisher.com/technology/43809",
+      "locator": "technologies.csv / description_full",
+      "quote_sha256": "48375d3b32d391bc29e3b665b318036bc2d3f5591aa46f30ea7bb2f1eeda0453",
+      "origin": "room"
+    },
+    {
+      "claim_id": "t4",
+      "source_id": "C15631",
+      "source_ref": "https://jhu.technologypublisher.com/technology/43809",
+      "locator": "technologies.csv / value_prop",
+      "quote_sha256": "1666ad5926dfb49614f7fe07df08931e24fdc02363f036bbd586ff12d269a9be",
+      "origin": "room"
+    },
+    {
+      "claim_id": "b1",
+      "source_id": "C14402",
+      "source_ref": "https://jhu.technologypublisher.com/technology/28645",
+      "locator": "technologies.csv / description_full",
+      "quote_sha256": "3b8914cde53ee60722c2f1ca6196fa81feff4f879ce95929bb3b4040ea04645f",
+      "origin": "room"
+    },
+    {
+      "claim_id": "b2",
+      "source_id": "C14402",
+      "source_ref": "https://jhu.technologypublisher.com/technology/28645",
+      "locator": "technologies.csv / description_full",
+      "quote_sha256": "d30d0f3217a8d15c75e2f0adbd2d2fc9aee5e84d9df06d28174c6af55f845a83",
+      "origin": "room"
+    },
+    {
+      "claim_id": "b3",
+      "source_id": "C14402",
+      "source_ref": "https://jhu.technologypublisher.com/technology/28645",
+      "locator": "technologies.csv / description_full",
+      "quote_sha256": "6f3b7d8692c0ffe5b0c2fd05c7e84666e28bade41a2d6f996893dfeed0e32792",
+      "origin": "room"
+    },
+    {
+      "claim_id": "b4",
+      "source_id": "C14402",
+      "source_ref": "https://jhu.technologypublisher.com/technology/28645",
+      "locator": "technologies.csv / description_full",
+      "quote_sha256": "ed7bd84507bc5d2337b4f58182100355684648832ef63b249250587f58de94e2",
+      "origin": "room"
+    },
+    {
+      "claim_id": "b5",
+      "source_id": "C14402",
+      "source_ref": "https://jhu.technologypublisher.com/technology/28645",
+      "locator": "technologies.csv / description_full",
+      "quote_sha256": "a62a154227660e07d669fb23d1c3dc28a22897c78c3aaa08997afc53041b3c36",
+      "origin": "room"
+    }
+  ],
+  "rules": [
+    "AN",
+    "MA"
+  ],
+  "max_maps_per_base": 5
+}

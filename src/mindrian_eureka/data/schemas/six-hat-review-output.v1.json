@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.bono-debate-review.v1",
+  "title": "deliberation.prepare_six_hat_review result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.bono-debate-review.v1"
+    },
+    "capability_id": {
+      "const": "deliberation.prepare_six_hat_review"
+    },
+    "status": {
+      "enum": [
+        "partial_debate",
+        "ready_for_human_ruling"
+      ]
+    },
+    "perspectives": {
+      "type": "object"
+    },
+    "limitations": {
+      "type": "array"
+    },
+    "scope_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

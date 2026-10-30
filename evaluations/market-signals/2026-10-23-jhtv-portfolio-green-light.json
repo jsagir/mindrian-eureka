@@ -1,0 +1,169 @@
+{
+  "record_type": "market-signal",
+  "record_id": "2026-10-23-jhtv-portfolio-green-light",
+  "signal_strength": "critical",
+  "meeting_date": "2026-10-23",
+  "room_binding": {
+    "room_id": "jhtv-oliver-kuntz",
+    "meeting_id": "2026-10-23-jhtv-portfolio-green-light-session",
+    "pointer_only": true
+  },
+  "review_status": "proposed",
+  "source_roles": ["partner", "mentor", "founder"],
+  "label": "candidate claims, proposed, not confirmed by a person",
+  "claims": [
+    {
+      "id": "MS-01",
+      "text": "The partner reports a green light inside the partner organization to run its whole technology portfolio through the tool. No scope, payer, price or timeline was stated. The approval is to run the tool, not to pay for it.",
+      "knowledge_type": "fact",
+      "confidence": 0.9,
+      "market_signal": "critical",
+      "review_status": "proposed",
+      "requirement_refs": ["RUN-01"]
+    },
+    {
+      "id": "MS-02",
+      "text": "The partner organization worked mostly through services and conversations, so its data is not organized for machine use. It is standing up a data operations function, which is a likely owner of the tool. Readiness and budget for that function are not stated.",
+      "knowledge_type": "fact",
+      "confidence": 0.85,
+      "market_signal": "critical",
+      "review_status": "proposed",
+      "requirement_refs": ["RUN-02"]
+    },
+    {
+      "id": "MS-03",
+      "text": "No opportunity in the current opportunity bank is validated. The founder cannot check them alone. Domain experts and licensing staff at the partner organization would have to review them before a buyer acts.",
+      "knowledge_type": "fact",
+      "confidence": 0.9,
+      "market_signal": "critical",
+      "review_status": "proposed",
+      "requirement_refs": ["RUN-05"]
+    },
+    {
+      "id": "MS-04",
+      "text": "The partner reacted strongly to the latest view and valued the substance over the graph picture. The partner asked what counts as a eureka (one technology or a combination) and whether the listed technologies are licensable. The founder's definition was loose. No purchase commitment was stated.",
+      "knowledge_type": "fact",
+      "confidence": 0.75,
+      "market_signal": "critical",
+      "review_status": "proposed",
+      "requirement_refs": ["RUN-05", "EXM-02"]
+    },
+    {
+      "id": "MS-05",
+      "text": "Technology licensing associates at the partner organization are the likely users. They work like a sales and business-development group. They both look for new opportunities and work on given ones.",
+      "knowledge_type": "fact",
+      "confidence": 0.9,
+      "market_signal": "critical",
+      "review_status": "proposed",
+      "requirement_refs": ["EXM-02"]
+    },
+    {
+      "id": "MS-06",
+      "text": "The full portfolio data cannot leave the partner organization's secure enclave. The tool must be installed and run inside it. The partner runs it on a local machine and the founder guides by shared screen. No data is handed over.",
+      "knowledge_type": "fact",
+      "confidence": 0.9,
+      "market_signal": "critical",
+      "review_status": "proposed",
+      "requirement_refs": ["RUN-01", "RUN-03", "DOC-01", "HOST-01"]
+    },
+    {
+      "id": "MS-07",
+      "text": "The founder is separating the discovery engine from the general host install so it can be installed on its own on the partner's machine. It needs a container runtime and heavy compute. No deadline was given. The engine name came from speech-to-text and is uncertain.",
+      "knowledge_type": "fact",
+      "confidence": 0.7,
+      "market_signal": "none",
+      "review_status": "proposed",
+      "requirement_refs": ["RUN-01", "DOC-01", "HOST-01"]
+    },
+    {
+      "id": "MS-08",
+      "text": "The tool does not find licensing or commercial-outcome signal by itself. A person must say which records show those outcomes. All technologies analyzed so far come from one public state, so the data has no licensed-technology signal.",
+      "knowledge_type": "causal",
+      "confidence": 0.9,
+      "market_signal": "critical",
+      "review_status": "proposed",
+      "requirement_refs": ["RUN-05", "EXM-02"]
+    },
+    {
+      "id": "MS-09",
+      "text": "Compute is the main limit for extending the analysis to other universities. The founder builds and tests on an ordinary machine because users are expected to lack strong hardware. Whether useful results are possible on ordinary PCs is not yet shown.",
+      "knowledge_type": "assumption",
+      "confidence": 0.75,
+      "market_signal": "none",
+      "review_status": "proposed",
+      "requirement_refs": ["DOC-01", "RUN-01"]
+    },
+    {
+      "id": "MS-10",
+      "text": "The analysis so far covers one university only. Extending it to other universities is agreed as the next step, but the timing is not settled. The mentor says start the talks early. The founder says show local value first.",
+      "knowledge_type": "heuristic",
+      "confidence": 0.7,
+      "market_signal": "none",
+      "review_status": "proposed",
+      "requirement_refs": []
+    },
+    {
+      "id": "MS-11",
+      "text": "In one earlier pilot, a business-development person at another organization received a market suggestion he had not considered, and new companies to contact. This is one reported case. The outcome of the outreach is not stated.",
+      "knowledge_type": "causal",
+      "confidence": 0.7,
+      "market_signal": "none",
+      "review_status": "proposed",
+      "requirement_refs": []
+    },
+    {
+      "id": "MS-12",
+      "text": "The partner will send the export column headers and the coded values for technology states, including commercial outcomes such as licensed. The founder will then return suggested preparation commands. The partner does not want to steer the tool toward a preset answer.",
+      "knowledge_type": "fact",
+      "confidence": 0.9,
+      "market_signal": "critical",
+      "review_status": "proposed",
+      "requirement_refs": ["RUN-02", "RUN-05"]
+    },
+    {
+      "id": "MS-13",
+      "text": "Soft commitments with no firm dates: an introduction to another university's technology transfer office, an introduction for a possible talk to the partner organization's groups, and a review of an earlier email from the founder.",
+      "knowledge_type": "fact",
+      "confidence": 0.7,
+      "market_signal": "none",
+      "review_status": "proposed",
+      "requirement_refs": []
+    },
+    {
+      "id": "MS-14",
+      "text": "A shared-screen working session of about 1 hour is proposed for 2026-10-27. The founder accepted. No backup slot was named. The date is inferred from the meeting.",
+      "knowledge_type": "fact",
+      "confidence": 0.85,
+      "market_signal": "critical",
+      "review_status": "proposed",
+      "requirement_refs": []
+    },
+    {
+      "id": "MS-15",
+      "text": "The opportunity bank page will be password-protected before the partner uses or shares it. The mentor and the partner treat the combinations of technologies, not the single catalog entries, as the valuable part. Whether the output counts as sensitive was not fully settled.",
+      "knowledge_type": "fact",
+      "confidence": 0.8,
+      "market_signal": "none",
+      "review_status": "proposed",
+      "requirement_refs": [],
+      "note": "Out of scope for the engine. The host and the sharing step own page protection."
+    },
+    {
+      "id": "MS-16",
+      "text": "Even if the tool finds a useful combination, an inventor may refuse to work with another. The mentor suggests selling the separate patents together as a package to a company that values the combination. No evidence was given for this route.",
+      "knowledge_type": "assumption",
+      "confidence": 0.65,
+      "market_signal": "none",
+      "review_status": "proposed",
+      "requirement_refs": []
+    }
+  ],
+  "not_established": [
+    "payer",
+    "price",
+    "budget",
+    "timeline",
+    "expert review of any opportunity",
+    "any purchase commitment"
+  ]
+}

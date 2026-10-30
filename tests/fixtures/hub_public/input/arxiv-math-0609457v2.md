@@ -1,0 +1,5 @@
+---
+title: Defining and Estimating Intervention Effects for Groups that will Develop an Auxiliary Outcome
+---
+
+It has recently become popular to define treatment effects for subsets of the target population characterized by variables not observable at the time a treatment decision is made. Characterizing and estimating such treatment effects is tricky; the most popular but naive approach inappropriately adjusts for variables affected by treatment and so is biased. We consider several appropriate ways to formalize the effects: principal stratification, stratification on a single potential auxiliary variable, stratification on an observed auxiliary variable and stratification on expected levels of auxiliary variables. We then outline identifying assumptions for each type of estimand. We evaluate the utility of these estimands and estimation procedures for decision making and understanding causal processes, contrasting them with the concepts of direct and indirect effects. We motivate our development with examples from nephrology and cancer screening, and use simulated data and real data on cancer screening to illustrate the estimation methods.

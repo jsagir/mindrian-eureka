@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.result.v1",
+  "title": "opportunity.find_cross_domain_pairs result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "outputs",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.result.v1"
+    },
+    "capability_id": {
+      "const": "opportunity.find_cross_domain_pairs"
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "completed_empty"
+      ]
+    },
+    "outputs": {
+      "type": "array"
+    },
+    "limitations": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true
+}

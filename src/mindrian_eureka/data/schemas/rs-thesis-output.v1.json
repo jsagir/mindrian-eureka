@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian-os.com/schemas/eureka/rs-thesis-output.v1.json",
+  "title": "RS thesis generation result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "capability_id", "capability_version", "status", "scope_id", "snapshot_id", "thesis", "components", "fallbacks_used", "evidence", "evidence_count", "source_ids", "second_signal", "novelty_check_status", "confidence", "confidence_label", "confidence_basis", "input_fingerprint", "limitations"],
+  "properties": {
+    "schema_version": {"const": "eureka.rs-thesis-record.v1"},
+    "capability_id": {"const": "research.generate_rs_thesis"},
+    "capability_version": {"const": "0.1.0"},
+    "status": {"enum": ["hypothesis_recorded", "unsupported_hypothesis"]},
+    "scope_id": {"type": ["string", "null"]},
+    "snapshot_id": {"type": ["string", "null"]},
+    "thesis": {"type": "string"},
+    "components": {"type": "object", "additionalProperties": {"type": "string"}},
+    "fallbacks_used": {"type": "array", "items": {"type": "string"}},
+    "evidence": {"type": "array", "items": {"type": "object"}},
+    "evidence_count": {"type": "integer", "minimum": 0},
+    "source_ids": {"type": "array", "items": {"type": "string"}},
+    "second_signal": {"type": "object"},
+    "novelty_check_status": {"enum": ["passed", "failed", "possible_prior_art", "not_run"]},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "confidence_label": {"enum": ["unsupported", "weak", "moderate", "strong"]},
+    "confidence_basis": {"type": "array", "items": {"type": "string"}},
+    "input_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}

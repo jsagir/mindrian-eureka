@@ -1,0 +1,33 @@
+{
+  "schema_version": "eureka.capability.v1",
+  "id": "analogy.assess_structural_fitness",
+  "name": "Assess a Selected Structural Analogy",
+  "jtbd": "When the user has a source mechanism and target encoded as seven sourced relational layers, assess which layers appear to correspond so SME and evidence review can test the proposed transfer.",
+  "status": "experimental",
+  "input_schema": "schemas/analogy-fitness-input.v1.schema.json",
+  "output_schema": "schemas/workflow-result.v1.schema.json",
+  "runtime": "Python >=3.11; local sentence-transformer model",
+  "network": "denied",
+  "data_classes": [
+    "user-provided-structural-descriptions",
+    "source-identifiers"
+  ],
+  "requires": [
+    "One source-linked target description group",
+    "1..100 source-linked mechanism description groups",
+    "Operator-supplied local sentence-transformer model"
+  ],
+  "side_effects": [],
+  "limitations": [
+    "The layer correspondence and bands are embedding heuristics, not validated transfer or opportunity-quality scores.",
+    "Per-layer corpus thresholds are descriptive and uncalibrated; pools under five use fixed 0.5 correspondence thresholds.",
+    "A high structural band is an SME handoff hypothesis and must be reviewed against counterevidence and boundary conditions.",
+    "No external mechanism retrieval is performed in this capability."
+  ],
+  "version": "0.1.0",
+  "source_revision": "independent implementation informed by the reviewed seven-layer Analogies fitness rubric",
+  "license_status": "unknown",
+  "max_runtime_seconds": 600,
+  "max_input_bytes": 10485760,
+  "max_candidates": 100
+}

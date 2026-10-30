@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>negative control</title>
+<link rel="stylesheet" href="http://example.invalid/s.css">
+</head>
+<body>
+<p>Negative control. Every remote attempt below must be blocked by the test driver.</p>
+<img src="http://example.invalid/i.png" alt="">
+<script>
+(function () {
+  window.__probe = { fetch: "pending", socket: "pending" };
+  fetch("https://example.invalid/x").then(
+    function () { window.__probe.fetch = "answered"; },
+    function () { window.__probe.fetch = "failed"; }
+  );
+  try {
+    var socket = new WebSocket("wss://example.invalid/s");
+    socket.onerror = function () { window.__probe.socket = "error"; };
+    socket.onclose = function () { window.__probe.socket = "closed"; };
+    socket.onopen = function () { window.__probe.socket = "open"; };
+  } catch (error) {
+    window.__probe.socket = "throw";
+  }
+})();
+</script>
+</body>
+</html>

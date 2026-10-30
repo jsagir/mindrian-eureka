@@ -1,0 +1,2285 @@
+{
+  "schemaVersion": 1,
+  "status": "intake-valid-workflow-adoption-required",
+  "consumer": {
+    "id": "mindrian-eureka-hub",
+    "name": "MindrianOS Eureka Opportunity Hub",
+    "kind": "product",
+    "team": "MindrianOS Eureka maintainers",
+    "project": "mindrian-eureka",
+    "owner": "Maintainer of mindrian-eureka"
+  },
+  "what": {
+    "deliverable": "One local page that shows the opportunity bank, the connection graph and the catalogue of an analyzed collection, built from the output of `eureka run`.",
+    "surfaces": [
+      "website",
+      "app-ui",
+      "graph-visualization"
+    ],
+    "languages": [
+      "en"
+    ],
+    "familyMember": null
+  },
+  "how": {
+    "approach": "Static HTML, CSS and JavaScript files written by Python. No framework. No network call. Deterministic output: two builds from the same run folder are byte-identical.",
+    "workflowFile": "docs/brand/hub-workflow.md",
+    "steps": [
+      {
+        "phase": "brief",
+        "action": "Read the output of `mos-brand context` for the hub job and the UI-SPEC copy deck before any page work."
+      },
+      {
+        "phase": "produce",
+        "action": "Write the hub files from the packet assets and tokens. Cite the book segment for every design choice."
+      },
+      {
+        "phase": "review",
+        "action": "Run `mos-brand review` on the built page and on rendered snapshots. Then a person looks at five widths."
+      },
+      {
+        "phase": "return-learning",
+        "action": "List every item where the book is silent as a proposed segment and return the list to the book."
+      }
+    ]
+  },
+  "why": {
+    "purpose": "A user who ran `eureka run` needs one local page to review ranked pairs, without any data leaving the machine.",
+    "evidence": "The 2026-10-23 review of the JHTV Fast Forward run, and the existing hub pages that were built by hand outside this repository.",
+    "success": "`mos-brand review` passes on the hub page. Every claim and every opportunity shows \"candidate, not verified\" and a source link. A person approves before anything publishes."
+  },
+  "jtbd": {
+    "when": "I have run Eureka on a folder of sources and hold ranked pairs in files",
+    "want": "open one local page that shows the opportunity bank, the connection graph and the catalogue",
+    "so": "I can decide which pairs deserve a human look, and no data leaves my computer",
+    "statement": "When I have run Eureka on a folder of sources and hold ranked pairs in files, I want to open one local page that shows the opportunity bank, the connection graph and the catalogue. Desired outcome: I can decide which pairs deserve a human look, and no data leaves my computer."
+  },
+  "designSource": {
+    "version": "2.43.0",
+    "contextFingerprint": "b857c73798bd64bf10f1d48cd5398f72018442d29d0946460741d81cee04236c"
+  },
+  "mandatoryRules": "references/brand-rules.md",
+  "segments": [
+    {
+      "path": "",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of governance",
+        "inherits-from governance",
+        "Ancestor of foundations",
+        "inherits-from foundations",
+        "Ancestor of writing",
+        "inherits-from writing",
+        "Ancestor of experience",
+        "inherits-from experience",
+        "Ancestor of identity",
+        "inherits-from identity",
+        "Ancestor of family",
+        "inherits-from family",
+        "Ancestor of teams",
+        "inherits-from teams"
+      ],
+      "applicationScope": "inherited",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.",
+      "title": "/m:os - Brand Manager",
+      "status": "working-baseline",
+      "identity": "ROOM.md",
+      "contract": "CONTEXT.md",
+      "routing": "INDEX.md",
+      "state": "STATE.md",
+      "job": "Maintain one private, nested source for the Mindrian family design system.",
+      "inputs": [
+        "Validated consumer intake with what, how, why and JTBD",
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Complete the governance/intake first workflow and adopt its workflow integration before production",
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": []
+    },
+    {
+      "path": "experience",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of experience/layout",
+        "inherits-from experience/layout",
+        "Ancestor of experience/inner-pages",
+        "inherits-from experience/inner-pages",
+        "Ancestor of experience/narrative",
+        "inherits-from experience/narrative",
+        "Ancestor of experience/accessibility",
+        "inherits-from experience/accessibility",
+        "Ancestor of experience/css-capabilities",
+        "inherits-from experience/css-capabilities",
+        "Ancestor of experience/forms",
+        "inherits-from experience/forms",
+        "Ancestor of experience/graph-visualization",
+        "inherits-from experience/graph-visualization",
+        "Ancestor of experience/motion",
+        "inherits-from experience/motion",
+        "Ancestor of experience/faq",
+        "inherits-from experience/faq",
+        "Ancestor of experience/visual-language",
+        "inherits-from experience/visual-language"
+      ],
+      "applicationScope": "inherited",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.experience",
+      "title": "Experience",
+      "status": "working-baseline",
+      "identity": "segments/experience/ROOM.md",
+      "contract": "segments/experience/CONTEXT.md",
+      "routing": "segments/experience/INDEX.md",
+      "state": "segments/experience/STATE.md",
+      "job": "Explain and implement the structured architectural experience.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": []
+    },
+    {
+      "path": "experience/accessibility",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: website",
+        "Declared surface: app-ui",
+        "Declared surface: graph-visualization",
+        "uses experience/css-capabilities",
+        "uses identity/logo/favicons",
+        "uses experience/forms",
+        "uses experience/graph-visualization",
+        "uses writing/text-augmentation",
+        "uses experience/forms/engagement",
+        "uses teams/documentation"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.experience.accessibility",
+      "title": "Accessibility and quality",
+      "status": "working-baseline",
+      "identity": "segments/experience/accessibility/ROOM.md",
+      "contract": "segments/experience/accessibility/CONTEXT.md",
+      "routing": "segments/experience/accessibility/INDEX.md",
+      "state": "segments/experience/accessibility/STATE.md",
+      "job": "Apply accessibility and quality within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/experience/accessibility/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "experience/css-capabilities",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: website",
+        "Declared surface: app-ui"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Confirm each enhancement clarifies evidence, a relationship or a change of state, the same facts, labels, source status and actions remain with the enhancement off and in reduced motion, and no experimental feature carries essential content. Only interpolate-size and gap decorations are first-wave; the other eight stay lab, prototype, tracking or required-now. Active on 2026-10-23 because the base path of all three examples passed in Chromium 145 and 149 and Firefox 146 (WebKit could not be run on the host; iOS Safari and Android Chrome are pending human cells). The scoped compliance ruling stays proposed and no browser or human approval is implied.",
+      "id": "mos.design.experience.css-capabilities",
+      "title": "CSS capabilities",
+      "status": "active",
+      "identity": "segments/experience/css-capabilities/ROOM.md",
+      "contract": "segments/experience/css-capabilities/CONTEXT.md",
+      "routing": "segments/experience/css-capabilities/INDEX.md",
+      "state": "segments/experience/css-capabilities/STATE.md",
+      "job": "Decide when a new CSS capability may enhance a page that already works without it, so evidence, source and group boundaries become clearer and nothing essential depends on an experimental feature.",
+      "inputs": [
+        "A semantic page that already explains the relationship, evidence or state in its static form",
+        "One of the ten registered capabilities and its use decision",
+        "Inherited layout, accessibility, visual-language, motion and scroll rules"
+      ],
+      "process": [
+        "Build the full semantic base first: content, labels, source status and actions work without the enhancement",
+        "Find the capability in capabilities.json and follow its use decision, feature detection, fallback and reduced-motion line",
+        "Add the enhancement behind a feature test and an explicit off switch",
+        "Run the required test for the capability, with the enhancement off, on and in reduced motion",
+        "Record the browsers, devices and checks actually run, and the cells not run"
+      ],
+      "artifacts": [
+        "segments/experience/css-capabilities/entries/2026-10-23/GUIDE.md",
+        "segments/experience/css-capabilities/entries/2026-10-23/capabilities.json",
+        "segments/experience/css-capabilities/entries/2026-10-23/acceptance.md",
+        "segments/experience/css-capabilities/entries/2026-10-23/examples/css-capabilities.css",
+        "segments/experience/css-capabilities/entries/2026-10-23/examples/evidence-in-place.html",
+        "segments/experience/css-capabilities/entries/2026-10-23/examples/source-tied-to-claim.html",
+        "segments/experience/css-capabilities/entries/2026-10-23/examples/group-boundary.html"
+      ]
+    },
+    {
+      "path": "experience/faq",
+      "kind": "dependency",
+      "reasons": [
+        "uses teams/marketing"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.experience.faq",
+      "title": "FAQs and help: answer the decision behind the question",
+      "status": "working-baseline",
+      "identity": "segments/experience/faq/ROOM.md",
+      "contract": "segments/experience/faq/CONTEXT.md",
+      "routing": "segments/experience/faq/INDEX.md",
+      "state": "segments/experience/faq/STATE.md",
+      "job": "Apply faqs and help: answer the decision behind the question within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/experience/faq/entries/2026-10-19/content.html",
+        "segments/experience/faq/entries/2026-10-19/asset-dda77d3274.json"
+      ]
+    },
+    {
+      "path": "experience/forms",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: app-ui",
+        "uses teams/marketing",
+        "Ancestor of experience/forms/engagement",
+        "inherits-from experience/forms/engagement",
+        "Ancestor of experience/forms/access",
+        "inherits-from experience/forms/access"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.experience.forms",
+      "title": "Forms and interface copy: every field needs a job",
+      "status": "working-baseline",
+      "identity": "segments/experience/forms/ROOM.md",
+      "contract": "segments/experience/forms/CONTEXT.md",
+      "routing": "segments/experience/forms/INDEX.md",
+      "state": "segments/experience/forms/STATE.md",
+      "job": "Apply forms and interface copy: every field needs a job within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/experience/forms/entries/2026-10-19/content.html",
+        "segments/experience/forms/entries/2026-10-19/asset-a42376489c.html",
+        "segments/experience/forms/entries/2026-10-19/asset-715b4e9f30.js"
+      ]
+    },
+    {
+      "path": "experience/forms/access",
+      "kind": "task",
+      "reasons": [
+        "Active ruling set website-google-access"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Active brand directive, narrowed on 2026-10-21 by owner ruling: blog, articles, installation pages and documentation stay open; sign-in applies only to the account page, the Theo connection consent and letter preferences. Verify real server-side Google authentication on the surfaces in scope, protected content/data responses there, callback destination, expiry/sign-out, and optional post-login intro with separate unchecked marketing permission. Live implementation and security/accessibility/privacy review remain unverified.",
+      "id": "mos.design.experience.forms.access",
+      "title": "Website access: Google sign-in where the product needs an identity, optional introduction",
+      "status": "active",
+      "identity": "segments/experience/forms/access/ROOM.md",
+      "contract": "segments/experience/forms/access/CONTEXT.md",
+      "routing": "segments/experience/forms/access/INDEX.md",
+      "state": "segments/experience/forms/access/STATE.md",
+      "job": "Apply the owner-approved Google sign-in requirement only where the MindrianOS website needs a signed-in identity (account page, Theo connection consent, letter preferences), keep blog, articles, installation pages and documentation open, and keep the post-login introduction optional.",
+      "inputs": [
+        "Explicit owner instruction on 20 October 2026 superseding the introduction-only access direction",
+        "Existing forms, consent and canonical brand constraints"
+      ],
+      "process": [
+        "Check whether work targets a surface in the named scope (account page, Theo connection consent, letter preferences)",
+        "Require server-verified Google authentication before protected content",
+        "Offer completion or skip only after authentication",
+        "Keep consent and introduction state separate from identity",
+        "Review actual route, callback, failure and data-access evidence before deployment"
+      ],
+      "artifacts": [
+        "segments/experience/forms/access/entries/2026-10-20/GUIDE.md",
+        "segments/experience/forms/access/entries/2026-10-20/policy.json"
+      ]
+    },
+    {
+      "path": "experience/forms/engagement",
+      "kind": "dependency",
+      "reasons": [
+        "uses experience/forms",
+        "uses teams/marketing"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "PROPOSED, not active. Owner, content/research, UI/UX/accessibility, engineering and privacy/operations review remain pending. Verify real destinations, question-to-decision use, explicit unchecked marketing permission, safe data flow and server-confirmed states in an actual implementation before launch.",
+      "id": "mos.design.experience.forms.engagement",
+      "title": "Proposed: CTAs and forms as a marketing and learning gateway",
+      "status": "proposed",
+      "identity": "segments/experience/forms/engagement/ROOM.md",
+      "contract": "segments/experience/forms/engagement/CONTEXT.md",
+      "routing": "segments/experience/forms/engagement/INDEX.md",
+      "state": "segments/experience/forms/engagement/STATE.md",
+      "job": "Propose a reusable method for relevant next steps, voluntary self-description and responsible audience learning.",
+      "inputs": [
+        "Owner request and Hebrew report, 20 October 2026",
+        "Public Real26 interaction reference, not an implementation contract",
+        "Existing forms, voice, JTBD, marketing, CRM and accessibility guidance",
+        "Marketing and CRM source chapters are research inputs, not transitive workflow dependencies for every form",
+        "Owner replaced the selected access direction with the active Google login ruling; broader forms proposal remains proposed."
+      ],
+      "process": [
+        "Define objective, reader job and supported continuation",
+        "Map each question to a decision and responsible role",
+        "Specify copy, semantic components, states and separate permissions",
+        "Review accessibility, privacy, operational readiness and measurement",
+        "Keep the proposal qualified until reviewed"
+      ],
+      "artifacts": [
+        "segments/experience/forms/engagement/entries/2026-10-20/cta-forms.html",
+        "segments/experience/forms/engagement/entries/2026-10-20/GUIDE.md",
+        "segments/experience/forms/engagement/entries/2026-10-20/form-brief.json",
+        "segments/experience/forms/engagement/entries/2026-10-20/website-access.json"
+      ]
+    },
+    {
+      "path": "experience/graph-visualization",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: graph-visualization"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "PROPOSED, not active. The owner has not ruled on this guide. Confirm the title asks the question the graph answers, every color has one named meaning, the data check result is on the page, every node opens plain text with a source link, every generated number was checked, and the page says that an engine link is similarity, not proof.",
+      "id": "mos.design.experience.graph-visualization",
+      "title": "Proposed: graph visualization",
+      "status": "proposed",
+      "identity": "segments/experience/graph-visualization/ROOM.md",
+      "contract": "segments/experience/graph-visualization/CONTEXT.md",
+      "routing": "segments/experience/graph-visualization/INDEX.md",
+      "state": "segments/experience/graph-visualization/STATE.md",
+      "job": "Show how many things relate as a playable network, so a reader can see neighborhoods, bridges and possible eurekas, and read each node in plain words.",
+      "inputs": [
+        "A question about neighborhoods and bridges that a list or chart cannot answer",
+        "Filed relationships and stored embeddings or other similarity scores",
+        "Source records for every node, with links",
+        "Inherited color, typography, voice and accessibility rules"
+      ],
+      "process": [
+        "Confirm a network is the right form and write the one question it answers",
+        "Build the data read-only: similarity from stored vectors, neighborhoods, bridges",
+        "Run the data check for identical, empty and boilerplate text, and remove or label artifacts",
+        "Write plain-language panel text in batches against the content contract",
+        "Build the page from the reference template and verify search, fallback, motion and phone layout"
+      ],
+      "artifacts": [
+        "segments/experience/graph-visualization/entries/2026-10-21/GUIDE.md",
+        "segments/experience/graph-visualization/entries/2026-10-21/network.template.html",
+        "segments/experience/graph-visualization/entries/2026-10-21/derive-network.cjs",
+        "segments/experience/graph-visualization/entries/2026-10-21/network-data.schema.json"
+      ]
+    },
+    {
+      "path": "experience/inner-pages",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: website"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.experience.inner-pages",
+      "title": "Building inner pages as places in the same story",
+      "status": "working-baseline",
+      "identity": "segments/experience/inner-pages/ROOM.md",
+      "contract": "segments/experience/inner-pages/CONTEXT.md",
+      "routing": "segments/experience/inner-pages/INDEX.md",
+      "state": "segments/experience/inner-pages/STATE.md",
+      "job": "Apply building inner pages as places in the same story within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/experience/inner-pages/entries/2026-10-19/content.html",
+        "segments/experience/inner-pages/entries/2026-10-19/asset-b03681fb34.html",
+        "segments/experience/inner-pages/entries/2026-10-19/asset-490daed6b8.js"
+      ]
+    },
+    {
+      "path": "experience/layout",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: website",
+        "Declared surface: app-ui",
+        "uses teams/documentation"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.experience.layout",
+      "title": "Layout and components",
+      "status": "working-baseline",
+      "identity": "segments/experience/layout/ROOM.md",
+      "contract": "segments/experience/layout/CONTEXT.md",
+      "routing": "segments/experience/layout/INDEX.md",
+      "state": "segments/experience/layout/STATE.md",
+      "job": "Apply layout and components within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/experience/layout/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "experience/motion",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: graph-visualization",
+        "uses experience/graph-visualization",
+        "uses experience/visual-language/shaper/motion"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Confirm movement clarifies a relationship or question, preserves the selected artwork and claim status, and remains understandable in the still version. React does not imply a replacement image sequence is implemented.",
+      "id": "mos.design.experience.motion",
+      "title": "Motion grammar",
+      "status": "working-baseline",
+      "identity": "segments/experience/motion/ROOM.md",
+      "contract": "segments/experience/motion/CONTEXT.md",
+      "routing": "segments/experience/motion/INDEX.md",
+      "state": "segments/experience/motion/STATE.md",
+      "job": "Explain meaningful movement across Mindrian experiences, including React coordination of persistent artwork, SVG relationships and readable narrative.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Resolve the user job and inherited rules; use the continuous-story directive for scoped project explainers",
+        "Map persistent layers and one dominant change in understanding per beat",
+        "Coordinate React, SVG, CSS and HTML through one reversible playhead where scroll drives the story",
+        "Preserve selected artwork quality and record actual visual, accessibility and device review"
+      ],
+      "artifacts": [
+        "segments/experience/motion/entries/2026-10-19/content.html",
+        "segments/experience/motion/entries/2026-10-19/asset-051b571bac.md",
+        "segments/experience/motion/entries/2026-10-19/asset-391a6d14d4.html",
+        "segments/experience/motion/entries/2026-10-19/asset-51655a1532.js",
+        "segments/experience/motion/entries/2026-10-19/asset-76b603e35b.css",
+        "segments/experience/motion/entries/2026-10-19/editorial-patterns.html",
+        "segments/experience/motion/entries/2026-10-19/editorial-patterns.css",
+        "segments/experience/motion/entries/2026-10-19/editorial-patterns.js",
+        "segments/experience/motion/entries/2026-10-19/editorial-motion.html",
+        "segments/experience/motion/entries/2026-10-19/BLOG-VISUAL-CRAFT.md"
+      ]
+    },
+    {
+      "path": "experience/narrative",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: website"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.experience.narrative",
+      "title": "How to build a visual story",
+      "status": "working-baseline",
+      "identity": "segments/experience/narrative/ROOM.md",
+      "contract": "segments/experience/narrative/CONTEXT.md",
+      "routing": "segments/experience/narrative/INDEX.md",
+      "state": "segments/experience/narrative/STATE.md",
+      "job": "Apply how to build a visual story within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/experience/narrative/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "experience/visual-language",
+      "kind": "task",
+      "reasons": [
+        "Active ruling set visual-explanation-grammar",
+        "Ancestor of experience/visual-language/graph-data",
+        "inherits-from experience/visual-language/graph-data",
+        "Ancestor of experience/visual-language/graph-relationships",
+        "inherits-from experience/visual-language/graph-relationships",
+        "Ancestor of experience/visual-language/matrix-2x2",
+        "inherits-from experience/visual-language/matrix-2x2",
+        "Ancestor of experience/visual-language/pyramid",
+        "inherits-from experience/visual-language/pyramid",
+        "Ancestor of experience/visual-language/system",
+        "inherits-from experience/visual-language/system",
+        "Ancestor of experience/visual-language/framework",
+        "inherits-from experience/visual-language/framework",
+        "Ancestor of experience/visual-language/shaper",
+        "inherits-from experience/visual-language/shaper"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Check the actual visual, source status, encoding, label fit, finite motion and equivalent still. No recipe proves content truth or framework execution.",
+      "id": "mos.design.experience.visual-language",
+      "title": "Visual explanation grammar",
+      "status": "active-directive",
+      "identity": "segments/experience/visual-language/ROOM.md",
+      "contract": "segments/experience/visual-language/CONTEXT.md",
+      "routing": "segments/experience/visual-language/INDEX.md",
+      "state": "segments/experience/visual-language/STATE.md",
+      "job": "Turn Theo Faces thinking gestures into accurate, readable diagrams and finite explanatory motion.",
+      "inputs": [
+        "Owner-supplied Theo Faces.html",
+        "Reader question, source status and intended interpretation"
+      ],
+      "process": [
+        "Select the structure from the relationship to explain",
+        "Read the matching child recipe and keep the still understandable",
+        "Use one source-grounded thinking gesture and inspect the real output"
+      ],
+      "artifacts": [
+        "segments/experience/visual-language/entries/2026-10-20/GUIDE.md",
+        "segments/experience/visual-language/entries/2026-10-20/forms.json",
+        "segments/experience/visual-language/entries/2026-10-20/source-record.json",
+        "segments/experience/visual-language/entries/2026-10-20/visual-grammar.html",
+        "segments/experience/visual-language/entries/2026-10-20/visual-grammar.css",
+        "segments/experience/visual-language/entries/2026-10-20/visual-grammar.js"
+      ]
+    },
+    {
+      "path": "experience/visual-language/framework",
+      "kind": "dependency",
+      "reasons": [
+        "uses experience/visual-language"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Check actual labels, quantities, source status, movement and equivalent still. This recipe does not validate content.",
+      "id": "mos.design.experience.visual-language.framework",
+      "title": "A framework as a way to look",
+      "status": "active-directive",
+      "identity": "segments/experience/visual-language/framework/ROOM.md",
+      "contract": "segments/experience/visual-language/framework/CONTEXT.md",
+      "routing": "segments/experience/visual-language/framework/INDEX.md",
+      "state": "segments/experience/visual-language/framework/STATE.md",
+      "job": "What does this lens help us notice?",
+      "inputs": [
+        "Reader question, source material and declared encoding"
+      ],
+      "process": [
+        "Declare the encoding and uncertainty",
+        "Author the readable still, then one meaningful change",
+        "Review the actual visual and possible wrong inference"
+      ],
+      "artifacts": [
+        "segments/experience/visual-language/framework/entries/2026-10-20/recipe.json",
+        "segments/experience/visual-language/framework/entries/2026-10-20/GUIDE.md"
+      ]
+    },
+    {
+      "path": "experience/visual-language/graph-data",
+      "kind": "dependency",
+      "reasons": [
+        "uses experience/visual-language"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Check actual labels, quantities, source status, movement and equivalent still. This recipe does not validate content.",
+      "id": "mos.design.experience.visual-language.graph-data",
+      "title": "A graph of values",
+      "status": "active-directive",
+      "identity": "segments/experience/visual-language/graph-data/ROOM.md",
+      "contract": "segments/experience/visual-language/graph-data/CONTEXT.md",
+      "routing": "segments/experience/visual-language/graph-data/INDEX.md",
+      "state": "segments/experience/visual-language/graph-data/STATE.md",
+      "job": "How do these values compare?",
+      "inputs": [
+        "Reader question, source material and declared encoding"
+      ],
+      "process": [
+        "Declare the encoding and uncertainty",
+        "Author the readable still, then one meaningful change",
+        "Review the actual visual and possible wrong inference"
+      ],
+      "artifacts": [
+        "segments/experience/visual-language/graph-data/entries/2026-10-20/recipe.json",
+        "segments/experience/visual-language/graph-data/entries/2026-10-20/GUIDE.md"
+      ]
+    },
+    {
+      "path": "experience/visual-language/graph-relationships",
+      "kind": "dependency",
+      "reasons": [
+        "uses experience/visual-language"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Check actual labels, quantities, source status, movement and equivalent still. This recipe does not validate content.",
+      "id": "mos.design.experience.visual-language.graph-relationships",
+      "title": "A graph of relationships",
+      "status": "active-directive",
+      "identity": "segments/experience/visual-language/graph-relationships/ROOM.md",
+      "contract": "segments/experience/visual-language/graph-relationships/CONTEXT.md",
+      "routing": "segments/experience/visual-language/graph-relationships/INDEX.md",
+      "state": "segments/experience/visual-language/graph-relationships/STATE.md",
+      "job": "Which relationship deserves investigation?",
+      "inputs": [
+        "Reader question, source material and declared encoding"
+      ],
+      "process": [
+        "Declare the encoding and uncertainty",
+        "Author the readable still, then one meaningful change",
+        "Review the actual visual and possible wrong inference"
+      ],
+      "artifacts": [
+        "segments/experience/visual-language/graph-relationships/entries/2026-10-20/recipe.json",
+        "segments/experience/visual-language/graph-relationships/entries/2026-10-20/GUIDE.md"
+      ]
+    },
+    {
+      "path": "experience/visual-language/matrix-2x2",
+      "kind": "dependency",
+      "reasons": [
+        "uses experience/visual-language"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Check actual labels, quantities, source status, movement and equivalent still. This recipe does not validate content.",
+      "id": "mos.design.experience.visual-language.matrix-2x2",
+      "title": "A 2×2 matrix",
+      "status": "active-directive",
+      "identity": "segments/experience/visual-language/matrix-2x2/ROOM.md",
+      "contract": "segments/experience/visual-language/matrix-2x2/CONTEXT.md",
+      "routing": "segments/experience/visual-language/matrix-2x2/INDEX.md",
+      "state": "segments/experience/visual-language/matrix-2x2/STATE.md",
+      "job": "Which combination are we examining?",
+      "inputs": [
+        "Reader question, source material and declared encoding"
+      ],
+      "process": [
+        "Declare the encoding and uncertainty",
+        "Author the readable still, then one meaningful change",
+        "Review the actual visual and possible wrong inference"
+      ],
+      "artifacts": [
+        "segments/experience/visual-language/matrix-2x2/entries/2026-10-20/recipe.json",
+        "segments/experience/visual-language/matrix-2x2/entries/2026-10-20/GUIDE.md"
+      ]
+    },
+    {
+      "path": "experience/visual-language/pyramid",
+      "kind": "dependency",
+      "reasons": [
+        "uses experience/visual-language"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Check actual labels, quantities, source status, movement and equivalent still. This recipe does not validate content.",
+      "id": "mos.design.experience.visual-language.pyramid",
+      "title": "A pyramid or hierarchy",
+      "status": "active-directive",
+      "identity": "segments/experience/visual-language/pyramid/ROOM.md",
+      "contract": "segments/experience/visual-language/pyramid/CONTEXT.md",
+      "routing": "segments/experience/visual-language/pyramid/INDEX.md",
+      "state": "segments/experience/visual-language/pyramid/STATE.md",
+      "job": "What supports this question or conclusion?",
+      "inputs": [
+        "Reader question, source material and declared encoding"
+      ],
+      "process": [
+        "Declare the encoding and uncertainty",
+        "Author the readable still, then one meaningful change",
+        "Review the actual visual and possible wrong inference"
+      ],
+      "artifacts": [
+        "segments/experience/visual-language/pyramid/entries/2026-10-20/recipe.json",
+        "segments/experience/visual-language/pyramid/entries/2026-10-20/GUIDE.md"
+      ]
+    },
+    {
+      "path": "experience/visual-language/shaper",
+      "kind": "dependency",
+      "reasons": [
+        "uses experience/visual-language",
+        "Ancestor of experience/visual-language/shaper/motion",
+        "inherits-from experience/visual-language/shaper/motion"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Review semantics, source status, actual label fit, reduced motion and device rendering. No component proves methodology execution.",
+      "id": "mos.design.experience.visual-language.shaper",
+      "title": "Shaper React framework components",
+      "status": "initial-implementation",
+      "identity": "segments/experience/visual-language/shaper/ROOM.md",
+      "contract": "segments/experience/visual-language/shaper/CONTEXT.md",
+      "routing": "segments/experience/visual-language/shaper/INDEX.md",
+      "state": "segments/experience/visual-language/shaper/STATE.md",
+      "job": "Give supported framework structures reusable geometry and controlled explanatory movement.",
+      "inputs": [
+        "Framework identity and source status",
+        "Reader question, project labels and intended thinking move"
+      ],
+      "process": [
+        "Choose a supported structure before styling",
+        "Supply project content and controlled progress",
+        "Review actual still, movement and device layout"
+      ],
+      "artifacts": [
+        "segments/experience/visual-language/shaper/entries/2026-10-20/GUIDE.md",
+        "segments/experience/visual-language/shaper/entries/2026-10-20/shaper.html",
+        "segments/experience/visual-language/shaper/entries/2026-10-20/shaper-gallery.js",
+        "segments/experience/visual-language/shaper/entries/2026-10-20/shaper-gallery.css",
+        "shaper/index.mjs",
+        "shaper/index.d.ts",
+        "shaper/styles.css",
+        "shaper/gallery.mjs",
+        "shaper/gallery.css",
+        "shaper/examples.mjs",
+        "shaper/examples.css",
+        "segments/experience/visual-language/shaper/entries/2026-10-20/shaper-examples.html",
+        "segments/experience/visual-language/shaper/entries/2026-10-20/shaper-examples.js",
+        "segments/experience/visual-language/shaper/entries/2026-10-20/shaper-examples.css",
+        "shaper/CONTEXT.md",
+        "templates/shaper-component/CONTEXT.md",
+        "templates/shaper-component/brief.json",
+        "templates/shaper-component/motion-contract.json",
+        "templates/shaper-component/component.mjs"
+      ]
+    },
+    {
+      "path": "experience/visual-language/shaper/motion",
+      "kind": "task",
+      "reasons": [
+        "Active ruling set shaper-motion-ruling",
+        "uses experience/visual-language/shaper"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Confirm meaningful relevance, accurate teaching move, readable labels, cancellation, reduced motion and the complete still. The parent declaration is not proof of compliance.",
+      "id": "mos.design.experience.visual-language.shaper.motion",
+      "title": "Shaper motion ruling and relevance player",
+      "status": "active-directive",
+      "identity": "segments/experience/visual-language/shaper/motion/ROOM.md",
+      "contract": "segments/experience/visual-language/shaper/motion/CONTEXT.md",
+      "routing": "segments/experience/visual-language/shaper/motion/INDEX.md",
+      "state": "segments/experience/visual-language/shaper/motion/STATE.md",
+      "job": "Require meaningful relevance, a registered thinking move and one bounded lifecycle for every animated Shaper component.",
+      "inputs": [
+        "Current reader question and explicit relevance",
+        "Framework component and registered motion contract"
+      ],
+      "process": [
+        "Declare purpose and relevance",
+        "Use the shared player or governed scroll driver",
+        "Review lifecycle, still and actual explanatory output"
+      ],
+      "artifacts": [
+        "segments/experience/visual-language/shaper/motion/entries/2026-10-20/GUIDE.md",
+        "segments/experience/visual-language/shaper/motion/entries/2026-10-20/motion-rules.json",
+        "shaper/motion.mjs",
+        "shaper/motion-rules.mjs",
+        "segments/experience/visual-language/shaper/motion/entries/2026-10-20/shaper-motion.html"
+      ]
+    },
+    {
+      "path": "experience/visual-language/system",
+      "kind": "dependency",
+      "reasons": [
+        "uses experience/visual-language"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Check actual labels, quantities, source status, movement and equivalent still. This recipe does not validate content.",
+      "id": "mos.design.experience.visual-language.system",
+      "title": "A system, flow or feedback loop",
+      "status": "active-directive",
+      "identity": "segments/experience/visual-language/system/ROOM.md",
+      "contract": "segments/experience/visual-language/system/CONTEXT.md",
+      "routing": "segments/experience/visual-language/system/INDEX.md",
+      "state": "segments/experience/visual-language/system/STATE.md",
+      "job": "What changes elsewhere when this part changes?",
+      "inputs": [
+        "Reader question, source material and declared encoding"
+      ],
+      "process": [
+        "Declare the encoding and uncertainty",
+        "Author the readable still, then one meaningful change",
+        "Review the actual visual and possible wrong inference"
+      ],
+      "artifacts": [
+        "segments/experience/visual-language/system/entries/2026-10-20/recipe.json",
+        "segments/experience/visual-language/system/entries/2026-10-20/GUIDE.md"
+      ]
+    },
+    {
+      "path": "family",
+      "kind": "dependency",
+      "reasons": [
+        "uses identity/logo/favicons"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.family",
+      "title": "Family",
+      "status": "working-baseline",
+      "identity": "segments/family/ROOM.md",
+      "contract": "segments/family/CONTEXT.md",
+      "routing": "segments/family/INDEX.md",
+      "state": "segments/family/STATE.md",
+      "job": "Support distinct identities inside the Mindrian family.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": []
+    },
+    {
+      "path": "foundations",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of foundations/positioning",
+        "inherits-from foundations/positioning",
+        "Ancestor of foundations/master-story",
+        "inherits-from foundations/master-story",
+        "Ancestor of foundations/typography",
+        "inherits-from foundations/typography",
+        "Ancestor of foundations/tokens",
+        "inherits-from foundations/tokens",
+        "Ancestor of foundations/color",
+        "inherits-from foundations/color",
+        "Ancestor of foundations/quest",
+        "inherits-from foundations/quest"
+      ],
+      "applicationScope": "inherited",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.foundations",
+      "title": "Foundations",
+      "status": "working-baseline",
+      "identity": "segments/foundations/ROOM.md",
+      "contract": "segments/foundations/CONTEXT.md",
+      "routing": "segments/foundations/INDEX.md",
+      "state": "segments/foundations/STATE.md",
+      "job": "Define the shared purpose and foundations of Mindrian.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": []
+    },
+    {
+      "path": "foundations/color",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: graph-visualization",
+        "uses experience/graph-visualization"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.foundations.color",
+      "title": "Color and meaning",
+      "status": "working-baseline",
+      "identity": "segments/foundations/color/ROOM.md",
+      "contract": "segments/foundations/color/CONTEXT.md",
+      "routing": "segments/foundations/color/INDEX.md",
+      "state": "segments/foundations/color/STATE.md",
+      "job": "Apply color and meaning within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/foundations/color/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "foundations/master-story",
+      "kind": "mandatory",
+      "reasons": [
+        "Shared baseline",
+        "uses writing/voice",
+        "uses teams/marketing"
+      ],
+      "applicationScope": "baseline",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.foundations.master-story",
+      "title": "The story architecture",
+      "status": "working-baseline",
+      "identity": "segments/foundations/master-story/ROOM.md",
+      "contract": "segments/foundations/master-story/CONTEXT.md",
+      "routing": "segments/foundations/master-story/INDEX.md",
+      "state": "segments/foundations/master-story/STATE.md",
+      "job": "Apply the story architecture within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/foundations/master-story/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "foundations/positioning",
+      "kind": "mandatory",
+      "reasons": [
+        "Shared baseline",
+        "uses teams/marketing"
+      ],
+      "applicationScope": "baseline",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.foundations.positioning",
+      "title": "The brand in plain words",
+      "status": "working-baseline",
+      "identity": "segments/foundations/positioning/ROOM.md",
+      "contract": "segments/foundations/positioning/CONTEXT.md",
+      "routing": "segments/foundations/positioning/INDEX.md",
+      "state": "segments/foundations/positioning/STATE.md",
+      "job": "Apply the brand in plain words within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/foundations/positioning/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "foundations/quest",
+      "kind": "dependency",
+      "reasons": [
+        "uses foundations/positioning",
+        "uses foundations/master-story",
+        "uses teams/marketing/draft-content",
+        "uses experience/forms/engagement"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Confirm that future possibilities stay conditional, current evidence stays dated and contextual, the person retains judgment and the next move remains practical. Do not claim prediction or elimination of uncertainty.",
+      "id": "mos.design.foundations.quest",
+      "title": "The quest, uncertainty and changing conditions",
+      "status": "working-baseline",
+      "identity": "segments/foundations/quest/ROOM.md",
+      "contract": "segments/foundations/quest/CONTEXT.md",
+      "routing": "segments/foundations/quest/INDEX.md",
+      "state": "segments/foundations/quest/STATE.md",
+      "job": "Explain Mindrian as practical inquiry through uncertainty while examining how conditions may change.",
+      "inputs": [
+        "Owner clarification: quest, uncertainty navigation and avoiding presentism",
+        "Shared Mindrian story and evidence distinctions"
+      ],
+      "process": [
+        "Describe an evolving inquiry rather than a route with a known destination",
+        "Distinguish estimable risks from questions that need learning",
+        "Treat current conditions as a dated baseline and examine plausible changes",
+        "Choose a practical next move and a signal for revisiting it"
+      ],
+      "artifacts": [
+        "segments/foundations/quest/entries/2026-10-20/GUIDE.md"
+      ]
+    },
+    {
+      "path": "foundations/tokens",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: website",
+        "Declared surface: app-ui",
+        "Declared surface: graph-visualization"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.foundations.tokens",
+      "title": "tokens",
+      "status": "working-baseline",
+      "identity": "segments/foundations/tokens/ROOM.md",
+      "contract": "segments/foundations/tokens/CONTEXT.md",
+      "routing": "segments/foundations/tokens/INDEX.md",
+      "state": "segments/foundations/tokens/STATE.md",
+      "job": "Maintain this bounded part of the Mindrian design system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/foundations/tokens/entries/2026-10-19/asset-f07fd25bc5.json",
+        "segments/foundations/tokens/entries/2026-10-19/asset-b1c43da20b.css",
+        "segments/foundations/tokens/entries/2026-10-19/asset-9cddfe3b8c.json"
+      ]
+    },
+    {
+      "path": "foundations/typography",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: website",
+        "Declared surface: graph-visualization",
+        "uses writing/text-augmentation",
+        "Ancestor of foundations/typography/figtree",
+        "inherits-from foundations/typography/figtree",
+        "Ancestor of foundations/typography/dm-sans",
+        "inherits-from foundations/typography/dm-sans",
+        "Ancestor of foundations/typography/heebo",
+        "inherits-from foundations/typography/heebo",
+        "Ancestor of foundations/typography/jetbrains-mono",
+        "inherits-from foundations/typography/jetbrains-mono"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.foundations.typography",
+      "title": "Fonts and typography in English and Hebrew",
+      "status": "working-baseline",
+      "identity": "segments/foundations/typography/ROOM.md",
+      "contract": "segments/foundations/typography/CONTEXT.md",
+      "routing": "segments/foundations/typography/INDEX.md",
+      "state": "segments/foundations/typography/STATE.md",
+      "job": "Specify the four font families, their roles, exact files, licenses, fallbacks and bilingual type hierarchy.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/foundations/typography/entries/2026-10-19/content.html",
+        "segments/foundations/typography/entries/2026-10-19/fonts.html",
+        "segments/foundations/typography/entries/2026-10-19/fonts-and-book.css"
+      ]
+    },
+    {
+      "path": "foundations/typography/dm-sans",
+      "kind": "dependency",
+      "reasons": [
+        "uses foundations/typography"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.foundations.typography.dm-sans",
+      "title": "dm sans",
+      "status": "working-baseline",
+      "identity": "segments/foundations/typography/dm-sans/ROOM.md",
+      "contract": "segments/foundations/typography/dm-sans/CONTEXT.md",
+      "routing": "segments/foundations/typography/dm-sans/INDEX.md",
+      "state": "segments/foundations/typography/dm-sans/STATE.md",
+      "job": "Maintain this bounded part of the Mindrian design system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/foundations/typography/dm-sans/entries/2026-10-19/asset-a9d9a51c0c.ttf",
+        "segments/foundations/typography/dm-sans/entries/2026-10-19/asset-a43d992a30.txt"
+      ]
+    },
+    {
+      "path": "foundations/typography/figtree",
+      "kind": "dependency",
+      "reasons": [
+        "uses foundations/typography"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.foundations.typography.figtree",
+      "title": "figtree",
+      "status": "working-baseline",
+      "identity": "segments/foundations/typography/figtree/ROOM.md",
+      "contract": "segments/foundations/typography/figtree/CONTEXT.md",
+      "routing": "segments/foundations/typography/figtree/INDEX.md",
+      "state": "segments/foundations/typography/figtree/STATE.md",
+      "job": "Maintain this bounded part of the Mindrian design system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/foundations/typography/figtree/entries/2026-10-19/asset-982863a066.txt",
+        "segments/foundations/typography/figtree/entries/2026-10-19/asset-16fa7737d0.woff2",
+        "segments/foundations/typography/figtree/entries/2026-10-19/Figtree-variable.ttf"
+      ]
+    },
+    {
+      "path": "foundations/typography/heebo",
+      "kind": "dependency",
+      "reasons": [
+        "uses foundations/typography"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.foundations.typography.heebo",
+      "title": "heebo",
+      "status": "working-baseline",
+      "identity": "segments/foundations/typography/heebo/ROOM.md",
+      "contract": "segments/foundations/typography/heebo/CONTEXT.md",
+      "routing": "segments/foundations/typography/heebo/INDEX.md",
+      "state": "segments/foundations/typography/heebo/STATE.md",
+      "job": "Maintain this bounded part of the Mindrian design system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/foundations/typography/heebo/entries/2026-10-19/asset-c7b64fae0a.txt",
+        "segments/foundations/typography/heebo/entries/2026-10-19/asset-26ff41b9d0.ttf"
+      ]
+    },
+    {
+      "path": "foundations/typography/jetbrains-mono",
+      "kind": "dependency",
+      "reasons": [
+        "uses foundations/typography"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.foundations.typography.jetbrains-mono",
+      "title": "jetbrains mono",
+      "status": "working-baseline",
+      "identity": "segments/foundations/typography/jetbrains-mono/ROOM.md",
+      "contract": "segments/foundations/typography/jetbrains-mono/CONTEXT.md",
+      "routing": "segments/foundations/typography/jetbrains-mono/INDEX.md",
+      "state": "segments/foundations/typography/jetbrains-mono/STATE.md",
+      "job": "Maintain this bounded part of the Mindrian design system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/foundations/typography/jetbrains-mono/entries/2026-10-19/asset-59e37f3e22.ttf",
+        "segments/foundations/typography/jetbrains-mono/entries/2026-10-19/asset-ff0057ecb6.txt"
+      ]
+    },
+    {
+      "path": "governance",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of governance/intake",
+        "inherits-from governance/intake",
+        "Ancestor of governance/tooling",
+        "inherits-from governance/tooling"
+      ],
+      "applicationScope": "inherited",
+      "humanCheck": "Confirm the workflow integration is actually adopted and do not confuse a plan with execution or pending rules with compliance.",
+      "id": "mos.design.governance",
+      "title": "Governance",
+      "status": "working-baseline",
+      "identity": "segments/governance/ROOM.md",
+      "contract": "segments/governance/CONTEXT.md",
+      "routing": "segments/governance/INDEX.md",
+      "state": "segments/governance/STATE.md",
+      "job": "Make every use of the design system explicit, relevant and reviewable.",
+      "inputs": [
+        "Consumer identity, what, how, why and JTBD",
+        "Inherited brand rules"
+      ],
+      "process": [
+        "Validate declared scope",
+        "Resolve relevant segments and rule status",
+        "Integrate required steps and record actual review"
+      ],
+      "artifacts": []
+    },
+    {
+      "path": "governance/intake",
+      "kind": "mandatory",
+      "reasons": [
+        "Mandatory first workflow",
+        "uses governance/tooling"
+      ],
+      "applicationScope": "baseline",
+      "humanCheck": "Confirm the workflow integration is actually adopted and do not confuse a plan with execution or pending rules with compliance.",
+      "id": "mos.design.governance.intake",
+      "title": "Consumer entry workflow",
+      "status": "working-baseline",
+      "identity": "segments/governance/intake/ROOM.md",
+      "contract": "segments/governance/intake/CONTEXT.md",
+      "routing": "segments/governance/intake/INDEX.md",
+      "state": "segments/governance/intake/STATE.md",
+      "job": "Require identity, what, how, why and JTBD before routing relevant design-system segments.",
+      "inputs": [
+        "Consumer identity, what, how, why and JTBD",
+        "Inherited brand rules"
+      ],
+      "process": [
+        "Validate declared scope",
+        "Resolve relevant segments and rule status",
+        "Integrate required steps and record actual review"
+      ],
+      "artifacts": [
+        "segments/governance/intake/entries/2026-10-19/PROTOCOL.md",
+        "segments/governance/intake/entries/2026-10-19/intake.schema.json",
+        "segments/governance/intake/entries/2026-10-19/routing.json",
+        "segments/governance/intake/entries/2026-10-19/consumer-template.json",
+        "segments/governance/intake/entries/2026-10-19/consumer-entry.html",
+        "segments/governance/intake/entries/2026-10-19/OPERATING-MODEL.md"
+      ]
+    },
+    {
+      "path": "governance/tooling",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of governance/tooling/production",
+        "inherits-from governance/tooling/production"
+      ],
+      "applicationScope": "inherited",
+      "humanCheck": "Review resolved scope and actual outputs. Verify memory is learning rather than authority, and do not claim automated design approval.",
+      "id": "mos.design.governance.tooling",
+      "title": "Installable brand tooling",
+      "status": "working-baseline",
+      "identity": "segments/governance/tooling/ROOM.md",
+      "contract": "segments/governance/tooling/CONTEXT.md",
+      "routing": "segments/governance/tooling/INDEX.md",
+      "state": "segments/governance/tooling/STATE.md",
+      "job": "Connect a declared consumer job to canonical brand guidance and reviewable work records.",
+      "inputs": [
+        "consumers/brand-cli.json and the validated consumer use packet",
+        "system.json consumerWorkflow schema, routing and rule-set registry",
+        "segments-index.json and selected segment.json contracts"
+      ],
+      "process": [
+        "Validate the consumer identity, what/how/why and JTBD using scripts/intake.cjs",
+        "Preflight managed paths and install a skill that routes to selected canonical sources",
+        "Expose selected assets, canonical review contracts and read-only prose signals; safely refresh managed guidance without overwriting edits",
+        "Ask for the image’s explanatory intent before selecting a template; carry the answers into a concrete scene plan and reject incomplete or unsupported support claims",
+        "Compile image briefs through nested canonical templates, compare supplied variation history and preserve sequence locks without invoking a provider",
+        "Record the source lock and numbered brief, produce, review and return-learning outputs",
+        "Keep optional rtk-ai/icm learning separate from canonical authority"
+      ],
+      "artifacts": [
+        "bin/mos-brand.cjs",
+        "skills/mindrian-brand-book/SKILL.md",
+        "skills/rtk-icm-memory/SKILL.md",
+        "references/cli-guide.md",
+        "references/brand-cli-workflow.md",
+        "scripts/test-cli.cjs",
+        "scripts/audit-icm.cjs",
+        "references/tooling-verification.json",
+        "segments/governance/tooling/entries/2026-10-19/install.html",
+        "scripts/cli-content.cjs",
+        "scripts/image-prompts.cjs",
+        "scripts/test-image-prompts.cjs",
+        "scripts/fixtures/consumer.cjs",
+        "scripts/build-editorial-integrity.cjs",
+        "scripts/editorial-evidence.cjs",
+        "scripts/test-editorial-evidence.cjs",
+        "scripts/build-draft-content.cjs",
+        "scripts/test-draft-content.cjs",
+        "scripts/content-pipeline.cjs",
+        "scripts/test-content-pipeline.cjs",
+        "scripts/build-visual-grammar.cjs",
+        "scripts/test-visual-grammar.cjs",
+        "scripts/build-shaper.cjs",
+        "scripts/test-shaper.mjs",
+        "scripts/website-access.cjs",
+        "scripts/test-website-access.cjs"
+      ]
+    },
+    {
+      "path": "governance/tooling/production",
+      "kind": "task",
+      "reasons": [
+        "Active ruling set production-tool-preflight"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Verify actual host tools, package compatibility, rendering, meaningful movement and evidence. Installation is not visual approval or factual verification.",
+      "id": "mos.design.governance.tooling.production",
+      "title": "Project tools and production preflight",
+      "status": "active-directive",
+      "identity": "segments/governance/tooling/production/ROOM.md",
+      "contract": "segments/governance/tooling/production/CONTEXT.md",
+      "routing": "segments/governance/tooling/production/INDEX.md",
+      "state": "segments/governance/tooling/production/STATE.md",
+      "job": "Install supported task-specific capabilities and apply actual brand rules before creation.",
+      "inputs": [
+        "Declared consumer scope, existing stack and actual production job",
+        "Canonical tool registry and verified host capability declarations"
+      ],
+      "process": [
+        "Inspect present skills and dependencies without executing user-supplied recipes",
+        "Install missing registered tools with managed edit protection",
+        "Prepare the explanatory plan and actual rules before creation, then review real output"
+      ],
+      "artifacts": [
+        "segments/governance/tooling/production/entries/2026-10-20/registry.json",
+        "segments/governance/tooling/production/entries/2026-10-20/upstream.json",
+        "segments/governance/tooling/production/entries/2026-10-20/GUIDE.md",
+        "segments/governance/tooling/production/entries/2026-10-20/production-brief.json",
+        "segments/governance/tooling/production/entries/2026-10-20/tools-template.json",
+        "scripts/production-tools.cjs",
+        "scripts/test-production-tools.cjs",
+        "skills/mindrian-production/SKILL.md",
+        "skills/mindrian-images/SKILL.md",
+        "skills/mindrian-visual-aids/SKILL.md",
+        "skills/mindrian-motion/SKILL.md",
+        "skills/vendor/gsap/LICENSE",
+        "skills/vendor/gsap/gsap-core/SKILL.md",
+        "skills/vendor/gsap/gsap-frameworks/SKILL.md",
+        "skills/vendor/gsap/gsap-performance/SKILL.md",
+        "skills/vendor/gsap/gsap-plugins/SKILL.md",
+        "skills/vendor/gsap/gsap-react/SKILL.md",
+        "skills/vendor/gsap/gsap-scrolltrigger/SKILL.md",
+        "skills/vendor/gsap/gsap-timeline/SKILL.md",
+        "skills/vendor/gsap/gsap-utils/SKILL.md",
+        "segments/governance/tooling/production/entries/2026-10-20/production-tools.html"
+      ]
+    },
+    {
+      "path": "identity",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of identity/logo",
+        "inherits-from identity/logo",
+        "Ancestor of identity/theo",
+        "inherits-from identity/theo"
+      ],
+      "applicationScope": "inherited",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.identity",
+      "title": "Identity",
+      "status": "working-baseline",
+      "identity": "segments/identity/ROOM.md",
+      "contract": "segments/identity/CONTEXT.md",
+      "routing": "segments/identity/INDEX.md",
+      "state": "segments/identity/STATE.md",
+      "job": "Maintain exact identity assets and the Theo visual language.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": []
+    },
+    {
+      "path": "identity/logo",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: website",
+        "Ancestor of identity/logo/favicons",
+        "inherits-from identity/logo/favicons",
+        "Ancestor of identity/logo/variants",
+        "inherits-from identity/logo/variants"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.identity.logo",
+      "title": "The logo system",
+      "status": "working-baseline",
+      "identity": "segments/identity/logo/ROOM.md",
+      "contract": "segments/identity/logo/CONTEXT.md",
+      "routing": "segments/identity/logo/INDEX.md",
+      "state": "segments/identity/logo/STATE.md",
+      "job": "Apply the logo system within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/identity/logo/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "identity/logo/favicons",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: website",
+        "Declared surface: app-ui"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Confirm distinct sibling silhouettes, tiny wink visibility, mask safety and the real deployed head. Proposed members remain proposed.",
+      "id": "mos.design.identity.logo.favicons",
+      "title": "Favicons and service icons",
+      "status": "working-baseline",
+      "identity": "segments/identity/logo/favicons/ROOM.md",
+      "contract": "segments/identity/logo/favicons/CONTEXT.md",
+      "routing": "segments/identity/logo/favicons/INDEX.md",
+      "state": "segments/identity/logo/favicons/STATE.md",
+      "job": "Identify the owning Mindrian service clearly in tabs, bookmarks and supported app surfaces.",
+      "inputs": [
+        "Owner-approved parent face with vertical yellow wink",
+        "Confirmed consumer job and service ownership",
+        "Current platform icon guidance"
+      ],
+      "process": [
+        "Choose the owning identity",
+        "Apply optical drawing and export rules",
+        "Scope asset and manifest paths to the service",
+        "Review actual sizes and record deployment results"
+      ],
+      "artifacts": [
+        "segments/identity/logo/favicons/entries/2026-10-19/GUIDE.md",
+        "segments/identity/logo/favicons/entries/2026-10-19/render.cjs",
+        "segments/identity/logo/favicons/entries/2026-10-19/favicon-registry.json",
+        "segments/identity/logo/favicons/entries/2026-10-19/favicons.html"
+      ]
+    },
+    {
+      "path": "identity/logo/variants",
+      "kind": "dependency",
+      "reasons": [
+        "uses identity/logo"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.identity.logo.variants",
+      "title": "variants",
+      "status": "working-baseline",
+      "identity": "segments/identity/logo/variants/ROOM.md",
+      "contract": "segments/identity/logo/variants/CONTEXT.md",
+      "routing": "segments/identity/logo/variants/INDEX.md",
+      "state": "segments/identity/logo/variants/STATE.md",
+      "job": "Maintain this bounded part of the Mindrian design system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/identity/logo/variants/entries/2026-10-19/asset-e062595916.png",
+        "segments/identity/logo/variants/entries/2026-10-19/asset-7500ef54f7.png",
+        "segments/identity/logo/variants/entries/2026-10-19/asset-95ebe29cff.png",
+        "segments/identity/logo/variants/entries/2026-10-19/asset-0b8f6f83e5.png",
+        "segments/identity/logo/variants/entries/2026-10-19/asset-6b6bb25f85.svg",
+        "segments/identity/logo/variants/entries/2026-10-19/asset-7499182ec9.svg",
+        "segments/identity/logo/variants/entries/2026-10-19/asset-2f6ca3ccb3.svg",
+        "segments/identity/logo/variants/entries/2026-10-19/asset-abde9b2b19.svg",
+        "segments/identity/logo/variants/entries/2026-10-19/asset-cbb80cb69f.svg",
+        "segments/identity/logo/variants/entries/2026-10-19/asset-a39c184bc6.svg",
+        "segments/identity/logo/variants/entries/2026-10-19/asset-dc83869aa5.svg",
+        "segments/identity/logo/variants/entries/2026-10-19/asset-aafc7b2563.svg",
+        "segments/identity/logo/variants/entries/2026-10-19/asset-acdd881a87.svg",
+        "segments/identity/logo/variants/entries/2026-10-19/asset-1b8e085f1d.svg",
+        "segments/identity/logo/variants/entries/2026-10-19/asset-a4f2bc079c.svg"
+      ]
+    },
+    {
+      "path": "identity/theo",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of identity/theo/states",
+        "inherits-from identity/theo/states",
+        "uses teams/documentation",
+        "Ancestor of identity/theo/framework-language",
+        "inherits-from identity/theo/framework-language"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.identity.theo",
+      "title": "Theo is one character",
+      "status": "working-baseline",
+      "identity": "segments/identity/theo/ROOM.md",
+      "contract": "segments/identity/theo/CONTEXT.md",
+      "routing": "segments/identity/theo/INDEX.md",
+      "state": "segments/identity/theo/STATE.md",
+      "job": "Apply theo is one character within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/identity/theo/entries/2026-10-19/content.html",
+        "segments/identity/theo/entries/2026-10-19/asset-fa8504998f.json",
+        "segments/identity/theo/entries/2026-10-19/asset-d96217b320.js"
+      ]
+    },
+    {
+      "path": "identity/theo/framework-language",
+      "kind": "dependency",
+      "reasons": [
+        "uses experience/visual-language",
+        "uses experience/visual-language/shaper"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.identity.theo.framework-language",
+      "title": "The avatar as a framework and concept language",
+      "status": "working-baseline",
+      "identity": "segments/identity/theo/framework-language/ROOM.md",
+      "contract": "segments/identity/theo/framework-language/CONTEXT.md",
+      "routing": "segments/identity/theo/framework-language/INDEX.md",
+      "state": "segments/identity/theo/framework-language/STATE.md",
+      "job": "Apply the avatar as a framework and concept language within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/identity/theo/framework-language/entries/2026-10-19/content.html",
+        "segments/identity/theo/framework-language/entries/2026-10-19/asset-539f4c5541.json",
+        "segments/identity/theo/framework-language/entries/2026-10-19/asset-1cb7af6135.html",
+        "segments/identity/theo/framework-language/entries/2026-10-19/asset-6531fbbc7b.css",
+        "segments/identity/theo/framework-language/entries/2026-10-19/asset-7e5db2bc97.js",
+        "segments/identity/theo/framework-language/entries/2026-10-19/asset-11b301a662.html"
+      ]
+    },
+    {
+      "path": "identity/theo/states",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: app-ui"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.identity.theo.states",
+      "title": "The face state contract",
+      "status": "working-baseline",
+      "identity": "segments/identity/theo/states/ROOM.md",
+      "contract": "segments/identity/theo/states/CONTEXT.md",
+      "routing": "segments/identity/theo/states/INDEX.md",
+      "state": "segments/identity/theo/states/STATE.md",
+      "job": "Apply the face state contract within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/identity/theo/states/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "teams",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of teams/marketing",
+        "inherits-from teams/marketing",
+        "Ancestor of teams/jtbd",
+        "inherits-from teams/jtbd",
+        "Ancestor of teams/documentation",
+        "inherits-from teams/documentation"
+      ],
+      "applicationScope": "inherited",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.teams",
+      "title": "Teams",
+      "status": "working-baseline",
+      "identity": "segments/teams/ROOM.md",
+      "contract": "segments/teams/CONTEXT.md",
+      "routing": "segments/teams/INDEX.md",
+      "state": "segments/teams/STATE.md",
+      "job": "Help each team apply Mindrian to the customer job.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": []
+    },
+    {
+      "path": "teams/documentation",
+      "kind": "dependency",
+      "reasons": [
+        "uses experience/faq"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.teams.documentation",
+      "title": "Documentation: help someone complete the job",
+      "status": "working-baseline",
+      "identity": "segments/teams/documentation/ROOM.md",
+      "contract": "segments/teams/documentation/CONTEXT.md",
+      "routing": "segments/teams/documentation/INDEX.md",
+      "state": "segments/teams/documentation/STATE.md",
+      "job": "Apply documentation: help someone complete the job within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/teams/documentation/entries/2026-10-19/content.html",
+        "segments/teams/documentation/entries/2026-10-19/asset-b1727ce037.md",
+        "segments/teams/documentation/entries/2026-10-19/asset-1a2d50f160.md",
+        "segments/teams/documentation/entries/2026-10-19/asset-4d832ba27c.md",
+        "segments/teams/documentation/entries/2026-10-19/asset-ac5a311087.csv"
+      ]
+    },
+    {
+      "path": "teams/jtbd",
+      "kind": "dependency",
+      "reasons": [
+        "uses experience/forms",
+        "uses teams/marketing",
+        "uses experience/faq",
+        "uses teams/documentation"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.teams.jtbd",
+      "title": "Mindrian uses its own method",
+      "status": "working-baseline",
+      "identity": "segments/teams/jtbd/ROOM.md",
+      "contract": "segments/teams/jtbd/CONTEXT.md",
+      "routing": "segments/teams/jtbd/INDEX.md",
+      "state": "segments/teams/jtbd/STATE.md",
+      "job": "Apply mindrian uses its own method within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/teams/jtbd/entries/2026-10-19/content.html",
+        "segments/teams/jtbd/entries/2026-10-19/asset-6f6959b52f.md",
+        "segments/teams/jtbd/entries/2026-10-19/asset-5ec8d6d324.md"
+      ]
+    },
+    {
+      "path": "teams/marketing",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of teams/marketing/draft-content",
+        "inherits-from teams/marketing/draft-content"
+      ],
+      "applicationScope": "inherited",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.teams.marketing",
+      "title": "Marketing: start with the job",
+      "status": "working-baseline",
+      "identity": "segments/teams/marketing/ROOM.md",
+      "contract": "segments/teams/marketing/CONTEXT.md",
+      "routing": "segments/teams/marketing/INDEX.md",
+      "state": "segments/teams/marketing/STATE.md",
+      "job": "Apply marketing: start with the job within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/teams/marketing/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "teams/marketing/draft-content",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: website",
+        "uses teams/documentation",
+        "Active ruling set content-production-pipeline"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Review the actual draft against inspected evidence and the reader job. No structural check verifies truth or grants publication approval.",
+      "id": "mos.design.teams.marketing.draft-content",
+      "title": "Draft content for the reader job",
+      "status": "active-directive",
+      "identity": "segments/teams/marketing/draft-content/ROOM.md",
+      "contract": "segments/teams/marketing/draft-content/CONTEXT.md",
+      "routing": "segments/teams/marketing/draft-content/INDEX.md",
+      "state": "segments/teams/marketing/draft-content/STATE.md",
+      "job": "Apply canonical voice, scan hierarchy and evidence to channel-specific written content.",
+      "inputs": [
+        "Declared consumer identity and reader JTBD",
+        "Content brief, original sources and actual channel constraints"
+      ],
+      "process": [
+        "Resolve the relevant canonical guidance before drafting",
+        "Choose an explanation and reading shape for the actual reader job",
+        "Review sources, scan path, current capabilities and pending checks"
+      ],
+      "artifacts": [
+        "segments/teams/marketing/draft-content/entries/2026-10-20/GUIDE.md",
+        "segments/teams/marketing/draft-content/entries/2026-10-20/channels.md",
+        "segments/teams/marketing/draft-content/entries/2026-10-20/content-brief.json",
+        "segments/teams/marketing/draft-content/entries/2026-10-20/content.html",
+        "segments/teams/marketing/draft-content/entries/2026-10-20/draft-content.html",
+        "skills/draft-content/SKILL.md",
+        "skills/draft-content/upstream/SKILL.md",
+        "skills/draft-content/upstream/LICENSE",
+        "skills/draft-content/upstream/source.json"
+      ]
+    },
+    {
+      "path": "writing",
+      "kind": "context",
+      "reasons": [
+        "Ancestor of writing/voice",
+        "inherits-from writing/voice",
+        "Ancestor of writing/punctuation",
+        "inherits-from writing/punctuation",
+        "Ancestor of writing/text-augmentation",
+        "inherits-from writing/text-augmentation",
+        "Ancestor of writing/editorial-integrity",
+        "inherits-from writing/editorial-integrity",
+        "Ancestor of writing/english-hebrew",
+        "inherits-from writing/english-hebrew"
+      ],
+      "applicationScope": "inherited",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.writing",
+      "title": "Writing",
+      "status": "working-baseline",
+      "identity": "segments/writing/ROOM.md",
+      "contract": "segments/writing/CONTEXT.md",
+      "routing": "segments/writing/INDEX.md",
+      "state": "segments/writing/STATE.md",
+      "job": "Keep language clear, consistent and honest.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": []
+    },
+    {
+      "path": "writing/editorial-integrity",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: graph-visualization",
+        "uses teams/marketing/draft-content",
+        "uses experience/graph-visualization",
+        "uses writing/text-augmentation",
+        "Ancestor of writing/editorial-integrity/callouts",
+        "inherits-from writing/editorial-integrity/callouts",
+        "Ancestor of writing/editorial-integrity/quotations",
+        "inherits-from writing/editorial-integrity/quotations",
+        "Ancestor of writing/editorial-integrity/evidence",
+        "inherits-from writing/editorial-integrity/evidence",
+        "uses teams/documentation"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Review the full draft and highlighted excerpts against the actual sources. Structural checks do not verify truth, permission, comprehension or human approval.",
+      "id": "mos.design.writing.editorial-integrity",
+      "title": "Callouts, quotations and grounded claims",
+      "status": "working-baseline",
+      "identity": "segments/writing/editorial-integrity/ROOM.md",
+      "contract": "segments/writing/editorial-integrity/CONTEXT.md",
+      "routing": "segments/writing/editorial-integrity/INDEX.md",
+      "state": "segments/writing/editorial-integrity/STATE.md",
+      "job": "Keep highlighted content honest, attributable and useful across channels.",
+      "inputs": [
+        "Declared reader job, channel and draft",
+        "Original source material, exact quotations and claim status"
+      ],
+      "process": [
+        "Read inherited brand constraints and the relevant child guidance",
+        "Apply the role and source checks to actual content",
+        "Record sources, limitations, corrections and unfinished reviews"
+      ],
+      "artifacts": [
+        "segments/writing/editorial-integrity/entries/2026-10-20/SKILL.md",
+        "segments/writing/editorial-integrity/entries/2026-10-20/content.html",
+        "segments/writing/editorial-integrity/entries/2026-10-20/research-notes.md",
+        "segments/writing/editorial-integrity/entries/2026-10-20/editorial-integrity.html"
+      ]
+    },
+    {
+      "path": "writing/editorial-integrity/callouts",
+      "kind": "dependency",
+      "reasons": [
+        "uses writing/editorial-integrity"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Review the full draft and highlighted excerpts against the actual sources. Structural checks do not verify truth, permission, comprehension or human approval.",
+      "id": "mos.design.writing.editorial-integrity.callouts",
+      "title": "Callout roles and restrained emphasis",
+      "status": "working-baseline",
+      "identity": "segments/writing/editorial-integrity/callouts/ROOM.md",
+      "contract": "segments/writing/editorial-integrity/callouts/CONTEXT.md",
+      "routing": "segments/writing/editorial-integrity/callouts/INDEX.md",
+      "state": "segments/writing/editorial-integrity/callouts/STATE.md",
+      "job": "Choose an inset only when it serves a distinct reading job.",
+      "inputs": [
+        "Declared reader job, channel and draft",
+        "Original source material, exact quotations and claim status"
+      ],
+      "process": [
+        "Read inherited brand constraints and the relevant child guidance",
+        "Apply the role and source checks to actual content",
+        "Record sources, limitations, corrections and unfinished reviews"
+      ],
+      "artifacts": [
+        "segments/writing/editorial-integrity/callouts/entries/2026-10-20/GUIDE.md",
+        "segments/writing/editorial-integrity/callouts/entries/2026-10-20/callouts.css"
+      ]
+    },
+    {
+      "path": "writing/editorial-integrity/evidence",
+      "kind": "dependency",
+      "reasons": [
+        "uses writing/editorial-integrity"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Review the full draft and highlighted excerpts against the actual sources. Structural checks do not verify truth, permission, comprehension or human approval.",
+      "id": "mos.design.writing.editorial-integrity.evidence",
+      "title": "Claim-level research and technical verification",
+      "status": "working-baseline",
+      "identity": "segments/writing/editorial-integrity/evidence/ROOM.md",
+      "contract": "segments/writing/editorial-integrity/evidence/CONTEXT.md",
+      "routing": "segments/writing/editorial-integrity/evidence/INDEX.md",
+      "state": "segments/writing/editorial-integrity/evidence/STATE.md",
+      "job": "Trace factual claims to direct supporting material and actual review.",
+      "inputs": [
+        "Declared reader job, channel and draft",
+        "Original source material, exact quotations and claim status"
+      ],
+      "process": [
+        "Read inherited brand constraints and the relevant child guidance",
+        "Apply the role and source checks to actual content",
+        "Record sources, limitations, corrections and unfinished reviews"
+      ],
+      "artifacts": [
+        "segments/writing/editorial-integrity/evidence/entries/2026-10-20/GUIDE.md",
+        "segments/writing/editorial-integrity/evidence/entries/2026-10-20/ledger.schema.json",
+        "segments/writing/editorial-integrity/evidence/entries/2026-10-20/ledger-template.json"
+      ]
+    },
+    {
+      "path": "writing/editorial-integrity/quotations",
+      "kind": "dependency",
+      "reasons": [
+        "uses writing/editorial-integrity"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Review the full draft and highlighted excerpts against the actual sources. Structural checks do not verify truth, permission, comprehension or human approval.",
+      "id": "mos.design.writing.editorial-integrity.quotations",
+      "title": "Exact quotation and visible attribution",
+      "status": "working-baseline",
+      "identity": "segments/writing/editorial-integrity/quotations/ROOM.md",
+      "contract": "segments/writing/editorial-integrity/quotations/CONTEXT.md",
+      "routing": "segments/writing/editorial-integrity/quotations/INDEX.md",
+      "state": "segments/writing/editorial-integrity/quotations/STATE.md",
+      "job": "Preserve wording, context and traceable attribution.",
+      "inputs": [
+        "Declared reader job, channel and draft",
+        "Original source material, exact quotations and claim status"
+      ],
+      "process": [
+        "Read inherited brand constraints and the relevant child guidance",
+        "Apply the role and source checks to actual content",
+        "Record sources, limitations, corrections and unfinished reviews"
+      ],
+      "artifacts": [
+        "segments/writing/editorial-integrity/quotations/entries/2026-10-20/GUIDE.md"
+      ]
+    },
+    {
+      "path": "writing/english-hebrew",
+      "kind": "dependency",
+      "reasons": [
+        "uses experience/forms"
+      ],
+      "applicationScope": "adjacent",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.writing.english-hebrew",
+      "title": "English and Hebrew writing",
+      "status": "working-baseline",
+      "identity": "segments/writing/english-hebrew/ROOM.md",
+      "contract": "segments/writing/english-hebrew/CONTEXT.md",
+      "routing": "segments/writing/english-hebrew/INDEX.md",
+      "state": "segments/writing/english-hebrew/STATE.md",
+      "job": "Apply english and hebrew writing within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/writing/english-hebrew/entries/2026-10-19/content.html"
+      ]
+    },
+    {
+      "path": "writing/punctuation",
+      "kind": "mandatory",
+      "reasons": [
+        "Shared baseline",
+        "uses writing/voice",
+        "uses experience/forms"
+      ],
+      "applicationScope": "baseline",
+      "humanCheck": "Confirm the result serves the stated job, preserves parent constraints and labels unverified claims.",
+      "id": "mos.design.writing.punctuation",
+      "title": "punctuation",
+      "status": "working-baseline",
+      "identity": "segments/writing/punctuation/ROOM.md",
+      "contract": "segments/writing/punctuation/CONTEXT.md",
+      "routing": "segments/writing/punctuation/INDEX.md",
+      "state": "segments/writing/punctuation/STATE.md",
+      "job": "Maintain this bounded part of the Mindrian design system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/writing/punctuation/entries/2026-10-19/asset-98b57a2843.json"
+      ]
+    },
+    {
+      "path": "writing/text-augmentation",
+      "kind": "task",
+      "reasons": [
+        "Declared surface: graph-visualization",
+        "uses writing/voice",
+        "uses teams/marketing/draft-content",
+        "uses experience/forms/engagement"
+      ],
+      "applicationScope": "direct",
+      "humanCheck": "Critical handoff review: no walls of text. Confirm a useful scan path and full reading, meaningful rich text/visual explanation, visible qualifications and actions, contrast/reflow/spacing behavior and native Hebrew. Source checks do not pass editorial review.",
+      "id": "mos.design.writing.text-augmentation",
+      "title": "Text augmentation and scannable hierarchy",
+      "status": "working-baseline",
+      "identity": "segments/writing/text-augmentation/ROOM.md",
+      "contract": "segments/writing/text-augmentation/CONTEXT.md",
+      "routing": "segments/writing/text-augmentation/INDEX.md",
+      "state": "segments/writing/text-augmentation/STATE.md",
+      "job": "Help readers find the point, inspect the reasoning and identify the next useful action through clear text roles.",
+      "inputs": [
+        "Declared reader job and channel",
+        "Inherited voice, evidence and typography guidance",
+        "Primary research and accessibility sources in research-notes.md"
+      ],
+      "process": [
+        "Write the reading outline and assign distinct text roles",
+        "Apply the procedure and channel-specific examples",
+        "Preserve evidence, language direction and accessible reading",
+        "Review actual reader and implementation outcomes separately"
+      ],
+      "artifacts": [
+        "segments/writing/text-augmentation/entries/2026-10-19/SKILL.md",
+        "segments/writing/text-augmentation/entries/2026-10-19/content.html",
+        "segments/writing/text-augmentation/entries/2026-10-19/text-augmentation.css",
+        "segments/writing/text-augmentation/entries/2026-10-19/research-notes.md",
+        "segments/writing/text-augmentation/entries/2026-10-19/text-augmentation.html"
+      ]
+    },
+    {
+      "path": "writing/voice",
+      "kind": "mandatory",
+      "reasons": [
+        "Shared baseline",
+        "uses teams/marketing/draft-content",
+        "uses experience/graph-visualization",
+        "uses teams/marketing",
+        "uses experience/forms/engagement",
+        "uses experience/faq",
+        "uses teams/documentation"
+      ],
+      "applicationScope": "baseline",
+      "humanCheck": "Can a creator apply the teaching sequence without copying verbal tics or runtime mechanisms? Verify claim grounding, reader comprehension and native Hebrew separately.",
+      "id": "mos.design.writing.voice",
+      "title": "The voice of Mindrian",
+      "status": "working-baseline",
+      "identity": "segments/writing/voice/ROOM.md",
+      "contract": "segments/writing/voice/CONTEXT.md",
+      "routing": "segments/writing/voice/INDEX.md",
+      "state": "segments/writing/voice/STATE.md",
+      "job": "Apply the voice of mindrian within the shared Mindrian system.",
+      "inputs": [
+        "Inherited brand rules",
+        "Relevant job and supporting sources",
+        "Owner-supplied Larry lecture transcript with timestamped teaching examples",
+        "Owner-supplied mos:larry-personality skill as a pedagogical reference",
+        "Owner direction: the supplied speaking approach is the canonical m:os presenter performance"
+      ],
+      "process": [
+        "Inspect inherited constraints and relevant evidence",
+        "Make the bounded change in this segment",
+        "Validate the affected assets and exports"
+      ],
+      "artifacts": [
+        "segments/writing/voice/entries/2026-10-19/content.html",
+        "segments/writing/voice/entries/2026-10-19/teaching.html",
+        "segments/writing/voice/entries/2026-10-19/TEACHING-SOURCES.md",
+        "segments/writing/voice/entries/2026-10-19/presenter-canon.json",
+        "segments/writing/voice/entries/2026-10-19/presenter-canon.md",
+        "segments/writing/voice/entries/2026-10-19/presenter-canon.html"
+      ]
+    }
+  ],
+  "ruleSets": [
+    {
+      "id": "brand-baseline",
+      "status": "active",
+      "version": "2.19.1",
+      "applies": true,
+      "source": "references/brand-rules.md",
+      "checks": [
+        "No em dashes",
+        "Exact parent identity",
+        "Mindrian leads, Theo supports",
+        "Preserve evidence status",
+        "Check relevant language/accessibility rules",
+        "Critical no-wall-of-text editorial review: hierarchy, rich text and useful visual explanation; human check required"
+      ],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "uiux-ruling-system",
+      "status": "planned",
+      "version": null,
+      "applies": true,
+      "source": null,
+      "checks": [],
+      "result": "not-implemented-not-passed"
+    },
+    {
+      "id": "content-production-pipeline",
+      "status": "active",
+      "version": "2.28.1",
+      "applies": true,
+      "source": "skills/draft-content/SKILL.md",
+      "checks": [
+        "Install the Mindrian drafting skill and actual selected instructions for the configured host",
+        "Complete the reader JTBD, scan outline, takeaway and evidence gaps before prose",
+        "Use a content run and current content preparation before advancing from the brief",
+        "Apply canonical voice, scannable hierarchy, callouts, quotations and evidence rules",
+        "Record actual editorial and rendered-page checks; no automated factual or publication approval"
+      ],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "blog-production-pipeline",
+      "status": "active",
+      "version": "2.28.1",
+      "applies": false,
+      "source": "segments/teams/editorial/blog/pipeline/entries/2026-10-20/GUIDE.md",
+      "checks": [],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "production-tool-preflight",
+      "status": "active",
+      "version": "2.29.0",
+      "applies": true,
+      "source": "segments/governance/tooling/production/entries/2026-10-20/GUIDE.md",
+      "checks": [
+        "Inspect the actual capabilities required by the deliverable",
+        "Install supported missing project skills and dependencies",
+        "Resolve unavailable provider or external-skill setup honestly",
+        "Apply actual brand instructions and rendering rationale before creation",
+        "Do not silently flatten required interaction because no packaged React components exist"
+      ],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "visual-explanation-grammar",
+      "status": "active",
+      "version": "2.33.0",
+      "applies": true,
+      "source": "segments/experience/visual-language/entries/2026-10-20/GUIDE.md",
+      "checks": [
+        "Choose values, relationships, two distinctions, hierarchy, system or lenses explicitly",
+        "Declare the encoding and keep its source status visible",
+        "Use Theo Faces as a thinking-motion language, not a compulsory face in every diagram",
+        "Perform one meaningful move and hold a complete readable still",
+        "Check labels, axes, levels, edge meaning, reduced motion and possible false inference",
+        "Select geometry from meaning; preserve valid curves, circles, organic contours, irregular boundaries and meaningful hard edges without forced brand geometry"
+      ],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "shaper-motion-ruling",
+      "status": "active",
+      "version": "2.33.0",
+      "applies": true,
+      "source": "segments/experience/visual-language/shaper/motion/entries/2026-10-20/GUIDE.md",
+      "checks": [
+        "Declare why this component is relevant to the current question",
+        "Use the registered thinking move and the shared relevance, manual or scroll driver",
+        "Only one shared explanation owns playback; no ambient loop",
+        "Cancel and settle on lost relevance, hidden tab, reduced motion and unmount",
+        "Keep labels, source status and the complete still readable",
+        "Review actual movement and the next question, not just a completed API call",
+        "Select geometry from meaning; preserve valid curves, circles, organic contours, irregular boundaries and meaningful hard edges without forced brand geometry"
+      ],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "website-google-access",
+      "status": "active",
+      "version": "2.37.0",
+      "applies": true,
+      "source": "segments/experience/forms/access/entries/2026-10-20/GUIDE.md",
+      "checks": [
+        "blog, article, installation and documentation requests stay open and need no sign-in",
+        "sign-in protects only the surfaces in the policy scope (account page, Theo connection consent, letter preferences); their content and data APIs are not shipped in public responses before authentication",
+        "valid Google identity and session are checked server-side; a cosmetic cookie or arbitrary session is insufficient",
+        "no client marker, query parameter or introduction skip can grant authentication",
+        "login rejection, cancellation and expired session remain gated",
+        "successful Google login preserves the internal return destination",
+        "introduction completion and skip preserve the same requested resource",
+        "empty or invalid optional introduction never blocks authenticated skip",
+        "unavailable intro storage and submission failure do not bypass Google authentication",
+        "sign-out clears stale intro progress and revokes access for later protected requests",
+        "marketing permission is separate, explicit and unchecked",
+        "no tokens, contact data or answer values in analytics, replay, URLs or application logs"
+      ],
+      "result": "checks-required-not-yet-executed"
+    },
+    {
+      "id": "graph-visualization-ruling",
+      "status": "proposed",
+      "version": null,
+      "applies": true,
+      "source": "segments/experience/graph-visualization/entries/2026-10-21/GUIDE.md",
+      "checks": [],
+      "result": "not-implemented-not-passed"
+    },
+    {
+      "id": "css-capabilities-ruling",
+      "status": "proposed",
+      "version": null,
+      "applies": true,
+      "source": "segments/experience/css-capabilities/entries/2026-10-23/GUIDE.md",
+      "checks": [],
+      "result": "not-implemented-not-passed"
+    }
+  ],
+  "notices": [],
+  "workflowIntegration": {
+    "file": "docs/brand/hub-workflow.md",
+    "status": "proposed-addition-generated-not-applied-to-external-workflow",
+    "requiredPhases": [
+      "brief",
+      "produce",
+      "review",
+      "return-learning"
+    ],
+    "steps": [
+      {
+        "phase": "brief",
+        "action": "Read the output of `mos-brand context` for the hub job and the UI-SPEC copy deck before any page work."
+      },
+      {
+        "phase": "produce",
+        "action": "Write the hub files from the packet assets and tokens. Cite the book segment for every design choice."
+      },
+      {
+        "phase": "review",
+        "action": "Run `mos-brand review` on the built page and on rendered snapshots. Then a person looks at five widths."
+      },
+      {
+        "phase": "return-learning",
+        "action": "List every item where the book is silent as a proposed segment and return the list to the book."
+      }
+    ]
+  },
+  "reviewEvidence": {
+    "status": "not-provided",
+    "note": "Valid intake is not final design approval, identity authentication or proof of workflow adoption."
+  }
+}

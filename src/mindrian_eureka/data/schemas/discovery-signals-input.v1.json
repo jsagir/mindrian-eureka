@@ -1,0 +1,172 @@
+{
+  "$defs": {
+    "ArtifactInput": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "source_ref": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Source Ref",
+          "type": "string"
+        },
+        "title": {
+          "default": "",
+          "maxLength": 2000,
+          "title": "Title",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 1000000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "corpus": {
+          "default": "room",
+          "enum": [
+            "room",
+            "external"
+          ],
+          "title": "Corpus",
+          "type": "string"
+        },
+        "media_type": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Media Type"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-fA-F0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sha256"
+        }
+      },
+      "required": [
+        "id",
+        "source_ref",
+        "text"
+      ],
+      "title": "ArtifactInput",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "objective": {
+      "maxLength": 5000,
+      "minLength": 1,
+      "title": "Objective",
+      "type": "string"
+    },
+    "scope_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Scope Id",
+      "type": "string"
+    },
+    "snapshot_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {"const": "eureka.graph-artifact-bundle.v1"},
+    "capability_id": {"const": "graph.prepare_artifact_bundle"},
+    "status": {"const": "completed_projection"},
+    "projection": {
+      "type": "object",
+      "properties": {
+        "source_node_count": {"type": "integer", "minimum": 0},
+        "artifact_count": {"type": "integer", "minimum": 2, "maximum": 2500},
+        "skipped_empty_node_count": {"type": "integer", "minimum": 0},
+        "max_artifacts": {"type": "integer", "minimum": 2, "maximum": 2500},
+        "source_ref_policy": {"type": "string", "minLength": 1},
+        "corpus": {"const": "room"}
+      },
+      "required": ["source_node_count", "artifact_count", "skipped_empty_node_count", "max_artifacts", "source_ref_policy", "corpus"],
+      "additionalProperties": false
+    },
+    "handoff": {
+      "type": "object",
+      "properties": {
+        "next_capability": {"const": "opportunity.synthesize_discovery_signals"},
+        "instruction": {"type": "string", "minLength": 1}
+      },
+      "required": ["next_capability", "instruction"],
+      "additionalProperties": false
+    },
+    "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "artifacts": {
+      "items": {
+        "$ref": "#/$defs/ArtifactInput"
+      },
+      "maxItems": 2500,
+      "minItems": 2,
+      "title": "Artifacts",
+      "type": "array"
+    },
+    "top_k": {
+      "default": 20,
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Top K",
+      "type": "integer"
+    },
+    "scoring": {
+      "enum": ["hybrid_2026", "legacy"],
+      "default": "hybrid_2026"
+    },
+    "lex_weight": {"type": "number", "minimum": 0, "maximum": 1, "default": 0.5},
+    "min_percentile": {"type": "number", "minimum": 0, "maximum": 1, "default": 0.9},
+    "dense_vectors": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "items": {
+              "type": "number"
+            },
+            "minItems": 1,
+            "maxItems": 20000,
+            "type": "array"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Dense Vectors"
+    }
+  },
+  "required": [
+    "objective",
+    "scope_id",
+    "artifacts"
+  ],
+  "title": "opportunity.synthesize_discovery_signals input",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.discovery-signals-input.v1"
+}

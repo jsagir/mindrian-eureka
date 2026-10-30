@@ -1,0 +1,226 @@
+{
+  "capture_command": "PYTHONPATH=src python3 scripts/hub_review_capture.py",
+  "screens_total_bytes": 3108717,
+  "files": [
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/review/bank.json",
+      "bytes": 1110,
+      "sha256": "a27417c2fb43d421a01beac68d287a3e37d2ca983229116ddc27e3dc48ce8469"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/review/catalogue.json",
+      "bytes": 1120,
+      "sha256": "f9e47ab0826b257dc47a2d228110563bc0102f90d631a47545d18de8e68b39dd"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/review/graph.json",
+      "bytes": 1112,
+      "sha256": "86ff696d0d8ae4d11dd040da9568d72ba08c9e7e511b263928626a593026fe79"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/review/hub.json",
+      "bytes": 1102,
+      "sha256": "51d40b643ef95fea3b6a89c4e6d8d941147d49556c70bab8bd2ccc1e223ebf27"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/review/locked.json",
+      "bytes": 1114,
+      "sha256": "fd0318e4d2c9ca5c8eacb057c880fb267121db2421d97b7eacaa393ccf8c8771"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/review/panel-pair.json",
+      "bytes": 1122,
+      "sha256": "e2015a29e9b27681b4f76658d4871f614065adbb1a8edd488eb293ee5df6f35b"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/review/panel-record.json",
+      "bytes": 1126,
+      "sha256": "eb60ea1d3cb0413d34415155fe479f1ec299b54aeca0cf98de09e778becf9cda"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/bank-1280.jpg",
+      "bytes": 92905,
+      "sha256": "253f7df2bd8e91403d1e02cc421cf826171a045faf940748eeeba6557f989262"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/bank-1600.jpg",
+      "bytes": 95185,
+      "sha256": "30cd834fbab828dbd292e92b8210f32954f1ffeebdc3077d6e2dc1bd01c0cfff"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/bank-320.jpg",
+      "bytes": 41641,
+      "sha256": "9bf5afed98b50ffa7916076bba8ab36f0dca50fdfdb57680c771b0925e5e2d29"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/bank-390.jpg",
+      "bytes": 48588,
+      "sha256": "8b5b419bf072e9abcca522d637d64618103e787e745c78586b3217336da3e731"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/bank-768.jpg",
+      "bytes": 64882,
+      "sha256": "ca6ea33fab67cbd22028d79a3276914ba497b4ba54a915dd58b77b5873fbdcf2"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/bank-header-1280.jpg",
+      "bytes": 83710,
+      "sha256": "ca6a3348b2aa5c740ee31313fa4a4409b6f974b0facae193a3148028040b840e"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/bank-header-390.jpg",
+      "bytes": 52249,
+      "sha256": "39d7c27acda54d5f80b19799112f0d44b74335a228285736e03fdedfd50c2e6d"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/catalogue-1280.jpg",
+      "bytes": 108314,
+      "sha256": "0077283ffe3ee93167e11b480c922f6e328ee6523a8f4e34f54783385a107ce7"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/catalogue-1600.jpg",
+      "bytes": 111061,
+      "sha256": "56012da47b8c19826106861c1f8691d937ef8a3a930170ea0122c9c48089076e"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/catalogue-320.jpg",
+      "bytes": 40434,
+      "sha256": "a1df00c4250986e63d2c7a73c3647ad356e8e0ac34f68a56ef165ce7f4c5c8c3"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/catalogue-390.jpg",
+      "bytes": 42517,
+      "sha256": "4f9c98d0d2a512fb60cb4a341d221e78f8b092dc5d7f86ab0f45ee33f5d790f4"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/catalogue-768.jpg",
+      "bytes": 62791,
+      "sha256": "06067789495f968407f84b001672f2ce6a660729ec2a7a3b8998556cd9508888"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/catalogue-header-1280.jpg",
+      "bytes": 87934,
+      "sha256": "79fc47b1d15a3b377abf272cf24343dd457aa6de6a8471ad83a7fd45ff9b44ae"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/catalogue-header-390.jpg",
+      "bytes": 51438,
+      "sha256": "1de57b3f49b0039095e65cf2672ce81f16360ff03f6013e688332b2d22994c96"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/diagram-1280.jpg",
+      "bytes": 159578,
+      "sha256": "97c94274f1e6ef286f6f871764ca41fbb8426b500affde7c61858895b7eac7f7"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/empty-1280.jpg",
+      "bytes": 81613,
+      "sha256": "8469dc3ae20bbc080c158a42a1ed7080fabe9f9891f4041649e3c16d8728ebc6"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/empty-header-1280.jpg",
+      "bytes": 84486,
+      "sha256": "c9769b11256125bcaa85300317cecb78ccff7b3ddfff72bf8e40a8e2c95608ca"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/fallback-1280.jpg",
+      "bytes": 131495,
+      "sha256": "9b7f7916f44480bef4c51dbf33320e2939c7cb7f06730f9f88d19cd73922fcb6"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/forced-bank-1280.jpg",
+      "bytes": 95976,
+      "sha256": "6861d663b7336978ca5c745ec90bed20b513d8ae102bc5881d6185f084e3e94e"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/forced-catalogue-1280.jpg",
+      "bytes": 122956,
+      "sha256": "8492e3fe111c6a1f65d6f7a039b1e76fe07071611cd75fb9a20e1507d5991a27"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/forced-graph-1280.jpg",
+      "bytes": 150358,
+      "sha256": "a248dcd303f4f416a3e12d95a2ed51d9f616631fc0dcd59991342ba786d3a9d7"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/graph-1280.jpg",
+      "bytes": 143997,
+      "sha256": "45ef53312e443886995def4cb7313f39eeedfdbdfd40732131475ae8391430cd"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/graph-1600.jpg",
+      "bytes": 158134,
+      "sha256": "00eb795b7eb56b3ce891078342037125d67b2368fbee4d99944ec32b89e7541a"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/graph-320.jpg",
+      "bytes": 32449,
+      "sha256": "f88f12479d5c70f24ba35c718f3d9846efe34221719570d9a2ae12a1e42c5294"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/graph-390.jpg",
+      "bytes": 37215,
+      "sha256": "78ab0e8a980dc97d8e95f4457469ba8e7945e759e90d0376b2cbeb80b88d0387"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/graph-768.jpg",
+      "bytes": 91285,
+      "sha256": "7c7e46aa344c168ee9d87ab52a5df0577758131dbe59e17f9bb865507306c2c0"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/graph-header-1280.jpg",
+      "bytes": 97202,
+      "sha256": "f91a0f0af99624de2b0a2517a4c35400a33c1ddc56c289f4ea538dcf88b15cae"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/graph-header-390.jpg",
+      "bytes": 60568,
+      "sha256": "24ff6387d7268365e55ba0abf9f81970947cf8fd66341a176bf432df4ab30fa7"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/graph-stage-768.jpg",
+      "bytes": 48563,
+      "sha256": "d87ea2a16757b5314b843c85c395142908dbbd4bc9fe4ff559d5e53bb42c2639"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/locked-1280.jpg",
+      "bytes": 62823,
+      "sha256": "9978f16fa66b713bfb61d1189ef4b3038fe76456d5ab20001983e360110b1160"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/locked-390.jpg",
+      "bytes": 42102,
+      "sha256": "cc4ec3123d89c97ae6dd5399870437eeb9eb733763dbf73f4fd980a0e268fc5b"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/none-390.jpg",
+      "bytes": 45076,
+      "sha256": "05e0575d1ea96632a37d08e89eb6cb64c3de6778fa952def87f5c5ac97208f98"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/panel-empty-1280.jpg",
+      "bytes": 57581,
+      "sha256": "848beb6b34aae731f58306707f4edfd884d5fe15b35f4b4b359c1a1307e410d3"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/panel-pair-1280.jpg",
+      "bytes": 108787,
+      "sha256": "da6e8d23846d0b94a91407bb13edd39115eb6d24903ac2aed49215e8c3804052"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/panel-record-1280.jpg",
+      "bytes": 123277,
+      "sha256": "bf44d3ddc6ef5670c612d7ce44242e4751c9c2f2829f27636d840230b9b22555"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/panel-record-390.jpg",
+      "bytes": 45550,
+      "sha256": "44f86b9b21c038d1569f2cb07627d0254e89bc18dd0142d3d79b1f840b7b0cbd"
+    },
+    {
+      "path": ".planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/evidence/screens/reduced-1280.jpg",
+      "bytes": 143997,
+      "sha256": "45ef53312e443886995def4cb7313f39eeedfdbdfd40732131475ae8391430cd"
+    }
+  ]
+}

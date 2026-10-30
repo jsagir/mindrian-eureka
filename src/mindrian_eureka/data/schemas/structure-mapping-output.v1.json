@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.structure-mapping-result.v1",
+  "title": "SME structure mapping result",
+  "type": "object",
+  "required": ["schema_version", "result_id", "run_id", "scope_id", "capability_id", "status", "maps", "verification_targets", "evidence_catalog", "warnings"],
+  "properties": {
+    "schema_version": {"const": "eureka.structure-mapping-result.v1"},
+    "result_id": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "scope_id": {"type": "string", "minLength": 1},
+    "capability_id": {"const": "analogy.map_structure"},
+    "capability_version": {"type": "string"},
+    "status": {"enum": ["completed", "completed_empty", "partial"]},
+    "network": {"const": "denied"},
+    "maps": {"type": "array", "items": {"oneOf": [{"$ref": "#/$defs/map"}, {"$ref": "#/$defs/partialMap"}]}},
+    "verification_targets": {"type": "array", "items": {"$ref": "#/$defs/verificationTarget"}},
+    "evidence_catalog": {"type": "array", "items": {"$ref": "#/$defs/evidenceRecord"}},
+    "warnings": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "evidenceRecord": {
+      "type": "object",
+      "properties": {
+        "claim_id": {"type": "string", "minLength": 1},
+        "source_ref": {"type": "string", "minLength": 1},
+        "text": {"type": "string"}
+      },
+      "required": ["claim_id"],
+      "additionalProperties": true
+    },
+    "correspondence": {
+      "type": "object",
+      "properties": {
+        "base_item": {"type": "string"},
+        "target_item": {"type": "string"},
+        "base_claim_ids": {"type": "array", "items": {"type": "string"}},
+        "target_claim_ids": {"type": "array", "items": {"type": "string"}}
+      },
+      "required": ["base_item", "target_item", "base_claim_ids", "target_claim_ids"],
+      "additionalProperties": false
+    },
+    "inference": {
+      "type": "object",
+      "properties": {
+        "inference_id": {"type": "string", "minLength": 1},
+        "base_expression": {"type": "string"},
+        "expression": {"type": "string"},
+        "source_claim_ids": {"type": "array", "items": {"type": "string"}},
+        "target_context_claim_ids": {"type": "array", "items": {"type": "string"}},
+        "status": {"const": "hypothesis_unverified"},
+        "next_step": {"type": "string"}
+      },
+      "required": ["inference_id", "base_expression", "expression", "source_claim_ids", "target_context_claim_ids", "status", "next_step"],
+      "additionalProperties": false
+    },
+    "map": {
+      "type": "object",
+      "properties": {
+        "map_id": {"type": "string", "minLength": 1},
+        "base_id": {"type": "string", "minLength": 1},
+        "base_domain": {"type": "string"},
+        "rules": {"enum": ["AN", "LS", "MA"]},
+        "ses": {"type": "number"},
+        "fit": {"type": "number", "minimum": 0, "maximum": 1},
+        "surface_distance": {"type": "number", "minimum": 0, "maximum": 1},
+        "novelty": {"type": "number", "minimum": 0, "maximum": 1},
+        "triage_score": {"type": "number", "minimum": 0, "maximum": 1},
+        "rank": {"type": "integer", "minimum": 1},
+        "correspondences": {"type": "array", "items": {"$ref": "#/$defs/correspondence"}},
+        "candidate_inferences": {"type": "array", "items": {"$ref": "#/$defs/inference"}},
+        "skolem_entities": {"type": "array"},
+        "interpretation": {"type": "string"}
+      },
+      "required": ["map_id", "base_id", "base_domain", "rules", "ses", "fit", "surface_distance", "novelty", "triage_score", "rank", "correspondences", "candidate_inferences", "skolem_entities", "interpretation"],
+      "additionalProperties": false
+    },
+    "partialMap": {
+      "type": "object",
+      "properties": {
+        "map_id": {"type": "string", "minLength": 1},
+        "base_id": {"type": "string", "minLength": 1},
+        "base_domain": {"type": "string"},
+        "rules": {"enum": ["AN", "LS", "MA"]},
+        "status": {"const": "partial"},
+        "warning": {"type": "string"},
+        "candidate_inferences": {"type": "array", "maxItems": 0}
+      },
+      "required": ["map_id", "base_id", "base_domain", "rules", "status", "warning", "candidate_inferences"],
+      "additionalProperties": false
+    },
+    "verificationTarget": {
+      "type": "object",
+      "properties": {
+        "inference_id": {"type": "string", "minLength": 1},
+        "hypothesis": {"type": "string"},
+        "base_claim_ids": {"type": "array", "items": {"type": "string"}},
+        "target_context_claim_ids": {"type": "array", "items": {"type": "string"}},
+        "required_checks": {
+          "type": "array",
+          "items": {"enum": ["find_support", "find_counterevidence", "check_novelty", "check_boundary"]}
+        }
+      },
+      "required": ["inference_id", "hypothesis", "base_claim_ids", "target_context_claim_ids", "required_checks"],
+      "additionalProperties": false
+    }
+  }
+}

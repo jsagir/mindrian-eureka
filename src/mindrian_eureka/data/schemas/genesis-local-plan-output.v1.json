@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.genesis-local-plan-output.v1",
+  "title": "research.run_genesis_local_plan result",
+  "type": "object",
+  "required": ["schema_version", "capability_id", "capability_version", "input_fingerprint", "run_config", "status", "analysis", "domains", "personas", "research_plan", "handoff", "source_manifest", "limitations"],
+  "properties": {
+    "schema_version": { "const": "eureka.genesis-local-plan.v1" },
+    "capability_id": { "const": "research.run_genesis_local_plan" },
+    "capability_version": { "type": "string" },
+    "input_fingerprint": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+    "run_config": { "type": "object" },
+    "status": { "enum": ["plan_ready_for_host_review", "insufficient_domain_signal"] },
+    "analysis": { "type": "object" },
+    "domains": { "type": "object" },
+    "personas": { "type": "array" },
+    "research_plan": { "type": "object" },
+    "handoff": { "type": "object" },
+    "source_manifest": {
+      "type": "object",
+      "required": ["included_artifacts", "omitted_artifact_count", "omitted_artifact_ids", "snapshot_id", "scope_id"],
+      "properties": {
+        "included_artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "source_ref", "sha256", "included_chars", "source_chars", "truncated"],
+            "properties": {
+              "id": { "type": "string" },
+              "source_ref": { "type": "string" },
+              "sha256": { "type": ["string", "null"] },
+              "included_chars": { "type": "integer", "minimum": 0 },
+              "source_chars": { "type": "integer", "minimum": 0 },
+              "truncated": { "type": "boolean" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "omitted_artifact_count": { "type": "integer", "minimum": 0 },
+        "omitted_artifact_ids": { "type": "array", "items": { "type": "string" } },
+        "snapshot_id": { "type": ["string", "null"] },
+        "scope_id": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>probe</title>
+</head>
+<body>
+<p>Media probe. This page loads no external resource.</p>
+<script>
+(function () {
+  var webgl = false;
+  try {
+    var canvas = document.createElement("canvas");
+    webgl = Boolean(canvas.getContext("webgl") || canvas.getContext("experimental-webgl"));
+  } catch (error) {
+    webgl = false;
+  }
+  var probe = {
+    prefersReducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    forcedColors: window.matchMedia("(forced-colors: active)").matches,
+    webgl: webgl,
+    subtle: Boolean(window.crypto && window.crypto.subtle),
+    secure: window.isSecureContext === true,
+    js: true
+  };
+  window.__probe = probe;
+  document.title = JSON.stringify(probe);
+})();
+</script>
+</body>
+</html>

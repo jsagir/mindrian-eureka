@@ -1,0 +1,5 @@
+---
+title: Instability and front propagation in laser-tweezed lipid bilayer tubules
+---
+
+We study the mechanism of the `pearling' instability seen recently in experiments on lipid tubules under a local applied laser intensity. We argue that the correct boundary conditions are fixed chemical potentials, or surface tensions Σ, at the laser spot and the reservoir in contact with the tubule. We support this with a microscopic picture which includes the intensity profile of the laser beam, and show how this leads to a steady-state flow of lipid along the surface and gradients in the local lipid concentration and surface tension (or chemical potential). This leads to a natural explanation for front propagation and makes several predictions based on the tubule length. While most of the qualitative conclusions of previous studies remain the same, the `ramped' control parameter (surface tension) implies several new qualitative results. We also explore some of the consequences of front propagation into a noisy (due to pre-existing thermal fluctuations) unstable medium.

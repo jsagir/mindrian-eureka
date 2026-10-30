@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.discovery-plan.v1",
+  "title": "discovery.plan_opportunity_scout result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "steps",
+    "principles",
+    "portfolio_write",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.discovery-plan.v1"
+    },
+    "status": {
+      "const": "plan_ready_for_user_and_theo_review"
+    },
+    "steps": {
+      "type": "array"
+    },
+    "scope_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.text-difference-input.v1",
+  "title": "Jason descriptive text-difference request",
+  "type": "object",
+  "properties": {
+    "pairs": {"type": "array", "maxItems": 5000, "items": {"type": "object", "required": ["a", "b"], "properties": {"id": {"type": ["string", "number"]}, "a": {"type": "string", "maxLength": 200000}, "b": {"type": "string", "maxLength": 200000}, "source": {"type": "string"}, "url": {"type": "string", "format": "uri"}, "retrieved": {"type": "string"}}}},
+    "texts": {"type": "array", "items": {"type": "object", "required": ["text"], "properties": {"id": {"type": ["string", "number", "null"]}, "text": {"type": "string", "maxLength": 200000}}}},
+    "legacy": {"type": "boolean"}
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.decision-sequence-result.v1",
+  "title": "decision.compare_sequence_patterns result",
+  "type": "object",
+  "required": ["schema_version", "capability_id", "method_version", "engine", "status", "scope", "observation_count", "feature_names", "state_names", "model_results", "relative_fit_leader", "mean_log_likelihood_difference_per_step", "step_posteriors", "interpretation_limit", "warnings"],
+  "properties": {
+    "schema_version": {"const": "eureka.decision-sequence-result.v1"},
+    "capability_id": {"const": "decision.compare_sequence_patterns"},
+    "method_version": {"type": "string", "minLength": 1},
+    "engine": {
+      "type": "object",
+      "properties": {
+        "name": {"const": "pomegranate"},
+        "version": {"type": "string"},
+        "license": {"type": "string"}
+      },
+      "required": ["name", "version", "license"],
+      "additionalProperties": false
+    },
+    "status": {"const": "completed_unvalidated_model_comparison"},
+    "scope": {
+      "type": "object",
+      "properties": {
+        "scope_id": {"type": "string"},
+        "snapshot_id": {"type": ["string", "null"]},
+        "sequence_id": {"type": "string"}
+      },
+      "required": ["scope_id", "snapshot_id", "sequence_id"],
+      "additionalProperties": false
+    },
+    "observation_count": {"type": "integer", "minimum": 1, "maximum": 2000},
+    "feature_names": {"$ref": "#/$defs/featureNames"},
+    "state_names": {"$ref": "#/$defs/stateNames"},
+    "model_results": {"type": "array", "items": {"$ref": "#/$defs/modelResult"}, "minItems": 2, "maxItems": 5},
+    "relative_fit_leader": {"type": "string", "minLength": 1},
+    "mean_log_likelihood_difference_per_step": {"type": "number", "minimum": 0},
+    "step_posteriors": {"type": "array", "items": {"$ref": "#/$defs/stepPosterior"}, "minItems": 1, "maxItems": 2000},
+    "interpretation_limit": {"type": "string", "minLength": 1},
+    "warnings": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "featureNames": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "complex_features"},
+        {"const": "multidirectional_causation"},
+        {"const": "holistic_view"},
+        {"const": "creative_synthesis"}
+      ],
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "stateNames": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "salience_recognition"},
+        {"const": "causality_mapping"},
+        {"const": "architecture_building"},
+        {"const": "resolution_creation"}
+      ],
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "probabilities": {
+      "type": "object",
+      "properties": {
+        "salience_recognition": {"type": "number", "minimum": 0, "maximum": 1},
+        "causality_mapping": {"type": "number", "minimum": 0, "maximum": 1},
+        "architecture_building": {"type": "number", "minimum": 0, "maximum": 1},
+        "resolution_creation": {"type": "number", "minimum": 0, "maximum": 1}
+      },
+      "required": ["salience_recognition", "causality_mapping", "architecture_building", "resolution_creation"],
+      "additionalProperties": false
+    },
+    "modelResult": {
+      "type": "object",
+      "properties": {
+        "model_id": {"type": "string", "minLength": 1},
+        "label": {"type": "string"},
+        "parameter_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "log_likelihood": {"type": "number"},
+        "mean_log_likelihood_per_step": {"type": "number"},
+        "posterior_map_state_sequence": {"type": "array", "items": {"enum": ["salience_recognition", "causality_mapping", "architecture_building", "resolution_creation"]}},
+        "posterior_state_probabilities": {"type": "array", "items": {"$ref": "#/$defs/probabilities"}}
+      },
+      "required": ["model_id", "label", "parameter_sha256", "log_likelihood", "mean_log_likelihood_per_step", "posterior_map_state_sequence", "posterior_state_probabilities"],
+      "additionalProperties": false
+    },
+    "stepPosterior": {
+      "type": "object",
+      "properties": {
+        "step_id": {"type": "string", "minLength": 1},
+        "models": {"type": "object", "additionalProperties": {"$ref": "#/$defs/probabilities"}}
+      },
+      "required": ["step_id", "models"],
+      "additionalProperties": false
+    }
+  }
+}

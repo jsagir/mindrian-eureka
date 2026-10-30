@@ -1,0 +1,30 @@
+{
+  "schema_version": "eureka.capability.v1",
+  "id": "decision.compare_sequence_patterns",
+  "name": "OMM Decision-Sequence Pattern Explorer",
+  "jtbd": "Hire this when a user has coded a decision process as ordered observations and wants to compare explicit HMM hypotheses, inspect step-level state probabilities, or explore fitting model parameters from multiple sequences.",
+  "status": "experimental",
+  "input_schema": "schemas/decision-sequence-input.v1.schema.json",
+  "output_schema": "schemas/decision-sequence-result.v1.schema.json",
+  "fit_input_schema": "schemas/decision-sequence-fit-input.v1.schema.json",
+  "fit_output_schema": "schemas/decision-sequence-fit-result.v1.schema.json",
+  "runtime": "Python >=3.11; pomegranate 1.1.2 (MIT) via optional hmm extra; local CLI, loopback web API, and stdio MCP tool",
+  "network": "none",
+  "data_classes": ["user-provided-decision-process-observations"],
+  "requires": ["explicitly coded feature observations", "at least two fully specified HMM parameter sets", "authorized room scope from MindrianOS"],
+  "side_effects": [],
+  "limitations": [
+    "The input research package does not provide numeric emissions or an initial state distribution; no default OMM model is shipped.",
+    "Relative model fit depends on caller-supplied feature coding and parameters and is not a validated measure of integrative thinking, ability, personality, or decision quality.",
+    "The capability compares models and returns posterior state probabilities; it does not generate opportunities or recommend a decision.",
+    "Exploratory Baum-Welch fitting is available only from explicit seed parameters and multiple coded sequences; the software minimum is not a statistical sufficiency claim.",
+    "The library returns posterior-MAP state labels by step, not a global Viterbi path.",
+    "MindrianOS must enforce authorization and retain any result in its own room or portfolio systems."
+  ],
+  "version": "0.1.0",
+  "source_revision": "independent standard HMM inference based on user-provided OM-HMM specification; no source code copied",
+  "license_status": "independent implementation; source document provenance remains user-provided",
+  "max_steps": 2000,
+  "max_models": 5,
+  "max_input_bytes": 5242880
+}

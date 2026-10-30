@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian-os.com/schemas/eureka/rs-breakthrough-input.v1.json",
+  "title": "RS breakthrough scoring request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "classified_pair"
+  ],
+  "properties": {
+    "scope_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "classified_pair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "query_concept",
+        "doc_concept",
+        "diff",
+        "lsa",
+        "bert",
+        "passes",
+        "classification"
+      ],
+      "properties": {
+        "query_concept": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "doc_concept": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "diff": {
+          "type": "number"
+        },
+        "lsa": {
+          "type": "number"
+        },
+        "bert": {
+          "type": "number"
+        },
+        "passes": {
+          "type": "boolean"
+        },
+        "classification": {
+          "enum": [
+            "structural_transfer",
+            "semantic_implementation",
+            "hybrid",
+            "none"
+          ]
+        },
+        "bridge_concept": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "evidence": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "source_id": {
+                "type": "string",
+                "maxLength": 500
+              },
+              "url": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "retrieved_at": {
+                "type": "string",
+                "maxLength": 100
+              },
+              "side": {
+                "enum": [
+                  "problem",
+                  "method",
+                  "unspecified"
+                ]
+              },
+              "sentence": {
+                "type": "string",
+                "maxLength": 10000
+              }
+            }
+          },
+          "default": []
+        },
+        "second_signal": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "confirmed": {
+              "type": "boolean"
+            },
+            "method": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        },
+        "novelty_check_status": {
+          "enum": [
+            "passed",
+            "failed",
+            "possible_prior_art",
+            "not_run"
+          ]
+        }
+      }
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "industry_signal_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "diff_percentile": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "pair_density": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "substrate_metadata": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tier": {
+              "enum": [
+                "core",
+                "applied",
+                "theoretical"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

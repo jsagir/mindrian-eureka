@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.graph-backtest-result.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "scope_id",
+    "snapshot_id",
+    "evaluation"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.graph-backtest-result.v1"
+    },
+    "capability_id": {
+      "const": "graph.backtest_relationship_methods"
+    },
+    "status": {
+      "enum": [
+        "completed_evaluation",
+        "insufficient_data"
+      ]
+    },
+    "evaluation": {
+      "type": "object"
+    },
+    "scope_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

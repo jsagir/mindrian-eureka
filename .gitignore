@@ -1,0 +1,45 @@
+# Local dependencies and runtime state
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage/
+dist/
+build/
+*.egg-info/
+
+# Local job data, artifacts, and secrets
+.eureka-data/
+eureka-run/
+eureka-hub/
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite3
+*.db
+*.log
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+**/.hyperframes/
+**/.thumbnails/
+
+# GSD hook scratch
+.planning/.mindrian/
+
+# mos-brand machine-specific files: absolute paths of this machine, rebuilt by `mos-brand configure`
+.mindrian/brand.lock.json
+.mindrian/WORKFLOW.md
+
+# mos-brand local memory (not shared)
+.mindrian/memory.db*
+.mindrian/memory.json

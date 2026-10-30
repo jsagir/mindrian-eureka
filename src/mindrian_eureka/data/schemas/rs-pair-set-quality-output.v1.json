@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian-os.com/schemas/eureka/rs-pair-set-quality-output.v1.json",
+  "title": "RS pair-set quality result",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "capability_id", "capability_version", "status", "scope_id", "snapshot_id", "quality", "pair_lineage", "input_fingerprint", "runtime", "limitations"],
+  "properties": {
+    "schema_version": {"const": "eureka.rs-pair-set-quality.v1"},
+    "capability_id": {"const": "research.assess_rs_pair_set_quality"},
+    "capability_version": {"const": "0.1.0"},
+    "status": {"enum": ["quality_gate_passed", "quality_gate_flagged"]},
+    "scope_id": {"type": ["string", "null"], "maxLength": 200},
+    "snapshot_id": {"type": ["string", "null"], "maxLength": 200},
+    "quality": {
+      "type": "object", "additionalProperties": false,
+      "required": ["degenerate", "ok", "flags", "stats"],
+      "properties": {
+        "degenerate": {"type": "boolean"}, "ok": {"type": "boolean"},
+        "flags": {"type": "array", "items": {"enum": ["empty_pair_set", "seed018_corner_collapse", "non_finite_scores", "no_scored_pairs", "too_few_pairs_for_ranking", "signed_diff_constant", "semantic_constant", "lsa_constant"]}},
+        "stats": {
+          "type": "object", "additionalProperties": false,
+          "required": ["n", "finite", "corner_fraction"],
+          "properties": {"n": {"type": "integer", "minimum": 0}, "finite": {"type": "integer", "minimum": 0}, "corner_fraction": {"type": "number", "minimum": 0, "maximum": 1}}
+        }
+      }
+    },
+    "pair_lineage": {"type": "array", "maxItems": 5000, "items": {"type": "object", "additionalProperties": false, "required": ["pair_id", "source_ids"], "properties": {"pair_id": {"type": "string", "maxLength": 500}, "query_node_id": {"type": "string", "maxLength": 500}, "doc_node_id": {"type": "string", "maxLength": 500}, "source_ids": {"type": "array", "items": {"type": "string", "maxLength": 500}}}}},
+    "input_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "runtime": {"type": "string", "pattern": "^v[0-9]+\\."},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}

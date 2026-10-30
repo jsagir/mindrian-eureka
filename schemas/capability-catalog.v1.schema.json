@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian.dev/schemas/eureka/capability-catalog.v1.schema.json",
+  "title": "Mindrian Eureka Capability Catalog v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "catalog_version", "readiness_key", "capabilities"],
+  "properties": {
+    "schema_version": { "const": "eureka.capability-catalog.v1" },
+    "catalog_version": { "type": "string" },
+    "readiness_key": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "minProperties": 1
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "engine_family", "jtbd", "status", "surface", "implementation", "requires", "network", "side_effects", "limitations"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9_-]*)+$" },
+          "name": { "type": "string", "minLength": 3 },
+          "engine_family": { "type": "string", "minLength": 1 },
+          "jtbd": { "type": "string", "minLength": 10 },
+          "status": { "enum": ["experimental", "host_brokered", "blocked", "planned", "retired"] },
+          "surface": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "implementation": { "type": ["string", "null"] },
+          "requires": { "type": "array", "items": { "type": "string" } },
+          "network": { "type": "string" },
+          "side_effects": { "type": "array", "items": { "type": "string" } },
+          "limitations": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

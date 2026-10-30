@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.network_holes.v1",
+  "title": "Find Unclosed Cycles in the Knowledge Graph output",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "graph_access",
+    "scope_id",
+    "snapshot_id",
+    "input_fingerprint",
+    "graph_summary",
+    "run_config",
+    "limitations",
+    "summary",
+    "candidate_diagonals",
+    "cycles_examined",
+    "ripser_summary",
+    "persistence_status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.graph-algorithm-result.v1"
+    },
+    "capability_id": {
+      "const": "graph.find_network_holes"
+    },
+    "status": {
+      "const": "completed_analysis"
+    },
+    "graph_access": {
+      "const": "read_only_snapshot"
+    },
+    "scope_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "input_fingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "graph_summary": {
+      "type": "object",
+      "required": [
+        "node_count",
+        "edge_count"
+      ],
+      "properties": {
+        "node_count": {
+          "type": "integer"
+        },
+        "edge_count": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "method": {
+      "type": "string"
+    },
+    "run_config": {
+      "type": "object",
+      "required": [
+        "rounds",
+        "seed",
+        "hub_cap",
+        "cycle_limit",
+        "top",
+        "include_persistence"
+      ],
+      "properties": {
+        "rounds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "default": 4
+        },
+        "seed": {
+          "type": "integer",
+          "default": 7
+        },
+        "hub_cap": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2500,
+          "default": 120
+        },
+        "cycle_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20000,
+          "default": 20000
+        },
+        "top": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000,
+          "default": 200
+        },
+        "include_persistence": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "holes",
+        "null_mean",
+        "null_sd",
+        "z"
+      ],
+      "properties": {
+        "holes": {
+          "type": "integer"
+        },
+        "null_mean": {
+          "type": "number"
+        },
+        "null_sd": {
+          "type": "number"
+        },
+        "z": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+    "candidate_diagonals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "node_ids",
+          "cycle_count"
+        ],
+        "properties": {
+          "node_ids": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "string"
+            }
+          },
+          "cycle_count": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "cycles_examined": {
+      "type": "integer"
+    },
+    "ripser_summary": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "required": [
+        "h1_count",
+        "h1_longest"
+      ],
+      "properties": {
+        "h1_count": {
+          "type": "integer"
+        },
+        "h1_longest": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+    "persistence_status": {
+      "enum": [
+        "not_requested",
+        "completed",
+        "unavailable"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

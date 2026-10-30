@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.hsi-result.v1",
+  "title": "portfolio.find_hybrid_similarity_pairs result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "hsi_pairs",
+    "warnings"
+  ],
+  "properties": {
+    "status": {
+      "type": "string"
+    },
+    "hsi_pairs": {
+      "type": "array"
+    },
+    "warnings": {
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "eureka.hsi-result.v1"
+    },
+    "capability_id": {
+      "const": "portfolio.find_hybrid_similarity_pairs"
+    }
+  },
+  "additionalProperties": true
+}

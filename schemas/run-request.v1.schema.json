@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian.dev/schemas/eureka/run-request.v1.schema.json",
+  "title": "Mindrian Eureka Run Request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "job_id", "capability_id", "objective", "scope", "policy"],
+  "properties": {
+    "schema_version": { "const": "eureka.run.v1" },
+    "job_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "capability_id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9_-]*)+$" },
+    "objective": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text"],
+      "properties": {
+        "text": { "type": "string", "minLength": 1, "maxLength": 5000 },
+        "desired_decision": { "type": "string", "maxLength": 2000 },
+        "constraints": { "type": "array", "items": { "type": "string", "maxLength": 1000 }, "maxItems": 50 }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope_id", "snapshot_id", "artifacts"],
+      "properties": {
+        "scope_id": { "type": "string", "minLength": 1 },
+        "snapshot_id": { "type": "string", "pattern": "^sha256:[a-fA-F0-9]{64}$" },
+        "artifacts": {
+          "type": "array",
+          "maxItems": 10000,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "sha256", "media_type"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+              "media_type": { "type": "string", "minLength": 1 },
+              "size_bytes": { "type": "integer", "minimum": 0 }
+            }
+          }
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["network", "model_route", "max_runtime_seconds", "max_candidates"],
+      "properties": {
+        "network": { "enum": ["denied", "brokered"] },
+        "model_route": { "type": ["string", "null"] },
+        "grant_id": { "type": ["string", "null"] },
+        "max_runtime_seconds": { "type": "integer", "minimum": 1, "maximum": 86400 },
+        "max_candidates": { "type": "integer", "minimum": 0, "maximum": 10000 }
+      }
+    },
+    "follow_up_of": { "type": ["string", "null"] }
+  }
+}

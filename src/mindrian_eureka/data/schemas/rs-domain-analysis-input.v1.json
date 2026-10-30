@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian-os.com/schemas/eureka/rs-domain-analysis-input.v1.json",
+  "title": "RS host-projected domain-analysis request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["scope_id", "snapshot_id", "topic", "substrate"],
+  "properties": {
+    "scope_id": {"type": "string", "minLength": 1, "maxLength": 200},
+    "snapshot_id": {"type": "string", "minLength": 1, "maxLength": 200},
+    "topic": {"type": "string", "minLength": 1, "maxLength": 512},
+    "substrate": {"type": "array", "maxItems": 500, "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "score", "source_ids", "metadata"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 500},
+        "score": {"type": "number", "minimum": 0, "maximum": 1},
+        "source_ids": {"type": "array", "maxItems": 25, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 500}},
+        "metadata": {"type": "object", "additionalProperties": false, "required": ["framework_name"], "properties": {
+          "framework_name": {"type": "string", "minLength": 1, "maxLength": 500},
+          "title": {"type": "string", "maxLength": 2000},
+          "text": {"type": "string", "maxLength": 50000},
+          "tier": {"type": "string", "maxLength": 100}
+        }}
+      }
+    }},
+    "options": {"type": "object", "additionalProperties": false, "properties": {
+      "limit": {"type": "integer", "minimum": 1, "maximum": 500},
+      "boundary_threshold": {"type": "number", "minimum": 0, "maximum": 1}
+    }}
+  }
+}

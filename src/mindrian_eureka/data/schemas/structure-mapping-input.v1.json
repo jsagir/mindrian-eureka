@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.structure-mapping-input.v1",
+  "title": "SME structure mapping input",
+  "type": "object",
+  "properties": {
+    "document": {"$ref": "#/$defs/mappingDocument"}
+  },
+  "required": ["document"],
+  "additionalProperties": false,
+  "$defs": {
+    "descriptionGroup": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "entities": {
+          "oneOf": [
+            {"type": "array", "items": {"type": "string"}},
+            {"type": "object", "additionalProperties": {"type": ["string", "null"]}}
+          ]
+        },
+        "functions": {"type": "array", "items": {"type": "string"}},
+        "commutative": {"type": "array", "items": {"type": "string"}},
+        "constants": {"type": "array", "items": {"type": "string"}},
+        "expressions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string", "minLength": 1},
+              "functor": {"type": "string", "minLength": 1},
+              "args": {"type": "array", "items": {"oneOf": [{"type": "string"}, {"type": "array"}]}}
+            },
+            "required": ["functor"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["expressions"],
+      "additionalProperties": false
+    },
+    "evidenceMap": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {"type": "string", "minLength": 1},
+        "minItems": 1,
+        "uniqueItems": true
+      }
+    },
+    "evidenceRecord": {
+      "type": "object",
+      "properties": {
+        "claim_id": {"type": "string", "minLength": 1},
+        "source_ref": {"type": "string", "minLength": 1},
+        "text": {"type": "string"}
+      },
+      "required": ["claim_id"],
+      "additionalProperties": true
+    },
+    "mappingDocument": {
+      "type": "object",
+      "properties": {
+        "run_id": {"type": "string", "minLength": 1},
+        "scope_id": {"type": "string", "minLength": 1},
+        "target": {"$ref": "#/$defs/descriptionGroup"},
+        "target_evidence": {"$ref": "#/$defs/evidenceMap"},
+        "evidence_catalog": {"type": "array", "items": {"$ref": "#/$defs/evidenceRecord"}},
+        "bases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "base_id": {"type": "string", "minLength": 1},
+              "domain": {"type": "string", "minLength": 1},
+              "description": {"$ref": "#/$defs/descriptionGroup"},
+              "evidence": {"$ref": "#/$defs/evidenceMap"}
+            },
+            "required": ["base_id", "domain", "description", "evidence"],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 10
+        },
+        "rules": {
+          "type": "array",
+          "items": {"enum": ["AN", "LS", "MA"]},
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true
+        },
+        "max_maps_per_base": {"type": "integer", "minimum": 1, "maximum": 10},
+        "known_claims": {"type": "array", "items": {"type": "string"}}
+      },
+      "required": ["run_id", "scope_id", "target", "target_evidence", "evidence_catalog", "bases"],
+      "additionalProperties": false
+    }
+  }
+}

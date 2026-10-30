@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.graph-btm-result.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capability_id",
+    "status",
+    "scope_id",
+    "snapshot_id",
+    "unique_document_indexes",
+    "unique_topics",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.graph-btm-result.v1"
+    },
+    "capability_id": {
+      "const": "graph.compare_bidirectional_topics"
+    },
+    "status": {
+      "const": "completed_analysis"
+    },
+    "unique_document_indexes": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "unique_topics": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "scope_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.critic-rubric-prepare-output.v1",
+  "type": "object",
+  "required": ["schema_version", "capability_id", "capability_version", "candidate_id", "source_node_id", "scope_id", "snapshot_id", "neutral_prompt", "adversarial_prompt", "prompt_sha256", "prompt_max_chars", "judge_policy", "runtime"],
+  "properties": {
+    "schema_version": {"const": "eureka.critic-stage-b.v1"},
+    "capability_id": {"const": "portfolio.prepare_critic_rubric"},
+    "capability_version": {"type": "string"},
+    "candidate_id": {"type": "string"},
+    "source_node_id": {"type": "string"},
+    "scope_id": {"type": "string"},
+    "snapshot_id": {"type": "string"},
+    "neutral_prompt": {"type": "string", "maxLength": 100000},
+    "adversarial_prompt": {"type": "string", "maxLength": 100000},
+    "prompt_sha256": {"type": "object", "required": ["neutral", "adversarial"], "properties": {"neutral": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "adversarial": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}, "additionalProperties": false},
+    "prompt_max_chars": {"type": "integer"},
+    "judge_policy": {"type": "string"},
+    "runtime": {"type": "string"}
+  },
+  "additionalProperties": false
+}

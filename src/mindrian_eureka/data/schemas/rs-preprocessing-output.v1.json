@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindrian-os.com/schemas/eureka/rs-preprocessing-output.v1.json",
+  "title": "RS document preprocessing result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "capability_id", "capability_version", "status", "scope_id", "snapshot_id", "records", "counts", "input_fingerprint", "runtime", "limitations"],
+  "properties": {
+    "schema_version": {"const": "eureka.rs-preprocessing.v1"},
+    "capability_id": {"const": "research.preprocess_rs_documents"},
+    "capability_version": {"const": "0.1.0"},
+    "status": {"const": "preprocessing_complete"},
+    "scope_id": {"type": "string"},
+    "snapshot_id": {"type": "string"},
+    "records": {"type": "array", "maxItems": 2000, "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["document_id", "technical_terms", "concepts", "methods", "relevance_score", "boundary_flag"],
+      "properties": {
+        "document_id": {"type": "string", "maxLength": 500},
+        "technical_terms": {"type": "array", "maxItems": 20, "items": {"type": "string", "maxLength": 40}},
+        "concepts": {"type": "array", "maxItems": 10, "items": {"type": "string", "maxLength": 500}},
+        "methods": {"type": "array", "maxItems": 5, "items": {"type": "string", "maxLength": 40}},
+        "relevance_score": {"type": "number", "minimum": 0, "maximum": 1},
+        "boundary_flag": {"type": "boolean"},
+        "warning": {"enum": ["document_text_missing"]}
+      }
+    }},
+    "counts": {"type": "object", "additionalProperties": false, "required": ["documents_received", "documents_processed", "documents_on_boundary", "documents_missing_text"], "properties": {
+      "documents_received": {"type": "integer", "minimum": 0},
+      "documents_processed": {"type": "integer", "minimum": 0},
+      "documents_on_boundary": {"type": "integer", "minimum": 0},
+      "documents_missing_text": {"type": "integer", "minimum": 0}
+    }},
+    "input_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "runtime": {"type": "string"},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}

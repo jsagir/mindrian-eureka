@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.workflow-request.v1",
+  "title": "MindrianOS Eureka workflow request",
+  "type": "object",
+  "additionalProperties": true,
+  "description": "Capability-specific JSON request. Use the capability catalog to inspect required fields before invoking.",
+  "properties": {
+    "scope_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "snapshot_id": {"type": "string", "maxLength": 256},
+    "objective": {"type": "string", "minLength": 1, "maxLength": 12000},
+    "artifacts": {"type": "array", "items": {"type": "object"}, "maxItems": 25000},
+    "taxonomy": {"type": "array", "items": {"type": "object"}, "maxItems": 1000},
+    "mechanisms": {"type": "array", "items": {"type": "object"}, "maxItems": 20000},
+    "approved_domains": {"type": "array", "items": {"oneOf": [{"type": "string"}, {"type": "object"}]}, "maxItems": 12},
+    "findings": {"type": "array", "items": {"type": "object"}, "maxItems": 5000},
+    "proposal": {"type": "string", "maxLength": 20000},
+    "claims": {"type": "array", "items": {"type": "object"}, "maxItems": 500},
+    "evidence": {"type": "array", "items": {"type": "object"}, "maxItems": 10000},
+    "topic": {"type": "string", "maxLength": 5000},
+    "hypothesis": {"type": "string", "maxLength": 5000},
+    "arguments": {"type": "array", "items": {"type": "object"}, "maxItems": 500},
+    "nodes": {"type": "array", "items": {"type": "object"}, "maxItems": 25000},
+    "relationships": {"type": "array", "items": {"type": "object"}, "maxItems": 50000},
+    "capability_ids": {"type": "array", "items": {"type": "string"}, "maxItems": 20}
+  }
+}

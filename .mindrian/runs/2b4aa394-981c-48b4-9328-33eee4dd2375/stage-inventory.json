@@ -1,0 +1,53 @@
+{
+  "status": "draft-attachments-only-owner-review-pending",
+  "outputs": [
+    {
+      "stage": "01-brief",
+      "path": ".mindrian/runs/2b4aa394-981c-48b4-9328-33eee4dd2375/01-brief/output/brief.md",
+      "bytes": 543,
+      "sha256": "ce3b62c9e06ce5ab17977788919be8911b54bc5cb99cb04445167fbfbafc898f"
+    },
+    {
+      "stage": "01-brief",
+      "path": ".mindrian/runs/2b4aa394-981c-48b4-9328-33eee4dd2375/01-brief/output/routed-context.json",
+      "bytes": 116448,
+      "sha256": "aab4bc9c9ab9f4642605a2ef864ed623de5d6fdd00da430f6aee2fff183b61b5"
+    },
+    {
+      "stage": "02-produce",
+      "path": ".mindrian/runs/2b4aa394-981c-48b4-9328-33eee4dd2375/02-produce/output/artifacts.md",
+      "bytes": 719,
+      "sha256": "f11a3976e647a1d585a369bbb6faa8630dd6ef29ae9dec4fddbe6f57f54fdbba"
+    },
+    {
+      "stage": "03-review",
+      "path": ".mindrian/runs/2b4aa394-981c-48b4-9328-33eee4dd2375/03-review/output/checklist-responses.json",
+      "bytes": 34439,
+      "sha256": "6def2694acd77a0c706375e6f830fc9e4d5df0188e410c4de5f96e88765c09f6"
+    },
+    {
+      "stage": "03-review",
+      "path": ".mindrian/runs/2b4aa394-981c-48b4-9328-33eee4dd2375/03-review/output/documentation-comparison.md",
+      "bytes": 1558,
+      "sha256": "051bded2d8d5b67c2612eca59b05b300e232c27801c6e443ad49fa94aaacdd01"
+    },
+    {
+      "stage": "03-review",
+      "path": ".mindrian/runs/2b4aa394-981c-48b4-9328-33eee4dd2375/03-review/output/finish-review.md",
+      "bytes": 3541,
+      "sha256": "7d6cafb1b34fc960fa805bc975250f3fbd8e64a21cdc8c90a98893c34a9b05ab"
+    },
+    {
+      "stage": "03-review",
+      "path": ".mindrian/runs/2b4aa394-981c-48b4-9328-33eee4dd2375/03-review/output/review.md",
+      "bytes": 402,
+      "sha256": "87150407d4d87e218c3e09d3162b6e7712f44e145bb2fe8b8db60351122150dd"
+    },
+    {
+      "stage": "04-return-learning",
+      "path": ".mindrian/runs/2b4aa394-981c-48b4-9328-33eee4dd2375/04-return-learning/output/silent-items.md",
+      "bytes": 6436,
+      "sha256": "d123779f1f9e8d299fc1335f571dcff7aa8ac54524ca5a72a9c7926717a6ccd1"
+    }
+  ]
+}

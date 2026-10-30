@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.graph-sme-bridge-input.v1",
+  "title": "Map structural analogies between graph neighborhoods",
+  "type": "object",
+  "required": ["snapshot", "base_node_id", "target_node_id"],
+  "properties": {
+    "snapshot": {
+      "type": "object",
+      "required": ["nodes", "edges"],
+      "properties": {
+        "nodes": {"type": "array", "maxItems": 10000, "items": {"type": "object", "required": ["id"], "properties": {"id": {"type": "string", "minLength": 1}, "labels": {"type": "array", "items": {"type": "string"}}, "name": {"type": "string"}, "text": {"type": "string"}, "attrs": {"type": "object"}}, "additionalProperties": true}},
+        "edges": {"type": "array", "maxItems": 50000, "items": {"type": "object", "required": ["s", "t", "type"], "properties": {"s": {"type": "string"}, "t": {"type": "string"}, "type": {"type": "string"}}, "additionalProperties": true}},
+        "meta": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "base_node_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "target_node_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "hops": {"type": "integer", "minimum": 0, "maximum": 4, "default": 2},
+    "rules": {"enum": ["AN", "LS", "MA"], "default": "AN"},
+    "attr": {"type": "string", "maxLength": 128, "default": "problem_type"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,5 @@
+---
+title: Can one estimate the conditional distribution of post-model-selection estimators?
+---
+
+We consider the problem of estimating the conditional distribution of a post-model-selection estimator where the conditioning is on the selected model. The notion of a post-model-selection estimator here refers to the combined procedure resulting from first selecting a model (e.g., by a model selection criterion such as AIC or by a hypothesis testing procedure) and then estimating the parameters in the selected model (e.g., by least-squares or maximum likelihood), all based on the same data set. We show that it is impossible to estimate this distribution with reasonable accuracy even asymptotically. In particular, we show that no estimator for this distribution can be uniformly consistent (not even locally). This follows as a corollary to (local) minimax lower bounds on the performance of estimators for this distribution. Similar impossibility results are also obtained for the conditional distribution of linear functions (e.g., predictors) of the post-model-selection estimator.

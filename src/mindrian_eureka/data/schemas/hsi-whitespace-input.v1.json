@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.hsi-whitespace-input.v1",
+  "title": "portfolio.discover_hsi_whitespace input",
+  "type": "object",
+  "properties": {
+    "scope_id": {
+      "type": "string"
+    },
+    "snapshot_id": {
+      "type": "string"
+    },
+    "hsi_ranking": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": ["percentile", "legacy"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "enum": ["percentile", "legacy"]
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "threshold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "signal_method": {
+      "enum": [
+        "percentile",
+        "fixed"
+      ],
+      "default": "percentile"
+    },
+    "embedding_model": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string"
+          },
+          "source_ref": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "vector": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 1,
+            "maxItems": 20000
+          }
+        },
+        "required": [
+          "id",
+          "vector"
+        ],
+        "additionalProperties": true
+      },
+      "minItems": 2,
+      "maxItems": 25000
+    },
+    "baseline_frameworks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string"
+          },
+          "vector": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 1,
+            "maxItems": 20000
+          }
+        },
+        "required": [
+          "id",
+          "vector"
+        ],
+        "additionalProperties": true
+      },
+      "minItems": 1,
+      "maxItems": 5000
+    },
+    "hsi_pairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "left_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "right_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "hsi_score": {
+            "type": "number"
+          },
+          "hsi_percentile": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "lexical_sim": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "left_id",
+          "right_id",
+          "hsi_score"
+        ],
+        "additionalProperties": true
+      },
+      "minItems": 1,
+      "maxItems": 50000
+    }
+  },
+  "required": [
+    "artifacts",
+    "baseline_frameworks",
+    "hsi_pairs"
+  ],
+  "additionalProperties": false
+}
