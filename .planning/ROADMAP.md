@@ -74,11 +74,15 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Requirements**: SEED-01 (seed contract and schema), SEED-02 (column-to-section map and not-in-export list as mapping data), SEED-03 (pair and cluster seeds with known and feed-next lists), SEED-04 (candidate list by class and degree), SEED-05 (hub action naming the seed command), SEED-06 (plugin consumption contract doc with the model boundary stated)
 **Depends on:** Phase 2.2 (pair_class, carried columns, mapping schema, hub chip row)
 **Context:** .planning/phases/02.3-room-seed-hand-off-to-mindrianos/02.3-CONTEXT.md
-**Plans:** 0 plans
+**Plans:** 5/5 plans executed (verification: human_needed)
 
 Plans:
 
-- [ ] TBD (run $gsd-plan-phase 02.3 to break down)
+- [x] 02.3-01: Room-section map in the mapping file, room cell states in runs, hub reader fields
+- [x] 02.3-02: Seed contract, closed schema, pair seed builder and `eureka seed --pair`
+- [x] 02.3-03: Pair graph, `--cluster` and `--list`
+- [x] 02.3-04: Seed command row in the hub bank
+- [x] 02.3-05: Plugin hand-off contract doc `docs/room-seed-contract.md`
 
 ### Phase 02.2: Partner export profile and package (INSERTED)
 
@@ -170,5 +174,7 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
 | 1. Release Gate and Engine Parity | 6/6 | Complete (owner sign-off open) | 2026-10-23 |
 | 2. One-Command Run and Doctor | 6/6 | Complete (verification: human_needed) | 2026-10-24 |
 | 2.1. Opportunity Hub in the mos-brand format | 18/19 | In progress | - |
+| 2.2. Partner export profile and package | 4/4 | Complete (verification: human_needed) | 2026-10-29 |
+| 2.3. Room seed hand-off to MindrianOS | 5/5 | Complete (verification: human_needed) | 2026-11-07 |
 | 3. Host Integration and Replay Rebuild | 0/TBD | Not started | - |
 | 4. Public Example and Reproduction Guide | 0/TBD | Not started | - |
