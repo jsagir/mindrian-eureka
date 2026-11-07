@@ -120,9 +120,10 @@ def test_run_without_classes(tmp_path: Path) -> None:
     assert [s.record_id for s in result.spines] == [record_id(i) for i, *_ in SPINES]
 
 
-def header_lines(run: Path, *flags: str, capsys: pytest.CaptureFixture[str]) -> list[str]:
-    assert main(["seed", str(run), "--list", *flags]) == 0
-    return capsys.readouterr().out.rstrip("\n").split("\n")
+def text_lines(run: Path, limit: int = 25) -> list[str]:
+    from mindrian_eureka.seed.candidates import render_text
+
+    return render_text(candidates_of(run), limit).split("\n")
 
 
 def row_line(i: int, j: int, left_degree: int, right_degree: int, engines: int) -> str:
@@ -132,8 +133,8 @@ def row_line(i: int, j: int, left_degree: int, right_degree: int, engines: int) 
     )
 
 
-def test_text_output_lines(run: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    lines = header_lines(run, capsys=capsys)
+def test_text_output_lines(run: Path) -> None:
+    lines = text_lines(run)
     expected = [f"Seed candidates for this run ({LABEL})", ""]
     expected.append("Open next to licensed (cross): 10 pairs")
     expected += [row_line(*row) for row in CROSS]
@@ -160,14 +161,14 @@ def test_text_output_lines(run: Path, capsys: pytest.CaptureFixture[str]) -> Non
     assert "pebbles" not in text
 
 
-def test_text_limit(run: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    lines = header_lines(run, "--limit", "2", capsys=capsys)
+def test_text_limit(run: Path) -> None:
+    lines = text_lines(run, 2)
     start = lines.index("Open next to licensed (cross): 10 pairs")
     assert lines[start + 1 : start + 3] == [row_line(*row) for row in CROSS[:2]]
     assert lines[start + 3].strip() == "and 8 more. Use --limit 0 to see all."
     assert sum(line.strip() == "and 2 more. Use --limit 0 to see all." for line in lines) == 1
     assert sum(line_has_pair(line) for line in lines) == 3
-    everything = header_lines(run, "--limit", "0", capsys=capsys)
+    everything = text_lines(run, 0)
     assert sum(line_has_pair(line) for line in everything) == 11
     assert not any(line.strip().startswith("and ") for line in everything)
 
@@ -176,19 +177,21 @@ def line_has_pair(line: str) -> bool:
     return line.startswith("  pair-")
 
 
-def test_text_without_classes(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_text_without_classes(tmp_path: Path) -> None:
     run = make(tmp_path, with_classes=False)
-    lines = header_lines(run, capsys=capsys)
+    lines = text_lines(run)
     assert "Pairs (no class): 12 pairs" in lines
     assert not any("(cross)" in line or "(open_open)" in line for line in lines)
     assert f"  {record_id(0)}  degree 4" in lines
     assert not any("licensed_licensed" in line for line in lines)
 
 
-def test_json_output(run: Path, capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
-    assert main(["seed", str(run), "--list", "--json", "--limit", "2"]) == 0
-    raw = capsys.readouterr().out
-    data = json.loads(raw)
+def test_json_output(run: Path, tmp_path: Path) -> None:
+    from mindrian_eureka.run.output import canonical_json
+    from mindrian_eureka.seed.candidates import to_json_dict
+
+    data = to_json_dict(candidates_of(run), 2)
+    raw = canonical_json(data).decode("utf-8")
     assert data["schema"] == "eureka.seed-candidates.v1"
     assert data["label"] == LABEL
     assert data["counts"] == {"records": 12, "pairs": 12, "min_degree": 3}
@@ -225,7 +228,13 @@ def test_cli_cluster_and_list(
     document = json.loads((out / "seed.json").read_text(encoding="utf-8"))
     assert document["seed_kind"] == "cluster"
     assert main(["seed", str(run), "--list"]) == 0
-    capsys.readouterr()
+    from mindrian_eureka.seed.candidates import render_text, to_json_dict
+
+    assert capsys.readouterr().out.rstrip("\n") == render_text(candidates_of(run), 25)
+    assert main(["seed", str(run), "--list", "--json", "--limit", "2"]) == 0
+    assert json.loads(capsys.readouterr().out) == to_json_dict(candidates_of(run), 2)
+    assert main(["seed", str(run), "--list", "--min-degree", "4", "--limit", "0"]) == 0
+    assert capsys.readouterr().out.rstrip("\n") == render_text(candidates_of(run, 4), 0)
     assert run_main(["seed", str(run), "--list", "--out", str(tmp_path / "x")]) == 2
     assert run_main(["seed", str(run), "--pair", pair_id_of(0, 1), "--min-degree", "3"]) == 2
     assert run_main(["seed", str(run), "--cluster", record_id(4)]) == 2

@@ -88,4 +88,4 @@ def test_conflicting_classes_are_a_damaged_run(run: Path) -> None:
     edit_json(run, OUTPUT_WORDING, change)
     with pytest.raises(RunError) as caught:
         graph_of(run)
-    assert "Eureka run again" in (caught.value.fix or "")
+    assert "eureka run again" in (caught.value.fix or "")
