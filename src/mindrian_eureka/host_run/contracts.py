@@ -204,10 +204,22 @@ def _bad(message: str, fix: str) -> HostRunError:
     return HostRunError("bad_request", message, fix)
 
 
+def _check_utf8(value: str, label: str) -> None:
+    """Refuse a string that cannot be encoded as UTF-8, such as a lone surrogate."""
+    try:
+        value.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise _bad(
+            f"The {label} cannot be encoded as UTF-8.",
+            f"Remove the invalid characters from the {label}.",
+        ) from exc
+
+
 def _text_field(raw: Mapping[str, Any], key: str, limit: int) -> str:
     value = raw[key]
     if not isinstance(value, str):
         raise _bad(f"The field {key} must be a string.", f"Send {key} as a string.")
+    _check_utf8(value, f"field {key}")
     if not value.strip():
         raise _bad(f"The field {key} is empty.", f"Send a {key} with at least 1 character.")
     if len(value) > limit:
@@ -271,6 +283,8 @@ def _check_artifact(position: int, item: Any) -> Artifact:
             )
     if not isinstance(title, str):
         raise _bad(f"The title of {where} must be a string.", "Send title as a string.")
+    for key, value in (("id", artifact_id), ("source_ref", source_ref), ("title", title)):
+        _check_utf8(value, f"{key} of {where}")
     if len(artifact_id) > _MAX_ID_CHARS:
         raise _bad(
             f"The id of {where} is longer than {_MAX_ID_CHARS} characters.",

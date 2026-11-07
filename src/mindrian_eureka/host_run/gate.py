@@ -161,13 +161,22 @@ class PlanReceipts:
             )
         return expires_at
 
-    def claim(self, digest: str, approval_ref: str | None, idempotency_key: str | None) -> Claim:
+    def claim(
+        self,
+        digest: str,
+        approval_ref: str | None,
+        idempotency_key: str | None,
+        job_exists: Callable[[str], bool] | None = None,
+    ) -> Claim:
         """Use a receipt once.
 
         Args:
             digest: The plan digest of the start request.
             approval_ref: The approval reference of the host. Stored for audit.
             idempotency_key: A key that makes a retry safe, or None.
+            job_exists: A function that tells whether a job id is still in the job store.
+                A retry counts only when the job of the receipt still exists. A deleted
+                job gives no second run for one approval. The default skips the check.
 
         Returns:
             The claim. `retry` is True when the same approval and key claimed it before.
@@ -180,7 +189,7 @@ class PlanReceipts:
             connection.execute("BEGIN IMMEDIATE")
             try:
                 claim = self._claim_in_transaction(
-                    connection, digest, approval_ref, idempotency_key, now
+                    connection, digest, approval_ref, idempotency_key, now, job_exists
                 )
             except BaseException:
                 connection.execute("ROLLBACK")
@@ -195,6 +204,7 @@ class PlanReceipts:
         approval_ref: str | None,
         idempotency_key: str | None,
         now: float,
+        job_exists: Callable[[str], bool] | None = None,
     ) -> Claim:
         known = connection.execute(
             "SELECT 1 FROM receipts WHERE plan_digest = ? LIMIT 1", (digest,)
@@ -207,12 +217,18 @@ class PlanReceipts:
             )
         if idempotency_key:
             same = connection.execute(
-                "SELECT receipt_id FROM receipts WHERE plan_digest = ? AND consumed_at IS NOT NULL"
+                "SELECT receipt_id, job_id FROM receipts WHERE plan_digest = ?"
+                " AND consumed_at IS NOT NULL"
                 " AND idempotency_key = ? AND approval_ref IS ? ORDER BY receipt_id DESC LIMIT 1",
                 (digest, idempotency_key, approval_ref),
             ).fetchone()
             if same is not None:
-                return Claim(receipt_id=int(same[0]), retry=True)
+                job_id = same[1]
+                job_is_gone = (
+                    job_exists is not None and job_id is not None and not job_exists(str(job_id))
+                )
+                if not job_is_gone:
+                    return Claim(receipt_id=int(same[0]), retry=True)
         live = connection.execute(
             "SELECT receipt_id, consumed_at FROM receipts WHERE plan_digest = ?"
             " AND expires_at >= ? ORDER BY receipt_id DESC",
@@ -269,7 +285,10 @@ class PlanReceipts:
 
 
 def check_start(
-    request: NormalizedRequest, receipts: PlanReceipts, idempotency_key: str | None
+    request: NormalizedRequest,
+    receipts: PlanReceipts,
+    idempotency_key: str | None,
+    job_exists: Callable[[str], bool] | None = None,
 ) -> Claim:
     """Check that a start request has a matching, live and unused plan, and claim it.
 
@@ -277,6 +296,7 @@ def check_start(
         request: A checked start request.
         receipts: The receipt store.
         idempotency_key: A key that makes a retry safe, or None.
+        job_exists: A function that tells whether a job id is still in the job store, or None.
 
     Returns:
         The claim of the receipt.
@@ -303,4 +323,4 @@ def check_start(
             "Send the same request that was planned, or call the plan tool again "
             "for this request.",
         )
-    return receipts.claim(digest, approval.approval_ref, idempotency_key)
+    return receipts.claim(digest, approval.approval_ref, idempotency_key, job_exists)

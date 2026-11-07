@@ -98,7 +98,12 @@ def start_pair_screen(
     try:
         request = normalize_request(raw)
         receipts = PlanReceipts(manager.store.data_dir)
-        claim = check_start(request, receipts, idempotency_key)
+        claim = check_start(
+            request,
+            receipts,
+            idempotency_key,
+            lambda job_id: manager.store.get(job_id) is not None,
+        )
     except HostRunError as error:
         return dict(error.as_refusal())
     try:
