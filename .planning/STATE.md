@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-11-07T19:03:31.708Z"
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-11-07T19:10:12.937Z"
 last_activity: 2026-11-07 -- Phase 4 execution started
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 51
-  completed_plans: 47
+  completed_plans: 48
   percent: 71
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-10-23)
 ## Current Position
 
 Phase: 4 (Public Example and Reproduction Guide) — EXECUTING
-Plan: 1 of 4
+Plan: 2 of 4
 Status: Ready to execute
 Last activity: 2026-11-07 -- Phase 4 execution started
 
@@ -78,6 +78,7 @@ Progress: [██████████] 97%
 | Phase 03 P05 | 40 min | 3 tasks | 13 files |
 | Phase 03 P07 | 45min | 3 tasks | 7 files |
 | Phase 04 P01 | 40min | 2 tasks | 9 files |
+| Phase 04 P02 | 10min | 3 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,7 @@ Recent decisions affecting current work:
 - [Phase 02.1-03]: Hub JS data file escapes characters inside JSON strings only (and also < and >); the word eureka is allowed only as the product name, Potential eureka, and the command eureka hub; the reader refuses unknown reading sentences and files whose hash differs from the manifest.
 - [Phase 02.1-04]: CSP decision = default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none' (Firefox does not enforce a meta CSP on local file loads, so the static scan stays a required control). cryptography becomes the optional extra hub-gate. 3d-force-graph@1.79.1 passes the 14 day rule (MIT, 262 days old). Browser tests skip without tools; EUREKA_REQUIRE_BROWSER=1 makes them fail.
 - [Phase 03]: 03-05: a refused start returns status refused with a reason code; a failed job start raises and releases the plan receipt unless it was a retry — Refusals are data for the host; a failed start must not burn the approval
+- [Phase 04-02]: Example reference run uses all-MiniLM-L6-v2 (JHTV replay used mdbr-leaf-ir); recorded in example.model_note. Example status: Internal only, per docs/rs-release-gate.md.
 
 ### Pending Todos
 
@@ -133,6 +135,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-11-07T19:03:31.698Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-11-07T19:10:12.933Z
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
