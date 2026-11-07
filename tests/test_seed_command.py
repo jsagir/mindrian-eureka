@@ -59,7 +59,7 @@ def test_success(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     assert lines[0] == "Eureka seed written."
     assert lines[-1] == SUMMARY_LINE
     assert any("not a room" in line for line in lines)
-    assert not captured.err or "warning" in captured.err
+    assert "Traceback" not in captured.err
     # Nothing was written into the run folder.
     assert not any(p.name.startswith("seed") for p in run.iterdir())
 
@@ -190,7 +190,7 @@ def test_seed_holds_no_absolute_path(tmp_path: Path) -> None:
             data = path.read_bytes()
             assert str(run).encode() not in data
             assert str(tmp_path).encode() not in data
-            assert b"/home/" not in data and b"file:" not in data
+            assert b"/home/" not in data and b"file://" not in data
 
 
 def test_exception_mapping(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

@@ -17,6 +17,7 @@ from .run.command import (
     run_command,
 )
 from .run.manifest import tool_version
+from .seed.command import register_seed, seed_command
 
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
@@ -49,12 +50,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     commands.add_parser("workflow", help="print the MindrianOS opportunity-discovery host contract")
     register_commands(commands)
     register_hub(commands)
+    register_seed(commands)
     raw = list(sys.argv[1:] if argv is None else argv)
     args = parser.parse_args(raw)
     if args.command == "run":
         return run_command(args, raw)
     if args.command == "hub":
         return hub_command(args)
+    if args.command == "seed":
+        return seed_command(args)
     if args.command == "doctor":
         return doctor_cli(args)
 
