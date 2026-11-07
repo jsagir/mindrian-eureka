@@ -42,6 +42,8 @@ if TYPE_CHECKING:
     import numpy as np
     from numpy.typing import NDArray
 
+    from ..encoder_spec import EncoderSpec
+
 Encode = Callable[[list[str]], "NDArray[np.float64]"]
 Progress = Callable[[str], None]
 
@@ -208,35 +210,50 @@ def _quiet_model_loggers() -> None:
     transformers_logging.set_verbosity_error()
 
 
-def load_local_encode(model_dir: Path) -> Encode:
+def load_local_encode(model_dir: Path, spec: EncoderSpec | None = None) -> Encode:
     """Load the meaning model from a local folder and return its encode function.
+
+    The encoder is built by the factory of the encoder seam. Without a spec the call to the
+    model library is the one of the earlier versions, and the function returns the model output
+    as it is. With a spec the model gets the dtype, device and prefix of the spec, and the
+    output width is checked against the width that the spec declares.
 
     Args:
         model_dir: The folder that holds the model files.
+        spec: The encoder spec of the wording-and-meaning engine, or None for the legacy call.
 
     Returns:
-        A function that maps a list of texts to a float64 matrix, one row per text.
+        A function that maps a list of texts to a matrix, one row per text.
 
     Raises:
-        RunError: If the package is missing or the folder cannot be loaded.
+        RunError: If the package is missing, the folder cannot be loaded or the width differs.
     """
     prepare_offline_environment()
     try:
-        from sentence_transformers import SentenceTransformer
+        from sentence_transformers import SentenceTransformer  # noqa: F401
     except ImportError as exc:
         raise RunError(
             "The sentence-transformers package is not installed.", fix=EXTRA_FIX
         ) from exc
-    import numpy as numpy_runtime
+    from mindrian_eureka.opportunity_pairs.encoders import (
+        SentenceTransformerEncoder,
+        make_encoder,
+    )
 
     _quiet_model_loggers()
+    encoder: Any
     try:
-        model = SentenceTransformer(str(model_dir), local_files_only=True)
+        if spec is None:
+            encoder = SentenceTransformerEncoder(str(model_dir), allow_download=False)
+        else:
+            encoder = make_encoder(spec, model_path=str(model_dir), allow_download=False)
     except (OSError, ValueError, KeyError) as exc:
         raise RunError(f"The model could not be loaded: {exc}", fix=MODEL_FIX) from exc
+    except RuntimeError as exc:
+        raise RunError(str(exc), fix=MODEL_FIX) from exc
 
     def encode(items: list[str]) -> NDArray[np.float64]:
-        return numpy_runtime.asarray(model.encode(list(items), show_progress_bar=False))
+        return encoder.encode_raw(list(items))  # type: ignore[no-any-return]
 
     return encode
 
@@ -253,6 +270,7 @@ def run_unusual_pairs(
     cache_path: Path,
     objective: str = "",
     progress: Progress | None = None,
+    encoder_spec: EncoderSpec | None = None,
 ) -> UnusualPairsOutcome:
     """Run the unusual-pairs engine on the records.
 
@@ -264,6 +282,7 @@ def run_unusual_pairs(
         cache_path: The file of the vector cache.
         objective: Free text that the engine records. It is not a scoring signal.
         progress: A function that receives the stage names.
+        encoder_spec: The encoder spec of the run, or None for the call of the earlier versions.
 
     Returns:
         The outcome with the full result document.
@@ -290,20 +309,22 @@ def run_unusual_pairs(
             for record in records
         ],
     }
+    call: dict[str, Any] = {
+        "encoder_name": settings.encoder,
+        "model_path": str(model_dir),
+        "allow_model_download": False,
+        "top_k": top_k,
+        "scoring": settings.scoring,
+        "lex_weight": settings.lex_weight,
+        "min_percentile": settings.min_percentile,
+        "cache_path": cache_path,
+        "stage_callback": progress,
+    }
+    if encoder_spec is not None:
+        call["encoder_spec"] = encoder_spec
     try:
         runner.validate_document(document, max_artifacts=max_artifacts)
-        result = runner.run_document(
-            document,
-            encoder_name=settings.encoder,
-            model_path=str(model_dir),
-            allow_model_download=False,
-            top_k=top_k,
-            scoring=settings.scoring,
-            lex_weight=settings.lex_weight,
-            min_percentile=settings.min_percentile,
-            cache_path=cache_path,
-            stage_callback=progress,
-        )
+        result = runner.run_document(document, **call)
     except ValueError as exc:
         raise RunError(str(exc)) from exc
     except (OSError, RuntimeError) as exc:
@@ -358,7 +379,14 @@ def _reference() -> Any:
     return _reference_module
 
 
-def wording_params(top_k: int) -> dict[str, Any]:
+def _wording_settings(top_k: int, model_name: str | None) -> WordingSettings:
+    """Return the settings of the wording engine. A model name replaces only the default one."""
+    if model_name is None:
+        return WordingSettings(top_k=top_k)
+    return WordingSettings(top_k=top_k, model_name=model_name)
+
+
+def wording_params(top_k: int, model_name: str | None = None) -> dict[str, Any]:
     """Return the settings dictionary that the reference script records for a run.
 
     The keys and values equal the dictionary in `hsi_reference.main` for
@@ -366,12 +394,13 @@ def wording_params(top_k: int) -> dict[str, Any]:
 
     Args:
         top_k: The most pairs to return.
+        model_name: The name of the meaning model, or None for the recorded default.
 
     Returns:
         The settings dictionary.
     """
     reference = _reference()
-    settings = WordingSettings(top_k=top_k)
+    settings = _wording_settings(top_k, model_name)
     return {
         "tier": settings.tier,
         "threshold": None,
@@ -392,10 +421,10 @@ def wording_params(top_k: int) -> dict[str, Any]:
     }
 
 
-def wording_params_hash(top_k: int) -> str:
+def wording_params_hash(top_k: int, model_name: str | None = None) -> str:
     """Return the hash that the reference script records for the settings."""
     reference = _reference()
-    return str(reference.params_fingerprint(wording_params(top_k)))
+    return str(reference.params_fingerprint(wording_params(top_k, model_name)))
 
 
 def _call_captured(
@@ -417,6 +446,7 @@ def run_wording_and_meaning(
     encode: Encode,
     top_k: int,
     progress: Progress | None = None,
+    model_name: str | None = None,
 ) -> WordingOutcome:
     """Run the wording-and-meaning engine as the recorded rebuild.
 
@@ -428,6 +458,7 @@ def run_wording_and_meaning(
         encode: The function that turns texts into vectors.
         top_k: The most pairs to return.
         progress: A function that receives plain progress lines.
+        model_name: The name of the meaning model to record, or None for the recorded default.
 
     Returns:
         The outcome with the pairs in engine order.
@@ -447,7 +478,7 @@ def run_wording_and_meaning(
             fix="Add more input files or records.",
         )
     reference = _reference()
-    settings = WordingSettings(top_k=top_k)
+    settings = _wording_settings(top_k, model_name)
     texts = [record.model_text for record in records]
     artifacts = [
         {
@@ -490,7 +521,7 @@ def run_wording_and_meaning(
     return WordingOutcome(
         pairs=tuple(pairs),
         settings=settings,
-        params_hash=str(reference.params_fingerprint(wording_params(top_k))),
+        params_hash=str(reference.params_fingerprint(wording_params(top_k, model_name))),
         reference_sha256=_reference_sha256,
         engine_notes=_reference_notes,
     )

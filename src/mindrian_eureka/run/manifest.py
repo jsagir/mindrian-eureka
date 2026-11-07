@@ -180,6 +180,7 @@ def build_manifest(
     environment: Mapping[str, Any],
     outputs: Sequence[Mapping[str, Any]],
     engine_notes: Sequence[str],
+    encoder: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build the manifest of a run. The result holds no clock value.
 
@@ -193,12 +194,15 @@ def build_manifest(
         environment: The result of `collect_environment`.
         outputs: One item for each hashed output file, with path, sha256 and bytes.
         engine_notes: Notes from the engines, already sorted by the caller.
+        encoder: The encoder block (profile, determinism class, fingerprints, identities), or
+            None. The key `encoder` is written only when a block is given, so an older caller
+            gets the older manifest.
 
     Returns:
         A JSON-ready dictionary.
     """
     ordered = sorted((_plain(item) for item in outputs), key=lambda item: str(item["path"]))
-    return {
+    built: dict[str, Any] = {
         "schema_version": MANIFEST_SCHEMA,
         "label": LABEL,
         "score_meaning": {
@@ -219,6 +223,9 @@ def build_manifest(
         "outputs": ordered,
         "engine_notes": [str(note) for note in engine_notes],
     }
+    if encoder is not None:
+        built["encoder"] = _plain(encoder)
+    return built
 
 
 def build_run_info(

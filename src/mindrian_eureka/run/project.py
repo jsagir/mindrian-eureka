@@ -127,11 +127,12 @@ def _file_shell(
     notes: Sequence[str],
     records_scored: int,
     pairs: list[dict[str, Any]],
+    encoder_fingerprint: str | None = None,
 ) -> dict[str, Any]:
     all_notes = list(notes)
     if not pairs:
         all_notes.append(EMPTY_RESULT_NOTE)
-    return {
+    shell: dict[str, Any] = {
         "schema_version": PAIRS_SCHEMA,
         "label": LABEL,
         "engine": {"name": name, "capability_id": capability_id},
@@ -146,6 +147,11 @@ def _file_shell(
         },
         "pairs": pairs,
     }
+    # The default profile leaves the shell as it is, so the shipped hashes keep holding. The
+    # manifest next to the file carries the encoder fingerprint of every run.
+    if encoder_fingerprint is not None:
+        shell["encoder_fingerprint"] = encoder_fingerprint
+    return shell
 
 
 # --- Projection -------------------------------------------------------------
@@ -158,6 +164,7 @@ def project_unusual_pairs(
     settings: Mapping[str, Any],
     top_k: int,
     notes: Sequence[str],
+    encoder_fingerprint: str | None = None,
 ) -> dict[str, Any]:
     """Project the result of the unusual-pairs engine to the fixed output shape.
 
@@ -167,6 +174,8 @@ def project_unusual_pairs(
         settings: The recorded settings of this engine.
         top_k: The requested number of pairs.
         notes: Plain-English notes for the top of the file.
+        encoder_fingerprint: The encoder fingerprint to record in the file, or None. The
+            default profile passes None and the file keeps its earlier shape.
 
     Returns:
         A dictionary with no time, path, model path or source excerpt.
@@ -207,6 +216,7 @@ def project_unusual_pairs(
         notes=notes,
         records_scored=len(records),
         pairs=pairs,
+        encoder_fingerprint=encoder_fingerprint,
     )
 
 
@@ -217,6 +227,7 @@ def project_wording_and_meaning(
     settings: Mapping[str, Any],
     top_k: int,
     notes: Sequence[str],
+    encoder_fingerprint: str | None = None,
 ) -> dict[str, Any]:
     """Project the pairs of the wording-and-meaning engine to the fixed output shape.
 
@@ -226,6 +237,8 @@ def project_wording_and_meaning(
         settings: The recorded settings of this engine.
         top_k: The requested number of pairs.
         notes: Plain-English notes for the top of the file.
+        encoder_fingerprint: The encoder fingerprint to record in the file, or None. The
+            default profile passes None and the file keeps its earlier shape.
 
     Returns:
         A dictionary with no time, path, model path or source excerpt.
@@ -277,6 +290,7 @@ def project_wording_and_meaning(
         notes=notes,
         records_scored=len(records),
         pairs=projected,
+        encoder_fingerprint=encoder_fingerprint,
     )
 
 
