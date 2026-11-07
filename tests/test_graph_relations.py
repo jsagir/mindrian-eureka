@@ -66,7 +66,7 @@ class GraphRelationshipTests(unittest.TestCase):
 
         catalog = json.loads((Path(__file__).parents[1] / "src/mindrian_eureka/data/capability-catalog.v1.json").read_text())
         runnable = [row for row in catalog["capabilities"] if row.get("status") in {"experimental", "host_brokered"}]
-        self.assertEqual(len(runnable), 59)
+        self.assertEqual(len(runnable), 60)
         for capability in runnable:
             capability_id = capability["id"]
             output = io.StringIO()
@@ -620,6 +620,7 @@ class GraphRelationshipTests(unittest.TestCase):
         direct_cli = {
             "opportunity.find_cross_domain_pairs": {"eureka-pair-scout"},
             "opportunity.synthesize_discovery_signals": {"eureka-signal-scout"},
+            "opportunity.run_pair_screen": {"eureka"},
             "analogy.map_structure": {"eureka-structure-mapping"},
             "analogy.cross_domain_research": {"eureka-structure-mapping"},
             "decision.compare_sequence_patterns": {"eureka-decision-sequences"},
@@ -726,6 +727,7 @@ class GraphRelationshipTests(unittest.TestCase):
         direct_routes = {
             "opportunity.find_cross_domain_pairs": {"scout_start", "scout_find_hybrid_similarity_pairs"},
             "opportunity.synthesize_discovery_signals": {"scout_start_opportunity_signal_scout"},
+            "opportunity.run_pair_screen": {"scout_start_pair_screen"},
             "analogy.map_structure": {"scout_sme_map"},
             "analogy.cross_domain_research": {"scout_sme_prepare_research", "scout_sme_validate_research_bundle", "scout_sme_map", "scout_sme_finalize"},
             "decision.compare_sequence_patterns": {"decision_compare_sequence_patterns"},

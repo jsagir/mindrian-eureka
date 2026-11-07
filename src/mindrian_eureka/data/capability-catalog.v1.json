@@ -1883,6 +1883,66 @@
       }
     },
     {
+      "id": "opportunity.run_pair_screen",
+      "name": "Run Both Pair Engines on One Collection and Write a Hashed Manifest",
+      "engine_family": "Local opportunity-pair screening",
+      "jtbd": "Use when a person approved a run on a scoped, source-linked collection and wants the ranked pairs of both pair engines, the same files that the eureka run command writes, and a manifest of hashes so the run can be checked and repeated. The result is a shortlist of candidates, not verified, and not a qualification.",
+      "status": "experimental",
+      "surface": [
+        "CLI",
+        "MCP"
+      ],
+      "implementation": "src/mindrian_eureka/host_run; run/pipeline.py run_pipeline; JobManager durable run lifecycle",
+      "requires": [
+        "2..3000 source-linked artifacts of the room corpus, with scope_id and snapshot_id",
+        "A plan from scout_plan_pair_screen and an approval reference from the host",
+        "A local meaning model already on disk; Eureka does not download models"
+      ],
+      "network": "denied; the run is offline",
+      "side_effects": [
+        "Writes a durable job record that is kept for 30 days and a short-lived private run folder under the Eureka data directory. The folder is deleted when the result is built. Keeps no derived vectors. Writes nothing to a MindrianOS room or portfolio."
+      ],
+      "limitations": [
+        "Results are candidates, not verified. They are leads for human review, not evidence of novelty or value.",
+        "Eureka cannot verify the approval. The approval reference is audit metadata that the host supplies.",
+        "A bundle above the artifact limit is refused and never cut. The eureka run command cuts the collection and records the cap.",
+        "The ranking of the unusual-pairs engine is not verified bit for bit against its original source.",
+        "Cancel takes effect between stages.",
+        "The host resolves source references, collects reviews and files any result."
+      ],
+      "input_schema": "schemas/pair-screen-input.v1.json",
+      "output_schema": "schemas/pair-screen-output.v1.json",
+      "resource_limits": {
+        "max_artifacts": 3000,
+        "max_top_k": 200,
+        "max_text_bytes": 20971520
+      },
+      "routes": {
+        "cli": {
+          "executable": "eureka",
+          "arguments": [
+            "run",
+            "<input-folder>"
+          ]
+        },
+        "mcp": {
+          "tool": "scout_start_pair_screen",
+          "plan_tool": "scout_plan_pair_screen",
+          "arguments": {
+            "request": "<pair-screen-input.v1>"
+          },
+          "environment": {
+            "MINDRIAN_EUREKA_RS_MODEL_PATH": "<local-model-path>"
+          },
+          "follow_up_tools": [
+            "scout_status",
+            "scout_result",
+            "scout_cancel"
+          ]
+        }
+      }
+    },
+    {
       "id": "analogy.assess_structural_fitness",
       "name": "Compare the Structure of a Mechanism and a Target",
       "engine_family": "Structural analogy comparison",

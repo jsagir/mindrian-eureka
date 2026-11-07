@@ -243,7 +243,12 @@ def test_blocked_plan_without_a_model(host: Any, monkeypatch: Any) -> None:
     planned = plan(host, request)
     assert planned["status"] == "blocked"
     assert planned["reason"] == "local_model_unavailable"
-    refused = start(host, request, "a" * 64)
+    from mindrian_eureka.host_run.contracts import normalize_request
+    from mindrian_eureka.host_run.gate import plan_digest
+
+    model = host.PairScreenInput(**request)
+    digest = plan_digest(normalize_request(model.model_dump(exclude_none=True)))
+    refused = start(host, request, digest)
     assert refused["status"] == "refused"
     assert refused["reason"] == "plan_unknown"
     assert job_rows(host) == 0

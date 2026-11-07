@@ -79,7 +79,7 @@
     {
       "id": "capability_plan",
       "owner": "mindrian_eureka",
-      "action": "For durable RS jobs, call scout_plan with the objective and exact authorized bundle. For synchronous supporting stages, inspect scout_capability and use scout_run_workflow or the typed HSI/Jason tool. Return readiness, prerequisites, model/runtime, network behavior, limits, and expected output.",
+      "action": "For durable RS jobs, call scout_plan with the objective and exact authorized bundle. For synchronous supporting stages, inspect scout_capability and use scout_run_workflow or the typed HSI/Jason tool. Return readiness, prerequisites, model/runtime, network behavior, limits, and expected output. For the one-command run of both pair engines, call scout_plan_pair_screen and present its plan.",
       "output": "validated_analysis_plan",
       "approval": "MindrianOS presents the plan and obtains any required run approval.",
       "stop_if": ["Plan is blocked", "Input validation fails", "Model/runtime is unavailable", "Required approval is absent"]
@@ -87,7 +87,7 @@
     {
       "id": "bounded_execution",
       "owner": "mindrian_eureka",
-      "action": "Start approved RS jobs with scout_start or the local RS+HSI scout with scout_start_opportunity_signal_scout; MindrianOS retains job_id, polls scout_status, supports scout_cancel, then retrieves scout_result. Other current stages are synchronous and do not have durable job recovery yet.",
+      "action": "Start approved RS jobs with scout_start or the local RS+HSI scout with scout_start_opportunity_signal_scout; MindrianOS retains job_id, polls scout_status, supports scout_cancel, then retrieves scout_result. Other current stages are synchronous and do not have durable job recovery yet. After the host approval, start it with scout_start_pair_screen, passing the plan digest and the approval reference.",
       "output": "versioned_candidate_result",
       "stop_if": ["Cancelled", "Failed", "Scope snapshot changed", "Output validation fails"]
     },
@@ -148,7 +148,7 @@
   ],
   "execution_surfaces": {
     "mindrianos_cli": "The existing /mos:eureka workflow owns orchestration and native /mos command execution. It should use this capability MCP when configured. A direct engine CLI may be used as an explicit fallback only over the same prepared bundle and approval boundary.",
-    "mcp": "The host invokes scout_capabilities, scout_plan/start/status/result/cancel for RS, scout_run_workflow for a selected supporting stage, typed HSI/Jason tools, and SME/OMM tools. MCP tools execute only Eureka-owned work and return data/metadata to the host.",
+    "mcp": "The host invokes scout_capabilities, scout_plan/start/status/result/cancel for RS, scout_run_workflow for a selected supporting stage, typed HSI/Jason tools, and SME/OMM tools. MCP tools execute only Eureka-owned work and return data/metadata to the host. For the one-command run of both pair engines, the host calls scout_plan_pair_screen, shows the plan, obtains the approval, then calls scout_start_pair_screen with the plan digest and an approval reference, and uses the existing scout_status and scout_result tools.",
     "direct_engine_cli": "Descriptive engine CLIs such as eureka-pair-scout and eureka-signal-scout run a named method over an explicit input bundle; they are not substitutes for MindrianOS authorization and review. Legacy acronym aliases remain available."
   },
   "catalog_scale_notes": {

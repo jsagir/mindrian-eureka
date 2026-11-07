@@ -27,6 +27,8 @@ from ..analogy_fitness import assess_analogy_fitness, AnalogyInputError, Analogy
 from ..workflow_handlers import HANDLERS as WORKFLOW_HANDLERS, NodeRuntimeUnavailable
 from ..graph_relations.runner import GraphInputError
 from ..limits import MAX_ARTIFACTS, MAX_TOP_K
+from ..host_run import api as host_run_api
+from ..host_run.contracts import APPROVAL_REF_PATTERN
 from ..contracts import ContractError, ResultContractError, schema_for, validate_request, validate_result
 
 
@@ -82,6 +84,28 @@ class OpportunityScoutInput(BaseModel):
     projection: dict | None = None
     handoff: dict | None = None
     limitations: list[str] | None = None
+
+
+class ApprovalInput(BaseModel):
+    """The approval block of a pair screen start. The engine cannot verify the approval."""
+
+    model_config = ConfigDict(extra="forbid")
+    plan_digest: str = Field(pattern=r"^[a-f0-9]{64}$")
+    approval_ref: str = Field(
+        min_length=1, max_length=128, pattern=f"^{APPROVAL_REF_PATTERN.pattern}$"
+    )
+
+
+class PairScreenInput(BaseModel):
+    """A host bundle for the one-command pair screen run (room corpus only)."""
+
+    model_config = ConfigDict(extra="forbid")
+    objective: str = Field(min_length=1, max_length=5000)
+    scope_id: str = Field(min_length=1, max_length=256)
+    snapshot_id: str = Field(min_length=1, max_length=256)
+    artifacts: list[ArtifactInput] = Field(min_length=2, max_length=MAX_ARTIFACTS)
+    top_k: int = Field(default=MAX_TOP_K, ge=1, le=MAX_TOP_K)
+    approval: ApprovalInput | None = None
 
 
 class ReviewInput(BaseModel):
@@ -313,6 +337,35 @@ def scout_start_opportunity_signal_scout(request: OpportunityScoutInput, idempot
     if request.dense_vectors is not None and set(request.dense_vectors) != {item["id"] for item in artifacts}:
         raise ValueError("dense_vectors must include exactly one vector for every artifact")
     return manager.start(payload, idempotency_key)
+
+
+@server.tool()
+def scout_plan_pair_screen(request: PairScreenInput) -> dict:
+    """Plan the one-command pair screen run over a host bundle. It starts nothing.
+
+    The plan states what the run reads, writes and ranks, and gives a plan digest. The tool
+    records a short-lived plan receipt. Show the plan to a person, get the approval, then
+    call scout_start_pair_screen with the digest and an approval reference. A problem gives
+    a dictionary with status refused or blocked and a reason code.
+    """
+    return host_run_api.plan_pair_screen(
+        request.model_dump(exclude_none=True), data_dir=manager.store.data_dir
+    )
+
+
+@server.tool()
+def scout_start_pair_screen(request: PairScreenInput, idempotency_key: str | None = None) -> dict:
+    """Start the one-command pair screen run as a durable job, after the plan and the approval.
+
+    The request needs the approval block with the plan digest from scout_plan_pair_screen and
+    an approval reference. The engine cannot verify the approval; the reference is audit
+    metadata. A start without a matching, live and unused plan receipt returns a dictionary
+    with status refused and a reason code, and starts no job. Poll scout_status, then call
+    scout_result. Results are candidates, not verified. Nothing is written to a room.
+    """
+    return host_run_api.start_pair_screen(
+        request.model_dump(exclude_none=True), idempotency_key, manager=manager
+    )
 
 
 @server.tool()
