@@ -137,6 +137,15 @@ uv run eureka seed ./eureka-run --cluster recs/C00001
 
 The hub shows the pair command under each pair. The folder layout and the rules for MindrianOS are in the [room seed contract](docs/room-seed-contract.md).
 
+## Reproduce the method on public data
+
+A guide takes a reader who is not the author from install to ranked pairs on a public example of 36 arXiv abstracts (CC0). The command `uv run eureka check-example <run-folder>` compares your run with the shipped expected hashes. The guide states what is reproducible and what is not. Every result is a candidate, not verified.
+
+Status: internal only. The release record has decision no-go for public distribution of the unusual-pairs engine; see the [release record](docs/rs-release-gate.md).
+
+- [Reproduce the JHTV method](docs/reproduce-the-jhtv-method.md)
+- [Public example](examples/public-example/README.md)
+
 ## Quick start
 
 Install the package and inspect the available job contracts:
