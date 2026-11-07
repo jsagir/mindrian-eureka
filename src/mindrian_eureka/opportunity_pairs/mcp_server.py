@@ -43,7 +43,7 @@ except ImportError:  # compatibility with the installed 1.x SDK line
 
 
 class ArtifactInput(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
     id: str = Field(min_length=1, max_length=256)
     source_ref: str = Field(min_length=1, max_length=2048)
     title: str = Field(default="", max_length=2000)
@@ -90,7 +90,7 @@ class OpportunityScoutInput(BaseModel):
 class ApprovalInput(BaseModel):
     """The approval block of a pair screen start. The engine cannot verify the approval."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
     plan_digest: str = Field(pattern=r"^[a-f0-9]{64}$")
     approval_ref: str = Field(
         min_length=1, max_length=128, pattern=f"^{APPROVAL_REF_PATTERN.pattern}$"
@@ -100,7 +100,7 @@ class ApprovalInput(BaseModel):
 class PairScreenInput(BaseModel):
     """A host bundle for the one-command pair screen run (room corpus only)."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
     objective: str = Field(min_length=1, max_length=5000)
     scope_id: str = Field(min_length=1, max_length=256)
     snapshot_id: str = Field(min_length=1, max_length=256)
@@ -367,6 +367,25 @@ def scout_start_pair_screen(request: PairScreenInput, idempotency_key: str | Non
     return host_run_api.start_pair_screen(
         request.model_dump(exclude_none=True), idempotency_key, manager=manager
     )
+
+
+def _hide_input_in_tool_errors(*names: str) -> None:
+    """Keep the text of a bad request out of the validation error of a tool.
+
+    The tool server checks the arguments with its own wrapper model, so the setting on
+    `PairScreenInput` alone does not reach the error text. The wrapper model of each
+    named tool gets the same setting. A host sees which field is wrong, not the value.
+    """
+    for name in names:
+        tool = server._tool_manager.get_tool(name)
+        if tool is None:
+            raise RuntimeError(f"tool {name} is not registered")
+        arg_model = tool.fn_metadata.arg_model
+        arg_model.model_config["hide_input_in_errors"] = True
+        arg_model.model_rebuild(force=True)
+
+
+_hide_input_in_tool_errors("scout_plan_pair_screen", "scout_start_pair_screen")
 
 
 @server.tool()

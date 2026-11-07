@@ -444,11 +444,16 @@ def _write_wheels(options: BundleOptions, target: Target, bundle: Path, uv: str)
     return "download"
 
 
-def _pip_download_base(target: Target, wheels: Path, uv: str) -> list[str]:
+def _pip_download_base(
+    target: Target, wheels: Path, uv: str, *, extra_index: bool = True
+) -> list[str]:
     """Return the shared `pip download` arguments for one target.
 
     PyPI stays the default index. The PyTorch CPU index is added with
-    `--extra-index-url` because the lock pins `torch==2.14.1+cpu` from it.
+    `--extra-index-url` because the lock pins `torch==2.14.1+cpu` from it. Only the
+    download of the locked, hashed requirements needs it. A download of unpinned,
+    unhashed requirements passes `extra_index=False`, so a second index cannot
+    answer for them.
     """
     base = [
         uv,
@@ -460,8 +465,7 @@ def _pip_download_base(target: Target, wheels: Path, uv: str) -> list[str]:
         "pip",
         "download",
         "--only-binary=:all:",
-        "--extra-index-url",
-        PYTORCH_CPU_INDEX,
+        *(["--extra-index-url", PYTORCH_CPU_INDEX] if extra_index else []),
         "--python-version",
         "3.12",
         "--implementation",
@@ -531,8 +535,9 @@ def _download_wheels(options: BundleOptions, target: Target, bundle: Path, uv: s
             cwd=options.repo_root,
             what="pip download of the locked wheels",
         )
+    backend_base = _pip_download_base(target, wheels, uv, extra_index=False)
     _run(
-        [*base, "setuptools>=75", "wheel"],
+        [*backend_base, "setuptools>=75", "wheel"],
         cwd=options.repo_root,
         what="pip download of the build backend",
     )

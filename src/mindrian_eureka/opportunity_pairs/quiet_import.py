@@ -27,14 +27,17 @@ def import_quietly(load: Callable[[], object]) -> str:
         The text that the step wrote to stderr.
 
     Raises:
-        BaseException: The error of the step, raised again. The captured text
-            goes back to stderr first, so a real failure keeps all its output.
+        BaseException: The error of the step, raised again. One line with the error
+            goes to stderr first, then the captured text, so the first stderr line is
+            the real cause and a real failure keeps all its output. The traceback
+            follows when the error leaves the interpreter.
     """
     buffer = io.StringIO()
     try:
         with contextlib.redirect_stderr(buffer):
             load()
-    except BaseException:
+    except BaseException as error:
+        sys.stderr.write(f"{type(error).__name__}: {error}\n")
         sys.stderr.write(buffer.getvalue())
         raise
     return buffer.getvalue()
