@@ -379,6 +379,13 @@ class JobManager:
                     request, data_dir=self.store.data_dir, job_id=job_id,
                     cancel_check=cancel_event.is_set, stage_callback=stage,
                 )
+            elif request.get("capability_id") == "opportunity.run_pair_screen":
+                from ..host_run.execute import run_pair_screen_job
+
+                result = run_pair_screen_job(
+                    request, data_dir=self.store.data_dir, job_id=job_id,
+                    cancel_check=cancel_event.is_set, stage_callback=stage,
+                )
             else:
                 result = run_document(
                     request, encoder_name=request["encoder"], model_path=request["model_path"],
