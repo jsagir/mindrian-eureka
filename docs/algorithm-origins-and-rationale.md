@@ -98,6 +98,6 @@ Each row is one independently addressable service. Workflow composition is optio
 - Capability names, JTBDs, maturity, surfaces, implementation entrypoints, prerequisites, and contracts: [machine-readable capability catalog](../src/mindrian_eureka/data/capability-catalog.v1.json).
 - Exact source paths, hashes, attribution/license status, adaptations, and evaluation limits: [engine source and license ledger](engine-source-ledger.md).
 - Task-level guidance: [engine jobs and when to use them](engine-jobs.md).
-- Current catalog counts: 67 entries; 59 with CLI and MCP routes; 8 blocked or planned.
+- Current catalog counts: 68 entries; 60 with CLI and MCP routes; 8 blocked or planned.
 
 **Unresolved origin work:** multiple user-provided research packages do not identify original authorship or redistribution authority. Several implementations are explicitly repository-authored adapters, not faithful copies. This register records the available lineage; it does not clear code for distribution. Algorithm-quality claims remain bounded by the source-ledger evaluation notes, including failed historical graph ranking and untested real-room behavior.

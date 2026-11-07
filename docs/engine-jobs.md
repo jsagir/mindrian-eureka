@@ -8,7 +8,7 @@ Wickedness is the context the agents explore, not a stage they claim to finish. 
 
 An algorithm exposed in the capability catalog is a service in its own right. Each runnable algorithm or method has a stable capability ID, a typed input/output contract, and a CLI and MCP route; callers can invoke it directly without running a larger Theo or Eureka workflow. Compositions are optional: a host such as MindrianOS or Theo may sequence several services when the task calls for it, while each service remains independently discoverable and usable. A blocked or planned entry is a cataloged service intention, not a runnable service. The catalog's maturity and prerequisites describe the current service boundary and must be checked before invocation.
 
-The catalog currently contains 67 capability entries: 59 with callable CLI/MCP routes and 8 blocked or planned. Callable does not mean production validated; experimental services retain their stated evidence, rights, data, and evaluation limits. See the [capability catalog](capability-catalog.md) for the authoritative per-service contracts and routes.
+The catalog currently contains 68 capability entries: 60 with callable CLI/MCP routes and 8 blocked or planned. Callable does not mean production validated; experimental services retain their stated evidence, rights, data, and evaluation limits. See the [capability catalog](capability-catalog.md) for the authoritative per-service contracts and routes.
 
 | User-facing job | Use it when… | Available here |
 |---|---|---|
