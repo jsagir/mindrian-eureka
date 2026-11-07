@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 04.1-03-PLAN.md
+status: ready_to_execute
+stopped_at: Phase 5 planned (9 plans); Phase 4.1 complete and verified (human_needed)
 last_updated: "2026-11-07T22:05:05.949Z"
-last_activity: 2026-11-07 -- Phase 4 execution started
+last_activity: 2026-11-08 -- Phase 4.1 verified; Phase 5 planned
 progress:
   total_phases: 9
   completed_phases: 6
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-23)
 
 **Core value:** A user who is not the author can install Eureka, run it on their own collection with one command, and get the same ranked candidates every time, with hashes and settings that prove it. Output stays labeled "candidate, not verified".
-**Current focus:** Phase 4 — Public Example and Reproduction Guide
+**Current focus:** Phase 5 — Encoder seam, safe cache key and local GPU spike (planned, not started)
 
 ## Current Position
 
-Phase: 4 (Public Example and Reproduction Guide) — EXECUTING
-Plan: 4 of 4
-Status: Ready to execute
-Last activity: 2026-11-07 -- Phase 4 execution started
+Phase: 5 (Encoder seam, safe cache key and local GPU spike) — PLANNED
+Plan: 0 of 9
+Status: Ready to execute. Phases 3, 4 and 4.1 are complete on the Eureka side and verified human_needed (owner items open: contract sections 4, 9, 10, 13; the five provenance-gap mark texts; the room-side mark; a non-author run of the guide on a second machine; release sign-off; a Windows run of start.ps1 with a path that has a space; the GPU spike on the owner's RTX 3060).
+Last activity: 2026-11-08 -- Phase 4.1 verified; Phase 5 planned
 
 Progress: [██████████] 97%
 

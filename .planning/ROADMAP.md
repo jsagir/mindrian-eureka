@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 2.1: Opportunity Hub in the mos-brand format** - One local page shows the opportunity bank, the connection graph and the full catalogue of an analyzed collection, styled by the mos-brand book
 - [x] **Phase 3: Host Integration and Replay Rebuild** - `/mos:eureka` calls the run through the MCP server; the graph-derive replay is rebuilt or marked as a provenance gap
 - [x] **Phase 4: Public Example and Reproduction Guide** - Small public dataset with expected hashes, plus a "reproduce the JHTV method" guide
-- [ ] **Phase 04.1: Fix the review findings** (INSERTED) - Fix the defects the Codex review and the independent code review confirm, starting with Windows launcher paths with spaces
+- [x] **Phase 04.1: Fix the review findings** (INSERTED) - Fix the defects the Codex review and the independent code review confirm, starting with Windows launcher paths with spaces
 - [ ] **Phase 5: Encoder seam, safe cache key and local GPU spike** - One place builds every encoder, the cache never mixes setups, and one local GPU encoder is proven on the owner's computer; MiniLM stays the default
 
 ## Phase Details
@@ -190,7 +190,8 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
 | 2.3. Room seed hand-off to MindrianOS | 5/5 | Complete (verification: human_needed) | 2026-11-07 |
 | 3. Host Integration and Replay Rebuild | 7/7 | Complete (verification: human_needed) | 2026-11-07 |
 | 4. Public Example and Reproduction Guide | 4/4 | Complete (verification: human_needed) | 2026-11-07 |
-| 5. Encoder seam, safe cache key and local GPU spike | 0/TBD | Not started | - |
+| 4.1. Fix the review findings | 3/3 | Complete (verification: human_needed) | 2026-11-08 |
+| 5. Encoder seam, safe cache key and local GPU spike | 0/9 | Planned | - |
 
 ### Phase 04.1: Fix the review findings (Codex and code review): Windows launcher paths with spaces and anything the reviews confirm (INSERTED)
 
@@ -204,19 +205,20 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
   3. No finding is fixed by weakening a test. The full suite stays at or above 1701 passed with 0 failed; ruff 1465 and mypy 88 errors do not rise.
   4. Close-out: the READMEs (README.md, examples/public-example/README.md, src/README.md and any doc index that lists counts or commands) are refreshed and checked against the code and a run (owner rule 2026-11-07: refresh the READMEs after each version).
 
-**Plans:** 1 plan done, 1 to plan
+**Plans:** 3 of 3 complete (verification: human_needed, 04.1-VERIFICATION.md)
 
 Plans:
 
 - [x] 04.1-01: Windows launcher passes the `uv sync` arguments as an array (delivered as quick task 261107-wuy, commit 4be74df)
-- [ ] 04.1-02: Fix the findings confirmed by the independent code review (plan after the review returns)
+- [x] 04.1-02: Code fixes confirmed by the independent code review (receipt replay after delete, lone surrogates, extra index scope, quiet import order, hidden input in tool errors, envelope leak test)
+- [x] 04.1-03: Contract and guide honesty fixes, README refresh against the code
 
 **Scope notes**: Urgent insert at the owner's request ("add a phase to fix what codex found, asap now"). Do not edit `hsi_reference.py`. No plugin checkout edits.
 
 ### Phase 5: Encoder seam, safe cache key and local GPU spike
 
 **Goal:** Eureka builds every encoder in one place, never reuses a vector made by a different encoder setup, and can run one named local GPU encoder on the user's own computer, while MiniLM stays the default and every default result stays byte-identical.
-**Requirements**: TBD (define in plan-phase; research source: the 2026-11-07 fan-out research, 8 lanes, 18 agents)
+**Requirements**: ENC-01, ENC-02, ENC-03, ENC-04, ENC-05, ENC-06, ENC-07, ENC-08, ENC-09, ENC-10, ENC-11 (research source: the 2026-11-07 fan-out research, 8 lanes, 18 agents)
 **Depends on:** Phase 4
 **Success Criteria** (what must be TRUE):
 
@@ -228,10 +230,18 @@ Plans:
   6. A measured comparison of MiniLM, `mdbr-leaf-ir` and the Nemotron profile on the 36-record public example gives top-200 pair overlap and texts per second. The owner decides any change of default from it.
   7. Close-out: the READMEs are refreshed and checked against the code and a run (owner rule 2026-11-07: refresh the READMEs after each version).
 
-**Plans:** 0 plans
+**Plans:** 0 of 9 complete
 
 Plans:
 
-- [ ] TBD (run $gsd-plan-phase 5 to break down)
+- [ ] 05-01: EncoderSpec, Encoder protocol, make_encoder, `gpu-encoder` extra (wave 1)
+- [ ] 05-02: Cache key with full encoder identity, schema 2, one cache file per profile (wave 1)
+- [ ] 05-03: Pair engine runner and doctor route through the factory (wave 2)
+- [ ] 05-04: `check-example` compares `gpu-approx` runs by ranking overlap (wave 2)
+- [ ] 05-05: Wording engine, `--encoder-profile`, manifest encoder block (wave 3)
+- [ ] 05-06: Host result key, profiles page, plugin hand-offs (wave 4)
+- [ ] 05-07: CPU comparison harness on the 36-record example (wave 4)
+- [ ] 05-08: Self-contained GPU spike script and results template; ends at an owner-run checkpoint (wave 4)
+- [ ] 05-09: README refresh close-out (wave 5)
 
 **Scope notes**: In-process on the user's own computer only. No sockets, no loopback HTTP client, no NIM and no tunnel in this phase; local NIM stays a later option the owner wants to keep. No ontology work (OpenAlex Topics is parked as an optional later layer). Never mix vectors from two encoders in one store. The partner room store holds 2,130 vectors of 384 dimensions made by `mdbr-leaf-ir`; a 2048-dimension profile needs its own table. Keep stable for the MindrianOS plugin: the `eureka-mcp` script, the tool names, the `eureka.doctor.v1` shape, and a `uv.lock` in sync (the plugin starts with `--locked`). A new device or backend setting needs a plugin allowlist entry, which is a hand-off to the plugin session.

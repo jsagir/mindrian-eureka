@@ -47,12 +47,30 @@
 - [x] **EXM-01**: A small public dataset example runs end to end with `eureka run` and ships with expected output hashes.
 - [x] **EXM-02**: A "reproduce the JHTV method" guide for a non-author, in plain English, states what is reproducible and what is not.
 
+### Encoder seam (ENC)
+
+- [ ] **ENC-01**: One `EncoderSpec`, one `Encoder` protocol and one `make_encoder` factory build every encoder, with two named profiles (`cpu-default` with MiniLM at 384 dimensions, `gpu-nemotron` as a spike profile); MiniLM stays the default and every default result stays byte-identical.
+- [ ] **ENC-02**: The two pair engines (`runner.py`, `run/engines.py`) and `doctor.py` load their encoder through the factory; the build sites that are not routed in this phase are listed with their risk, and `hsi_reference.py` is not edited.
+- [ ] **ENC-03**: The embedding cache key holds the full encoder identity (model id, revision, model digest, dimension, dtype, attention, device, prefixes, normalization, chunking, batch size, token cap); the cache schema version is raised so old entries are ignored; a stored vector of the wrong width is rejected on a hit; each profile has its own cache file.
+- [ ] **ENC-04**: The run manifest has an `encoder` block with the profile, the determinism class (`cpu-exact` or `gpu-approx`) and an encoder fingerprint for each engine; `eureka check-example` compares a `gpu-approx` run by ranking overlap and not by bytes, and never reports a match while no overlap threshold has been measured.
+- [ ] **ENC-05**: Every ranked result carries the label "candidate, not verified" and an encoder fingerprint in a stable field: on each output of the library runner, in the optional `encoder` key of the host run result, and in the manifest; the pair files of a non-default profile also carry the fingerprint.
+- [ ] **ENC-06**: `eureka doctor --encoder-profile NAME` adds one encoder check (profile name, libraries, device, model folder, and with `--load-model` the vector width) without changing the `eureka.doctor.v1` shape or any existing check id.
+- [ ] **ENC-07**: GPU-related packages live in the optional extra `gpu-encoder`; the core dependencies stay `jsonschema`, `numpy` and `scikit-learn`; `uv.lock` is regenerated in the same commit as `pyproject.toml`.
+- [ ] **ENC-08**: A self-contained spike script and a results page let the owner run `nvidia/Nemotron-3-Embed-1B-BF16` on the RTX 3060 in a scratch environment outside the repository; every number on the page comes from the run log; until the owner returns a log, every value is NOT RUN.
+- [ ] **ENC-09**: A measured comparison of MiniLM, `mdbr-leaf-ir` and the Nemotron profile on the 36-record public example reports the dense top-200 pair overlap and the texts per second; the CPU part runs on this computer, a column that cannot run is marked NOT RUN with its reason, and the owner decides any change of the default encoder.
+- [ ] **ENC-10**: The hand-offs for the MindrianOS plugin session (environment allowlist, request field for the profile, contract version marker, one `vec0` table for each profile, re-tuned 0.55 floor, failure reasons, start stderr, doctor checks that are not added) are written in `docs/encoder-profiles.md` with a source and a mark for each; no plugin checkout is edited.
+- [ ] **ENC-11**: The READMEs (README.md, examples/public-example/README.md, src/README.md) are refreshed for the encoder profiles, `--encoder-profile`, `doctor --encoder-profile`, the `gpu-encoder` extra and the `cpu-exact` / `gpu-approx` classes, and every claim is checked against the code and a run (owner rule 2026-11-07).
+
 ## v2 Requirements
 
 - **CAT-01**: Promote experimental capabilities to supported, one at a time, with benchmark evidence.
 - **EVAL-01**: Bundle a benchmark corpus and reviewer rubric so method variants can be compared.
 - **DEDUP-01**: Near-duplicate and same-family record handling before ranking.
 - **DOM-01**: Domain-aware filtering so "cross-domain" pairs really cross domains.
+- **LIM-01**: A memory guard for the pair-screen job at 3,000 artifacts (about 3.4 GB is ASSUMED in limits.py; a long-lived MCP process could be OOM-killed). Source: independent code review 2026-11-07, finding 10b; recorded in docs/mos-eureka-engine-run-contract.md.
+- **PLG-01**: Plugin-side wiring for the pair-screen routes (ALLOWED_MCP_ROUTES, ASYNC_ROUTES, routeGate needs, caps 100 to 200 and 2,500 to 3,000), owned by the MindrianOS plugin repo (nearest fit: plugin Phase 374).
+- **TAX-01**: Optional topic taxonomy layer for graph typing (OpenAlex Topics, CC0) as a soft signal; parked by the owner on 2026-11-07.
+- **NIM-01**: Local NIM hosting of the embedding model, kept as a later option by the owner on 2026-11-07 (research: docs/research/mindrian-eureka-local-nim-hosting.md).
 
 ## Out of Scope
 
@@ -88,13 +106,24 @@
 | HUB-05 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
 | EXM-01 | Phase 4 - Public Example and Reproduction Guide | Complete |
 | EXM-02 | Phase 4 - Public Example and Reproduction Guide | Complete (owner check: non-author run) |
+| ENC-01 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Pending |
+| ENC-02 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Pending |
+| ENC-03 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Pending |
+| ENC-04 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Pending |
+| ENC-05 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Pending |
+| ENC-06 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Pending |
+| ENC-07 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Pending |
+| ENC-08 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Pending |
+| ENC-09 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Pending |
+| ENC-10 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Pending |
+| ENC-11 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Pending |
 
 **Coverage:**
 
-- v1 requirements: 21 total
-- Mapped to phases: 21 (Phase 1: 5, Phase 2: 7, Phase 2.1: 5, Phase 3: 2, Phase 4: 2)
+- v1 requirements: 32 total
+- Mapped to phases: 32 (Phase 1: 5, Phase 2: 7, Phase 2.1: 5, Phase 3: 2, Phase 4: 2, Phase 5: 11)
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-10-23*
-*Last updated: 2026-10-23 after adding Phase 2.1 (Hub)*
+*Last updated: 2026-11-08 after adding Phase 5 (Encoder seam, ENC-01 to ENC-11)*
