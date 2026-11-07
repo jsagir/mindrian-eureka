@@ -188,6 +188,7 @@ Current MCP tools include:
 - `scout_plan` — transform objective + authorized scope into a proposed sequence and explain why; no execution or egress.
 - `scout_start` — start a durable RS run; returns `job_id`.
 - `scout_start_opportunity_signal_scout` — run RS and HSI on one local bundle and return their source-linked union; returns `job_id`.
+- `scout_plan_pair_screen` / `scout_start_pair_screen`: plan the one-command run of both pair engines over a host bundle, then start it as a durable job only with a matching plan digest and an approval reference; returns `job_id`.
 - `scout_status` — inspect progress, partial results, blockers, and required user action.
 - `scout_result` — retrieve a validated result envelope by job ID.
 - `scout_cancel` — cancel a running job and prevent later stages from starting.

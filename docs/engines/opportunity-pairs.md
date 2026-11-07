@@ -55,7 +55,7 @@ The engine never searches the web or calls a provider. For external/hybrid runs 
 }
 ```
 
-Input limit: 2,500 artifacts and 20 MiB of UTF-8 text per run. A MindrianOS graph-derived request may supply `scope_id` and `snapshot_id`; the result echoes both and also returns an `input_digest` covering the exact task and scoring configuration. The reference SVD configuration uses up to 80 topics; smaller collections use the largest valid topic count and report that adaptation. Corpus size, duplicate material, empty vocabulary, and similarity variance can change or prevent ranking, and are not silently reported as an empty discovery result.
+Input limit: 3,000 artifacts and 20 MiB of UTF-8 text per run. A MindrianOS graph-derived request may supply `scope_id` and `snapshot_id`; the result echoes both and also returns an `input_digest` covering the exact task and scoring configuration. The reference SVD configuration uses up to 80 topics; smaller collections use the largest valid topic count and report that adaptation. Corpus size, duplicate material, empty vocabulary, and similarity variance can change or prevent ranking, and are not silently reported as an empty discovery result.
 
 Hybrid percentile gating requires at least ten eligible pairs. Below that threshold it returns no candidates; choose `legacy` when deliberately analyzing a smaller set. For graph-derived research, MindrianOS owns the graph projection, scope, authorization, stable node IDs, and source resolution. The RS engine analyzes the supplied artifacts and does not read `room.db` or query the graph.
 

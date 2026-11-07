@@ -280,6 +280,8 @@ scripts/run-mcp-container
 
 The wrapper disables network access, mounts the model read-only, makes the container root filesystem read-only, and applies configurable CPU and memory limits. The model must already exist on the host.
 
+A host can plan and start the one-command run through `scout_plan_pair_screen` and `scout_start_pair_screen`. A start needs the plan and an approval reference, and the run writes nothing to a room. The steps and the exact keys are in [the engine run contract](docs/mos-eureka-engine-run-contract.md).
+
 ## Engine names
 
 Eureka names its pair engines by what they do. The first engine was formerly called RS.

@@ -89,6 +89,7 @@ The compact catalog returns names, JTBDs, readiness, and route names without sch
 - `scout_capability(capability_id)` returns one job contract.
 - `scout_capability_contract(capability_id)` returns that contract plus its packaged JSON input/output schemas; a schema marked `not_published` is a visible contract gap, not permission to guess.
 - `scout_start_opportunity_signal_scout(request)` runs the durable local RS+HSI signal job, with status/result/cancel via its returned `job_id`.
+- `scout_plan_pair_screen(request)` plans the one-command run of both pair engines over a host bundle and returns a plan digest; `scout_start_pair_screen(request)` starts it as a durable job after the person approves, and refuses without a matching plan. See [the engine run contract](mos-eureka-engine-run-contract.md).
 - `scout_run_workflow(capability_id, request)` runs one named local stage synchronously.
 - `scout_find_hybrid_similarity_pairs(request)` and `scout_compare_text_differences(request)` are direct, typed MCP entry points.
 - `scout_assess_analogy_fitness(request)` compares sourced SAPPhIRE-layer structures with the configured local encoder.

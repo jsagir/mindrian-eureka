@@ -121,7 +121,7 @@ If the user asks for `/mos:status`, `/mos:find-connections`, or `/mos:qualify-op
 
 For cross-domain pair finding, the CLI and MCP call the same method implementation and result contract, but their execution lifecycles differ: `eureka-pair-scout` (legacy alias: `eureka-rs`) is a direct bounded run that reads an explicit JSON bundle; MCP provides the durable `plan → start → status/result/cancel` job lifecycle. Both return the same `host_handoff` guidance. The other engine CLIs execute their named method and are not yet unified under the RS job lifecycle. Handoff guidance recommends a next host action; it does not execute a `/mos:*` command, grant approval, or write graph state. The MindrianOS host must preserve the same scope manifest, model identity, source references, approval rules, and result caveats whichever execution surface it uses. Never pass an arbitrary filesystem path through an MCP request; never use a direct CLI call to avoid a MindrianOS gate.
 
-Input is bounded at 3,000 artifacts and 20 MiB of UTF-8 artifact text. Each artifact needs a unique ID, source reference, non-empty text, and `room` or `external` corpus. A host should split exceptionally large rooms into explicit snapshots rather than silently truncate them.
+The pair tools (`scout_start`, `scout_start_opportunity_signal_scout`, `scout_find_hybrid_similarity_pairs` and `scout_start_pair_screen`) accept up to 3,000 artifacts, 200 pairs and 20 MiB of UTF-8 artifact text. Other method families keep the limits that the catalog states for them; the graph projection stays at 2,500. Each artifact needs a unique ID, source reference, non-empty text, and `room` or `external` corpus. A host should split exceptionally large rooms into explicit snapshots rather than silently truncate them.
 
 ### The MindrianOS plugin side of the pair screen tools
 
@@ -130,6 +130,10 @@ MindrianOS plugin Phase 387 owns adoption, the doctor check and the typed refusa
 ## The reverse leg: a room seed
 
 MindrianOS feeds Eureka a graph projection and gets pairs back. The other leg is `eureka seed`. It turns one pair, or one record and the records paired with it, of a finished run into a seed folder. The folder is a candidate, not verified. The plugin opens it through its own birth gate with `/mos:ignite --from-seed`. That command is planned in the plugin repo and is not built. Eureka writes nothing to a room, a registry or a room database, and it calls no model. The contract is in [the room seed contract](../room-seed-contract.md), file `docs/room-seed-contract.md`.
+
+## The engine run: opportunity.run_pair_screen
+
+A connected host can start one run of both pair engines through Eureka. The order is fixed: call `scout_plan_pair_screen`, get the approval of the person, call `scout_start_pair_screen`, then poll `scout_status` and read `scout_result`. Eureka refuses a start that has no matching, live plan. Eureka cannot verify the approval: the approval reference is audit metadata, and the real approval is the card of the host. Eureka writes nothing to a room, a registry or a portfolio. Every result is candidate, not verified. The contract for the plugin phase is in [the engine run contract](../mos-eureka-engine-run-contract.md), file `docs/mos-eureka-engine-run-contract.md`.
 
 ## External research and confidentiality
 
