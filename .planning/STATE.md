@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-04-PLAN.md
-last_updated: "2026-11-07T18:29:06.598Z"
+stopped_at: Completed 03-05-PLAN.md
+last_updated: "2026-11-07T18:36:55.778Z"
 last_activity: 2026-11-07
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 51
-  completed_plans: 44
+  completed_plans: 45
   percent: 57
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-10-23)
 ## Current Position
 
 Phase: 3 (Host Integration and Replay Rebuild) — EXECUTING
-Plan: 4 of 7
+Plan: 5 of 7
 Status: Ready to execute
 Last activity: 2026-11-07
 
@@ -75,6 +75,7 @@ Progress: [██████████] 97%
 | Phase 03 P06 | 35 min | 3 tasks | 9 files |
 | Phase 03 P03 | 20min | 3 tasks | 4 files |
 | Phase 03 P04 | 35min | 3 tasks | 5 files |
+| Phase 03 P05 | 40 min | 3 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,7 @@ Recent decisions affecting current work:
 - [Phase 02.1-01]: D-14 owner ruling 2026-10-24: keep, label Potential eureka. D-17 password gate kept as drafted.
 - [Phase 02.1-03]: Hub JS data file escapes characters inside JSON strings only (and also < and >); the word eureka is allowed only as the product name, Potential eureka, and the command eureka hub; the reader refuses unknown reading sentences and files whose hash differs from the manifest.
 - [Phase 02.1-04]: CSP decision = default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none' (Firefox does not enforce a meta CSP on local file loads, so the static scan stays a required control). cryptography becomes the optional extra hub-gate. 3d-force-graph@1.79.1 passes the 14 day rule (MIT, 262 days old). Browser tests skip without tools; EUREKA_REQUIRE_BROWSER=1 makes them fail.
+- [Phase 03]: 03-05: a refused start returns status refused with a reason code; a failed job start raises and releases the plan receipt unless it was a retry — Refusals are data for the host; a failed start must not burn the approval
 
 ### Pending Todos
 
@@ -129,6 +131,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-11-07T18:29:06.594Z
-Stopped at: Completed 03-04-PLAN.md
+Last session: 2026-11-07T18:36:55.772Z
+Stopped at: Completed 03-05-PLAN.md
 Resume file: None
