@@ -163,6 +163,7 @@ The result has the schema version `eureka.pair-screen.v1`. A host reads `scout_r
 | `job_store` | string | The job record is kept 30 days. Delete it with `scout_delete_job`. |
 | `derived_vectors` | string | The value says that no vector is kept. |
 | `run_files` | string | The value says that the private run folder was deleted. |
+| `encoder` | object, optional | The encoder record of the run, copied from the manifest. It names the profile and the determinism class (`cpu-exact` or `gpu-approx`) and gives a fingerprint for each engine. Keep it next to the result. A `gpu-approx` run is compared by ranking overlap and not by bytes. It is absent for a run folder that has no such record. See `docs/encoder-profiles.md`. |
 
 About `files`: four files are listed with their exact text in `content`, so the host can hash the UTF-8 bytes and compare. They are `unusual-pairs.json`, `wording-and-meaning-pairs.json`, `ranked-pairs.md` and `manifest.json`. The file `corpus/records.jsonl` is listed with its hash and without text, because it holds the text of the host. The file `run-info.json` is never returned, because it holds times.
 

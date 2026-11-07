@@ -11,6 +11,7 @@ It reads no file that holds times. It imports no numpy.
 
 from __future__ import annotations
 
+import copy
 import json
 from collections.abc import Mapping
 from pathlib import Path
@@ -194,7 +195,9 @@ def build_result(
         job_id: The job id. It appears only in the key `job_id`.
 
     Returns:
-        A dictionary that validates against `pair-screen-output.v1.json`.
+        A dictionary that validates against `pair-screen-output.v1.json`. The optional key
+        `encoder` is a deep copy of the `encoder` block of the manifest. It is absent when
+        the run folder has no such block (a folder made before plan 05-05).
 
     Raises:
         ValueError: A listed file is missing or does not match `manifest.json`, or a
@@ -218,7 +221,7 @@ def build_result(
         for record_id, host in sorted(id_map.items())
     ]
     caps = manifest["corpus"].get("caps_hit", [])
-    return {
+    result: dict[str, Any] = {
         "schema_version": RESULT_SCHEMA,
         "capability_id": CAPABILITY_ID,
         "status": status,
@@ -243,3 +246,7 @@ def build_result(
         "portfolio_write": "not_performed",
         "persistence": dict(_PERSISTENCE),
     }
+    block = manifest.get("encoder")
+    if isinstance(block, Mapping):
+        result["encoder"] = copy.deepcopy(dict(block))
+    return result

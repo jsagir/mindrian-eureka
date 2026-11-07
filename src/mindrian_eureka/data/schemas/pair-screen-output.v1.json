@@ -139,6 +139,10 @@
         "derived_vectors": {"type": "string"},
         "run_files": {"type": "string"}
       }
+    },
+    "encoder": {
+      "type": "object",
+      "description": "Optional. A copy of the encoder block of the run manifest (schema eureka.encoder-block.v1): the profile, the determinism class and, for each engine, a fingerprint and the identity. Present when the run wrote the block."
     }
   },
   "$defs": {
