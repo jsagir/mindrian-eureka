@@ -512,6 +512,37 @@ def test_start_ps1_has_the_same_sequence(host_bundle: Path) -> None:
     assert "--output " not in text
 
 
+def test_start_ps1_passes_the_sync_arguments_as_an_array(host_bundle: Path) -> None:
+    text = (host_bundle / "start.ps1").read_text(encoding="utf-8")
+    assert "$Sync.Split" not in text
+    assert "& $Uv @SyncArgs" in text
+    assert '$SyncArgs -join " "' in text
+    # The path element stays whole: --find-links is one element, the quoted path the next.
+    assert '"--find-links", "$Bundle\\wheels"' in text
+    # The no-wheels form drops both path flags.
+    assert (
+        '$SyncArgs = @("sync", "--offline", "--extra", "modern-encoder", "--extra", "hub-gate")'
+        in text
+    )
+    # The docker launcher keeps its constant flag string: no path is split there.
+    docker = host_bundle / "start-docker.ps1"
+    if docker.exists():
+        assert '.Split(" ")' in docker.read_text(encoding="utf-8")
+
+
+def test_start_ps1_sync_has_no_split_on_a_path() -> None:
+    from mindrian_eureka.partner_bundle.launchers import START_PS1
+
+    text = START_PS1.replace("@PYTHON_SERIES@", "3.12")
+    assert 'Split(" ")' not in text
+    # A bundle path with spaces: the element is one quoted string, so the shell cannot cut it.
+    match = re.search(r'\$SyncArgs = @\("sync", "--offline", "--no-index", (.*?)\)\n', text)
+    assert match is not None
+    elements = match.group(1)
+    assert elements.startswith('"--find-links", "$Bundle\\wheels", ')
+    assert "$Bundle\\wheels" not in elements.replace('"$Bundle\\wheels"', "")
+
+
 def test_doctor_runs_from_inside_the_bundle(host_bundle: Path, tmp_path: Path) -> None:
     if not models.discover_model(None).ok:
         pytest.skip("local model absent")

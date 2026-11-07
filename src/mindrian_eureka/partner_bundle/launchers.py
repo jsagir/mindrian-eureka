@@ -146,11 +146,12 @@ foreach ($File in ($Files | Sort-Object Name)) {
   break
 }
 
-$Sync = "sync --offline --no-index --find-links $Bundle\wheels --extra modern-encoder --extra hub-gate"
+$SyncArgs = @("sync", "--offline", "--no-index", "--find-links", "$Bundle\wheels", "--extra", "modern-encoder", "--extra", "hub-gate")
 if (-not (Test-Path "$Bundle\wheels")) {
   Write-Output "No wheels folder. The sync uses a cache on this machine, if one exists."
-  $Sync = "sync --offline --extra modern-encoder --extra hub-gate"
+  $SyncArgs = @("sync", "--offline", "--extra", "modern-encoder", "--extra", "hub-gate")
 }
+$SyncText = $SyncArgs -join " "
 $SidecarArgs = @()
 if ($Sidecar -ne "") { $SidecarArgs = @("--text-sidecar", $Sidecar) }
 $SidecarText = ""
@@ -158,7 +159,7 @@ if ($Sidecar -ne "") { $SidecarText = " --text-sidecar $Sidecar" }
 $Page = "$OutputDir-hub\hub.html"
 
 if ($DryRun) {
-  Write-Output "would run: Set-Location $Bundle\source; uv $Sync"
+  Write-Output "would run: Set-Location $Bundle\source; uv $SyncText"
   Write-Output "would run: uv run --offline eureka doctor"
   Write-Output "would run: uv run --offline eureka run $InputDir --out $OutputDir --mapping $Mapping$SidecarText"
   Write-Output "would run: uv run --offline eureka hub $OutputDir --out $OutputDir-hub"
@@ -173,8 +174,8 @@ if (-not (Test-Path $InputDir)) {
 }
 
 Set-Location "$Bundle\source"
-Write-Output "step 1: uv $Sync"
-& $Uv $Sync.Split(" ")
+Write-Output "step 1: uv $SyncText"
+& $Uv @SyncArgs
 if ($LASTEXITCODE -ne 0) { exit 1 }
 Write-Output "step 2: uv run --offline eureka doctor"
 & $Uv run --offline eureka doctor
