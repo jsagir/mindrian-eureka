@@ -670,6 +670,10 @@ dependencies = [
 bundle = [
     { name = "packaging" },
 ]
+gpu-encoder = [
+    { name = "sentence-transformers" },
+    { name = "transformers" },
+]
 hmm = [
     { name = "pomegranate" },
 ]
@@ -701,11 +705,13 @@ requires-dist = [
     { name = "packaging", marker = "extra == 'bundle'", specifier = ">=26.3" },
     { name = "pomegranate", marker = "extra == 'hmm'", specifier = "==1.1.2" },
     { name = "scikit-learn", specifier = ">=1.6,<2" },
+    { name = "sentence-transformers", marker = "extra == 'gpu-encoder'", specifier = ">=5.4.1,<6" },
     { name = "sentence-transformers", marker = "extra == 'modern-encoder'", specifier = ">=5.0,<6" },
     { name = "torch", marker = "extra == 'reference-encoder'", specifier = ">=2.6,<3", index = "https://download.pytorch.org/whl/cpu" },
+    { name = "transformers", marker = "extra == 'gpu-encoder'", specifier = ">=5.2,<6" },
     { name = "transformers", marker = "extra == 'reference-encoder'", specifier = ">=4.50,<6" },
 ]
-provides-extras = ["bundle", "hub-gate", "modern-encoder", "reference-encoder", "mcp-server", "hmm", "neo4j"]
+provides-extras = ["bundle", "hub-gate", "modern-encoder", "gpu-encoder", "reference-encoder", "mcp-server", "hmm", "neo4j"]
 
 [[package]]
 name = "mpmath"
