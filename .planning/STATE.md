@@ -145,3 +145,7 @@ Items acknowledged and carried forward from previous milestone close:
 Last session: 2026-11-07T19:28:11.650Z
 Stopped at: Completed 04-04-PLAN.md
 Resume file: None
+
+### Roadmap Evolution
+
+- Phase 5 added 2026-11-07: Encoder seam, safe cache key and local GPU spike (source: fan-out research on local embedding, NVIDIA open models and plugin fit; owner chose in-process on the user's own computer now, local NIM later)

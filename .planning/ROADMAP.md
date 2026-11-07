@@ -18,6 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 2.1: Opportunity Hub in the mos-brand format** - One local page shows the opportunity bank, the connection graph and the full catalogue of an analyzed collection, styled by the mos-brand book
 - [x] **Phase 3: Host Integration and Replay Rebuild** - `/mos:eureka` calls the run through the MCP server; the graph-derive replay is rebuilt or marked as a provenance gap
 - [x] **Phase 4: Public Example and Reproduction Guide** - Small public dataset with expected hashes, plus a "reproduce the JHTV method" guide
+- [ ] **Phase 5: Encoder seam, safe cache key and local GPU spike** - One place builds every encoder, the cache never mixes setups, and one local GPU encoder is proven on the owner's computer; MiniLM stays the default
 
 ## Phase Details
 
@@ -149,6 +150,7 @@ Plans:
 **Plans**: 7 plans
 
 Plans:
+
 - [x] 03-01 to 03-07, complete 2026-11-07 (verification: human_needed; see `.planning/phases/03-host-integration-and-replay-rebuild/`)
 
 **Scope notes**: HOST-01 touches the MindrianOS plugin repo, which has its own GSD-only rule. Plan-phase must split the Eureka side (MCP tool surface) from the plugin side (command wiring). Room marks for HOST-02 are host-owned writes and need approval.
@@ -168,6 +170,7 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
+
 - [x] 04-01 to 04-04, complete 2026-11-07 (verification: human_needed; see `.planning/phases/04-public-example-and-reproduction-guide/`); 04-04 waits for the Phase 3 record `docs/jhtv-replay-record.md`
 
 **Scope notes**: The dataset license must allow redistribution. If REL-01 ends in no-go, ship the example and guide as internal only and record the reason.
@@ -186,3 +189,26 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
 | 2.3. Room seed hand-off to MindrianOS | 5/5 | Complete (verification: human_needed) | 2026-11-07 |
 | 3. Host Integration and Replay Rebuild | 7/7 | Complete (verification: human_needed) | 2026-11-07 |
 | 4. Public Example and Reproduction Guide | 4/4 | Complete (verification: human_needed) | 2026-11-07 |
+| 5. Encoder seam, safe cache key and local GPU spike | 0/TBD | Not started | - |
+
+### Phase 5: Encoder seam, safe cache key and local GPU spike
+
+**Goal:** Eureka builds every encoder in one place, never reuses a vector made by a different encoder setup, and can run one named local GPU encoder on the user's own computer, while MiniLM stays the default and every default result stays byte-identical.
+**Requirements**: TBD (define in plan-phase; research source: the 2026-11-07 fan-out research, 8 lanes, 18 agents)
+**Depends on:** Phase 4
+**Success Criteria** (what must be TRUE):
+
+  1. One `EncoderSpec` and one `make_encoder` build every encoder. The two pair engines use it first. The other build sites follow; at least seven exist today (runner.py, run/engines.py, hsi_engine.py, analogy_fitness.py, hsi_reference.py, pitch_analysis/algorithm.py, doctor.py). `hsi_reference.py` is not edited, because its hash is recorded in manifests.
+  2. The embedding cache key holds the model revision, dimension, dtype, device, prefixes and normalization. A vector made by one setup is never returned for another. Old cache entries are ignored, not misread.
+  3. The default run on the public example still gives `Result: MATCH`, and the full suite stays green with MiniLM defaults unchanged.
+  4. The manifest and every ranked result carry an encoder fingerprint and the label "candidate, not verified". A non-CPU run is compared by ranking overlap, not by bytes.
+  5. A recorded spike shows whether `Nemotron-3-Embed-1B-BF16` loads and embeds on the owner's RTX 3060 (dimension, load time, peak memory, prefixes, whether remote code is needed), with every number from a run log.
+  6. A measured comparison of MiniLM, `mdbr-leaf-ir` and the Nemotron profile on the 36-record public example gives top-200 pair overlap and texts per second. The owner decides any change of default from it.
+
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run $gsd-plan-phase 5 to break down)
+
+**Scope notes**: In-process on the user's own computer only. No sockets, no loopback HTTP client, no NIM and no tunnel in this phase; local NIM stays a later option the owner wants to keep. No ontology work (OpenAlex Topics is parked as an optional later layer). Never mix vectors from two encoders in one store. The partner room store holds 2,130 vectors of 384 dimensions made by `mdbr-leaf-ir`; a 2048-dimension profile needs its own table. Keep stable for the MindrianOS plugin: the `eureka-mcp` script, the tool names, the `eureka.doctor.v1` shape, and a `uv.lock` in sync (the plugin starts with `--locked`). A new device or backend setting needs a plugin allowlist entry, which is a hand-off to the plugin session.
