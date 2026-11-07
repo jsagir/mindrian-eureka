@@ -142,11 +142,15 @@ Plans:
 **Requirements**: HOST-01, HOST-02
 **Success Criteria** (what must be TRUE):
 
-  1. In MindrianOS, `/mos:eureka` starts the one-command run through the Eureka MCP server and returns the ranked output with the host handoff block.
+  1. The Eureka MCP server exposes a plan tool and a start tool for the one-command run, with the approval step and the result envelope that carries the host handoff block. The plugin wiring that makes `/mos:eureka` call them is a separate plugin phase under the plugin's own GSD rule (reworded 2026-11-07 after the feasibility check).
   2. The run respects room scope and approval rules: it does not start without the approval step, and Eureka writes nothing to the room graph.
   3. Either a recorded script rebuilds the graph-derive replay and two runs give the same output hashes, with its claim and pair counts compared to the cited 2,130 claims and 2,267,385 pairs, or OPP-027 to OPP-031 are marked "provenance gap" in the room.
 
-**Plans**: TBD
+**Plans**: 7 plans
+
+Plans:
+- [ ] 03-01 to 03-07 (see `.planning/phases/03-host-integration-and-replay-rebuild/`)
+
 **Scope notes**: HOST-01 touches the MindrianOS plugin repo, which has its own GSD-only rule. Plan-phase must split the Eureka side (MCP tool surface) from the plugin side (command wiring). Room marks for HOST-02 are host-owned writes and need approval.
 
 ### Phase 4: Public Example and Reproduction Guide
@@ -161,7 +165,11 @@ Plans:
   3. A "reproduce the JHTV method" guide in plain English walks a non-author through the steps from install to ranked pairs.
   4. The guide states what is reproducible (the unusual-pairs and wording-and-meaning pairs engines, per the Phase 1 record), what is not (the replay outcome from Phase 3, unusual-pairs engine bit-for-bit fidelity), and keeps the "candidate, not verified" wording.
 
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 04-01 to 04-04 (see `.planning/phases/04-public-example-and-reproduction-guide/`); 04-04 waits for the Phase 3 record `docs/jhtv-replay-record.md`
+
 **Scope notes**: The dataset license must allow redistribution. If REL-01 ends in no-go, ship the example and guide as internal only and record the reason.
 
 ## Progress
