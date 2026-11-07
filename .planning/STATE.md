@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-03-PLAN.md
-last_updated: "2026-11-07T22:59:54.649Z"
+stopped_at: Completed 05-04-PLAN.md
+last_updated: "2026-11-07T23:04:44.694Z"
 last_activity: 2026-11-07 -- Phase 5 execution started
 progress:
   total_phases: 9
   completed_phases: 7
   total_plans: 62
-  completed_plans: 55
+  completed_plans: 56
   percent: 78
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-10-23)
 ## Current Position
 
 Phase: 5 (Encoder seam, safe cache key and local GPU spike) — EXECUTING
-Plan: 3 of 9
+Plan: 4 of 9
 Status: Ready to execute
 Last activity: 2026-11-07 -- Phase 5 execution started
 
@@ -84,6 +84,7 @@ Progress: [██████████] 97%
 | Phase 05 P01 | 55min | 3 tasks | 9 files |
 | Phase 05 P02 | 25min | 2 tasks | 3 files |
 | Phase 05 P03 | 40min | 3 tasks | 6 files |
+| Phase 5 P04 | 35min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -103,6 +104,7 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-03: the replay block of the reproduction guide holds a fixed pending text until plan 04-04 derives it from docs/jhtv-replay-record.md — One record file is the only source of the replay statement
 - [Phase 04]: 04-04: the guide replay block holds the statement derived from docs/jhtv-replay-record.md (provenance gap); example hashes did not drift; release status stays internal only
 - [Phase 05]: 05-01: factory not wired into runner/engines yet; gpu-nemotron revision unpinned until spike 05-08
+- [Phase 05]: 05-04: GPU_APPROX_MIN_OVERLAP stays None; a gpu-approx run is never a MATCH until the spike (05-08) sets it
 
 ### Pending Todos
 
@@ -148,8 +150,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-11-07T22:59:54.640Z
-Stopped at: Completed 05-03-PLAN.md
+Last session: 2026-11-07T23:04:44.689Z
+Stopped at: Completed 05-04-PLAN.md
 Resume file: None
 
 ### Roadmap Evolution
