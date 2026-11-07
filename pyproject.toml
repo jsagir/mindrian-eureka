@@ -11,11 +11,11 @@ requires-python = ">=3.11"
 dependencies = [
   "jsonschema>=4.20,<5",
   "numpy>=2.0,<3",
-  "packaging>=26.3",
   "scikit-learn>=1.6,<2",
 ]
 
 [project.optional-dependencies]
+bundle = ["packaging>=26.3"]
 hub-gate = ["cryptography>=44,<51"]
 modern-encoder = ["sentence-transformers>=5.0,<6"]
 reference-encoder = ["torch>=2.6,<3", "transformers>=4.50,<6"]
