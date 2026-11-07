@@ -62,8 +62,11 @@ def recorder(monkeypatch: pytest.MonkeyPatch) -> type:
         def encode(self, texts: Any, cancel_check: Any = None) -> np.ndarray:
             base = hashing_encode(list(texts))
             width = type(self).width
-            if width <= base.shape[1]:
-                return base[:, :width]
+            if width < base.shape[1]:
+                # A narrow slice of a hashed vector can be all zero, so lift every row.
+                return base[:, :width] + np.arange(1, width + 1)
+            if width == base.shape[1]:
+                return base
             pad = np.zeros((base.shape[0], width - base.shape[1]))
             return np.concatenate([base, pad], axis=1)
 

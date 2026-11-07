@@ -7,12 +7,20 @@ import json
 import platform
 import re
 import time
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 
+from ..encoder_spec import (
+    CUSTOM_PROFILE,
+    DETERMINISM_CPU_EXACT,
+    RESULT_LABEL,
+    EncoderSpec,
+    custom_spec,
+)
 from ..limits import HARD_MAX_ARTIFACTS, MAX_ARTIFACTS, MAX_TOP_K
 from . import CAPABILITY_ID, CAPABILITY_VERSION
 from .cache import EmbeddingCache, cached_encode, default_cache_path
@@ -25,7 +33,7 @@ from .algorithm import (
     reference_semantic_similarity,
     structural_similarity,
 )
-from .encoders import ReferenceBertEncoder, SentenceTransformerEncoder
+from .encoders import ReferenceBertEncoder, SentenceTransformerEncoder, make_encoder
 from .host_handoff import host_handoff
 
 
@@ -35,9 +43,11 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
                  min_percentile: float | None = None,
                  job_id: str = "local-rs-run", model_revision: str | None = None,
                  cache_path: str | Path | None = None, cancel_check=None,
-                 stage_callback=None) -> dict[str, Any]:
+                 stage_callback=None, encoder_spec: EncoderSpec | None = None) -> dict[str, Any]:
     if top_k < 0 or top_k > MAX_TOP_K:
         raise ValueError(f"top_k must be between 0 and {MAX_TOP_K}")
+    spec = resolve_encoder_spec(encoder_spec, encoder_name, model_path, model_revision)
+    model_revision = spec.revision
     if allow_model_download and not (model_revision and re.fullmatch(r"[0-9a-fA-F]{40}", model_revision)):
         raise ValueError("Model downloads require a 40-character immutable commit hash via --model-revision")
     started = datetime.now(timezone.utc)
@@ -75,19 +85,25 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
             texts, cache=cache, encoder_name=encoder_name, model_path=model_path,
             model_revision=model_revision, method_version="bert-cls-510-plus-specials-v1",
             encode_missing=encode_missing, cancel_check=cancel_check,
+            identity=spec.identity(), expected_dimension=None,
         )
         semantic, semantic_meta = reference_semantic_similarity(texts, segment_vectors)
         semantic_meta["method"] = "bert_cls_segment_pair_mean"
     elif encoder_name == "sentence-transformers":
         def encode_missing(missing_texts, cancel_check=None):
             check_cancelled(cancel_check)
-            encoder = SentenceTransformerEncoder(model_path, allow_download=allow_model_download, revision=model_revision)
+            # The module attribute is read here, so every patch of SentenceTransformerEncoder works.
+            encoder = make_encoder(
+                spec, model_path=model_path, allow_download=allow_model_download,
+                backend=SentenceTransformerEncoder,
+            )
             return list(encoder.encode(missing_texts, cancel_check=cancel_check))
 
         vectors, cache_meta = cached_encode(
-            texts, cache=cache, encoder_name=encoder_name, model_path=model_path,
+            texts, cache=cache, encoder_name=encoder_name, model_path=spec.model_id,
             model_revision=model_revision, method_version="sentence-transformer-chunk-mean-v1",
             encode_missing=encode_missing, cancel_check=cancel_check,
+            identity=spec.identity(), expected_dimension=spec.dimension,
         )
         vectors = np.stack([item.reshape(-1) for item in vectors])
         semantic, semantic_meta = modern_semantic_similarity(vectors)
@@ -103,6 +119,11 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
         warnings.append("One or more artifacts had no membership in the selected LSA topic keywords; inspect those candidates carefully.")
     if not model_revision and not allow_model_download:
         warnings.append("Model identity is recorded as the supplied local path; pin and record model-file digests for controlled comparisons.")
+    if spec.determinism_class() != DETERMINISM_CPU_EXACT:
+        warnings.append(
+            "This run used a non-exact encoder setup (gpu-approx): vectors can differ between "
+            "machines, so compare two runs by ranking overlap and not by bytes."
+        )
 
     check_cancelled(cancel_check)
     report_stage(stage_callback, "pair-ranking")
@@ -136,6 +157,8 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
             "id": f"rs-pair-{stable_pair_key}",
             "kind": "cross_domain_opportunity_pair",
             "rank": rank,
+            "label": RESULT_LABEL,
+            "encoder_fingerprint": spec.fingerprint(),
             "payload": {
                 "left": {"artifact_id": pair.left.id, "title": pair.left.title, "source_ref": pair.left.source_ref},
                 "right": {"artifact_id": pair.right.id, "title": pair.right.title, "source_ref": pair.right.source_ref},
@@ -206,7 +229,11 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
         "resource_use": {"duration_ms": duration, "tokens": None, "estimated_cost": None},
         "failure": None,
         "method_details": {
-            "encoder": {"name": encoder_name, "model": model_path, "revision": model_revision},
+            "encoder": {
+                "name": encoder_name, "model": model_path, "revision": model_revision,
+                "profile": spec.profile, "fingerprint": spec.fingerprint(),
+                "determinism_class": spec.determinism_class(), "identity": spec.identity(),
+            },
             "structural_signal": structural_meta,
             "semantic_signal": {**semantic_meta, "cache": cache_meta},
             "selection": "LATEST RS 2026 hybrid z-score gap with empirical percentile gate" if scoring == "hybrid_2026" else "legacy top_k by absolute semantic-structural difference",
@@ -217,6 +244,22 @@ def run_document(document: dict[str, Any], *, encoder_name: str, model_path: str
             "input_objective": objective,
         },
     }
+
+
+def resolve_encoder_spec(
+    encoder_spec: EncoderSpec | None, encoder_name: str, model_path: str,
+    model_revision: str | None,
+) -> EncoderSpec:
+    """Return the spec of this run: the given spec, or the spec of the bare model folder."""
+    if encoder_spec is None:
+        return custom_spec(model_path, model_revision)
+    if encoder_name == "reference-bert" and encoder_spec.profile != CUSTOM_PROFILE:
+        raise ValueError("An encoder spec applies to the sentence-transformers encoder only.")
+    if model_revision is None or model_revision == encoder_spec.revision:
+        return encoder_spec
+    if encoder_spec.revision is None:
+        return replace(encoder_spec, revision=model_revision)
+    raise ValueError("The model revision and the revision of the encoder spec are different.")
 
 
 def check_cancelled(cancel_check) -> None:
