@@ -9,12 +9,12 @@ import csv
 import json
 import socket
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
 import pytest
-from hashing_stub import HashingEncoder, hashing_encode
+from hashing_stub import EMBED_DIM, HashingEncoder, hashing_encode
 
 CORPUS_FIXTURE = Path(__file__).resolve().parent / "fixtures" / "rs_parity" / "corpus.json"
 REGION_NAMES = {
@@ -89,9 +89,17 @@ def fake_model_dir(tmp_path: Path) -> Path:
 @pytest.fixture
 def hashing_encoder(monkeypatch: pytest.MonkeyPatch) -> type[HashingEncoder]:
     """Replace the sentence encoder of the unusual-pairs runner with HashingEncoder."""
+    import mindrian_eureka.encoder_spec as encoder_spec
     import mindrian_eureka.opportunity_pairs.runner as runner
 
     monkeypatch.setattr(runner, "SentenceTransformerEncoder", HashingEncoder)
+    # A stub replaces the model, so the declared width of the default profile must follow the
+    # stub. Without this the width check would reject the 64 wide stub vectors.
+    monkeypatch.setitem(
+        encoder_spec.PROFILES,
+        encoder_spec.DEFAULT_PROFILE,
+        replace(encoder_spec.PROFILES[encoder_spec.DEFAULT_PROFILE], dimension=EMBED_DIM),
+    )
     return HashingEncoder
 
 
@@ -104,7 +112,7 @@ def stub_encoders(monkeypatch: pytest.MonkeyPatch, hashing_encoder: type[Hashing
     """
     import mindrian_eureka.run.engines as engines
 
-    def _load(model_dir: Path) -> Callable[[list[str]], Any]:
+    def _load(model_dir: Path, spec: object | None = None) -> Callable[[list[str]], Any]:
         return hashing_encode
 
     monkeypatch.setattr(engines, "load_local_encode", _load)

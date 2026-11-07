@@ -41,6 +41,7 @@ MANIFEST_KEYS = {
     "environment",
     "outputs",
     "engine_notes",
+    "encoder",
 }
 
 
