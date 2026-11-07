@@ -200,6 +200,11 @@ class RunData:
         dropped: The records removed before ranking, as the manifest lists them.
         caps_hit: The limits that were reached, as the manifest lists them.
         dropped_note_count: The number of engine notes the reader dropped.
+        tool: The `tool` section of the manifest, verbatim (name, version, engines).
+        room_sections: The manifest `settings.run.room_sections`, verbatim; empty when the
+            run had no section map (Phase 2.3).
+        corpus_sha256: The sha256 that the manifest lists for the corpus file; empty when
+            not set.
     """
 
     manifest_sha256: str
@@ -210,6 +215,9 @@ class RunData:
     dropped: tuple[dict[str, Any], ...]
     caps_hit: tuple[dict[str, Any], ...]
     dropped_note_count: int
+    tool: Mapping[str, Any] = field(default_factory=dict)
+    room_sections: Mapping[str, Any] = field(default_factory=dict)
+    corpus_sha256: str = ""
 
 
 # --- Payload types (what hub-data.js carries) -------------------------------

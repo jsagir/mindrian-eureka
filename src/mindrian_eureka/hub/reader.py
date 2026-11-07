@@ -17,6 +17,7 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
 
 from ..run.contracts import (
+    CELL_STATES,
     CORPUS_SCHEMA,
     OUTCOME_LICENSED,
     OUTCOME_OPEN,
@@ -100,6 +101,12 @@ def _text(value: object, what: str) -> str:
     return value
 
 
+def _optional_text(value: object, what: str) -> str | None:
+    if value is None:
+        return None
+    return _text(value, what)
+
+
 def _number(value: object, what: str) -> float:
     if isinstance(value, bool) or not isinstance(value, int | float):
         raise _damaged(f"{what} is missing or is not a number")
@@ -115,6 +122,20 @@ def _extras(value: object, what: str) -> dict[str, str]:
     for key, cell in value.items():
         if not isinstance(key, str) or not isinstance(cell, str):
             raise _damaged(f"{what} is not a mapping of text")
+    return dict(value)
+
+
+def _cells(value: object, what: str) -> dict[str, str]:
+    """Return the cell states of a record. Absent is empty; a state is never echoed."""
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise _damaged(f"{what} is not a mapping of text")
+    for key, state in value.items():
+        if not isinstance(key, str) or not isinstance(state, str):
+            raise _damaged(f"{what} is not a mapping of text")
+        if state not in CELL_STATES:
+            raise _damaged(f"{what} holds a cell state that the reader does not know")
     return dict(value)
 
 
@@ -237,6 +258,10 @@ def _read_records(data: bytes) -> tuple[Record, ...]:
             text_sha256=_text(item.get("text_sha256"), "a record text hash"),
             outcome_class=outcome_class,
             extras=_extras(item.get("extras"), f"the extras of a record in {OUTPUT_CORPUS}"),
+            text_source=_optional_text(item.get("text_source"), "the text source of a record"),
+            room_cells=_cells(
+                item.get("room_cells"), f"the cell states of a record in {OUTPUT_CORPUS}"
+            ),
         )
         if record.id in seen:
             raise _damaged(f"{OUTPUT_CORPUS} holds the record id {record.id} twice")
@@ -348,6 +373,17 @@ def _read_engine(
     return run, dropped
 
 
+def _room_sections(manifest: dict[str, Any]) -> dict[str, Any]:
+    """Return the section map of the manifest. Absent is empty."""
+    settings = manifest.get("settings")
+    if not isinstance(settings, dict):
+        return {}
+    run = settings.get("run")
+    if not isinstance(run, dict) or "room_sections" not in run:
+        return {}
+    return dict(_mapping(run["room_sections"], "the room sections of the manifest"))
+
+
 def _dict_items(value: object, what: str) -> tuple[dict[str, Any], ...]:
     return tuple(dict(_mapping(item, what)) for item in _sequence(value, what))
 
@@ -398,4 +434,7 @@ def load_run(run_dir: Path) -> RunData:
         dropped=_dict_items(corpus.get("dropped"), "the dropped records"),
         caps_hit=_dict_items(corpus.get("caps_hit"), "the limits that were reached"),
         dropped_note_count=dropped_notes,
+        tool=dict(tool),
+        room_sections=_room_sections(manifest),
+        corpus_sha256=listed[OUTPUT_CORPUS],
     )

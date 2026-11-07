@@ -55,7 +55,39 @@
         "first_translational_date",
         "disclosure_date",
         "status"
-      ]
+      ],
+      "room_sections": {
+        "problem-definition": ["problem_solved", "end_user", "marginal_or_groundbreaking"],
+        "market-analysis": ["size_of_unmet_need", "target_companies"],
+        "solution-design": ["abstract", "topics", "stage_work_required"],
+        "legal-ip": [
+          "status",
+          "licenses",
+          "options",
+          "first_license_or_option_date",
+          "licensed_to_jh_startup",
+          "licensed_externally"
+        ],
+        "financial-model": [
+          "funding_total",
+          "translational_total",
+          "follow_on_total",
+          "startup_funding_after_deal",
+          "corporate_partnership_amount"
+        ],
+        "funding": [
+          "had_translational_funding",
+          "translational_funds",
+          "had_follow_on",
+          "follow_on_summary"
+        ],
+        "team": ["lead_inventor", "licensing_associate"],
+        "not_in_export": [
+          {"item": "patents", "section": "legal-ip", "source": "Inteum"},
+          {"item": "royalties and license income", "section": "financial-model", "source": "Inteum"},
+          {"item": "true disclosure date", "section": "legal-ip", "source": "Inteum"}
+        ]
+      }
     }
   }
 }
