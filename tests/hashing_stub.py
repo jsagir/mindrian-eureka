@@ -43,9 +43,15 @@ class HashingEncoder:
     """Same interface as SentenceTransformerEncoder. Never touches network or disk."""
 
     def __init__(
-        self, model_path: str, *, allow_download: bool = False, revision: str | None = None
+        self,
+        model_path: str,
+        *,
+        allow_download: bool = False,
+        revision: str | None = None,
+        spec: object | None = None,
     ) -> None:
         self.model_path = model_path
+        self.spec = spec
         self.name = "sentence-transformers"
         self.version = model_path
 
