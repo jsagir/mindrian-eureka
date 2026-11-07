@@ -169,7 +169,7 @@ The JHTV run was done in a partner room from 2026-10-18 to 2026-10-21 on a catal
 The JHTV work also cited one graph-derive replay. This block states what the project records about it, and nothing more.
 
 <!-- replay-outcome:begin -->
-Replay outcome: not recorded yet. Phase 3 has not produced its result, so this guide makes no claim about the replay. This is not a verified statement.
+Replay outcome: provenance gap. The replay of 2026-10-21 (2,130 claims and 2,267,385 pairs) has no script and no result file, so it cannot be reproduced. Five candidates, OPP-027 to OPP-031, cite it. The provenance-gap mark in the room waits for a host approval step. Each of these candidates stays a candidate, not verified. Record: docs/jhtv-replay-record.md.
 <!-- replay-outcome:end -->
 
 ## What is not reproducible
