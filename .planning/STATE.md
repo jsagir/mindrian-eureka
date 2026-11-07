@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-03-PLAN.md
-last_updated: "2026-11-07T19:15:45.476Z"
+stopped_at: Completed 04-04-PLAN.md
+last_updated: "2026-11-07T19:28:11.657Z"
 last_activity: 2026-11-07 -- Phase 4 execution started
 progress:
   total_phases: 7
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 51
-  completed_plans: 49
-  percent: 71
+  completed_plans: 50
+  percent: 86
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-10-23)
 ## Current Position
 
 Phase: 4 (Public Example and Reproduction Guide) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 Status: Ready to execute
 Last activity: 2026-11-07 -- Phase 4 execution started
 
@@ -80,6 +80,7 @@ Progress: [██████████] 97%
 | Phase 04 P01 | 40min | 2 tasks | 9 files |
 | Phase 04 P02 | 10min | 3 tasks | 11 files |
 | Phase 04 P03 | 25min | 3 tasks | 4 files |
+| Phase 04 P04 | 20min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -97,6 +98,7 @@ Recent decisions affecting current work:
 - [Phase 03]: 03-05: a refused start returns status refused with a reason code; a failed job start raises and releases the plan receipt unless it was a retry — Refusals are data for the host; a failed start must not burn the approval
 - [Phase 04-02]: Example reference run uses all-MiniLM-L6-v2 (JHTV replay used mdbr-leaf-ir); recorded in example.model_note. Example status: Internal only, per docs/rs-release-gate.md.
 - [Phase 04]: 04-03: the replay block of the reproduction guide holds a fixed pending text until plan 04-04 derives it from docs/jhtv-replay-record.md — One record file is the only source of the replay statement
+- [Phase 04]: 04-04: the guide replay block holds the statement derived from docs/jhtv-replay-record.md (provenance gap); example hashes did not drift; release status stays internal only
 
 ### Pending Todos
 
@@ -137,6 +139,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-11-07T19:15:45.469Z
-Stopped at: Completed 04-03-PLAN.md
+Last session: 2026-11-07T19:28:11.650Z
+Stopped at: Completed 04-04-PLAN.md
 Resume file: None
