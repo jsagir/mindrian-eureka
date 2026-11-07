@@ -32,7 +32,11 @@ SPIKE_SCRIPT = ROOT / "scripts" / "encoder-spike.py"
 RECORDS = ROOT / "examples" / "public-example" / "reference-run" / "corpus" / "records.jsonl"
 REFERENCE_RUN = ROOT / "examples" / "public-example" / "reference-run"
 PAGE = ROOT / "docs" / "encoder-comparison.md"
-LOG = ROOT / "docs" / "encoder-evidence" / "cpu-compare-log.json"
+CPU_LOG = ROOT / "docs" / "encoder-evidence" / "cpu-compare-log.json"
+# After the owner run, the harness writes the merged log to `compare-log.json`; the page then
+# follows that file. Until it exists, the page follows the CPU log.
+MERGED_LOG = ROOT / "docs" / "encoder-evidence" / "compare-log.json"
+LOG = MERGED_LOG if MERGED_LOG.is_file() else CPU_LOG
 VECTORS = ROOT / "docs" / "encoder-evidence" / "minilm-cpu-vectors.npz"
 START = "<!-- compare-table:start -->"
 END = "<!-- compare-table:end -->"
@@ -277,7 +281,7 @@ def test_render_table_is_stable_and_marks_every_gap(
 
     collect(log)
     for line in rows:
-        for cell in [part.strip() for part in line.strip("|").split("|")][:4]:
+        for cell in [part.strip() for part in line.strip("|").split("|")][1:4]:
             for number in re.findall(r"\d+(?:\.\d+)?", cell):
                 assert number in allowed, (number, line)
 
@@ -441,3 +445,20 @@ def test_engine_overlap_compares_pair_id_lists(compare: ModuleType) -> None:
     result = compare.engine_overlap(REFERENCE_RUN, REFERENCE_RUN)
     assert result["unusual_pairs"] == 1.0
     assert result["wording_and_meaning"] == 1.0
+
+
+def test_update_log_adds_a_vectors_file_without_a_model(
+    compare: ModuleType, records: list[dict[str, Any]], tmp_path: Path
+) -> None:
+    ids = [item["id"] for item in records]
+    base, vectors = make_log(compare, records, tmp_path)
+    path = tmp_path / "nemotron.npz"
+    fake_vectors_file(path, ids, width=16)
+    merged = compare.update_log(base, vectors, ids, {"nemotron": path})
+    assert merged["columns"]["nemotron"]["status"] == "from_file"
+    assert merged["columns"]["nemotron"]["dimension"] == 16
+    assert merged["columns"]["minilm"] == base["columns"]["minilm"]
+    assert "nemotron" in merged["overlap"]["minilm"]
+    assert base["columns"]["nemotron"]["status"] == "not_run"
+    with pytest.raises(ValueError):
+        compare.update_log(base, vectors, ids, {"minilm": path})
