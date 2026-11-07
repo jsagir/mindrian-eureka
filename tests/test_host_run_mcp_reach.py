@@ -48,10 +48,46 @@ def call(host: Any, tool: str, request: dict[str, Any], key: str | None = None) 
         out = asyncio.run(host.server.call_tool(tool, arguments))
     except Exception:
         return ("tool error", "")
-    if isinstance(out, tuple):
-        out = out[0]
-    answer = out if isinstance(out, dict) else json.loads(out[0].text)
+    return classify(out)
+
+
+def classify(out: Any) -> tuple[str, str]:
+    """Read one tool answer in either result shape.
+
+    mcp 1.25 returns a list of content items (a tuple or a dict is also read).
+    mcp 2.3 returns a `CallToolResult` object with `is_error` (alias `isError`),
+    `structured_content` and `content`. An error flag means "tool error".
+    """
+    if hasattr(out, "content") and hasattr(out, "is_error"):
+        if getattr(out, "is_error", False) or getattr(out, "isError", False):
+            return ("tool error", "")
+        answer = getattr(out, "structured_content", None)
+        if not isinstance(answer, dict):
+            answer = json.loads(out.content[0].text)
+    else:
+        if isinstance(out, tuple):
+            out = out[0]
+        answer = out if isinstance(out, dict) else json.loads(out[0].text)
     return (str(answer.get("status")), str(answer.get("reason", "")))
+
+
+class _Result:
+    """Stand-in for the mcp 2.x `CallToolResult`, to test the reader on both flags."""
+
+    def __init__(self, is_error: bool, structured: Any, text: str) -> None:
+        self.is_error = is_error
+        self.structured_content = structured
+        self.content = [type("Item", (), {"text": text})()]
+
+
+def test_reader_handles_each_result_shape() -> None:
+    body = {"status": "refused", "reason": "bad_request"}
+    assert classify(_Result(True, None, "{}")) == ("tool error", "")
+    assert classify(_Result(False, body, "{}")) == ("refused", "bad_request")
+    assert classify(_Result(False, None, json.dumps(body))) == ("refused", "bad_request")
+    assert classify([type("Item", (), {"text": json.dumps(body)})()]) == ("refused", "bad_request")
+    assert classify((body, None)) == ("refused", "bad_request")
+    assert classify(body) == ("refused", "bad_request")
 
 
 def digest_of(host: Any, request: dict[str, Any]) -> str:
