@@ -20,10 +20,10 @@ def test_compact_capability_catalog_preserves_all_jobs_and_readiness(monkeypatch
 
     assert result["schema_version"] == source["schema_version"]
     assert result["catalog_version"] == source["catalog_version"]
-    assert result["count"] == len(source["capabilities"]) == 67
+    assert result["count"] == len(source["capabilities"]) == 68
     assert {item["id"] for item in result["capabilities"]} == {item["id"] for item in source["capabilities"]}
     assert result["counts_by_status"] == {
-        "experimental": 54,
+        "experimental": 55,
         "host_brokered": 5,
         "blocked": 4,
         "planned": 4,
