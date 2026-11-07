@@ -125,6 +125,18 @@ unset HUB_PASS
 
 The gate encrypts the stored hub payload. It does not protect a computer that already has the passphrase. The data is readable in the browser after unlock. Original run folders, source files and older open exports remain readable. See the [gate record](docs/brand/hub-gate-record.md) for its assumptions and limits, and [offline installation](docs/offline-install.md) for setup.
 
+## Start a room from one pair
+
+A seed is a folder that MindrianOS can open as a room. Eureka writes the folder and nothing else. It makes no network call and uses no model. The mapping file decides which column belongs to which room section. Every result is a candidate, not verified.
+
+```bash
+uv run eureka seed ./eureka-run --list
+uv run eureka seed ./eureka-run --pair pair-0123456789abcdef0123
+uv run eureka seed ./eureka-run --cluster recs/C00001
+```
+
+The hub shows the pair command under each pair. The folder layout and the rules for MindrianOS are in the [room seed contract](docs/room-seed-contract.md).
+
 ## Quick start
 
 Install the package and inspect the available job contracts:

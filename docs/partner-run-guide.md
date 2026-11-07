@@ -81,6 +81,31 @@ In the hub, every pair shows its class and its carried outcome cells as small la
 
 MindrianOS finds the engine through the variable `MINDRIAN_EUREKA_ROOT` in the host settings. Set `MINDRIAN_EUREKA_ROOT=<folder>` where `<folder>` is the Eureka source folder of section 1. This was measured on the owner's machine on 2026-10-29: the value there is the engine checkout folder. The host starts the engine from that folder with `uv`, so `uv` must be on the `PATH` of the host process. The contract is in [the MindrianOS host integration](integrations/mindrianos.md).
 
+## 8. Start a room from one pair
+
+A finished run can give you a seed: a folder that MindrianOS can open as a room. Eureka only writes the folder. It writes no room, calls no model and makes no network call. Every result in it is a candidate, not verified.
+
+List the places to start. The list shows counts and classes. It does not say what is worth more.
+
+```sh
+uv run eureka seed <run-folder> --list
+```
+
+Pick one pair or one record, then run one of these 2 commands. Replace the placeholder.
+
+```sh
+uv run eureka seed <run-folder> --pair <pair-id>
+uv run eureka seed <run-folder> --cluster <record-id>
+```
+
+The hub shows the pair command under each pair. The folder is saved next to where you ran the command, under a name that starts with `eureka-seed`. Add `--out <folder>` to choose another place.
+
+The folder holds a statement draft for each pair, one evidence file for each record with its hash, what is known and what to feed next, sorted by room section. The `room_sections` block of the mapping file decides the sections. Its `not_in_export` list names what the export lacks: patents, royalties and license income, and the true disclosure date. Each item names the system that holds it.
+
+The people columns and the money columns never leave the CSV. The seed shows only that they are filled.
+
+Working the room with Larry sends room content to the model provider. You decide whether to do that and when. The rules for MindrianOS are in the [room seed contract](room-seed-contract.md), file `docs/room-seed-contract.md`.
+
 ## How the bundle is built
 
 The owner builds one carry-in folder per operating system with `scripts/build-partner-bundle --target <linux-x86_64 | windows-x86_64 | macos-arm64> --out dist --online`. The model folder comes from a local path given with `--model-path`, and the builder never downloads it unless `--allow-model-download` is passed. The folder `eureka-partner-bundle-<target>` holds the `uv` program for that system, the Eureka source at the agreed commit, the locked requirement list with hashes, the wheel folder, the model folder, the mapping file, a `sidecar/` folder with a README and the format example, this guide, and the launchers `start.sh` and `start.ps1`. The file `BUNDLE-MANIFEST.json` lists every file of the folder with its sha256 and byte size, so the receiving side can check each file before anything runs. The side-car file for this export, if one exists, is dropped into `sidecar/` before hand-over. On the partner machine the whole run is `start.sh` on Linux or macOS and `start.ps1` on Windows, with an input folder and an output folder that default to `input` and `output` next to the bundle. Add `--dry-run` (or `-DryRun`) to see the steps without running them. The first step of the launcher, before the 4 steps of section 2 to section 5, is a `uv sync` of the bundled source from the `wheels/` folder, offline, so the first run needs no network and no install on the machine; on the partner machine this sync is ASSUMED until the first real run. The launcher stops when `eureka doctor` finds a problem and leaves the printed fix on the screen. Re-running on a new export is the same click. Nothing in the bundle or the launcher calls the network. Every result stays a candidate, not verified.

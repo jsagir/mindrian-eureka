@@ -121,6 +121,10 @@ For cross-domain pair finding, the CLI and MCP call the same method implementati
 
 Input is bounded at 2,500 artifacts and 20 MiB of UTF-8 artifact text. Each artifact needs a unique ID, source reference, non-empty text, and `room` or `external` corpus. A host should split exceptionally large rooms into explicit snapshots rather than silently truncate them.
 
+## The reverse leg: a room seed
+
+MindrianOS feeds Eureka a graph projection and gets pairs back. The other leg is `eureka seed`. It turns one pair, or one record and the records paired with it, of a finished run into a seed folder. The folder is a candidate, not verified. The plugin opens it through its own birth gate with `/mos:ignite --from-seed`. That command is planned in the plugin repo and is not built. Eureka writes nothing to a room, a registry or a room database, and it calls no model. The contract is in [the room seed contract](../room-seed-contract.md), file `docs/room-seed-contract.md`.
+
 ## External research and confidentiality
 
 `external` and `hybrid` requests require a `research_grant_id` and appropriately labeled external artifacts. The ID is audit metadata only; this server does not verify the grant. MindrianOS must validate the grant, user approval, source terms, room scope, and allowed model path before sending the bundle. Research discovery/fetching remains a separate host service. The RS server performs no network research calls and does not write to room or portfolio state.
