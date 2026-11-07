@@ -17,7 +17,6 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ..encoder_spec import DEFAULT_PROFILE
 from ..limits import HARD_MAX_ARTIFACTS, MAX_ARTIFACTS, MAX_TOP_K
 from .console import Console
 from .contracts import (
@@ -103,6 +102,9 @@ def register_commands(subparsers: argparse._SubParsersAction[argparse.ArgumentPa
     Args:
         subparsers: The subparser group of the top-level parser.
     """
+    # Imported here, not at the top: the example commands import this module and must stay light.
+    from ..encoder_spec import DEFAULT_PROFILE
+
     raw = argparse.RawDescriptionHelpFormatter
     run = subparsers.add_parser(
         "run",
