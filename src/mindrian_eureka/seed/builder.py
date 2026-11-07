@@ -12,6 +12,7 @@ other seed modules. No numpy, no network, no process.
 
 from __future__ import annotations
 
+import hashlib
 import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -22,7 +23,7 @@ from typing import Any
 from jsonschema import Draft202012Validator
 
 from ..hub.contracts import ENGINE_KEYS, RunPair
-from ..run.contracts import LABEL, SUMMARY_LINE, Record, RunError, sha256_bytes
+from ..run.contracts import LABEL, SUMMARY_LINE, Record, RunError, UsageError, sha256_bytes
 from ..run.manifest import tool_version
 from ..run.output import FileDigest, StagedRun, canonical_json, ensure_out_dir_allowed
 from .contracts import (
@@ -31,13 +32,17 @@ from .contracts import (
     MODEL_BOUNDARY,
     OUTPUT_SEED,
     REVIEW_STATUS_PROPOSED,
+    ROLE_NEIGHBOUR,
     ROLE_PAIR_MEMBER,
+    ROLE_SPINE,
     SCORE_NOTE,
+    SEED_KIND_CLUSTER,
     SEED_KIND_PAIR,
     SEED_SCHEMA,
     SEED_SUMMARY_SCHEMA,
 )
 from .evidence import evidence_slug, render_evidence
+from .graph import PairGraph
 from .sections import merge_lists, order_sections, section_lists
 from .source import SeedSource, combine_maps, find_pair, room_map_for
 from .statement import build_statement
@@ -205,6 +210,8 @@ def _bank_entry(
         for entry in entries:
             if entry.engine == key and entry.reading not in readings:
                 readings.append(entry.reading)
+    # In a cluster seed the spine comes first in the statement; a pair seed keeps id order.
+    first, second = (right, left) if neighbour_id == left.id else (left, right)
     bank: dict[str, Any] = {
         "entry_id": pair["pair_id"],
         "pair_id": pair["pair_id"],
@@ -212,7 +219,7 @@ def _bank_entry(
         "right_id": pair["right_id"],
         "review_status": REVIEW_STATUS_PROPOSED,
         "statement": build_statement(
-            (left.id, left.title), (right.id, right.title), pair.get("pair_class"), readings
+            (first.id, first.title), (second.id, second.title), pair.get("pair_class"), readings
         ),
     }
     if neighbour_id is not None:
@@ -231,6 +238,7 @@ def assemble_seed(
     pair_groups: Sequence[Sequence[RunPair]],
     bank_entries: Sequence[dict[str, Any]],
     default_out_name: str,
+    list_records: Sequence[Record] | None = None,
 ) -> Seed:
     """Build the seed document and its evidence files, and check the document.
 
@@ -242,6 +250,8 @@ def assemble_seed(
         pair_groups: The run entries of each pair of the seed.
         bank_entries: The bank entries, sorted by pair id.
         default_out_name: The default name of the output folder.
+        list_records: The records that fill `known` and `feed_next`. The default is every
+            member. A cluster seed gives the spine record only.
 
     Returns:
         The checked seed.
@@ -250,10 +260,10 @@ def assemble_seed(
         RunError: A cell state is missing, or the document breaks the schema.
     """
     files = {record.id: _evidence_file(record, role) for record, role in members}
-    maps = [room_map_for(source, record) for record, _ in members]
+    listed = [record for record, _ in members] if list_records is None else list(list_records)
+    maps = [room_map_for(source, record) for record in listed]
     per_record = [
-        section_lists(record, room_map)
-        for (record, _), room_map in zip(members, maps, strict=True)
+        section_lists(record, room_map) for record, room_map in zip(listed, maps, strict=True)
     ]
     combined = combine_maps(maps)
     known, feed_next = merge_lists(per_record, combined.section_names)
@@ -324,6 +334,70 @@ def build_pair_seed(source: SeedSource, pair_id: str) -> Seed:
         pair_groups=[entries],
         bank_entries=[_bank_entry(source, entries)],
         default_out_name=f"{DEFAULT_SEED_OUT_PREFIX}-{pair_id}",
+    )
+
+
+def build_cluster_seed(
+    source: SeedSource, graph: PairGraph, record_id: str, *, min_degree: int
+) -> Seed:
+    """Build the seed of the cluster around one record.
+
+    The spine record fills `known` and `feed_next`. Each paired neighbour becomes one bank
+    entry with its own statement draft. Every record gets an evidence file.
+
+    Args:
+        source: The verified run.
+        graph: The pair graph of the run.
+        record_id: The id of the spine record.
+        min_degree: The least number of pairs the spine record must sit in.
+
+    Returns:
+        The checked seed. The same run and the same record give the same bytes.
+
+    Raises:
+        UsageError: The run has no such record, or the record sits in too few pairs.
+        RunError: A cell state is missing, or the document breaks the schema.
+    """
+    spine = source.records_by_id.get(record_id)
+    if spine is None:
+        raise UsageError(
+            "This run has no record with that id",
+            fix="Check the record id in corpus/records.jsonl.",
+        )
+    degree = graph.degree(record_id)
+    if degree < min_degree:
+        raise UsageError(
+            f"The record is in {degree} pair(s). A cluster seed needs at least {min_degree}.",
+            fix="Lower the minimum with --min-degree, or start from one pair with --pair.",
+        )
+    neighbours = graph.neighbours(record_id)
+    members: list[tuple[Record, str]] = [(spine, ROLE_SPINE)]
+    seen = {record_id}
+    for neighbour_id, _ in neighbours:
+        if neighbour_id not in seen:
+            seen.add(neighbour_id)
+            members.append((source.records_by_id[neighbour_id], ROLE_NEIGHBOUR))
+    groups = [graph.nodes[pair_id].runs for _, pair_id in neighbours]
+    bank = [
+        _bank_entry(source, graph.nodes[pair_id].runs, neighbour_id)
+        for neighbour_id, pair_id in neighbours
+    ]
+    bank.sort(key=lambda entry: str(entry["pair_id"]))
+    digest = hashlib.sha256(record_id.encode("utf-8")).hexdigest()[:12]
+    return assemble_seed(
+        source,
+        kind=SEED_KIND_CLUSTER,
+        selection={
+            "spine_record_id": record_id,
+            "degree": degree,
+            "min_degree": min_degree,
+            "pair_ids": sorted(pair_id for _, pair_id in neighbours),
+        },
+        members=members,
+        pair_groups=groups,
+        bank_entries=bank,
+        default_out_name=f"{DEFAULT_SEED_OUT_PREFIX}-cluster-{digest}",
+        list_records=[spine],
     )
 
 
