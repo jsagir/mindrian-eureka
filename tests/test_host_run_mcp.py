@@ -349,6 +349,20 @@ def test_result_envelope_leaks_neither_data_path_nor_extra_text(
         assert set(item) <= {"path", "sha256", "bytes", "inline", "content"}
 
 
+@pytest.mark.parametrize("tool", ["scout_plan_pair_screen", "scout_start_pair_screen"])
+def test_bad_request_error_does_not_echo_the_input(host: Any, tool: str) -> None:
+    marker = "SECRETINPUTMARKER"
+    request = make_request(12)
+    request["snapshot_id"] = marker * 30
+    if tool == "scout_start_pair_screen":
+        request["approval"] = {"plan_digest": marker, "approval_ref": "gate:test-1"}
+    with pytest.raises(Exception) as caught:
+        asyncio.run(host.server.call_tool(tool, {"request": request}))
+    message = str(caught.value)
+    assert "validation error" in message
+    assert marker not in message
+
+
 def test_catalog_entry_and_contract(host: Any) -> None:
     from mindrian_eureka.contracts import capability_record
     from mindrian_eureka.limits import MAX_ARTIFACTS, MAX_TOP_K

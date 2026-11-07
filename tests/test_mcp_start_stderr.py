@@ -105,3 +105,43 @@ def test_failure_replays_the_captured_note_to_stderr(capsys: pytest.CaptureFixtu
         quiet_import.import_quietly(failing)
     assert "a note before the failure" in capsys.readouterr().err
 
+
+
+def test_failure_prints_the_real_error_before_the_note(capsys: pytest.CaptureFixture[str]) -> None:
+    from mindrian_eureka.opportunity_pairs import quiet_import
+
+    def failing() -> None:
+        print("harmless fallback note", file=sys.stderr)
+        raise RuntimeError("the real cause")
+
+    with pytest.raises(RuntimeError, match="the real cause"):
+        quiet_import.import_quietly(failing)
+    lines = capsys.readouterr().err.splitlines()
+    assert lines
+    assert "the real cause" in lines[0]
+    assert "harmless fallback note" in "\n".join(lines[1:])
+
+
+def test_failed_start_shows_the_real_error_on_the_first_stderr_line(tmp_path: Path) -> None:
+    code = (
+        "import sys; sys.path.insert(0, sys.argv[1]);"
+        "from mindrian_eureka.opportunity_pairs import quiet_import as q;"
+        "\n"
+        "def load():\n"
+        "    print('harmless fallback note', file=sys.stderr)\n"
+        "    raise ImportError('deliberate first-import failure')\n"
+        "q.import_quietly(load)\n"
+    )
+    done = subprocess.run(
+        [sys.executable, "-E", "-c", code, SRC_DIR],
+        cwd=tmp_path,
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        text=True,
+        env=_clean_env(tmp_path),
+        timeout=120,
+    )
+    assert done.returncode != 0
+    first = done.stderr.splitlines()[0]
+    assert "deliberate first-import failure" in first
+    assert "harmless fallback note" not in first

@@ -209,7 +209,14 @@ def test_wheel_download_keeps_require_hashes(
     assert "--require-hashes" in calls[0]
     assert "--no-deps" in calls[0]
     assert "--requirement" in calls[0]
-    assert all("--extra-index-url" in call for call in calls)
+    # The extra index serves only the locked, hashed download. The unpinned, unhashed
+    # build backend download uses the default index alone.
+    assert "--extra-index-url" in calls[0]
+    assert calls[0][calls[0].index("--extra-index-url") + 1] == PYTORCH_CPU_INDEX
+    assert "--extra-index-url" not in calls[1]
+    assert PYTORCH_CPU_INDEX not in calls[1]
+    assert calls[1][-2:] == ["setuptools>=75", "wheel"]
+    assert "--require-hashes" not in calls[1]
 
 
 SAMPLE_LOCK = """# header
