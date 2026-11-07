@@ -1,0 +1,282 @@
+{
+  "command": "uv run eureka run tests/fixtures/hub_public/input --out <run-folder> --threads 1",
+  "corpus": {
+    "corpus_digest": "2a88dfb1789fab8ba48d8e6678f79ca36e650ee68fc204da0cbe2ffa474cfe4d",
+    "records_used": 36
+  },
+  "engine": {
+    "engines": {
+      "unusual_pairs": {
+        "capability_id": "opportunity.find_cross_domain_pairs",
+        "capability_version": "0.1.0",
+        "method_version": "sentence-transformer-chunk-mean-v1",
+        "scoring": "hybrid_2026",
+        "tie_break": "stable descending top-7 term sort (lower term index first on equal values)"
+      },
+      "wording_and_meaning": {
+        "capability_id": "portfolio.find_hybrid_similarity_pairs",
+        "params_hash": "bea4c100c2013300",
+        "reference": "hsi_reference.py",
+        "reference_sha256": "595460b0f624e6797a67d3aabc1508212e8ac467906014f06a2b30d1c040544a"
+      }
+    },
+    "tool_version": "0.1.0"
+  },
+  "engine_sources": {
+    "src/mindrian_eureka/hsi_reference.py": "595460b0f624e6797a67d3aabc1508212e8ac467906014f06a2b30d1c040544a",
+    "src/mindrian_eureka/opportunity_pairs/algorithm.py": "f437194cfe2910f3e4e02f5137134a6f25264a6e5b5e65d2cc10901c1bc13830"
+  },
+  "example": {
+    "id": "public-arxiv-36",
+    "input_folder": "tests/fixtures/hub_public/input",
+    "license": "CC0 1.0 Universal",
+    "license_record": "tests/fixtures/hub_public/SOURCE.md",
+    "model_note": "This example uses the meaning model all-MiniLM-L6-v2. The earlier JHTV replay used the model mdbr-leaf-ir, which this example does not use.",
+    "records": 36
+  },
+  "inputs": {
+    "files": [
+      {
+        "path": "arxiv-0704-0744v1.md",
+        "sha256": "05e878d3b36817597a196bd298ad48bb9b715d1264ba0780a6ee3b62d40b8c6a"
+      },
+      {
+        "path": "arxiv-0906-4316v2.md",
+        "sha256": "4145680441a04d5da541f15cece77ce7561878996f3635b1a485a582cc7a58ad"
+      },
+      {
+        "path": "arxiv-1204-1846v3.md",
+        "sha256": "5c1f59953b11563972cfac76ce40955b61a4597b90d0d4d70bfb795ee5a6e2de"
+      },
+      {
+        "path": "arxiv-1404-3167v1.md",
+        "sha256": "40ce69fac903edf65291ee5188780403107b1bcddd3dfd3e9fa063f20740ebd1"
+      },
+      {
+        "path": "arxiv-1405-0585v2.md",
+        "sha256": "8046c3337d3e52be63c893c608dc156a1cccd2932a0817535a5f3251634557dd"
+      },
+      {
+        "path": "arxiv-1405-0733v1.md",
+        "sha256": "ef330a285095634e6ea501a75ca0985f08f41ec130e84cf0236cb9a48865ee21"
+      },
+      {
+        "path": "arxiv-1405-2051v1.md",
+        "sha256": "4e4111160ccc61348ada87a29d24d38e9356b883f8904d82c1cb8873ed45264d"
+      },
+      {
+        "path": "arxiv-1701-00554v2.md",
+        "sha256": "a2104cdd330c2ea4361e36a099d720fb2117f69d58edd63dafcbf5827e78e770"
+      },
+      {
+        "path": "arxiv-1701-00558v2.md",
+        "sha256": "a6c2006d46a1efca8f9217e7c92a85924b414789db75d4b2a774eb21c55da304"
+      },
+      {
+        "path": "arxiv-1701-00881v2.md",
+        "sha256": "e74622ff4cc8598c277ddb2e152d4192e4f882e5e4ec6c27d28534c7aa1a4589"
+      },
+      {
+        "path": "arxiv-1701-01477v1.md",
+        "sha256": "23cbfddd180f9d048ad985ff500b0491d0081c05faeb2da23b891de18662d823"
+      },
+      {
+        "path": "arxiv-1701-01768v1.md",
+        "sha256": "5f9dd4a5b14a07edc47f6c33cfdfeecba7848aaba7f952a32c65cf308355b6f2"
+      },
+      {
+        "path": "arxiv-1701-01913v1.md",
+        "sha256": "f86d12a1c70944df9c2dc5ba32c85475932c3ce01ba20d89a7c1e85fabedd584"
+      },
+      {
+        "path": "arxiv-cond-mat-9610048v1.md",
+        "sha256": "c80662b3223187ef8d883f62fdf03e1089c630e41fea9153f5b9fb5e197430b0"
+      },
+      {
+        "path": "arxiv-cond-mat-9610069v1.md",
+        "sha256": "6571046cedd4c990fe46aea691c3864cadef2af0caec22adfb6f46fe3048cdd3"
+      },
+      {
+        "path": "arxiv-cond-mat-9610070v1.md",
+        "sha256": "4c59998b98c4184ad05df1c0413fecb2e159b6f744fddb7bb214827e67678271"
+      },
+      {
+        "path": "arxiv-cond-mat-9610098v1.md",
+        "sha256": "347c14f81c668eb436b847a0f68fe55bc64711e9bd2142b2c4772e6ca30ce2ef"
+      },
+      {
+        "path": "arxiv-cond-mat-9610116v1.md",
+        "sha256": "c97ba50e427287c233cd1919f79113fe8ccbb5a9850277da2d3afc80dbde7766"
+      },
+      {
+        "path": "arxiv-cond-mat-9611039v1.md",
+        "sha256": "eac6e80907b96051a64b1651ff861027624815985d27d2f1e7acef4d353830a4"
+      },
+      {
+        "path": "arxiv-cond-mat-9807121v2.md",
+        "sha256": "c6ac59440f47e021ea2acd9baf07e99904f213569d8a0a184a86224ac741e0ec"
+      },
+      {
+        "path": "arxiv-cs-9311101v1.md",
+        "sha256": "b4bb08ad6fac78d5f67351bfabf6f9693eb12a5a1969952b42e2489d88410ce1"
+      },
+      {
+        "path": "arxiv-cs-9312101v1.md",
+        "sha256": "064da0abf17eeaf8e179c6895596787a5f9b36dde96cc5240e975e0aee5dc321"
+      },
+      {
+        "path": "arxiv-cs-9401101v1.md",
+        "sha256": "adc7dfcb577dcaa9b58facc8248dd03f4d4b88fcb9279a38e7cfa29133d6bfaa"
+      },
+      {
+        "path": "arxiv-cs-9501101v1.md",
+        "sha256": "4edb4791647317f2405472ca8897f88b0170b7f097a29c0c9fac81bc06ad2ffc"
+      },
+      {
+        "path": "arxiv-cs-9501102v1.md",
+        "sha256": "90c7c9a14b85eeaf86887af626f98066b0620a1d851ad0db8bccc7218c0f6090"
+      },
+      {
+        "path": "arxiv-cs-9608103v1.md",
+        "sha256": "0e626739aa099cc93b304dacc31f9e1110fc0c613b15ede0f691a6a21b8ff1f5"
+      },
+      {
+        "path": "arxiv-math-0510276v3.md",
+        "sha256": "dd13657d120e1987cbc5df592a4183f6065871ee5b64fd00b6d20a078efb7d0d"
+      },
+      {
+        "path": "arxiv-math-0609457v2.md",
+        "sha256": "dc0b0b9aa3f8e8a93e04c15dbc256eb15d53c4d2a8a75debe3ba183ae8127d51"
+      },
+      {
+        "path": "arxiv-math-0610518v1.md",
+        "sha256": "adcdaf1925869146f3ebd2e63ef2c6a7884bec22273bb8d398510ceb3d44bc1f"
+      },
+      {
+        "path": "arxiv-math-0702703v1.md",
+        "sha256": "dcaabfe934f75f44552d28674e64b8a67715015e17459d095e670c93518468ed"
+      },
+      {
+        "path": "arxiv-physics-0203002v2.md",
+        "sha256": "5d68d66d01e4fa9daac97420f2738a074e657e64c8bfed7eaadc93c9eff120f3"
+      },
+      {
+        "path": "arxiv-physics-9807059v1.md",
+        "sha256": "fbf41c7c142808104def7d6577f3bfd050cff5949d9ce66575d37f9c4280b76b"
+      },
+      {
+        "path": "arxiv-q-bio-0309024v1.md",
+        "sha256": "15619192318f59fbc445f4f9ad81f36a50b682ba073dc29cf9b0b7f89495bea3"
+      },
+      {
+        "path": "arxiv-q-bio-0309025v1.md",
+        "sha256": "d46b8614bbb8ccca596e64e9a93766e8eb47c345f62542cf19a62aded8b02915"
+      },
+      {
+        "path": "arxiv-q-bio-0309026v1.md",
+        "sha256": "71b1fdb780db24d4a6d06465c25cd2cb16c51fc85e6fb48d3d75e46099612c90"
+      },
+      {
+        "path": "arxiv-q-bio-0309028v1.md",
+        "sha256": "e659dec689375830bad7ba09dbb011708ccb653ef583a84070073711a872447b"
+      }
+    ],
+    "folder_digest": "b368f1822bc208d3dda3215c3916293170305c3a1ee7865a91d0feef29e59c4d",
+    "mapping_sha256": null
+  },
+  "label": "candidate, not verified",
+  "model": {
+    "files": {
+      "1_Pooling/config.json": "4be450dde3b0273bb9787637cfbd28fe04a7ba6ab9d36ac48e92b11e350ffc23",
+      "config.json": "953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab5d8908b41",
+      "config_sentence_transformers.json": "061ca9d39661d6c6d6de5ba27f79a1cd5770ea247f8d46412a68a498dc5ac9f3",
+      "model.safetensors": "53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db",
+      "modules.json": "84e40c8e006c9b1d6c122e02cba9b02458120b5fb0c87b746c41e0207cf642cf",
+      "sentence_bert_config.json": "fc1993fde0a95c24ec6c022539d41cf6e2f7c9721e5415d6fb6897472a9cd4b7",
+      "special_tokens_map.json": "303df45a03609e4ead04bc3dc1536d0ab19b5358db685b6f3da123d05ec200e3",
+      "tokenizer.json": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037",
+      "tokenizer_config.json": "acb92769e8195aabd29b7b2137a9e6d6e25c476a4f15aa4355c233426c61576b",
+      "vocab.txt": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"
+    },
+    "name": "sentence-transformers/all-MiniLM-L6-v2",
+    "snapshot": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+  },
+  "outputs": [
+    {
+      "bytes": 50696,
+      "path": "corpus/records.jsonl",
+      "sha256": "8fe1460910b11e9fa0c3719c4552c23452ad2b1079605308bbf018244a2bee78"
+    },
+    {
+      "bytes": 65826,
+      "path": "ranked-pairs.md",
+      "sha256": "e20a6251df859fa68b507d51e292966b1d27eccf604e3dffcca5d1514bbdc092"
+    },
+    {
+      "bytes": 61369,
+      "pairs": 63,
+      "path": "unusual-pairs.json",
+      "sha256": "38a0b95eb51cd212cd8ccaa2d43af4c18745ce6a0ca906562648dbc34e6401b3"
+    },
+    {
+      "bytes": 200370,
+      "pairs": 200,
+      "path": "wording-and-meaning-pairs.json",
+      "sha256": "cd226a7e9fad02b08b9f8f67fcf50f31fba579a7a04bdb9e75d5aba95e25bf3f"
+    }
+  ],
+  "reference_environment": {
+    "implementation": "CPython",
+    "libraries": {
+      "huggingface-hub": "2.2.0",
+      "jsonschema": "4.26.0",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "sentence-transformers": "5.7.0",
+      "threadpoolctl": "3.7.0",
+      "tokenizers": "0.23.3",
+      "torch": "2.14.1+cpu",
+      "transformers": "5.20.1"
+    },
+    "platform": "linux-aarch64",
+    "python": "3.12.12",
+    "threads_requested": 1
+  },
+  "schema_version": "eureka.example-expected-hashes.v1",
+  "seeds": {
+    "unusual_pairs_svd_random_state": 256,
+    "wording_and_meaning_lsa_seed": 42
+  },
+  "settings": {
+    "run": {
+      "max_artifacts": 3000,
+      "objective": "",
+      "top_k": 200
+    },
+    "unusual_pairs": {
+      "encoder": "sentence-transformers",
+      "lex_weight": 0.5,
+      "method_version": "sentence-transformer-chunk-mean-v1",
+      "min_percentile": 0.9,
+      "mode": "local",
+      "scoring": "hybrid_2026",
+      "svd_random_state": 256,
+      "svd_topics_requested": 80,
+      "tfidf_max_features": 2000,
+      "top_k": 200
+    },
+    "wording_and_meaning": {
+      "chunk_words": 200,
+      "confirm_percentile": 0.75,
+      "lexical": "hybrid",
+      "max_chunks": 12,
+      "min_percentile": 0.0,
+      "model_name": "all-MiniLM-L6-v2",
+      "ranking": "percentile",
+      "seed": 42,
+      "tier": 1,
+      "top_k": 200
+    }
+  }
+}

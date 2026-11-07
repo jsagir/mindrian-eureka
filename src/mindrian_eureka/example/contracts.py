@@ -33,6 +33,10 @@ EXAMPLE_INPUT = "tests/fixtures/hub_public/input"
 EXAMPLE_LICENSE_RECORD = "tests/fixtures/hub_public/SOURCE.md"
 EXAMPLE_LICENSE = "CC0 1.0 Universal"
 EXAMPLE_RECORDS = 36
+EXAMPLE_MODEL_NOTE = (
+    "This example uses the meaning model all-MiniLM-L6-v2. "
+    "The earlier JHTV replay used the model mdbr-leaf-ir, which this example does not use."
+)
 EXAMPLE_COMMAND = "uv run eureka run tests/fixtures/hub_public/input --out <run-folder> --threads 1"
 EXAMPLE_DIR = "examples/public-example"
 EXPECTED_NAME = "expected-hashes.json"

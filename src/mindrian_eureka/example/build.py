@@ -28,6 +28,7 @@ from .contracts import (
     EXAMPLE_INPUT,
     EXAMPLE_LICENSE,
     EXAMPLE_LICENSE_RECORD,
+    EXAMPLE_MODEL_NOTE,
     EXAMPLE_RECORDS,
     EXPECTED_SCHEMA,
     OUTPUT_FILES,
@@ -121,6 +122,7 @@ def build_expected(run_folder: Path, *, repo_root: Path, records: int) -> dict[s
             "license_record": EXAMPLE_LICENSE_RECORD,
             "license": EXAMPLE_LICENSE,
             "records": records,
+            "model_note": EXAMPLE_MODEL_NOTE,
         },
         "command": EXAMPLE_COMMAND,
         "inputs": {

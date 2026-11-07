@@ -1,0 +1,1860 @@
+{
+  "counts": {
+    "pairs": 63,
+    "records_scored": 36,
+    "top_k": 200,
+    "top_k_reached": false
+  },
+  "engine": {
+    "capability_id": "opportunity.find_cross_domain_pairs",
+    "name": "Find Unusual Pairs Across a Research Collection"
+  },
+  "label": "candidate, not verified",
+  "notes": [
+    "Model files are identified by sha256 in the manifest.",
+    "Structural LSA used 35 topics instead of the source setting of 80 because the corpus is small."
+  ],
+  "pairs": [
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cs-9311101v1",
+        "source_ref": "arxiv-cs-9311101v1.md",
+        "title": "The Difficulties of Learning Logic Programs with Cut"
+      },
+      "pair_id": "pair-28a8d6afdf8e32e56d6e",
+      "rank": 1,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-cs-9312101v1",
+        "source_ref": "arxiv-cs-9312101v1.md",
+        "title": "Decidable Reasoning in Terminological Knowledge Representation Systems"
+      },
+      "scores": {
+        "meaning_similarity": 1.013295,
+        "method_signals": {
+          "bm25_similarity": 0.040464,
+          "dense_z": 3.686415,
+          "gap_percentile": 1.0,
+          "hybrid_signed_gap": 3.724776,
+          "structural_z": -0.038361
+        },
+        "rank_score": 3.724776,
+        "signed_gap": 3.724776,
+        "wording_similarity": 0.039096
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1405-2051v1",
+        "source_ref": "arxiv-1405-2051v1.md",
+        "title": "Merchant Sharing Towards a Zero Marginal Cost Economy"
+      },
+      "pair_id": "pair-e03a32bdfb59104d68c9",
+      "rank": 2,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-cond-mat-9610048v1",
+        "source_ref": "arxiv-cond-mat-9610048v1.md",
+        "title": "Instability and front propagation in laser-tweezed lipid bilayer tubules"
+      },
+      "scores": {
+        "meaning_similarity": 0.290005,
+        "method_signals": {
+          "bm25_similarity": 0.031642,
+          "dense_z": -1.234256,
+          "gap_percentile": 0.99841,
+          "hybrid_signed_gap": -3.475069,
+          "structural_z": 2.240813
+        },
+        "rank_score": 3.475069,
+        "signed_gap": -3.475069,
+        "wording_similarity": 0.602564
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1204-1846v3",
+        "source_ref": "arxiv-1204-1846v3.md",
+        "title": "Approximate Revenue Maximization with Multiple Items"
+      },
+      "pair_id": "pair-a36158cc9dc5dce6e391",
+      "rank": 3,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-1405-0585v2",
+        "source_ref": "arxiv-1405-0585v2.md",
+        "title": "Evaluating gambles using dynamics"
+      },
+      "scores": {
+        "meaning_similarity": 0.781625,
+        "method_signals": {
+          "bm25_similarity": 0.0,
+          "dense_z": 2.110324,
+          "gap_percentile": 0.99682,
+          "hybrid_signed_gap": 3.326641,
+          "structural_z": -1.216317
+        },
+        "rank_score": 3.326641,
+        "signed_gap": 3.326641,
+        "wording_similarity": 0.0
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cs-9501102v1",
+        "source_ref": "arxiv-cs-9501102v1.md",
+        "title": "A Domain-Independent Algorithm for Plan Adaptation"
+      },
+      "pair_id": "pair-066917f2db3a21d00d23",
+      "rank": 4,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-cs-9608103v1",
+        "source_ref": "arxiv-cs-9608103v1.md",
+        "title": "Spatial Aggregation: Theory and Applications"
+      },
+      "scores": {
+        "meaning_similarity": 0.894983,
+        "method_signals": {
+          "bm25_similarity": 0.037731,
+          "dense_z": 2.881522,
+          "gap_percentile": 0.995231,
+          "hybrid_signed_gap": 2.860475,
+          "structural_z": 0.021047
+        },
+        "rank_score": 2.860475,
+        "signed_gap": 2.860475,
+        "wording_similarity": 0.067797
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cond-mat-9610098v1",
+        "source_ref": "arxiv-cond-mat-9610098v1.md",
+        "title": "Straightening of Thermal Fluctuations in Semi-Flexible Polymers by Applied Tension"
+      },
+      "pair_id": "pair-1be8cb7447c9fd48c26a",
+      "rank": 5,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-cond-mat-9610116v1",
+        "source_ref": "arxiv-cond-mat-9610116v1.md",
+        "title": "Long Range Moves for High Density Polymer Simulations"
+      },
+      "scores": {
+        "meaning_similarity": 0.782718,
+        "method_signals": {
+          "bm25_similarity": 0.025355,
+          "dense_z": 2.117763,
+          "gap_percentile": 0.993641,
+          "hybrid_signed_gap": 2.704567,
+          "structural_z": -0.586805
+        },
+        "rank_score": 2.704567,
+        "signed_gap": 2.704567,
+        "wording_similarity": 0.0
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-math-0609457v2",
+        "source_ref": "arxiv-math-0609457v2.md",
+        "title": "Defining and Estimating Intervention Effects for Groups that will Develop an Auxiliary Outcome"
+      },
+      "pair_id": "pair-dfed60446b165661c317",
+      "rank": 6,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-math-0610518v1",
+        "source_ref": "arxiv-math-0610518v1.md",
+        "title": "Asymptotic Properties of Covariate-Adjusted Adaptive Designs"
+      },
+      "scores": {
+        "meaning_similarity": 0.818926,
+        "method_signals": {
+          "bm25_similarity": 0.025811,
+          "dense_z": 2.364087,
+          "gap_percentile": 0.992051,
+          "hybrid_signed_gap": 2.59853,
+          "structural_z": -0.234443
+        },
+        "rank_score": 2.59853,
+        "signed_gap": 2.59853,
+        "wording_similarity": 0.076923
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-0906-4316v2",
+        "source_ref": "arxiv-0906-4316v2.md",
+        "title": "Constructive Decision Theory"
+      },
+      "pair_id": "pair-9dff08313fb9dfa1220f",
+      "rank": 7,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-1701-00881v2",
+        "source_ref": "arxiv-1701-00881v2.md",
+        "title": "Supervisory Control of Discrete-event Systems under Attacks"
+      },
+      "scores": {
+        "meaning_similarity": 0.889309,
+        "method_signals": {
+          "bm25_similarity": 0.046245,
+          "dense_z": 2.842916,
+          "gap_percentile": 0.990461,
+          "hybrid_signed_gap": 2.58112,
+          "structural_z": 0.261796
+        },
+        "rank_score": 2.58112,
+        "signed_gap": 2.58112,
+        "wording_similarity": 0.074423
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-0704-0744v1",
+        "source_ref": "arxiv-0704-0744v1.md",
+        "title": "Quantifying social group evolution"
+      },
+      "pair_id": "pair-90f6f15f2201541f4fcb",
+      "rank": 8,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-cs-9312101v1",
+        "source_ref": "arxiv-cs-9312101v1.md",
+        "title": "Decidable Reasoning in Terminological Knowledge Representation Systems"
+      },
+      "scores": {
+        "meaning_similarity": 0.307941,
+        "method_signals": {
+          "bm25_similarity": 0.037577,
+          "dense_z": -1.112234,
+          "gap_percentile": 0.988871,
+          "hybrid_signed_gap": -2.565179,
+          "structural_z": 1.452945
+        },
+        "rank_score": 2.565179,
+        "signed_gap": -2.565179,
+        "wording_similarity": 0.391624
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cond-mat-9610048v1",
+        "source_ref": "arxiv-cond-mat-9610048v1.md",
+        "title": "Instability and front propagation in laser-tweezed lipid bilayer tubules"
+      },
+      "pair_id": "pair-37c44d4b1a44890f273d",
+      "rank": 9,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-cond-mat-9610098v1",
+        "source_ref": "arxiv-cond-mat-9610098v1.md",
+        "title": "Straightening of Thermal Fluctuations in Semi-Flexible Polymers by Applied Tension"
+      },
+      "scores": {
+        "meaning_similarity": 0.644419,
+        "method_signals": {
+          "bm25_similarity": 0.105763,
+          "dense_z": 1.176889,
+          "gap_percentile": 0.987281,
+          "hybrid_signed_gap": -2.563124,
+          "structural_z": 3.740013
+        },
+        "rank_score": 2.563124,
+        "signed_gap": -2.563124,
+        "wording_similarity": 0.525641
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1405-2051v1",
+        "source_ref": "arxiv-1405-2051v1.md",
+        "title": "Merchant Sharing Towards a Zero Marginal Cost Economy"
+      },
+      "pair_id": "pair-e974a6e5c6d7cb6f5209",
+      "rank": 10,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-cond-mat-9610098v1",
+        "source_ref": "arxiv-cond-mat-9610098v1.md",
+        "title": "Straightening of Thermal Fluctuations in Semi-Flexible Polymers by Applied Tension"
+      },
+      "scores": {
+        "meaning_similarity": 0.42947,
+        "method_signals": {
+          "bm25_similarity": 0.020716,
+          "dense_z": -0.28545,
+          "gap_percentile": 0.985692,
+          "hybrid_signed_gap": -2.539202,
+          "structural_z": 2.253752
+        },
+        "rank_score": 2.539202,
+        "signed_gap": -2.539202,
+        "wording_similarity": 0.666667
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1701-00554v2",
+        "source_ref": "arxiv-1701-00554v2.md",
+        "title": "Exponential Convergence of a Distributed Algorithm for Solving Linear Algebraic Equations"
+      },
+      "pair_id": "pair-7ca5843d54cbd8a4d445",
+      "rank": 11,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-1701-01477v1",
+        "source_ref": "arxiv-1701-01477v1.md",
+        "title": "Unconstrained inverse quadratic programming problem"
+      },
+      "scores": {
+        "meaning_similarity": 0.55862,
+        "method_signals": {
+          "bm25_similarity": 0.123247,
+          "dense_z": 0.593179,
+          "gap_percentile": 0.984102,
+          "hybrid_signed_gap": -2.517198,
+          "structural_z": 3.110377
+        },
+        "rank_score": 2.517198,
+        "signed_gap": -2.517198,
+        "wording_similarity": 0.285714
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1701-01768v1",
+        "source_ref": "arxiv-1701-01768v1.md",
+        "title": "Multi-Haul Quasi Network Flow Model for Vertical Alignment Optimization"
+      },
+      "pair_id": "pair-049bb2ea7eb0c41a3811",
+      "rank": 12,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-q-bio-0309025v1",
+        "source_ref": "arxiv-q-bio-0309025v1.md",
+        "title": "Frequency control in synchronized networks of inhibitory neurons"
+      },
+      "scores": {
+        "meaning_similarity": 0.370741,
+        "method_signals": {
+          "bm25_similarity": 0.055847,
+          "dense_z": -0.684998,
+          "gap_percentile": 0.982512,
+          "hybrid_signed_gap": -2.470509,
+          "structural_z": 1.785511
+        },
+        "rank_score": 2.470509,
+        "signed_gap": -2.470509,
+        "wording_similarity": 0.364326
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-0906-4316v2",
+        "source_ref": "arxiv-0906-4316v2.md",
+        "title": "Constructive Decision Theory"
+      },
+      "pair_id": "pair-26beefabcd06b56ff74c",
+      "rank": 13,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-cs-9312101v1",
+        "source_ref": "arxiv-cs-9312101v1.md",
+        "title": "Decidable Reasoning in Terminological Knowledge Representation Systems"
+      },
+      "scores": {
+        "meaning_similarity": 0.745715,
+        "method_signals": {
+          "bm25_similarity": 0.018477,
+          "dense_z": 1.866021,
+          "gap_percentile": 0.980922,
+          "hybrid_signed_gap": 2.456291,
+          "structural_z": -0.59027
+        },
+        "rank_score": 2.456291,
+        "signed_gap": 2.456291,
+        "wording_similarity": 0.037736
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1204-1846v3",
+        "source_ref": "arxiv-1204-1846v3.md",
+        "title": "Approximate Revenue Maximization with Multiple Items"
+      },
+      "pair_id": "pair-c57b65334c381eb69703",
+      "rank": 14,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-math-0510276v3",
+        "source_ref": "arxiv-math-0510276v3.md",
+        "title": "An algorithmic and a geometric characterization of Coarsening At Random"
+      },
+      "scores": {
+        "meaning_similarity": 0.774716,
+        "method_signals": {
+          "bm25_similarity": 0.025785,
+          "dense_z": 2.063321,
+          "gap_percentile": 0.979332,
+          "hybrid_signed_gap": 2.454726,
+          "structural_z": -0.391405
+        },
+        "rank_score": 2.454726,
+        "signed_gap": 2.454726,
+        "wording_similarity": 0.041667
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1405-2051v1",
+        "source_ref": "arxiv-1405-2051v1.md",
+        "title": "Merchant Sharing Towards a Zero Marginal Cost Economy"
+      },
+      "pair_id": "pair-50e16c77fa354572b2ad",
+      "rank": 15,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-physics-9807059v1",
+        "source_ref": "arxiv-physics-9807059v1.md",
+        "title": "Oligopeptides' frequencies in the classification of proteins' primary structures"
+      },
+      "scores": {
+        "meaning_similarity": 0.22325,
+        "method_signals": {
+          "bm25_similarity": 0.019943,
+          "dense_z": -1.688407,
+          "gap_percentile": 0.977742,
+          "hybrid_signed_gap": -2.44509,
+          "structural_z": 0.756683
+        },
+        "rank_score": 2.44509,
+        "signed_gap": -2.44509,
+        "wording_similarity": 0.333333
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-math-0609457v2",
+        "source_ref": "arxiv-math-0609457v2.md",
+        "title": "Defining and Estimating Intervention Effects for Groups that will Develop an Auxiliary Outcome"
+      },
+      "pair_id": "pair-54668c934fcedb2da295",
+      "rank": 16,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-q-bio-0309028v1",
+        "source_ref": "arxiv-q-bio-0309028v1.md",
+        "title": "Analysis of Dynamic Brain Imaging Data"
+      },
+      "scores": {
+        "meaning_similarity": 0.386034,
+        "method_signals": {
+          "bm25_similarity": 0.06443,
+          "dense_z": -0.580953,
+          "gap_percentile": 0.976153,
+          "hybrid_signed_gap": -2.400268,
+          "structural_z": 1.819314
+        },
+        "rank_score": 2.400268,
+        "signed_gap": -2.400268,
+        "wording_similarity": 0.323887
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cs-9311101v1",
+        "source_ref": "arxiv-cs-9311101v1.md",
+        "title": "The Difficulties of Learning Logic Programs with Cut"
+      },
+      "pair_id": "pair-56e70aabac205254f486",
+      "rank": 17,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-q-bio-0309025v1",
+        "source_ref": "arxiv-q-bio-0309025v1.md",
+        "title": "Frequency control in synchronized networks of inhibitory neurons"
+      },
+      "scores": {
+        "meaning_similarity": 0.163163,
+        "method_signals": {
+          "bm25_similarity": 0.028623,
+          "dense_z": -2.09719,
+          "gap_percentile": 0.974563,
+          "hybrid_signed_gap": -2.333948,
+          "structural_z": 0.236758
+        },
+        "rank_score": 2.333948,
+        "signed_gap": -2.333948,
+        "wording_similarity": 0.167457
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-0906-4316v2",
+        "source_ref": "arxiv-0906-4316v2.md",
+        "title": "Constructive Decision Theory"
+      },
+      "pair_id": "pair-ba0c93d055bc746a5e15",
+      "rank": 18,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-cs-9401101v1",
+        "source_ref": "arxiv-cs-9401101v1.md",
+        "title": "Teleo-Reactive Programs for Agent Control"
+      },
+      "scores": {
+        "meaning_similarity": 0.701073,
+        "method_signals": {
+          "bm25_similarity": 0.019279,
+          "dense_z": 1.562315,
+          "gap_percentile": 0.972973,
+          "hybrid_signed_gap": 2.299982,
+          "structural_z": -0.737667
+        },
+        "rank_score": 2.299982,
+        "signed_gap": 2.299982,
+        "wording_similarity": 0.0
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1701-01768v1",
+        "source_ref": "arxiv-1701-01768v1.md",
+        "title": "Multi-Haul Quasi Network Flow Model for Vertical Alignment Optimization"
+      },
+      "pair_id": "pair-81bbdd4f8e9dd941641e",
+      "rank": 19,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-cond-mat-9610070v1",
+        "source_ref": "arxiv-cond-mat-9610070v1.md",
+        "title": "Spontaneous Expulsion of Giant Lipid Vesicles Induced by Laser Tweezers"
+      },
+      "scores": {
+        "meaning_similarity": 0.154415,
+        "method_signals": {
+          "bm25_similarity": 0.010573,
+          "dense_z": -2.1567,
+          "gap_percentile": 0.971383,
+          "hybrid_signed_gap": -2.227451,
+          "structural_z": 0.070751
+        },
+        "rank_score": 2.227451,
+        "signed_gap": -2.227451,
+        "wording_similarity": 0.231092
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cond-mat-9807121v2",
+        "source_ref": "arxiv-cond-mat-9807121v2.md",
+        "title": "Continuous and discrete models of cooperation in complex bacterial colonies"
+      },
+      "pair_id": "pair-4b140bb4d434306579d8",
+      "rank": 20,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-q-bio-0309024v1",
+        "source_ref": "arxiv-q-bio-0309024v1.md",
+        "title": "Synchronization and oscillatory dynamics in heterogeneous mutually inhibited neurons"
+      },
+      "scores": {
+        "meaning_similarity": 0.78988,
+        "method_signals": {
+          "bm25_similarity": 0.025479,
+          "dense_z": 2.166487,
+          "gap_percentile": 0.969793,
+          "hybrid_signed_gap": 2.21756,
+          "structural_z": -0.051073
+        },
+        "rank_score": 2.21756,
+        "signed_gap": 2.21756,
+        "wording_similarity": 0.120139
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1204-1846v3",
+        "source_ref": "arxiv-1204-1846v3.md",
+        "title": "Approximate Revenue Maximization with Multiple Items"
+      },
+      "pair_id": "pair-0f9628d75582a6cb6e39",
+      "rank": 21,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-1405-2051v1",
+        "source_ref": "arxiv-1405-2051v1.md",
+        "title": "Merchant Sharing Towards a Zero Marginal Cost Economy"
+      },
+      "scores": {
+        "meaning_similarity": 0.837781,
+        "method_signals": {
+          "bm25_similarity": 0.029658,
+          "dense_z": 2.492362,
+          "gap_percentile": 0.968203,
+          "hybrid_signed_gap": 2.141037,
+          "structural_z": 0.351325
+        },
+        "rank_score": 2.141037,
+        "signed_gap": 2.141037,
+        "wording_similarity": 0.1875
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1701-01768v1",
+        "source_ref": "arxiv-1701-01768v1.md",
+        "title": "Multi-Haul Quasi Network Flow Model for Vertical Alignment Optimization"
+      },
+      "pair_id": "pair-4b4c429c1c6ad0895e87",
+      "rank": 22,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-cond-mat-9610048v1",
+        "source_ref": "arxiv-cond-mat-9610048v1.md",
+        "title": "Instability and front propagation in laser-tweezed lipid bilayer tubules"
+      },
+      "scores": {
+        "meaning_similarity": 0.215339,
+        "method_signals": {
+          "bm25_similarity": 0.038117,
+          "dense_z": -1.742227,
+          "gap_percentile": 0.966614,
+          "hybrid_signed_gap": -2.090826,
+          "structural_z": 0.348598
+        },
+        "rank_score": 2.090826,
+        "signed_gap": -2.090826,
+        "wording_similarity": 0.139517
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-0906-4316v2",
+        "source_ref": "arxiv-0906-4316v2.md",
+        "title": "Constructive Decision Theory"
+      },
+      "pair_id": "pair-1e892ca447406bbf5d04",
+      "rank": 23,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-1204-1846v3",
+        "source_ref": "arxiv-1204-1846v3.md",
+        "title": "Approximate Revenue Maximization with Multiple Items"
+      },
+      "scores": {
+        "meaning_similarity": 0.614479,
+        "method_signals": {
+          "bm25_similarity": 0.002222,
+          "dense_z": 0.973198,
+          "gap_percentile": 0.965024,
+          "hybrid_signed_gap": 2.05069,
+          "structural_z": -1.077492
+        },
+        "rank_score": 2.05069,
+        "signed_gap": 2.05069,
+        "wording_similarity": 0.018868
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1404-3167v1",
+        "source_ref": "arxiv-1404-3167v1.md",
+        "title": "A Dynamical Model of the Industrial Economy of the Humber Region"
+      },
+      "pair_id": "pair-c33a0094b6bf5afa1d85",
+      "rank": 24,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-1701-01768v1",
+        "source_ref": "arxiv-1701-01768v1.md",
+        "title": "Multi-Haul Quasi Network Flow Model for Vertical Alignment Optimization"
+      },
+      "scores": {
+        "meaning_similarity": 0.286033,
+        "method_signals": {
+          "bm25_similarity": 0.011304,
+          "dense_z": -1.261279,
+          "gap_percentile": 0.963434,
+          "hybrid_signed_gap": -2.003796,
+          "structural_z": 0.742517
+        },
+        "rank_score": 2.003796,
+        "signed_gap": -2.003796,
+        "wording_similarity": 0.378517
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1701-01477v1",
+        "source_ref": "arxiv-1701-01477v1.md",
+        "title": "Unconstrained inverse quadratic programming problem"
+      },
+      "pair_id": "pair-d1eb99aed0f370bbf38e",
+      "rank": 25,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-physics-9807059v1",
+        "source_ref": "arxiv-physics-9807059v1.md",
+        "title": "Oligopeptides' frequencies in the classification of proteins' primary structures"
+      },
+      "scores": {
+        "meaning_similarity": 0.628263,
+        "method_signals": {
+          "bm25_similarity": 0.013088,
+          "dense_z": 1.066976,
+          "gap_percentile": 0.961844,
+          "hybrid_signed_gap": 1.958353,
+          "structural_z": -0.891377
+        },
+        "rank_score": 1.958353,
+        "signed_gap": 1.958353,
+        "wording_similarity": 0.0
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1701-00881v2",
+        "source_ref": "arxiv-1701-00881v2.md",
+        "title": "Supervisory Control of Discrete-event Systems under Attacks"
+      },
+      "pair_id": "pair-b4fd67634f25663f453a",
+      "rank": 26,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-cs-9401101v1",
+        "source_ref": "arxiv-cs-9401101v1.md",
+        "title": "Teleo-Reactive Programs for Agent Control"
+      },
+      "scores": {
+        "meaning_similarity": 0.745384,
+        "method_signals": {
+          "bm25_similarity": 0.025557,
+          "dense_z": 1.863768,
+          "gap_percentile": 0.960254,
+          "hybrid_signed_gap": 1.95294,
+          "structural_z": -0.089173
+        },
+        "rank_score": 1.95294,
+        "signed_gap": 1.95294,
+        "wording_similarity": 0.111111
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1701-00554v2",
+        "source_ref": "arxiv-1701-00554v2.md",
+        "title": "Exponential Convergence of a Distributed Algorithm for Solving Linear Algebraic Equations"
+      },
+      "pair_id": "pair-2e8ea7a4a78656fd8dea",
+      "rank": 27,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-cs-9311101v1",
+        "source_ref": "arxiv-cs-9311101v1.md",
+        "title": "The Difficulties of Learning Logic Programs with Cut"
+      },
+      "scores": {
+        "meaning_similarity": 0.315867,
+        "method_signals": {
+          "bm25_similarity": 0.03506,
+          "dense_z": -1.058312,
+          "gap_percentile": 0.958665,
+          "hybrid_signed_gap": -1.932637,
+          "structural_z": 0.874324
+        },
+        "rank_score": 1.932637,
+        "signed_gap": -1.932637,
+        "wording_similarity": 0.27521
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cs-9311101v1",
+        "source_ref": "arxiv-cs-9311101v1.md",
+        "title": "The Difficulties of Learning Logic Programs with Cut"
+      },
+      "pair_id": "pair-b5cc2421c8455fddb6ce",
+      "rank": 28,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-q-bio-0309028v1",
+        "source_ref": "arxiv-q-bio-0309028v1.md",
+        "title": "Analysis of Dynamic Brain Imaging Data"
+      },
+      "scores": {
+        "meaning_similarity": 0.309581,
+        "method_signals": {
+          "bm25_similarity": 0.063466,
+          "dense_z": -1.101081,
+          "gap_percentile": 0.957075,
+          "hybrid_signed_gap": -1.903156,
+          "structural_z": 0.802074
+        },
+        "rank_score": 1.903156,
+        "signed_gap": -1.903156,
+        "wording_similarity": 0.099845
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1204-1846v3",
+        "source_ref": "arxiv-1204-1846v3.md",
+        "title": "Approximate Revenue Maximization with Multiple Items"
+      },
+      "pair_id": "pair-c9bd2f919ba8b5c419ad",
+      "rank": 29,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-math-0702703v1",
+        "source_ref": "arxiv-math-0702703v1.md",
+        "title": "Can one estimate the conditional distribution of post-model-selection estimators?"
+      },
+      "scores": {
+        "meaning_similarity": 0.731698,
+        "method_signals": {
+          "bm25_similarity": 0.031829,
+          "dense_z": 1.770663,
+          "gap_percentile": 0.955485,
+          "hybrid_signed_gap": 1.898312,
+          "structural_z": -0.127648
+        },
+        "rank_score": 1.898312,
+        "signed_gap": 1.898312,
+        "wording_similarity": 0.067308
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cond-mat-9610070v1",
+        "source_ref": "arxiv-cond-mat-9610070v1.md",
+        "title": "Spontaneous Expulsion of Giant Lipid Vesicles Induced by Laser Tweezers"
+      },
+      "pair_id": "pair-a54fe6aa9e1160aa240b",
+      "rank": 30,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-math-0702703v1",
+        "source_ref": "arxiv-math-0702703v1.md",
+        "title": "Can one estimate the conditional distribution of post-model-selection estimators?"
+      },
+      "scores": {
+        "meaning_similarity": 0.254215,
+        "method_signals": {
+          "bm25_similarity": 0.020114,
+          "dense_z": -1.477745,
+          "gap_percentile": 0.953895,
+          "hybrid_signed_gap": -1.869221,
+          "structural_z": 0.391476
+        },
+        "rank_score": 1.869221,
+        "signed_gap": -1.869221,
+        "wording_similarity": 0.25
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cs-9312101v1",
+        "source_ref": "arxiv-cs-9312101v1.md",
+        "title": "Decidable Reasoning in Terminological Knowledge Representation Systems"
+      },
+      "pair_id": "pair-9f2e201b8b56362e0db9",
+      "rank": 31,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-cs-9608103v1",
+        "source_ref": "arxiv-cs-9608103v1.md",
+        "title": "Spatial Aggregation: Theory and Applications"
+      },
+      "scores": {
+        "meaning_similarity": 0.743111,
+        "method_signals": {
+          "bm25_similarity": 0.044867,
+          "dense_z": 1.848308,
+          "gap_percentile": 0.952305,
+          "hybrid_signed_gap": 1.842538,
+          "structural_z": 0.00577
+        },
+        "rank_score": 1.842538,
+        "signed_gap": 1.842538,
+        "wording_similarity": 0.02439
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cond-mat-9807121v2",
+        "source_ref": "arxiv-cond-mat-9807121v2.md",
+        "title": "Continuous and discrete models of cooperation in complex bacterial colonies"
+      },
+      "pair_id": "pair-c6ec075ba239fcea9ffb",
+      "rank": 32,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-q-bio-0309026v1",
+        "source_ref": "arxiv-q-bio-0309026v1.md",
+        "title": "Coding Strategies in Monkey V1 and Inferior Temporal Cortices"
+      },
+      "scores": {
+        "meaning_similarity": 0.664918,
+        "method_signals": {
+          "bm25_similarity": 0.01891,
+          "dense_z": 1.316345,
+          "gap_percentile": 0.950715,
+          "hybrid_signed_gap": 1.826103,
+          "structural_z": -0.509758
+        },
+        "rank_score": 1.826103,
+        "signed_gap": 1.826103,
+        "wording_similarity": 0.053472
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-q-bio-0309025v1",
+        "source_ref": "arxiv-q-bio-0309025v1.md",
+        "title": "Frequency control in synchronized networks of inhibitory neurons"
+      },
+      "pair_id": "pair-c6a46e7cb86733db4fb7",
+      "rank": 33,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-q-bio-0309026v1",
+        "source_ref": "arxiv-q-bio-0309026v1.md",
+        "title": "Coding Strategies in Monkey V1 and Inferior Temporal Cortices"
+      },
+      "scores": {
+        "meaning_similarity": 0.744131,
+        "method_signals": {
+          "bm25_similarity": 0.044588,
+          "dense_z": 1.855247,
+          "gap_percentile": 0.949126,
+          "hybrid_signed_gap": 1.825983,
+          "structural_z": 0.029264
+        },
+        "rank_score": 1.825983,
+        "signed_gap": 1.825983,
+        "wording_similarity": 0.03125
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-q-bio-0309024v1",
+        "source_ref": "arxiv-q-bio-0309024v1.md",
+        "title": "Synchronization and oscillatory dynamics in heterogeneous mutually inhibited neurons"
+      },
+      "pair_id": "pair-49c16c7d71d84dd6299d",
+      "rank": 34,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-q-bio-0309025v1",
+        "source_ref": "arxiv-q-bio-0309025v1.md",
+        "title": "Frequency control in synchronized networks of inhibitory neurons"
+      },
+      "scores": {
+        "meaning_similarity": 1.299088,
+        "method_signals": {
+          "bm25_similarity": 0.233995,
+          "dense_z": 5.630719,
+          "gap_percentile": 0.947536,
+          "hybrid_signed_gap": -1.7961,
+          "structural_z": 7.426819
+        },
+        "rank_score": 1.7961,
+        "signed_gap": -1.7961,
+        "wording_similarity": 0.639113
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1701-01477v1",
+        "source_ref": "arxiv-1701-01477v1.md",
+        "title": "Unconstrained inverse quadratic programming problem"
+      },
+      "pair_id": "pair-ac62a8f763a0544b1dd4",
+      "rank": 35,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-q-bio-0309028v1",
+        "source_ref": "arxiv-q-bio-0309028v1.md",
+        "title": "Analysis of Dynamic Brain Imaging Data"
+      },
+      "scores": {
+        "meaning_similarity": 0.631732,
+        "method_signals": {
+          "bm25_similarity": 0.016757,
+          "dense_z": 1.090575,
+          "gap_percentile": 0.945946,
+          "hybrid_signed_gap": 1.774186,
+          "structural_z": -0.683611
+        },
+        "rank_score": 1.774186,
+        "signed_gap": 1.774186,
+        "wording_similarity": 0.026316
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-0906-4316v2",
+        "source_ref": "arxiv-0906-4316v2.md",
+        "title": "Constructive Decision Theory"
+      },
+      "pair_id": "pair-1077adff2960211ae297",
+      "rank": 36,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-math-0702703v1",
+        "source_ref": "arxiv-math-0702703v1.md",
+        "title": "Can one estimate the conditional distribution of post-model-selection estimators?"
+      },
+      "scores": {
+        "meaning_similarity": 0.661262,
+        "method_signals": {
+          "bm25_similarity": 0.015343,
+          "dense_z": 1.291474,
+          "gap_percentile": 0.944356,
+          "hybrid_signed_gap": 1.762224,
+          "structural_z": -0.47075
+        },
+        "rank_score": 1.762224,
+        "signed_gap": 1.762224,
+        "wording_similarity": 0.082245
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-math-0702703v1",
+        "source_ref": "arxiv-math-0702703v1.md",
+        "title": "Can one estimate the conditional distribution of post-model-selection estimators?"
+      },
+      "pair_id": "pair-193733d9476e03f28e26",
+      "rank": 37,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-physics-0203002v2",
+        "source_ref": "arxiv-physics-0203002v2.md",
+        "title": "Finding an Upper Limit in the Presence of Unknown Background"
+      },
+      "scores": {
+        "meaning_similarity": 0.788287,
+        "method_signals": {
+          "bm25_similarity": 0.030168,
+          "dense_z": 2.155648,
+          "gap_percentile": 0.942766,
+          "hybrid_signed_gap": 1.736251,
+          "structural_z": 0.419397
+        },
+        "rank_score": 1.736251,
+        "signed_gap": 1.736251,
+        "wording_similarity": 0.2
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cs-9312101v1",
+        "source_ref": "arxiv-cs-9312101v1.md",
+        "title": "Decidable Reasoning in Terminological Knowledge Representation Systems"
+      },
+      "pair_id": "pair-055714598fe3da70aaf2",
+      "rank": 38,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-cs-9401101v1",
+        "source_ref": "arxiv-cs-9401101v1.md",
+        "title": "Teleo-Reactive Programs for Agent Control"
+      },
+      "scores": {
+        "meaning_similarity": 0.651009,
+        "method_signals": {
+          "bm25_similarity": 0.019785,
+          "dense_z": 1.221718,
+          "gap_percentile": 0.941176,
+          "hybrid_signed_gap": 1.735571,
+          "structural_z": -0.513853
+        },
+        "rank_score": 1.735571,
+        "signed_gap": 1.735571,
+        "wording_similarity": 0.047646
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1701-01913v1",
+        "source_ref": "arxiv-1701-01913v1.md",
+        "title": "Hierarchical Control Framework for Integrated Coordination between DERs and Demand Response"
+      },
+      "pair_id": "pair-f11bcb776fb512bd0a5d",
+      "rank": 39,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-math-0610518v1",
+        "source_ref": "arxiv-math-0610518v1.md",
+        "title": "Asymptotic Properties of Covariate-Adjusted Adaptive Designs"
+      },
+      "scores": {
+        "meaning_similarity": 0.525221,
+        "method_signals": {
+          "bm25_similarity": 0.043479,
+          "dense_z": 0.365963,
+          "gap_percentile": 0.939587,
+          "hybrid_signed_gap": -1.714002,
+          "structural_z": 2.079965
+        },
+        "rank_score": 1.714002,
+        "signed_gap": -1.714002,
+        "wording_similarity": 0.5
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-math-0609457v2",
+        "source_ref": "arxiv-math-0609457v2.md",
+        "title": "Defining and Estimating Intervention Effects for Groups that will Develop an Auxiliary Outcome"
+      },
+      "pair_id": "pair-cbb86de75524544f6b61",
+      "rank": 40,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-math-0702703v1",
+        "source_ref": "arxiv-math-0702703v1.md",
+        "title": "Can one estimate the conditional distribution of post-model-selection estimators?"
+      },
+      "scores": {
+        "meaning_similarity": 0.753343,
+        "method_signals": {
+          "bm25_similarity": 0.030069,
+          "dense_z": 1.917918,
+          "gap_percentile": 0.937997,
+          "hybrid_signed_gap": 1.705592,
+          "structural_z": 0.212326
+        },
+        "rank_score": 1.705592,
+        "signed_gap": 1.705592,
+        "wording_similarity": 0.153846
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1404-3167v1",
+        "source_ref": "arxiv-1404-3167v1.md",
+        "title": "A Dynamical Model of the Industrial Economy of the Humber Region"
+      },
+      "pair_id": "pair-ad34513622bc02ec2b69",
+      "rank": 41,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-cs-9311101v1",
+        "source_ref": "arxiv-cs-9311101v1.md",
+        "title": "The Difficulties of Learning Logic Programs with Cut"
+      },
+      "scores": {
+        "meaning_similarity": 0.342438,
+        "method_signals": {
+          "bm25_similarity": 0.031517,
+          "dense_z": -0.877547,
+          "gap_percentile": 0.936407,
+          "hybrid_signed_gap": -1.66835,
+          "structural_z": 0.790802
+        },
+        "rank_score": 1.66835,
+        "signed_gap": -1.66835,
+        "wording_similarity": 0.276215
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-0906-4316v2",
+        "source_ref": "arxiv-0906-4316v2.md",
+        "title": "Constructive Decision Theory"
+      },
+      "pair_id": "pair-b3d182f7cad18bb85e46",
+      "rank": 42,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-cs-9501102v1",
+        "source_ref": "arxiv-cs-9501102v1.md",
+        "title": "A Domain-Independent Algorithm for Plan Adaptation"
+      },
+      "scores": {
+        "meaning_similarity": 0.613034,
+        "method_signals": {
+          "bm25_similarity": 0.011371,
+          "dense_z": 0.963367,
+          "gap_percentile": 0.934817,
+          "hybrid_signed_gap": 1.654918,
+          "structural_z": -0.691551
+        },
+        "rank_score": 1.654918,
+        "signed_gap": 1.654918,
+        "wording_similarity": 0.054685
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1701-00554v2",
+        "source_ref": "arxiv-1701-00554v2.md",
+        "title": "Exponential Convergence of a Distributed Algorithm for Solving Linear Algebraic Equations"
+      },
+      "pair_id": "pair-5eab9145c1fdddde2a8a",
+      "rank": 43,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-q-bio-0309024v1",
+        "source_ref": "arxiv-q-bio-0309024v1.md",
+        "title": "Synchronization and oscillatory dynamics in heterogeneous mutually inhibited neurons"
+      },
+      "scores": {
+        "meaning_similarity": 0.712423,
+        "method_signals": {
+          "bm25_similarity": 0.017589,
+          "dense_z": 1.639532,
+          "gap_percentile": 0.933227,
+          "hybrid_signed_gap": 1.647234,
+          "structural_z": -0.007702
+        },
+        "rank_score": 1.647234,
+        "signed_gap": 1.647234,
+        "wording_similarity": 0.174107
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-0906-4316v2",
+        "source_ref": "arxiv-0906-4316v2.md",
+        "title": "Constructive Decision Theory"
+      },
+      "pair_id": "pair-14c29c43ca4b479d1db6",
+      "rank": 44,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-1405-2051v1",
+        "source_ref": "arxiv-1405-2051v1.md",
+        "title": "Merchant Sharing Towards a Zero Marginal Cost Economy"
+      },
+      "scores": {
+        "meaning_similarity": 0.600117,
+        "method_signals": {
+          "bm25_similarity": 0.018035,
+          "dense_z": 0.875489,
+          "gap_percentile": 0.931638,
+          "hybrid_signed_gap": 1.644026,
+          "structural_z": -0.768537
+        },
+        "rank_score": 1.644026,
+        "signed_gap": 1.644026,
+        "wording_similarity": 0.0
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1701-00554v2",
+        "source_ref": "arxiv-1701-00554v2.md",
+        "title": "Exponential Convergence of a Distributed Algorithm for Solving Linear Algebraic Equations"
+      },
+      "pair_id": "pair-31f431e88c08cbb82d17",
+      "rank": 45,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-cs-9401101v1",
+        "source_ref": "arxiv-cs-9401101v1.md",
+        "title": "Teleo-Reactive Programs for Agent Control"
+      },
+      "scores": {
+        "meaning_similarity": 0.513652,
+        "method_signals": {
+          "bm25_similarity": 0.067353,
+          "dense_z": 0.287254,
+          "gap_percentile": 0.930048,
+          "hybrid_signed_gap": -1.641617,
+          "structural_z": 1.928871
+        },
+        "rank_score": 1.641617,
+        "signed_gap": -1.641617,
+        "wording_similarity": 0.332226
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1701-01913v1",
+        "source_ref": "arxiv-1701-01913v1.md",
+        "title": "Hierarchical Control Framework for Integrated Coordination between DERs and Demand Response"
+      },
+      "pair_id": "pair-67ee285dbd6aceca26cd",
+      "rank": 46,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-math-0510276v3",
+        "source_ref": "arxiv-math-0510276v3.md",
+        "title": "An algorithmic and a geometric characterization of Coarsening At Random"
+      },
+      "scores": {
+        "meaning_similarity": 0.532106,
+        "method_signals": {
+          "bm25_similarity": 0.0,
+          "dense_z": 0.412803,
+          "gap_percentile": 0.928458,
+          "hybrid_signed_gap": 1.62912,
+          "structural_z": -1.216317
+        },
+        "rank_score": 1.62912,
+        "signed_gap": 1.62912,
+        "wording_similarity": 0.0
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cond-mat-9610069v1",
+        "source_ref": "arxiv-cond-mat-9610069v1.md",
+        "title": "The Role of Bilayer Tilt Difference in Equilibrium Membrane Shapes"
+      },
+      "pair_id": "pair-ca1c75d2a3f2199f0ab8",
+      "rank": 47,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-cs-9501101v1",
+        "source_ref": "arxiv-cs-9501101v1.md",
+        "title": "Solving Multiclass Learning Problems via Error-Correcting Output Codes"
+      },
+      "scores": {
+        "meaning_similarity": 0.116438,
+        "method_signals": {
+          "bm25_similarity": 0.0,
+          "dense_z": -2.415064,
+          "gap_percentile": 0.926868,
+          "hybrid_signed_gap": -1.620994,
+          "structural_z": -0.79407
+        },
+        "rank_score": 1.620994,
+        "signed_gap": -1.620994,
+        "wording_similarity": 0.095238
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1405-0733v1",
+        "source_ref": "arxiv-1405-0733v1.md",
+        "title": "Spatial interactions in agent-based modeling"
+      },
+      "pair_id": "pair-326c410992c8dcb9a2bd",
+      "rank": 48,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-1701-00554v2",
+        "source_ref": "arxiv-1701-00554v2.md",
+        "title": "Exponential Convergence of a Distributed Algorithm for Solving Linear Algebraic Equations"
+      },
+      "scores": {
+        "meaning_similarity": 0.501884,
+        "method_signals": {
+          "bm25_similarity": 0.049905,
+          "dense_z": 0.207192,
+          "gap_percentile": 0.925278,
+          "hybrid_signed_gap": -1.579924,
+          "structural_z": 1.787116
+        },
+        "rank_score": 1.579924,
+        "signed_gap": -1.579924,
+        "wording_similarity": 0.397959
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cond-mat-9610069v1",
+        "source_ref": "arxiv-cond-mat-9610069v1.md",
+        "title": "The Role of Bilayer Tilt Difference in Equilibrium Membrane Shapes"
+      },
+      "pair_id": "pair-d864316d06a867a46904",
+      "rank": 49,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-q-bio-0309024v1",
+        "source_ref": "arxiv-q-bio-0309024v1.md",
+        "title": "Synchronization and oscillatory dynamics in heterogeneous mutually inhibited neurons"
+      },
+      "scores": {
+        "meaning_similarity": 0.571849,
+        "method_signals": {
+          "bm25_similarity": 0.013279,
+          "dense_z": 0.683175,
+          "gap_percentile": 0.923688,
+          "hybrid_signed_gap": 1.569804,
+          "structural_z": -0.886629
+        },
+        "rank_score": 1.569804,
+        "signed_gap": 1.569804,
+        "wording_similarity": 0.0
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-math-0510276v3",
+        "source_ref": "arxiv-math-0510276v3.md",
+        "title": "An algorithmic and a geometric characterization of Coarsening At Random"
+      },
+      "pair_id": "pair-828464b660f0cf6bec5c",
+      "rank": 50,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-q-bio-0309028v1",
+        "source_ref": "arxiv-q-bio-0309028v1.md",
+        "title": "Analysis of Dynamic Brain Imaging Data"
+      },
+      "scores": {
+        "meaning_similarity": 0.432881,
+        "method_signals": {
+          "bm25_similarity": 0.05063,
+          "dense_z": -0.262243,
+          "gap_percentile": 0.922099,
+          "hybrid_signed_gap": -1.569689,
+          "structural_z": 1.307446
+        },
+        "rank_score": 1.569689,
+        "signed_gap": -1.569689,
+        "wording_similarity": 0.285714
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-math-0609457v2",
+        "source_ref": "arxiv-math-0609457v2.md",
+        "title": "Defining and Estimating Intervention Effects for Groups that will Develop an Auxiliary Outcome"
+      },
+      "pair_id": "pair-16dc749ac3a06ea61172",
+      "rank": 51,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-physics-9807059v1",
+        "source_ref": "arxiv-physics-9807059v1.md",
+        "title": "Oligopeptides' frequencies in the classification of proteins' primary structures"
+      },
+      "scores": {
+        "meaning_similarity": 0.367801,
+        "method_signals": {
+          "bm25_similarity": 0.053969,
+          "dense_z": -0.704999,
+          "gap_percentile": 0.920509,
+          "hybrid_signed_gap": -1.524923,
+          "structural_z": 0.819923
+        },
+        "rank_score": 1.524923,
+        "signed_gap": -1.524923,
+        "wording_similarity": 0.157051
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cond-mat-9807121v2",
+        "source_ref": "arxiv-cond-mat-9807121v2.md",
+        "title": "Continuous and discrete models of cooperation in complex bacterial colonies"
+      },
+      "pair_id": "pair-2be39324314d591cfc39",
+      "rank": 52,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-q-bio-0309025v1",
+        "source_ref": "arxiv-q-bio-0309025v1.md",
+        "title": "Frequency control in synchronized networks of inhibitory neurons"
+      },
+      "scores": {
+        "meaning_similarity": 0.777817,
+        "method_signals": {
+          "bm25_similarity": 0.019271,
+          "dense_z": 2.084418,
+          "gap_percentile": 0.918919,
+          "hybrid_signed_gap": 1.516031,
+          "structural_z": 0.568387
+        },
+        "rank_score": 1.516031,
+        "signed_gap": 1.516031,
+        "wording_similarity": 0.294624
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1405-0585v2",
+        "source_ref": "arxiv-1405-0585v2.md",
+        "title": "Evaluating gambles using dynamics"
+      },
+      "pair_id": "pair-eada43ee7b41bb4d63b3",
+      "rank": 53,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-1701-01477v1",
+        "source_ref": "arxiv-1701-01477v1.md",
+        "title": "Unconstrained inverse quadratic programming problem"
+      },
+      "scores": {
+        "meaning_similarity": 0.337731,
+        "method_signals": {
+          "bm25_similarity": 0.035519,
+          "dense_z": -0.909568,
+          "gap_percentile": 0.917329,
+          "hybrid_signed_gap": -1.51567,
+          "structural_z": 0.606102
+        },
+        "rank_score": 1.51567,
+        "signed_gap": -1.51567,
+        "wording_similarity": 0.212144
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-0906-4316v2",
+        "source_ref": "arxiv-0906-4316v2.md",
+        "title": "Constructive Decision Theory"
+      },
+      "pair_id": "pair-f89776458d5ba047958c",
+      "rank": 54,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-physics-0203002v2",
+        "source_ref": "arxiv-physics-0203002v2.md",
+        "title": "Finding an Upper Limit in the Presence of Unknown Background"
+      },
+      "scores": {
+        "meaning_similarity": 0.568017,
+        "method_signals": {
+          "bm25_similarity": 0.007751,
+          "dense_z": 0.657111,
+          "gap_percentile": 0.915739,
+          "hybrid_signed_gap": 1.513672,
+          "structural_z": -0.856561
+        },
+        "rank_score": 1.513672,
+        "signed_gap": 1.513672,
+        "wording_similarity": 0.037736
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1701-00881v2",
+        "source_ref": "arxiv-1701-00881v2.md",
+        "title": "Supervisory Control of Discrete-event Systems under Attacks"
+      },
+      "pair_id": "pair-efa53d2c74ffa612b55b",
+      "rank": 55,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-physics-0203002v2",
+        "source_ref": "arxiv-physics-0203002v2.md",
+        "title": "Finding an Upper Limit in the Presence of Unknown Background"
+      },
+      "scores": {
+        "meaning_similarity": 0.576903,
+        "method_signals": {
+          "bm25_similarity": 0.017066,
+          "dense_z": 0.717565,
+          "gap_percentile": 0.914149,
+          "hybrid_signed_gap": 1.510179,
+          "structural_z": -0.792614
+        },
+        "rank_score": 1.510179,
+        "signed_gap": 1.510179,
+        "wording_similarity": 0.0
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cond-mat-9610069v1",
+        "source_ref": "arxiv-cond-mat-9610069v1.md",
+        "title": "The Role of Bilayer Tilt Difference in Equilibrium Membrane Shapes"
+      },
+      "pair_id": "pair-19b0124678ef1d2af286",
+      "rank": 56,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-cs-9401101v1",
+        "source_ref": "arxiv-cs-9401101v1.md",
+        "title": "Teleo-Reactive Programs for Agent Control"
+      },
+      "scores": {
+        "meaning_similarity": 0.271046,
+        "method_signals": {
+          "bm25_similarity": 0.025635,
+          "dense_z": -1.363239,
+          "gap_percentile": 0.91256,
+          "hybrid_signed_gap": -1.505136,
+          "structural_z": 0.141897
+        },
+        "rank_score": 1.505136,
+        "signed_gap": -1.505136,
+        "wording_similarity": 0.162791
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1405-0733v1",
+        "source_ref": "arxiv-1405-0733v1.md",
+        "title": "Spatial interactions in agent-based modeling"
+      },
+      "pair_id": "pair-f1ce7410bb990831d6e4",
+      "rank": 57,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-cond-mat-9807121v2",
+        "source_ref": "arxiv-cond-mat-9807121v2.md",
+        "title": "Continuous and discrete models of cooperation in complex bacterial colonies"
+      },
+      "scores": {
+        "meaning_similarity": 0.767067,
+        "method_signals": {
+          "bm25_similarity": 0.017144,
+          "dense_z": 2.011281,
+          "gap_percentile": 0.91097,
+          "hybrid_signed_gap": 1.50305,
+          "structural_z": 0.508232
+        },
+        "rank_score": 1.50305,
+        "signed_gap": 1.50305,
+        "wording_similarity": 0.292971
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-0906-4316v2",
+        "source_ref": "arxiv-0906-4316v2.md",
+        "title": "Constructive Decision Theory"
+      },
+      "pair_id": "pair-217fdacac61b21ba386b",
+      "rank": 58,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-cs-9311101v1",
+        "source_ref": "arxiv-cs-9311101v1.md",
+        "title": "The Difficulties of Learning Logic Programs with Cut"
+      },
+      "scores": {
+        "meaning_similarity": 0.77451,
+        "method_signals": {
+          "bm25_similarity": 0.041252,
+          "dense_z": 2.06192,
+          "gap_percentile": 0.90938,
+          "hybrid_signed_gap": 1.50117,
+          "structural_z": 0.56075
+        },
+        "rank_score": 1.50117,
+        "signed_gap": 1.50117,
+        "wording_similarity": 0.169811
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1701-00881v2",
+        "source_ref": "arxiv-1701-00881v2.md",
+        "title": "Supervisory Control of Discrete-event Systems under Attacks"
+      },
+      "pair_id": "pair-b0992931ed04070903da",
+      "rank": 59,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-cond-mat-9610069v1",
+        "source_ref": "arxiv-cond-mat-9610069v1.md",
+        "title": "The Role of Bilayer Tilt Difference in Equilibrium Membrane Shapes"
+      },
+      "scores": {
+        "meaning_similarity": 0.212921,
+        "method_signals": {
+          "bm25_similarity": 0.002404,
+          "dense_z": -1.758674,
+          "gap_percentile": 0.90779,
+          "hybrid_signed_gap": -1.488763,
+          "structural_z": -0.269911
+        },
+        "rank_score": 1.488763,
+        "signed_gap": -1.488763,
+        "wording_similarity": 0.2
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-1405-0585v2",
+        "source_ref": "arxiv-1405-0585v2.md",
+        "title": "Evaluating gambles using dynamics"
+      },
+      "pair_id": "pair-7bf6a5974745ccfb00ae",
+      "rank": 60,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-1701-00881v2",
+        "source_ref": "arxiv-1701-00881v2.md",
+        "title": "Supervisory Control of Discrete-event Systems under Attacks"
+      },
+      "scores": {
+        "meaning_similarity": 0.615595,
+        "method_signals": {
+          "bm25_similarity": 0.016596,
+          "dense_z": 0.980788,
+          "gap_percentile": 0.9062,
+          "hybrid_signed_gap": 1.479311,
+          "structural_z": -0.498522
+        },
+        "rank_score": 1.479311,
+        "signed_gap": 1.479311,
+        "wording_similarity": 0.068966
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cond-mat-9610069v1",
+        "source_ref": "arxiv-cond-mat-9610069v1.md",
+        "title": "The Role of Bilayer Tilt Difference in Equilibrium Membrane Shapes"
+      },
+      "pair_id": "pair-a74b6d7de4875123b80c",
+      "rank": 61,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-cond-mat-9610098v1",
+        "source_ref": "arxiv-cond-mat-9610098v1.md",
+        "title": "Straightening of Thermal Fluctuations in Semi-Flexible Polymers by Applied Tension"
+      },
+      "scores": {
+        "meaning_similarity": 0.634904,
+        "method_signals": {
+          "bm25_similarity": 0.0,
+          "dense_z": 1.112151,
+          "gap_percentile": 0.90461,
+          "hybrid_signed_gap": 1.475853,
+          "structural_z": -0.363702
+        },
+        "rank_score": 1.475853,
+        "signed_gap": 1.475853,
+        "wording_similarity": 0.192308
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cond-mat-9807121v2",
+        "source_ref": "arxiv-cond-mat-9807121v2.md",
+        "title": "Continuous and discrete models of cooperation in complex bacterial colonies"
+      },
+      "pair_id": "pair-5e6d6f28e079ef6af6cd",
+      "rank": 62,
+      "reading": "Similar meaning, different wording.",
+      "right": {
+        "id": "arxiv-math-0510276v3",
+        "source_ref": "arxiv-math-0510276v3.md",
+        "title": "An algorithmic and a geometric characterization of Coarsening At Random"
+      },
+      "scores": {
+        "meaning_similarity": 0.71499,
+        "method_signals": {
+          "bm25_similarity": 0.026981,
+          "dense_z": 1.656994,
+          "gap_percentile": 0.903021,
+          "hybrid_signed_gap": 1.471544,
+          "structural_z": 0.18545
+        },
+        "rank_score": 1.471544,
+        "signed_gap": 1.471544,
+        "wording_similarity": 0.165079
+      }
+    },
+    {
+      "label": "candidate, not verified",
+      "left": {
+        "id": "arxiv-cond-mat-9610116v1",
+        "source_ref": "arxiv-cond-mat-9610116v1.md",
+        "title": "Long Range Moves for High Density Polymer Simulations"
+      },
+      "pair_id": "pair-96de9cf6b20c632df1e8",
+      "rank": 63,
+      "reading": "Similar wording, different meaning.",
+      "right": {
+        "id": "arxiv-cs-9312101v1",
+        "source_ref": "arxiv-cs-9312101v1.md",
+        "title": "Decidable Reasoning in Terminological Knowledge Representation Systems"
+      },
+      "scores": {
+        "meaning_similarity": 0.325379,
+        "method_signals": {
+          "bm25_similarity": 0.019173,
+          "dense_z": -0.993599,
+          "gap_percentile": 0.901431,
+          "hybrid_signed_gap": -1.456326,
+          "structural_z": 0.462727
+        },
+        "rank_score": 1.456326,
+        "signed_gap": -1.456326,
+        "wording_similarity": 0.271341
+      }
+    }
+  ],
+  "schema_version": "eureka.run-pairs.v1",
+  "score_meaning": "Each pair has a wording score and a meaning score. The wording score shows how alike the two records are in vocabulary structure and word overlap. The meaning score shows how close their ideas are. Both scores are put on a common scale. The rank follows how far the two scores disagree. A high rank means the records read differently from how close their ideas are, or the reverse. The score is a screening signal. It does not show novelty, evidence, demand or value.",
+  "settings": {
+    "encoder": "sentence-transformers",
+    "lex_weight": 0.5,
+    "method_version": "sentence-transformer-chunk-mean-v1",
+    "min_percentile": 0.9,
+    "mode": "local",
+    "scoring": "hybrid_2026",
+    "svd_random_state": 256,
+    "svd_topics_requested": 80,
+    "tfidf_max_features": 2000,
+    "top_k": 200
+  }
+}
