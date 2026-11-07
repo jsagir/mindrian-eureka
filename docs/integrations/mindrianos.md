@@ -125,7 +125,7 @@ The pair tools (`scout_start`, `scout_start_opportunity_signal_scout`, `scout_fi
 
 ### The MindrianOS plugin side of the pair screen tools
 
-MindrianOS plugin Phase 387 owns adoption, the doctor check and the typed refusals in the plugin (base commits `173a5b1e9` and `25838bb02`). It does not add or call the two pair screen tools yet. The plugin bridge in `lib/mcp/eureka-tool-contract.cjs` needs an entry for each new route in three tables: `ALLOWED_MCP_ROUTES`, `ASYNC_ROUTES` and `routeGate`. The plugin adapter also caps `top_k` at 100 and `node_ids` at 2,500. It must lift these to 200 and 3,000 to match the Eureka limits. These changes belong to the plugin repository and its own phase. Eureka makes none of them.
+MindrianOS plugin Phase 387 owns adoption, the doctor check and the typed refusals in the plugin (base commits `173a5b1e9` and `25838bb02`). It does not add or call the two pair screen tools yet. The plugin bridge in `lib/mcp/eureka-tool-contract.cjs` needs an entry for each new route in two tables, `ALLOWED_MCP_ROUTES` and `ASYNC_ROUTES`, and the `routeGate` function must know the route: it reads the per-capability needs from `needsForCall` and `PAIR_IDS` in `lib/core/eureka/eureka-engine-requirements.cjs`. The plugin adapter also caps `top_k` at 100 and `node_ids` at 2,500. It must lift these to 200 and 3,000 to match the Eureka limits. These changes belong to the plugin repository and its own phase. Eureka makes none of them.
 
 ## The reverse leg: a room seed
 

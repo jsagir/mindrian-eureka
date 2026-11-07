@@ -44,8 +44,8 @@
 
 ### Public example (EXM)
 
-- [ ] **EXM-01**: A small public dataset example runs end to end with `eureka run` and ships with expected output hashes.
-- [ ] **EXM-02**: A "reproduce the JHTV method" guide for a non-author, in plain English, states what is reproducible and what is not.
+- [x] **EXM-01**: A small public dataset example runs end to end with `eureka run` and ships with expected output hashes.
+- [x] **EXM-02**: A "reproduce the JHTV method" guide for a non-author, in plain English, states what is reproducible and what is not.
 
 ## v2 Requirements
 
@@ -79,15 +79,15 @@
 | RUN-05 | Phase 2 - One-Command Run and Doctor | Complete |
 | DOC-01 | Phase 2 - One-Command Run and Doctor | Complete |
 | DOC-02 | Phase 2 - One-Command Run and Doctor | Complete |
-| HOST-01 | Phase 3 - Host Integration and Replay Rebuild | Pending |
-| HOST-02 | Phase 3 - Host Integration and Replay Rebuild | Pending |
+| HOST-01 | Phase 3 - Host Integration and Replay Rebuild | Eureka side complete; plugin wiring open |
+| HOST-02 | Phase 3 - Host Integration and Replay Rebuild | Eureka side complete (provenance gap recorded); room mark open |
 | HUB-01 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
 | HUB-02 | Phase 2.1 - Opportunity Hub in the mos-brand format | Complete |
 | HUB-03 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
 | HUB-04 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
 | HUB-05 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
-| EXM-01 | Phase 4 - Public Example and Reproduction Guide | Pending |
-| EXM-02 | Phase 4 - Public Example and Reproduction Guide | Pending |
+| EXM-01 | Phase 4 - Public Example and Reproduction Guide | Complete |
+| EXM-02 | Phase 4 - Public Example and Reproduction Guide | Complete (owner check: non-author run) |
 
 **Coverage:**
 

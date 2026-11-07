@@ -16,8 +16,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Release Gate and Engine Parity** (completed 2026-10-23, one open owner item) - Settle unusual-pairs engine licensing and attribution, prove or choose its canonical path, recover the wording-and-meaning pairs engine command
 - [x] **Phase 2: One-Command Run and Doctor** - `eureka run` builds a clean corpus, ranks unusual pairs and wording-and-meaning pairs, writes a manifest; `eureka doctor` checks the setup
 - [ ] **Phase 2.1: Opportunity Hub in the mos-brand format** - One local page shows the opportunity bank, the connection graph and the full catalogue of an analyzed collection, styled by the mos-brand book
-- [ ] **Phase 3: Host Integration and Replay Rebuild** - `/mos:eureka` calls the run through the MCP server; the graph-derive replay is rebuilt or marked as a provenance gap
-- [ ] **Phase 4: Public Example and Reproduction Guide** - Small public dataset with expected hashes, plus a "reproduce the JHTV method" guide
+- [x] **Phase 3: Host Integration and Replay Rebuild** - `/mos:eureka` calls the run through the MCP server; the graph-derive replay is rebuilt or marked as a provenance gap
+- [x] **Phase 4: Public Example and Reproduction Guide** - Small public dataset with expected hashes, plus a "reproduce the JHTV method" guide
 
 ## Phase Details
 
@@ -149,7 +149,7 @@ Plans:
 **Plans**: 7 plans
 
 Plans:
-- [ ] 03-01 to 03-07 (see `.planning/phases/03-host-integration-and-replay-rebuild/`)
+- [x] 03-01 to 03-07, complete 2026-11-07 (verification: human_needed; see `.planning/phases/03-host-integration-and-replay-rebuild/`)
 
 **Scope notes**: HOST-01 touches the MindrianOS plugin repo, which has its own GSD-only rule. Plan-phase must split the Eureka side (MCP tool surface) from the plugin side (command wiring). Room marks for HOST-02 are host-owned writes and need approval.
 
@@ -168,7 +168,7 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 04-01 to 04-04 (see `.planning/phases/04-public-example-and-reproduction-guide/`); 04-04 waits for the Phase 3 record `docs/jhtv-replay-record.md`
+- [x] 04-01 to 04-04, complete 2026-11-07 (verification: human_needed; see `.planning/phases/04-public-example-and-reproduction-guide/`); 04-04 waits for the Phase 3 record `docs/jhtv-replay-record.md`
 
 **Scope notes**: The dataset license must allow redistribution. If REL-01 ends in no-go, ship the example and guide as internal only and record the reason.
 
@@ -184,5 +184,5 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
 | 2.1. Opportunity Hub in the mos-brand format | 18/19 | In progress | - |
 | 2.2. Partner export profile and package | 4/4 | Complete (verification: human_needed) | 2026-10-29 |
 | 2.3. Room seed hand-off to MindrianOS | 5/5 | Complete (verification: human_needed) | 2026-11-07 |
-| 3. Host Integration and Replay Rebuild | 0/TBD | Not started | - |
-| 4. Public Example and Reproduction Guide | 0/TBD | Not started | - |
+| 3. Host Integration and Replay Rebuild | 7/7 | Complete (verification: human_needed) | 2026-11-07 |
+| 4. Public Example and Reproduction Guide | 4/4 | Complete (verification: human_needed) | 2026-11-07 |
