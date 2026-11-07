@@ -27,6 +27,32 @@ HtmlMode = Literal["auto", "always", "never"]
 
 _NAME = {"type": "string", "minLength": 1}
 
+# Room section names are lower-case kebab-case. `not_in_export` is the one reserved key.
+_NOT_IN_EXPORT = "not_in_export"
+_SECTION_NAME_PATTERN = r"^[a-z0-9]+(-[a-z0-9]+)*$"
+
+_ROOM_SECTIONS_SCHEMA: Final[dict[str, Any]] = {
+    "type": "object",
+    "additionalProperties": False,
+    "patternProperties": {
+        _SECTION_NAME_PATTERN: {
+            "type": "array",
+            "items": _NAME,
+            "minItems": 1,
+            "uniqueItems": True,
+        },
+        f"^{_NOT_IN_EXPORT}$": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["item", "section", "source"],
+                "additionalProperties": False,
+                "properties": {"item": _NAME, "section": _NAME, "source": _NAME},
+            },
+        },
+    },
+}
+
 _ENTRY_SCHEMA: Final[dict[str, Any]] = {
     "type": "object",
     "required": ["text_columns"],
@@ -53,6 +79,7 @@ _ENTRY_SCHEMA: Final[dict[str, Any]] = {
         },
         "html": {"enum": ["auto", "always", "never"]},
         "carry_columns": {"type": "array", "items": _NAME, "uniqueItems": True},
+        "room_sections": _ROOM_SECTIONS_SCHEMA,
         "outcome_rule": {
             "type": "object",
             "required": ["licensed_when_any"],
@@ -139,6 +166,52 @@ class OutcomeRule:
 
 
 @dataclass(frozen=True)
+class NotInExportItem:
+    """One fact the partner export does not hold (Phase 2.3, D-02).
+
+    Attributes:
+        item: The plain name of the fact.
+        section: The room section the fact belongs to.
+        source: The outside source that holds the fact.
+    """
+
+    item: str
+    section: str
+    source: str
+
+    def as_data(self) -> dict[str, str]:
+        """Return the item in the JSON shape of the mapping file."""
+        return {"item": self.item, "section": self.section, "source": self.source}
+
+
+@dataclass(frozen=True)
+class RoomSections:
+    """The map from room sections to CSV columns (Phase 2.3, D-02).
+
+    Attributes:
+        sections: Each section name with its columns, in file order.
+        not_in_export: The facts the export lacks, in file order.
+    """
+
+    sections: tuple[tuple[str, tuple[str, ...]], ...]
+    not_in_export: tuple[NotInExportItem, ...] = ()
+
+    @property
+    def columns(self) -> tuple[str, ...]:
+        """Return every section column, in file order."""
+        return tuple(column for _, columns in self.sections for column in columns)
+
+    def as_data(self) -> dict[str, Any]:
+        """Return the map as ordered data for the manifest (a list keeps the file order)."""
+        return {
+            "sections": [
+                {"section": name, "columns": list(columns)} for name, columns in self.sections
+            ],
+            "not_in_export": [item.as_data() for item in self.not_in_export],
+        }
+
+
+@dataclass(frozen=True)
 class CsvMapping:
     """How to read one CSV file.
 
@@ -154,6 +227,7 @@ class CsvMapping:
         html: Whether to clean HTML in cells: auto, always or never.
         carry_columns: Headers whose trimmed cells ride along as record extras.
         outcome_rule: The rule that classifies every record, or None.
+        room_sections: The map from room sections to columns, or None.
     """
 
     text_columns: tuple[str, ...]
@@ -167,6 +241,7 @@ class CsvMapping:
     html: HtmlMode = "auto"
     carry_columns: tuple[str, ...] = ()
     outcome_rule: OutcomeRule | None = None
+    room_sections: RoomSections | None = None
 
 
 @dataclass(frozen=True)
@@ -210,7 +285,58 @@ def _entry_from_data(data: Mapping[str, Any]) -> CsvMapping:
         html=cast(HtmlMode, data.get("html", "auto")),
         carry_columns=tuple(data.get("carry_columns", ())),
         outcome_rule=_rule_from_data(data["outcome_rule"]) if "outcome_rule" in data else None,
+        room_sections=(
+            _room_sections_from_data(data["room_sections"]) if "room_sections" in data else None
+        ),
     )
+
+
+def _room_sections_from_data(data: Mapping[str, Any]) -> RoomSections:
+    """Build RoomSections from validated JSON data. The file order is kept."""
+    sections = tuple(
+        (str(name), tuple(str(column) for column in columns))
+        for name, columns in data.items()
+        if name != _NOT_IN_EXPORT
+    )
+    items = tuple(
+        NotInExportItem(
+            item=str(item["item"]), section=str(item["section"]), source=str(item["source"])
+        )
+        for item in data.get(_NOT_IN_EXPORT, ())
+    )
+    return RoomSections(sections=sections, not_in_export=items)
+
+
+def _check_room_sections(name: str, key: str, block: Mapping[str, Any]) -> None:
+    """Run the checks of a `room_sections` block that the schema cannot state."""
+    fix = "Correct the room_sections block of the mapping file"
+    where = f"The mapping file {name}, entry {key}, room_sections:"
+    sections = {n: cols for n, cols in block.items() if n != _NOT_IN_EXPORT}
+    if not sections:
+        raise UsageError(f"{where} needs at least one section", fix=fix)
+    owner: dict[str, str] = {}
+    for section, columns in sections.items():
+        for column in columns:
+            if column in owner:
+                raise UsageError(
+                    f"{where} the column {column} is in two sections: "
+                    f"{owner[column]} and {section}",
+                    fix=fix,
+                )
+            owner[column] = section
+    seen: set[str] = set()
+    for entry in block.get(_NOT_IN_EXPORT, ()):
+        if entry["section"] not in sections:
+            raise UsageError(
+                f"{where} the not_in_export item {entry['item']} names the section "
+                f"{entry['section']}, which is not a section of the block",
+                fix=fix,
+            )
+        if entry["item"] in seen:
+            raise UsageError(
+                f"{where} the not_in_export item {entry['item']} is listed twice", fix=fix
+            )
+        seen.add(entry["item"])
 
 
 def _rule_from_data(data: Mapping[str, Any]) -> OutcomeRule:
@@ -281,6 +407,9 @@ def load_mapping_file(path: Path) -> MappingConfig:
             f"The mapping file {name} has {len(errors)} problem(s): {lines}{suffix}",
             fix=help_fix,
         )
+    for key, value in data["files"].items():
+        if "room_sections" in value:
+            _check_room_sections(name, key, value["room_sections"])
     files = {key: _entry_from_data(value) for key, value in data["files"].items()}
     return MappingConfig(files=files, sha256=sha256_bytes(raw))
 

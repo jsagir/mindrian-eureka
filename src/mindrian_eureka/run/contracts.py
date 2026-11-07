@@ -69,6 +69,14 @@ PAIR_CLASS_OPEN_OPEN = "open_open"
 PAIR_CLASS_LICENSED_LICENSED = "licensed_licensed"
 PAIR_CLASSES = frozenset({PAIR_CLASS_CROSS, PAIR_CLASS_OPEN_OPEN, PAIR_CLASS_LICENSED_LICENSED})
 
+# Fill state of one mapped CSV cell (Phase 2.3, D-02). A state names where the cell went,
+# never what it held.
+CELL_BLANK = "blank"
+CELL_TEXT = "text"
+CELL_CARRIED = "carried"
+CELL_EXPORT_ONLY = "export_only"
+CELL_STATES = frozenset({CELL_BLANK, CELL_TEXT, CELL_CARRIED, CELL_EXPORT_ONLY})
+
 
 # --- Schema ids -------------------------------------------------------------
 
@@ -124,6 +132,9 @@ class Record:
         outcome_class: `licensed` or `open` under a mapping outcome rule, else None.
         extras: The trimmed cells of the mapping carry columns. Empty without them.
         text_source: Where extra text came from (for example `sidecar`), else None.
+        room_cells: The fill state of each column in the mapping `room_sections` block
+            (`blank`, `text`, `carried` or `export_only`). Empty without the block. It
+            holds states only, never a cell value.
     """
 
     id: str
@@ -135,6 +146,7 @@ class Record:
     outcome_class: str | None = None
     extras: Mapping[str, str] = field(default_factory=dict)
     text_source: str | None = None
+    room_cells: Mapping[str, str] = field(default_factory=dict)
 
     @property
     def model_text(self) -> str:

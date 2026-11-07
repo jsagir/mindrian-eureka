@@ -401,10 +401,17 @@ def _write_outputs(
             for key, entry in request.mapping.files.items()
             if entry.carry_columns
         }
+        room_maps = {
+            key: entry.room_sections.as_data()
+            for key, entry in request.mapping.files.items()
+            if entry.room_sections is not None
+        }
         if rules:
             settings["run"]["outcome_rules"] = rules
         if carried:
             settings["run"]["carry_columns"] = carried
+        if room_maps:
+            settings["run"]["room_sections"] = room_maps
     outputs = [
         corpus_digest.as_dict(),
         _manifest_output(unusual_digest, unusual_doc),

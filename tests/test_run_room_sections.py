@@ -366,7 +366,8 @@ def test_pipeline_records_the_section_map(env: Path, fake_model_dir: Path, tmp_p
     assert len(lines) == 12
     for line in lines:
         item = json.loads(line)
-        assert list(item["room_cells"]) == SECTION_COLUMNS
+        # The corpus file sorts keys. The order of the columns lives in the manifest.
+        assert set(item["room_cells"]) == set(SECTION_COLUMNS)
     text_b = (out_b / "corpus" / "records.jsonl").read_bytes()
     assert PERSON.encode() not in text_b
     assert MONEY_VALUE.encode() not in text_b

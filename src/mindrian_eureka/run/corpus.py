@@ -38,6 +38,10 @@ from ..limits import (
     MIN_BODY_CHARS,
 )
 from .contracts import (
+    CELL_BLANK,
+    CELL_CARRIED,
+    CELL_EXPORT_ONLY,
+    CELL_TEXT,
     OUTCOME_LICENSED,
     OUTCOME_OPEN,
     PAIR_CLASS_CROSS,
@@ -226,6 +230,7 @@ class _Candidate:
     extras: Mapping[str, str] = field(default_factory=dict)
     raw_id: str = ""
     text_source: str | None = None
+    room_cells: Mapping[str, str] = field(default_factory=dict)
 
 
 # --- Discovery --------------------------------------------------------------
@@ -549,6 +554,7 @@ def _check_headers(rel: str, headers: list[str], entry: CsvMapping) -> None:
         *(c for c in (entry.id_column, entry.title_column, entry.source_column) if c),
         *entry.carry_columns,
         *(entry.outcome_rule.columns if entry.outcome_rule is not None else ()),
+        *(entry.room_sections.columns if entry.room_sections is not None else ()),
     ]
     missing = [name for name in dict.fromkeys(wanted) if name not in headers]
     if missing:
@@ -594,6 +600,25 @@ def _read_csv(
                     licensed = True
         return OUTCOME_LICENSED if licensed else OUTCOME_OPEN
 
+    def cell_states(row: dict[str | None, Any], cleaned: Mapping[str, str]) -> dict[str, str]:
+        """Return the fill state of each `room_sections` column of a row. No value is kept."""
+        block = entry.room_sections
+        if block is None:
+            return {}
+        carried = set(entry.carry_columns)
+        states: dict[str, str] = {}
+        for column in block.columns:
+            value = cleaned[column] if column in cleaned else normalize_text(cell(row, column))
+            if not value:
+                states[column] = CELL_BLANK
+            elif column in carried:
+                states[column] = CELL_CARRIED
+            elif column in cleaned:
+                states[column] = CELL_TEXT
+            else:
+                states[column] = CELL_EXPORT_ONLY
+        return states
+
     def clean(column: str, raw: str) -> str:
         value = raw
         table = entry.value_maps.get(column)
@@ -629,8 +654,10 @@ def _read_csv(
                     continue
                 where = f"{rel} row {row_number}"
                 body_blocks: list[str] = []
+                cleaned: dict[str, str] = {}
                 for column in entry.text_columns:
                     value = clean(column, cell(row, column))
+                    cleaned[column] = value
                     if not value:
                         continue
                     label = entry.labels.get(column)
@@ -638,6 +665,7 @@ def _read_csv(
                 extra_lines: list[str] = []
                 for column in entry.extra_fields:
                     value = clean(column, cell(row, column))
+                    cleaned[column] = value
                     if value:
                         extra_lines.append(f"{entry.labels.get(column, column)}: {value}")
                 if extra_lines:
@@ -678,6 +706,7 @@ def _read_csv(
                 extras = {
                     column: normalize_text(cell(row, column)) for column in entry.carry_columns
                 }
+                room_cells = cell_states(row, cleaned) if entry.room_sections is not None else {}
                 candidates.append(
                     _Candidate(
                         id=unicodedata.normalize("NFC", f"{id_base}/{id_part}"),
@@ -689,6 +718,7 @@ def _read_csv(
                         outcome_class=outcome_class,
                         extras=extras,
                         raw_id=raw_id,
+                        room_cells=room_cells,
                     )
                 )
         except csv.Error as exc:
@@ -932,6 +962,7 @@ def build_corpus(
             outcome_class=item.outcome_class,
             extras=dict(item.extras),
             text_source=item.text_source,
+            room_cells=dict(item.room_cells),
         )
         for item in kept
     )

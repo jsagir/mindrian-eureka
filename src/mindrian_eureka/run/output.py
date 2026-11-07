@@ -118,6 +118,8 @@ def corpus_lines(records: Sequence[Record]) -> bytes:
             item["extras"] = dict(record.extras)
         if record.text_source is not None:
             item["text_source"] = record.text_source
+        if record.room_cells:
+            item["room_cells"] = dict(record.room_cells)
         lines.append(_compact(item))
     return ("\n".join(lines) + "\n").encode("utf-8")
 
