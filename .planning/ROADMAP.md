@@ -18,6 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 2.1: Opportunity Hub in the mos-brand format** - One local page shows the opportunity bank, the connection graph and the full catalogue of an analyzed collection, styled by the mos-brand book
 - [x] **Phase 3: Host Integration and Replay Rebuild** - `/mos:eureka` calls the run through the MCP server; the graph-derive replay is rebuilt or marked as a provenance gap
 - [x] **Phase 4: Public Example and Reproduction Guide** - Small public dataset with expected hashes, plus a "reproduce the JHTV method" guide
+- [ ] **Phase 04.1: Fix the review findings** (INSERTED) - Fix the defects the Codex review and the independent code review confirm, starting with Windows launcher paths with spaces
 - [ ] **Phase 5: Encoder seam, safe cache key and local GPU spike** - One place builds every encoder, the cache never mixes setups, and one local GPU encoder is proven on the owner's computer; MiniLM stays the default
 
 ## Phase Details
@@ -190,6 +191,26 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
 | 3. Host Integration and Replay Rebuild | 7/7 | Complete (verification: human_needed) | 2026-11-07 |
 | 4. Public Example and Reproduction Guide | 4/4 | Complete (verification: human_needed) | 2026-11-07 |
 | 5. Encoder seam, safe cache key and local GPU spike | 0/TBD | Not started | - |
+
+### Phase 04.1: Fix the review findings (Codex and code review): Windows launcher paths with spaces and anything the reviews confirm (INSERTED)
+
+**Goal:** Every defect that a review of the Phase 3 and Phase 4 work confirms is fixed, tested and recorded, starting with the one the Codex adversarial review found on 2026-11-07, so the committed capabilities will work for a MindrianOS user.
+**Requirements**: PKG-07, HOST-01, EXM-01 (fixes to delivered work; no new requirement)
+**Depends on:** Phase 4
+**Success Criteria** (what must be TRUE):
+
+  1. Windows launcher: the `uv sync` command is built as a PowerShell argument array, so a bundle path with spaces stays one argument. A text test pins it. It stays ASSUMED until a Windows machine runs it, because PowerShell is not installed on the build machine.
+  2. Each finding of the independent code review (requested 2026-11-07 over the range 874f40b..6741585) that this phase confirms as Critical or Important is fixed with a failing test first, or is recorded as declined with the reason.
+  3. No finding is fixed by weakening a test. The full suite stays at or above 1701 passed with 0 failed; ruff 1465 and mypy 88 errors do not rise.
+
+**Plans:** 1 plan done, 1 to plan
+
+Plans:
+
+- [x] 04.1-01: Windows launcher passes the `uv sync` arguments as an array (delivered as quick task 261107-wuy, commit 4be74df)
+- [ ] 04.1-02: Fix the findings confirmed by the independent code review (plan after the review returns)
+
+**Scope notes**: Urgent insert at the owner's request ("add a phase to fix what codex found, asap now"). Do not edit `hsi_reference.py`. No plugin checkout edits.
 
 ### Phase 5: Encoder seam, safe cache key and local GPU spike
 
