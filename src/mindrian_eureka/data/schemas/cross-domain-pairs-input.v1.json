@@ -119,14 +119,14 @@
       "items": {
         "$ref": "#/$defs/ArtifactInput"
       },
-      "maxItems": 2500,
+      "maxItems": 3000,
       "minItems": 2,
       "title": "Artifacts",
       "type": "array"
     },
     "top_k": {
       "default": 20,
-      "maximum": 100,
+      "maximum": 200,
       "minimum": 1,
       "title": "Top K",
       "type": "integer"

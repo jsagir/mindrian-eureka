@@ -1839,7 +1839,7 @@
       ],
       "implementation": "src/mindrian_eureka/opportunity_discovery.py; JobManager durable run lifecycle",
       "requires": [
-        "2..2500 source-linked local artifacts",
+        "2..3000 source-linked local artifacts",
         "MindrianOS scope and snapshot identity when the bundle is graph-derived",
         "Configured local unusual-pairs model or local model cache",
         "Optional precomputed dense vectors or local wording-and-meaning model; without these that engine uses labeled lexical-only degradation"

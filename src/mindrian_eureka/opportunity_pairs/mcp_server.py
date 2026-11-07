@@ -26,6 +26,7 @@ from ..hsi_engine import run_hsi, HSIInputError
 from ..analogy_fitness import assess_analogy_fitness, AnalogyInputError, AnalogyUnavailable
 from ..workflow_handlers import HANDLERS as WORKFLOW_HANDLERS, NodeRuntimeUnavailable
 from ..graph_relations.runner import GraphInputError
+from ..limits import MAX_ARTIFACTS, MAX_TOP_K
 from ..contracts import ContractError, ResultContractError, schema_for, validate_request, validate_result
 
 
@@ -56,8 +57,8 @@ class ScoutRunInput(BaseModel):
     scope_id: str = Field(min_length=1, max_length=256)
     snapshot_id: str | None = Field(default=None, min_length=1, max_length=256)
     research_grant_id: str | None = Field(default=None, max_length=256)
-    artifacts: list[ArtifactInput] = Field(min_length=2, max_length=2500)
-    top_k: int = Field(default=20, ge=1, le=100)
+    artifacts: list[ArtifactInput] = Field(min_length=2, max_length=MAX_ARTIFACTS)
+    top_k: int = Field(default=20, ge=1, le=MAX_TOP_K)
     scoring: Literal["hybrid_2026", "legacy"] = "hybrid_2026"
     lex_weight: float = Field(default=0.5, ge=0, le=1)
     min_percentile: float = Field(default=0.9, ge=0, le=1)
@@ -68,8 +69,8 @@ class OpportunityScoutInput(BaseModel):
     objective: str = Field(min_length=1, max_length=5000)
     scope_id: str = Field(min_length=1, max_length=256)
     snapshot_id: str | None = Field(default=None, min_length=1, max_length=256)
-    artifacts: list[ArtifactInput] = Field(min_length=2, max_length=2500)
-    top_k: int = Field(default=20, ge=1, le=100)
+    artifacts: list[ArtifactInput] = Field(min_length=2, max_length=MAX_ARTIFACTS)
+    top_k: int = Field(default=20, ge=1, le=MAX_TOP_K)
     scoring: Literal["hybrid_2026", "legacy"] = "hybrid_2026"
     lex_weight: float = Field(default=0.5, ge=0, le=1)
     min_percentile: float = Field(default=0.9, ge=0, le=1)

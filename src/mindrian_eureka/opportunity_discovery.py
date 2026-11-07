@@ -12,6 +12,7 @@ import os
 from typing import Any, Callable
 
 from .hsi_engine import run_hsi
+from .limits import MAX_ARTIFACTS
 from .opportunity_pairs.algorithm import RunCancelled
 from .opportunity_pairs.runner import run_document
 
@@ -23,8 +24,8 @@ def run_signal_synthesis(request: dict[str, Any], *, data_dir, job_id: str,
                          stage_callback: Callable[[str], None] | None = None) -> dict[str, Any]:
     """Run RS and HSI locally, then merge by artifact pair without score fusion."""
     artifacts = request["artifacts"]
-    if len(artifacts) > 2500:
-        raise ValueError("multi-engine scout supports at most 2500 artifacts")
+    if len(artifacts) > MAX_ARTIFACTS:
+        raise ValueError(f"multi-engine scout supports at most {MAX_ARTIFACTS} artifacts")
     if cancel_check and cancel_check():
         raise RuntimeError("Run cancelled")
     if stage_callback:

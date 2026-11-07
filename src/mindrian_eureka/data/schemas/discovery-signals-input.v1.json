@@ -98,9 +98,9 @@
       "type": "object",
       "properties": {
         "source_node_count": {"type": "integer", "minimum": 0},
-        "artifact_count": {"type": "integer", "minimum": 2, "maximum": 2500},
+        "artifact_count": {"type": "integer", "minimum": 2, "maximum": 3000},
         "skipped_empty_node_count": {"type": "integer", "minimum": 0},
-        "max_artifacts": {"type": "integer", "minimum": 2, "maximum": 2500},
+        "max_artifacts": {"type": "integer", "minimum": 2, "maximum": 3000},
         "source_ref_policy": {"type": "string", "minLength": 1},
         "corpus": {"const": "room"}
       },
@@ -121,14 +121,14 @@
       "items": {
         "$ref": "#/$defs/ArtifactInput"
       },
-      "maxItems": 2500,
+      "maxItems": 3000,
       "minItems": 2,
       "title": "Artifacts",
       "type": "array"
     },
     "top_k": {
       "default": 20,
-      "maximum": 100,
+      "maximum": 200,
       "minimum": 1,
       "title": "Top K",
       "type": "integer"

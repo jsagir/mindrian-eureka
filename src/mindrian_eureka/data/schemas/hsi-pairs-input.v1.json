@@ -57,7 +57,7 @@
         "additionalProperties": true
       },
       "minItems": 2,
-      "maxItems": 2500
+      "maxItems": 3000
     },
     "dense_vectors": {
       "type": "object",
@@ -86,7 +86,7 @@
     "top_k": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 100
+      "maximum": 200
     },
     "min_percentile": {
       "type": "number",
