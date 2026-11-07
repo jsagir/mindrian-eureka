@@ -111,6 +111,48 @@ def test_result_validates_against_the_output_schema(tmp_path: Path) -> None:
     assert errors == []
 
 
+def _copy_run_with_encoder_block(tmp_path: Path) -> tuple[Path, dict[str, Any]]:
+    """Copy the frozen run and write the encoder block that a run after plan 05-05 records."""
+    from mindrian_eureka.encoder_spec import DEFAULT_PROFILE, PROFILES, encoder_block
+
+    run_dir = _copy_run(tmp_path, "block-run")
+    manifest = json.loads((run_dir / MANIFEST).read_text(encoding="utf-8"))
+    spec = PROFILES[DEFAULT_PROFILE]
+    block = encoder_block(spec.for_caller_chunks(), spec)
+    manifest["encoder"] = block
+    _write_json(run_dir / MANIFEST, manifest)
+    return run_dir, block
+
+
+def test_result_carries_the_encoder_block(tmp_path: Path) -> None:
+    run_dir, block = _copy_run_with_encoder_block(tmp_path)
+    result = _build(run_dir)
+    assert result["encoder"] == block
+    assert result["encoder"]["profile"] == "cpu-default"
+    assert result["encoder"]["determinism_class"] == "cpu-exact"
+    errors = sorted(_validator().iter_errors(result), key=lambda error: list(error.path))
+    assert errors == []
+
+
+def test_result_without_a_block_has_no_encoder_key(tmp_path: Path) -> None:
+    manifest = json.loads((FROZEN_RUN / MANIFEST).read_text(encoding="utf-8"))
+    assert "encoder" not in manifest
+    result = _build(_copy_run(tmp_path))
+    assert "encoder" not in result
+    assert list(_validator().iter_errors(result)) == []
+
+
+def test_encoder_block_is_a_copy(tmp_path: Path) -> None:
+    run_dir, block = _copy_run_with_encoder_block(tmp_path)
+    result = _build(run_dir)
+    result["encoder"]["profile"] = "changed"
+    result["encoder"]["unusual_pairs"]["identity"]["model_id"] = "changed"
+    again = _build(run_dir)
+    assert again["encoder"] == block
+    manifest = json.loads((run_dir / MANIFEST).read_text(encoding="utf-8"))
+    assert manifest["encoder"] == block
+
+
 def test_files_list_and_inline_rules(tmp_path: Path) -> None:
     run_dir = _copy_run(tmp_path)
     result = _build(run_dir)

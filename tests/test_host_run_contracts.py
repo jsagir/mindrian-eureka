@@ -365,6 +365,31 @@ def test_output_schema_is_valid_and_closed() -> None:
         assert list(validator.iter_errors(bad))
 
 
+def test_output_schema_has_an_optional_encoder_object() -> None:
+    schema = _load("pair-screen-output.v1.json")
+    assert schema["properties"]["encoder"]["type"] == "object"
+    assert "encoder" not in schema["required"]
+    assert len(schema["required"]) == 19
+    assert schema["additionalProperties"] is False
+    validator = Draft202012Validator(schema)
+    without = _minimal_result()
+    assert not list(validator.iter_errors(without))
+    with_block = _minimal_result()
+    with_block["encoder"] = {
+        "schema": "eureka.encoder-block.v1",
+        "profile": "cpu-default",
+        "determinism_class": "cpu-exact",
+    }
+    assert not list(validator.iter_errors(with_block))
+    for wrong in ("cpu-default", ["cpu-default"], 1, None):
+        bad = _minimal_result()
+        bad["encoder"] = wrong
+        assert list(validator.iter_errors(bad)), wrong
+    extra = _minimal_result()
+    extra["encoder_extra"] = {}
+    assert list(validator.iter_errors(extra))
+
+
 def test_package_imports_stay_light() -> None:
     code = (
         "import sys\n"
