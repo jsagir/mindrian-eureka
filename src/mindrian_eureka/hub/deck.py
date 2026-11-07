@@ -128,6 +128,13 @@ DECK: dict[str, str] = {
     "B15.cross": "Open next to licensed",
     "B15.open_open": "Both open",
     "B15.licensed_licensed": "Both licensed",
+    "B16.label": "Start a room from this pair",
+    "B16.hint": (
+        "Copy the command under a pair and run it in a terminal. "
+        "Replace RUN_FOLDER with your run folder. "
+        "The command writes a new folder that MindrianOS can open as a room. "
+        "It changes no room."
+    ),
     # --- 9.3 Connection graph -----------------------------------------------
     "Gr01": "Who sits next to whom, and where might the next lead be?",
     "Gr02": (

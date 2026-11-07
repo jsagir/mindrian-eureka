@@ -163,6 +163,17 @@ def _pair_row(pair: PayloadPair, records: Mapping[str, PayloadRecord]) -> str:
             " " + _el("span", _h(f"{key}: {value}"), {"class": "hub-label"}) for key, value in cells
         )
         parts.append(_el("p", chips, {"class": "hub-pair-extras"}))
+    # Phase 2.3 (D-04): the exact seed command as text to copy. The page runs nothing.
+    if pair.get("seed_command"):
+        parts.append(
+            _el(
+                "p",
+                _el("span", _copy("B16.label"), {"class": "hub-label"})
+                + " "
+                + _el("code", _h(pair["seed_command"]), {"class": "hub-mono"}),
+                {"class": "hub-pair-seed"},
+            )
+        )
     scores = [
         _copy("B08.wording", x=pair["wording_text"]),
         _copy("B08.meaning", y=pair["meaning_text"]),
@@ -287,6 +298,8 @@ def _views(payload: Payload) -> str:
     ) + _cutoffs(payload)
     bank = _el("h2", _copy("G09.bank.long")) + _el("p", _copy("B02"))
     bank += _el("div", controls, {"id": "bank-controls"})
+    if payload.get("has_seed_commands"):
+        bank += _el("p", _copy("B16.hint"), {"class": "hub-seed-hint"})
     if not payload["pairs"]:
         bank += _el("h3", _copy("B10")) + _el("p", _copy("B11"))
     bank += _el("div", _engine_lists(payload), {"id": "bank-list"})

@@ -1,7 +1,8 @@
 """Build deterministic graph model values from hub run data.
 
-Import rule: the standard library, `.contracts`, and `..run.output` for the
-4-decimal score text helper only. Do not import numpy.
+Import rule: the standard library, `.contracts`, `..run.output` for the
+4-decimal score text helper, and `..seed.contracts` for the seed constants only. Do not
+import numpy.
 """
 
 from __future__ import annotations
@@ -10,6 +11,7 @@ from collections.abc import Mapping, Sequence
 
 from ..run.contracts import LABEL
 from ..run.output import _score
+from ..seed.contracts import PAIR_ID_PATTERN, pair_command
 from .contracts import (
     ENGINE_KEYS,
     ENGINE_UNUSUAL,
@@ -387,6 +389,16 @@ def build_payload(
             entry["left_extras"] = dict(pair.left_extras)
         if pair.right_extras:
             entry["right_extras"] = dict(pair.right_extras)
+        # Phase 2.3 (D-04, SEED-05): the exact seed command, as text to copy. Only for a
+        # run that holds a section map, a pair id of the known form, and cell states for
+        # both records. A hostile id never reaches a command that a person could paste.
+        if (
+            run.room_sections
+            and PAIR_ID_PATTERN.fullmatch(pair.pair_id)
+            and left.room_cells
+            and right.room_cells
+        ):
+            entry["seed_command"] = pair_command(pair.pair_id)
         pairs.append(entry)
 
     removed_counts: dict[str, int] = {}
@@ -461,4 +473,6 @@ def build_payload(
     }
     if any(pair.pair_class is not None for pair in all_pairs):
         payload["has_pair_classes"] = True
+    if any("seed_command" in entry for entry in pairs):
+        payload["has_seed_commands"] = True
     return payload

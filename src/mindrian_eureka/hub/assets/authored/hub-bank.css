@@ -7,7 +7,8 @@
 .hub-bank-row > * { min-inline-size: 0; margin: 0; }
 .hub-bank-rank { grid-column: 1; grid-row: 1; }
 .hub-bank-labels { grid-column: 2; grid-row: 1; }
-.hub-bank-records, .hub-bank-scores, .hub-bank-reading, .hub-bank-read { grid-column: 1 / -1; }
+.hub-bank-records, .hub-bank-scores, .hub-bank-reading, .hub-bank-read, .hub-bank-seed { grid-column: 1 / -1; }
+.hub-bank-seed { display: flex; flex-wrap: wrap; align-items: center; gap: var(--hub-space-2); }
 .hub-bank-row p { margin-block: var(--hub-space-2); }
 .hub-bank-title { font-size: 16px; font-weight: 600; line-height: 1.5; }
 .hub-bank-labels { display: flex; flex-wrap: wrap; align-items: center; gap: var(--hub-space-2); }

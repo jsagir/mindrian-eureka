@@ -259,6 +259,7 @@ class PayloadPair(TypedDict):
     pair_class: NotRequired[str]
     left_extras: NotRequired[dict[str, str]]
     right_extras: NotRequired[dict[str, str]]
+    seed_command: NotRequired[str]
 
 
 class PayloadRecord(TypedDict):
@@ -370,6 +371,7 @@ class Payload(TypedDict):
     data_check: PayloadDataCheck
     graph: PayloadGraph
     has_pair_classes: NotRequired[bool]
+    has_seed_commands: NotRequired[bool]
 
 
 # --- Functions --------------------------------------------------------------

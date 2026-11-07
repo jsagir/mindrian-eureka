@@ -89,6 +89,14 @@
     [rank, role].concat(extrasRows).concat([records, scores, reading, button]).forEach(function (part) {
       if (part) item.appendChild(part);
     });
+    // Phase 2.3 (D-04): the exact seed command as text to copy. It is the last child.
+    // The page runs nothing: no button, no handler, no copy code.
+    if (typeof pair.seed_command === "string") {
+      item.appendChild(HubApp.el("div", { class: "hub-bank-seed" }, [
+        text("span", "B16.label", {}, { class: "hub-chip hub-bank-seed-label" }),
+        HubApp.el("code", { class: "hub-mono hub-bank-seed-command" }, pair.seed_command)
+      ]));
+    }
     return item;
   }
   function update() {
@@ -196,6 +204,9 @@
       controls.appendChild(classes);
     }
     controls.appendChild(cutoffs());
+    if (HubApp.data.has_seed_commands === true) {
+      controls.appendChild(text("p", "B16.hint", {}, { class: "hub-bank-seed-hint" }));
+    }
     weak = null;
     if (HubApp.data.counts.weak_pairs > 0) {
       weak = HubApp.el("input", { type: "checkbox", id: "bank-weak" });
