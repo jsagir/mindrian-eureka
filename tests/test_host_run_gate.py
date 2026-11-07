@@ -165,6 +165,30 @@ def test_claim_retry_with_the_same_key(tmp_path: Path) -> None:
     assert late.receipt_id == first.receipt_id
 
 
+def test_claim_retry_needs_the_job_to_still_exist(tmp_path: Path) -> None:
+    from mindrian_eureka.host_run.contracts import HostRunError
+
+    receipts = _receipts(tmp_path)
+    receipts.record_plan(DIGEST_A, "scope", "snap")
+    first = receipts.claim(DIGEST_A, "gate:one", "k1")
+    receipts.attach_job(first.receipt_id, "eureka-abc")
+
+    kept = receipts.claim(DIGEST_A, "gate:one", "k1", job_exists=lambda job_id: True)
+    assert kept.retry is True
+    assert kept.receipt_id == first.receipt_id
+
+    seen: list[str] = []
+
+    def gone(job_id: str) -> bool:
+        seen.append(job_id)
+        return False
+
+    with pytest.raises(HostRunError) as replay:
+        receipts.claim(DIGEST_A, "gate:one", "k1", job_exists=gone)
+    assert replay.value.code == "plan_consumed"
+    assert seen == ["eureka-abc"]
+
+
 def test_new_plan_call_opens_a_new_receipt(tmp_path: Path) -> None:
     from mindrian_eureka.host_run.contracts import HostRunError
 

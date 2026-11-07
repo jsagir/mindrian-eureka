@@ -218,6 +218,21 @@ def test_receipt_is_single_use_and_retry_safe(host: Any) -> None:
     wait(host, one["job_id"])
 
 
+def test_deleted_job_does_not_give_a_second_run_for_one_approval(host: Any) -> None:
+    request = make_request(12)
+    planned = plan(host, request)
+    first = start(host, request, planned["plan_digest"], key="k1")
+    assert "job_id" in first
+    assert wait(host, first["job_id"])["status"] == "completed"
+    assert host.scout_delete_job(first["job_id"])["deleted"] is True
+    assert job_rows(host) == 0
+
+    replay = start(host, request, planned["plan_digest"], key="k1")
+    assert replay["status"] == "refused"
+    assert replay["reason"] == "plan_consumed"
+    assert job_rows(host) == 0
+
+
 def test_failed_job_start_releases_the_receipt(host: Any) -> None:
     request = make_request(12)
     planned = plan(host, request)
@@ -301,6 +316,37 @@ def test_only_the_data_directory_changes(host: Any, isolated_env: Path, tmp_path
         assert path == data or data in path.parents, str(path)
     assert tree_hash(room) == room_before
     assert list(isolated_env.rglob("embeddings.sqlite3")) == []
+
+
+def test_result_envelope_leaks_neither_data_path_nor_extra_text(
+    isolated_env: Path, stub_encoders: None, fake_model_dir: Path, monkeypatch: Any
+) -> None:
+    from mindrian_eureka.opportunity_pairs import mcp_server
+    from mindrian_eureka.opportunity_pairs.jobs import JobManager
+
+    data_marker = "DATADIRMARKER7f3a"
+    text_marker = "ARTIFACTTEXTMARKER9c1e"
+    monkeypatch.setenv("MINDRIAN_EUREKA_RS_MODEL_PATH", str(fake_model_dir))
+    data_dir = isolated_env / data_marker / "store"
+    manager = JobManager(data_dir)
+    monkeypatch.setattr(mcp_server, "manager", manager)
+    try:
+        request = make_request(12)
+        for item in request["artifacts"]:
+            item["text"] = f"{item['text']} {text_marker}"
+        result = run_cycle(mcp_server, request)
+    finally:
+        manager.executor.shutdown(wait=True)
+    assert data_dir.exists()
+    shown = json.dumps(result, ensure_ascii=False)
+    assert data_marker not in shown
+    assert str(isolated_env) not in shown
+    assert str(data_dir) not in shown
+    assert text_marker not in shown
+    inline = {item["path"] for item in result["files"] if item["inline"]}
+    assert "corpus/records.jsonl" not in inline
+    for item in result["files"]:
+        assert set(item) <= {"path", "sha256", "bytes", "inline", "content"}
 
 
 def test_catalog_entry_and_contract(host: Any) -> None:

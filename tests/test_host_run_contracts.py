@@ -56,6 +56,27 @@ def test_valid_request_normalizes() -> None:
         assert artifact.text_sha256 == hashlib.sha256(artifact.text.encode("utf-8")).hexdigest()
 
 
+LONE_SURROGATE = "bad\ud800text"
+
+
+@pytest.mark.parametrize("key", ["objective", "scope_id", "snapshot_id"])
+def test_lone_surrogate_in_a_top_field_is_a_typed_refusal(key: str) -> None:
+    error = _refused(make_request(**{key: LONE_SURROGATE}))
+    assert error.code == "bad_request"
+    assert key in error.message
+    assert "\ud800" not in error.message
+
+
+@pytest.mark.parametrize("key", ["id", "source_ref", "title"])
+def test_lone_surrogate_in_an_artifact_field_is_a_typed_refusal(key: str) -> None:
+    raw = make_request(12)
+    raw["artifacts"][3][key] = LONE_SURROGATE
+    error = _refused(raw)
+    assert error.code == "bad_request"
+    assert key in error.message
+    assert "\ud800" not in error.message
+
+
 def test_top_k_defaults_to_the_limit() -> None:
     from mindrian_eureka.host_run.contracts import normalize_request
 
