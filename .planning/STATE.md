@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: ready_to_execute
-stopped_at: Phase 5 planned (9 plans); Phase 4.1 complete and verified (human_needed)
-last_updated: "2026-11-07T22:05:05.949Z"
-last_activity: 2026-11-08 -- Phase 4.1 verified; Phase 5 planned
+status: executing
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-11-07T22:35:59.862Z"
+last_activity: 2026-11-07 -- Phase 5 execution started
 progress:
   total_phases: 9
-  completed_phases: 6
-  total_plans: 54
-  completed_plans: 51
-  percent: 67
+  completed_phases: 7
+  total_plans: 62
+  completed_plans: 53
+  percent: 78
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-23)
 
 **Core value:** A user who is not the author can install Eureka, run it on their own collection with one command, and get the same ranked candidates every time, with hashes and settings that prove it. Output stays labeled "candidate, not verified".
-**Current focus:** Phase 5 — Encoder seam, safe cache key and local GPU spike (planned, not started)
+**Current focus:** Phase 5 — Encoder seam, safe cache key and local GPU spike
 
 ## Current Position
 
-Phase: 5 (Encoder seam, safe cache key and local GPU spike) — PLANNED
-Plan: 0 of 9
-Status: Ready to execute. Phases 3, 4 and 4.1 are complete on the Eureka side and verified human_needed (owner items open: contract sections 4, 9, 10, 13; the five provenance-gap mark texts; the room-side mark; a non-author run of the guide on a second machine; release sign-off; a Windows run of start.ps1 with a path that has a space; the GPU spike on the owner's RTX 3060).
-Last activity: 2026-11-08 -- Phase 4.1 verified; Phase 5 planned
+Phase: 5 (Encoder seam, safe cache key and local GPU spike) — EXECUTING
+Plan: 1 of 9
+Status: Ready to execute
+Last activity: 2026-11-07 -- Phase 5 execution started
 
 Progress: [██████████] 97%
 
@@ -81,6 +81,7 @@ Progress: [██████████] 97%
 | Phase 04 P02 | 10min | 3 tasks | 11 files |
 | Phase 04 P03 | 25min | 3 tasks | 4 files |
 | Phase 04 P04 | 20min | 2 tasks | 3 files |
+| Phase 05 P01 | 55min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -99,6 +100,7 @@ Recent decisions affecting current work:
 - [Phase 04-02]: Example reference run uses all-MiniLM-L6-v2 (JHTV replay used mdbr-leaf-ir); recorded in example.model_note. Example status: Internal only, per docs/rs-release-gate.md.
 - [Phase 04]: 04-03: the replay block of the reproduction guide holds a fixed pending text until plan 04-04 derives it from docs/jhtv-replay-record.md — One record file is the only source of the replay statement
 - [Phase 04]: 04-04: the guide replay block holds the statement derived from docs/jhtv-replay-record.md (provenance gap); example hashes did not drift; release status stays internal only
+- [Phase 05]: 05-01: factory not wired into runner/engines yet; gpu-nemotron revision unpinned until spike 05-08
 
 ### Pending Todos
 
@@ -143,8 +145,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-11-07T22:05:05.943Z
-Stopped at: Completed 04.1-03-PLAN.md
+Last session: 2026-11-07T22:35:59.857Z
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
 
 ### Roadmap Evolution
