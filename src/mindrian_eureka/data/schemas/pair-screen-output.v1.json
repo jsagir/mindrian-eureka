@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.pair-screen.v1",
+  "title": "opportunity.run_pair_screen result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "capability_id", "status", "job_id", "label", "summary_line", "scope",
+    "approval", "counts", "caps_hit", "warnings", "manifest_sha256", "files", "id_map",
+    "outputs", "host_handoff", "room_write", "portfolio_write", "persistence"
+  ],
+  "properties": {
+    "schema_version": {"const": "eureka.pair-screen.v1"},
+    "capability_id": {"const": "opportunity.run_pair_screen"},
+    "status": {"enum": ["completed", "completed_empty"]},
+    "job_id": {"type": "string", "minLength": 1},
+    "label": {"const": "candidate, not verified"},
+    "summary_line": {"type": "string", "minLength": 1},
+    "scope": {
+      "type": "object",
+      "required": ["scope_id", "snapshot_id"],
+      "properties": {
+        "scope_id": {"type": "string"},
+        "snapshot_id": {"type": "string"}
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plan_digest", "approval_ref", "verified_by_engine"],
+      "properties": {
+        "plan_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "approval_ref": {"type": "string"},
+        "verified_by_engine": {"const": false}
+      }
+    },
+    "counts": {
+      "type": "object",
+      "required": [
+        "records_read", "records_used", "dropped", "unusual_pairs", "wording_and_meaning_pairs"
+      ],
+      "properties": {
+        "records_read": {"type": "integer", "minimum": 0},
+        "records_used": {"type": "integer", "minimum": 0},
+        "dropped": {"type": "integer", "minimum": 0},
+        "unusual_pairs": {"type": "integer", "minimum": 0},
+        "wording_and_meaning_pairs": {"type": "integer", "minimum": 0},
+        "pair_classes": {"type": "object"}
+      }
+    },
+    "caps_hit": {"type": "array", "items": {"type": "object"}},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "manifest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "bytes", "sha256", "inline"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "bytes": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "inline": {"type": "boolean"},
+          "content": {"type": "string"}
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"inline": {"const": true}}, "required": ["inline"]},
+            "then": {"required": ["content"]}
+          },
+          {
+            "if": {"properties": {"inline": {"const": false}}, "required": ["inline"]},
+            "then": {"not": {"required": ["content"]}}
+          }
+        ]
+      }
+    },
+    "id_map": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["record_id", "artifact_id", "source_ref"],
+        "properties": {
+          "record_id": {"type": "string"},
+          "artifact_id": {"type": "string"},
+          "source_ref": {"type": "string"}
+        }
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "engines", "payload"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "kind": {"const": "pair"},
+          "engines": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"enum": ["unusual_pairs", "wording_and_meaning"]}
+          },
+          "payload": {
+            "type": "object",
+            "required": ["left", "right", "ranks"],
+            "properties": {
+              "left": {"$ref": "#/$defs/PairSide"},
+              "right": {"$ref": "#/$defs/PairSide"},
+              "ranks": {
+                "type": "object",
+                "required": ["unusual_pairs", "wording_and_meaning"],
+                "properties": {
+                  "unusual_pairs": {"type": ["integer", "null"]},
+                  "wording_and_meaning": {"type": ["integer", "null"]}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "host_handoff": {
+      "type": "object",
+      "required": ["state", "owner"],
+      "properties": {
+        "state": {"type": "string"},
+        "owner": {"type": "string"}
+      }
+    },
+    "room_write": {"const": "not_performed"},
+    "portfolio_write": {"const": "not_performed"},
+    "persistence": {
+      "type": "object",
+      "required": ["job_store", "derived_vectors", "run_files"],
+      "properties": {
+        "job_store": {"type": "string"},
+        "derived_vectors": {"type": "string"},
+        "run_files": {"type": "string"}
+      }
+    }
+  },
+  "$defs": {
+    "PairSide": {
+      "type": "object",
+      "required": ["artifact_id", "record_id", "source_ref", "title"],
+      "properties": {
+        "artifact_id": {"type": "string"},
+        "record_id": {"type": "string"},
+        "source_ref": {"type": "string"},
+        "title": {"type": "string"}
+      }
+    }
+  }
+}

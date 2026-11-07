@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.pair-screen-input.v1",
+  "title": "opportunity.run_pair_screen input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["objective", "scope_id", "snapshot_id", "artifacts"],
+  "properties": {
+    "objective": {"type": "string", "minLength": 1, "maxLength": 5000},
+    "scope_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "snapshot_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "artifacts": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 3000,
+      "items": {"$ref": "#/$defs/ArtifactInput"}
+    },
+    "top_k": {"type": "integer", "minimum": 1, "maximum": 200, "default": 200},
+    "approval": {
+      "type": "object",
+      "description": "Required to start the run. The plan tool ignores it. The approval_ref is audit metadata that the engine cannot verify.",
+      "additionalProperties": false,
+      "required": ["plan_digest", "approval_ref"],
+      "properties": {
+        "plan_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "approval_ref": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:#/-]{0,127}$"}
+      }
+    }
+  },
+  "$defs": {
+    "ArtifactInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "source_ref", "text"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 256},
+        "source_ref": {"type": "string", "minLength": 1, "maxLength": 2048},
+        "title": {"type": "string", "default": "", "maxLength": 2000},
+        "text": {"type": "string", "minLength": 1, "maxLength": 1000000},
+        "corpus": {"type": "string", "default": "room", "enum": ["room"]},
+        "media_type": {"anyOf": [{"type": "string", "maxLength": 128}, {"type": "null"}], "default": null},
+        "sha256": {"anyOf": [{"type": "string", "pattern": "^[a-fA-F0-9]{64}$"}, {"type": "null"}], "default": null}
+      }
+    }
+  }
+}
