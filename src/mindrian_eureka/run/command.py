@@ -206,6 +206,15 @@ def register_commands(subparsers: argparse._SubParsersAction[argparse.ArgumentPa
     doctor.add_argument(
         "--model-path", type=Path, metavar="P", help="folder of the local meaning model"
     )
+    doctor.add_argument(
+        "--encoder-profile",
+        metavar="NAME",
+        default=None,
+        help=(
+            "also check one named encoder profile (D9); the names are listed when the name is "
+            "unknown; add --load-model to load it and compare the vector width"
+        ),
+    )
     doctor.add_argument("--no-color", action="store_true", help="accepted; doctor never uses color")
 
 
@@ -325,6 +334,7 @@ def doctor_cli(args: argparse.Namespace) -> int:
             load_model=args.load_model,
             model_path=args.model_path,
             out=None,
+            encoder_profile=getattr(args, "encoder_profile", None),
         )
     except KeyboardInterrupt:
         Console(no_color=True).error("Interrupted.")

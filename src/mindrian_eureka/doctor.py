@@ -3,7 +3,8 @@
 The doctor checks Python, uv, the encoder libraries, the local model, the cache folder,
 the data folder and the offline variables. It prints fix commands. It never runs them.
 It makes no network call and creates, changes or deletes nothing on disk. Heavy
-libraries load only when the user passes `--load-model`.
+libraries load only when the user passes `--load-model`. The flag `--encoder-profile NAME`
+adds one check, D9, for a named encoder profile; it replaces D8 when the model is loaded.
 """
 
 from __future__ import annotations
@@ -21,6 +22,15 @@ from enum import Enum
 from pathlib import Path
 from typing import TextIO
 
+from .encoder_spec import (
+    DEFAULT_PROFILE,
+    MODERN_EXTRA,
+    PROFILE_EXTRA,
+    PROFILE_STATUS,
+    PROFILES,
+    EncoderSpec,
+    profile_spec,
+)
 from .models import (
     discover_model,
     missing_model_message,
@@ -107,6 +117,26 @@ def _default_loader(model_dir: Path) -> int:
     return int(vectors.shape[-1])
 
 
+def _default_encoder_loader(spec: EncoderSpec, model_dir: Path) -> int:
+    """Load the model of a profile through the factory, encode one sentence, return the width."""
+    os.environ["HF_HUB_OFFLINE"] = "1"
+    os.environ["TRANSFORMERS_OFFLINE"] = "1"
+    from .opportunity_pairs.encoders import make_encoder
+
+    encoder = make_encoder(spec, model_path=str(model_dir), allow_download=False)
+    vectors = encoder.encode_raw([_CHECK_SENTENCE])
+    return int(vectors.shape[-1])
+
+
+def _default_cuda_available() -> bool:
+    """Ask torch whether a CUDA device exists. A missing torch gives False."""
+    try:
+        import torch
+    except ImportError:
+        return False
+    return bool(torch.cuda.is_available())
+
+
 @dataclass(frozen=True)
 class Probes:
     """The system probes of the doctor. Tests replace them.
@@ -119,6 +149,8 @@ class Probes:
         is_posix: True on Linux and macOS.
         geteuid: The user id of the current user.
         loader: Load the model folder and return the vector width.
+        encoder_loader: Load the model of an encoder profile and return the vector width.
+        cuda_available: True when torch reports a CUDA device.
     """
 
     python_version: tuple[int, int, int] = field(default_factory=_default_python_version)
@@ -128,6 +160,8 @@ class Probes:
     is_posix: bool = field(default_factory=_default_is_posix)
     geteuid: Callable[[], int] = _default_geteuid
     loader: Callable[[Path], int] = _default_loader
+    encoder_loader: Callable[[EncoderSpec, Path], int] = _default_encoder_loader
+    cuda_available: Callable[[], bool] = _default_cuda_available
 
 
 def _check_python(probes: Probes) -> CheckResult:
@@ -344,6 +378,90 @@ def _check_model_loads(model_dir: Path, probes: Probes) -> CheckResult:
     return CheckResult("D8", "Model loads", Status.PASS, text, None)
 
 
+def _check_encoder_profile(
+    name: str,
+    model_path: Path | None,
+    model_dir: Path | None,
+    load_model: bool,
+    probes: Probes,
+) -> CheckResult:
+    """Check one named encoder profile (D9). The cuda probe runs for a cuda profile only."""
+    check_id, title = "D9", "Encoder profile"
+    if name not in PROFILES:
+        known = ", ".join(sorted(PROFILES))
+        return CheckResult(
+            check_id, title, Status.FAIL,
+            f"Unknown encoder profile {name!r}. Known profiles: {known}.",
+            f"Use one of: {known}",
+        )
+    spec = profile_spec(name)
+    extra = PROFILE_EXTRA.get(name, MODERN_EXTRA)
+    libraries = ["sentence_transformers"]
+    if spec.device != "cpu":
+        libraries += ["transformers", "torch"]
+    missing = [item for item in libraries if probes.find_spec(item) is None]
+    if missing:
+        return CheckResult(
+            check_id, title, Status.FAIL,
+            f"Profile {name} needs these Python libraries: {', '.join(missing)}.",
+            f"Run: uv sync --extra {extra}",
+        )
+    if spec.device.startswith("cuda") and not probes.cuda_available():
+        return CheckResult(
+            check_id, title, Status.FAIL,
+            f"Profile {name} needs a CUDA device, but torch reports none.",
+            "Install a CUDA build of torch for this computer. This project does not lock it, "
+            f"because the build depends on the computer. Then run again: eureka doctor "
+            f"--encoder-profile {name}",
+        )
+    folder = model_dir if name == DEFAULT_PROFILE and model_path is None else model_path
+    if name != DEFAULT_PROFILE and model_path is None:
+        return CheckResult(
+            check_id, title, Status.FAIL if load_model else Status.WARN,
+            f"Profile {name} needs its own model folder; none was given.",
+            f"Add --model-path <folder with the {spec.model_id} files>",
+        )
+    pinned_note = ""
+    if PROFILE_STATUS.get(name) == "spike" and spec.revision is None:
+        pinned_note = " The model revision is not pinned."
+    details = f"dtype {spec.dtype or 'default'}, device {spec.device}"
+    if not load_model:
+        status = Status.WARN if pinned_note else Status.PASS
+        return CheckResult(
+            check_id, title, status,
+            f"Profile {name}: libraries found ({details}). "
+            "Add --load-model to load the model and check the vector width." + pinned_note,
+            "The spike record pins the model revision before real use." if pinned_note else None,
+        )
+    if folder is None:
+        return CheckResult(
+            check_id, title, Status.WARN,
+            f"Profile {name}: the load check was skipped because no model folder was found "
+            "(see D4).",
+            model_fix_text(),
+        )
+    try:
+        width = probes.encoder_loader(spec, folder)
+    except Exception as error:  # model libraries raise many error types
+        return CheckResult(
+            check_id, title, Status.FAIL,
+            f"Profile {name} did not load from {folder}: {type(error).__name__}: {error}",
+            model_fix_text(),
+        )
+    if spec.dimension is not None and width != spec.dimension:
+        return CheckResult(
+            check_id, title, Status.FAIL,
+            f"Profile {name} declares vectors of width {spec.dimension}, but the model "
+            f"gave width {width}.",
+            f"Check that the folder holds the {spec.model_id} files: {folder}",
+        )
+    text = f"Profile {name} loaded and gave vectors of width {width} ({details})." + pinned_note
+    return CheckResult(
+        check_id, title, Status.WARN if pinned_note else Status.PASS, text,
+        "The spike record pins the model revision before real use." if pinned_note else None,
+    )
+
+
 def run_checks(
     *,
     model_path: Path | None = None,
@@ -351,6 +469,7 @@ def run_checks(
     env: Mapping[str, str] | None = None,
     home: Path | None = None,
     probes: Probes | None = None,
+    encoder_profile: str | None = None,
 ) -> list[CheckResult]:
     """Run all checks. Nothing is created, changed or downloaded.
 
@@ -360,9 +479,11 @@ def run_checks(
         env: The environment. The default is `os.environ`.
         home: The home folder. The default is `Path.home()`.
         probes: Replacement system probes. The default uses the real system.
+        encoder_profile: The name given with `--encoder-profile`, or None.
 
     Returns:
         The results in order D1 to D7, then D8 when `load_model` is true and D4 passed.
+        With an encoder profile, D8 is left out and D9 comes last.
     """
     environment: Mapping[str, str] = os.environ if env is None else env
     home_dir = Path.home() if home is None else home
@@ -379,8 +500,12 @@ def run_checks(
         _check_folder("D6", "Data folder", _data_dir(environment, home_dir), ENV_DATA_DIR, system),
         _check_offline_env(environment),
     ]
-    if load_model and model_dir is not None:
+    if load_model and model_dir is not None and encoder_profile is None:
         results.append(_check_model_loads(model_dir, system))
+    if encoder_profile is not None:
+        results.append(
+            _check_encoder_profile(encoder_profile, model_path, model_dir, load_model, system)
+        )
     return results
 
 
@@ -449,6 +574,7 @@ def doctor_command(
     load_model: bool,
     model_path: Path | None,
     out: TextIO | None = None,
+    encoder_profile: str | None = None,
 ) -> int:
     """Run the doctor and print the report.
 
@@ -457,12 +583,15 @@ def doctor_command(
         load_model: True to run check D8.
         model_path: The folder given with `--model-path`, or None.
         out: The output stream. The default is standard output at call time.
+        encoder_profile: The name given with `--encoder-profile`, or None.
 
     Returns:
         0 when no check is FAIL, else 1.
     """
     stream = sys.stdout if out is None else out
-    results = run_checks(model_path=model_path, load_model=load_model)
+    results = run_checks(
+        model_path=model_path, load_model=load_model, encoder_profile=encoder_profile
+    )
     stream.write(report_json(results) if json_output else format_report(results))
     failed = any(item.status is Status.FAIL for item in results)
     return EXIT_FAILURE if failed else EXIT_OK
