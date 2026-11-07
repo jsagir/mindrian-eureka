@@ -27,11 +27,6 @@ CITED_PAIRS = 2267385
 OUTCOMES = ("provenance_gap", "replayed")
 ROOM_MARKS = ("done", "pending_approval")
 
-PENDING_TEXT = (
-    "Replay outcome: not recorded yet. Phase 3 has not produced its result, "
-    "so this guide makes no claim about the replay. This is not a verified statement."
-)
-
 
 def read_replay_record(path: Path = REPLAY_RECORD_PATH) -> dict[str, Any] | None:
     """Read the front matter of the replay record.

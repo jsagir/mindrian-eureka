@@ -17,7 +17,6 @@ from guide_support import (
     CITED_CLAIMS,
     CITED_PAIRS,
     END,
-    PENDING_TEXT,
     RECORD_SENTENCE,
     REPLAY_RECORD_PATH,
     read_replay_record,
@@ -281,12 +280,11 @@ def test_replay_block_state() -> None:
     text = _guide()
     block = replay_block(text)
     assert text.count("Replay outcome") == 1
+    assert "not recorded yet" not in text
+    assert REPLAY_RECORD_PATH.exists()
     record = read_replay_record()
-    if record is None:
-        assert not REPLAY_RECORD_PATH.exists()
-        assert block == PENDING_TEXT
-    else:
-        assert block in (PENDING_TEXT, replay_statement(record))
+    assert record is not None
+    assert block == replay_statement(record)
 
 
 # --- replay statement unit cases (no file) -----------------------------------
@@ -350,6 +348,37 @@ def test_replay_statement_unit_cases() -> None:
         )
     with pytest.raises(ValueError):
         replay_statement({"outcome": "provenance_gap"})
+
+
+def test_statement_uses_only_listed_keys() -> None:
+    """Text in a record key outside the listed keys must not reach the statement."""
+    secret = "PRIVATE-ROOM-TEXT-9f3a"
+    extra = {
+        "label": secret,
+        "note": secret,
+        "title": secret,
+        "checked_on": secret,
+        "opportunity": secret,
+    }
+    gap = {"outcome": "provenance_gap", "room_mark": "pending_approval"}
+    replayed = {
+        "outcome": "replayed",
+        "claims": str(CITED_CLAIMS),
+        "pairs": str(CITED_PAIRS),
+        "two_run_hashes_equal": "true",
+    }
+    for base in (gap, replayed):
+        assert replay_statement({**base, **extra}) == replay_statement(base)
+        assert secret not in replay_statement({**base, **extra})
+    record = read_replay_record()
+    assert record is not None
+    statement = replay_statement(record)
+    # `label` is excluded: the fixed label is constant text of the statement, not read from
+    # the record, and the loop above proves a changed `label` value does not reach it.
+    listed = {"outcome", "room_mark", "claims", "pairs", "two_run_hashes_equal", "label"}
+    for key, value in record.items():
+        if key not in listed and len(str(value)) > 12:
+            assert str(value) not in statement
 
 
 def test_replay_block_markers_unit_cases() -> None:
