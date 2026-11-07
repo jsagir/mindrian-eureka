@@ -13,6 +13,7 @@ import re
 import shutil
 import stat
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -267,6 +268,13 @@ def test_requirements_filter_on_the_real_lock_keeps_every_hash_of_a_kept_entry(
         assert ("colorama==" in filtered) == (name == "windows-x86_64")
         filtered_hashes = {x for x in filtered.split() if x.startswith("--hash=sha256:")}
         assert filtered_hashes <= {x for x in locked.split() if x.startswith("--hash=sha256:")}
+
+
+def test_missing_packaging_fix_names_the_bundle_extra(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setitem(sys.modules, "packaging.markers", None)
+    with pytest.raises(BundleError) as caught:
+        filter_requirements_for_target(SAMPLE_LOCK, TARGETS["linux-x86_64"])
+    assert "--extra bundle" in str(caught.value.fix)
 
 
 def test_other_targets_refuse_offline(tmp_path: Path) -> None:

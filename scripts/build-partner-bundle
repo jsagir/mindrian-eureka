@@ -3,4 +3,4 @@
 set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
-exec uv run --offline python -m mindrian_eureka.partner_bundle.builder "$@"
+exec uv run --offline --extra bundle python -m mindrian_eureka.partner_bundle.builder "$@"

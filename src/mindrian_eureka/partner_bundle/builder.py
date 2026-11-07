@@ -488,7 +488,10 @@ def filter_requirements_for_target(text: str, target: Target) -> str:
     except ImportError as error:  # pragma: no cover - depends on the builder environment
         raise BundleError(
             "The wheel download needs the `packaging` module to read the markers.",
-            fix="Run the builder with `uv run --offline` inside the repository checkout.",
+            fix=(
+                "Run the builder with `uv run --offline --extra bundle` inside the repository "
+                "checkout, or use `scripts/build-partner-bundle`."
+            ),
         ) from error
     environment = {**_COMMON_MARKERS, **TARGET_MARKERS[target.uv_triple]}
     kept: list[str] = []
