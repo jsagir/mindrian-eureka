@@ -27,6 +27,7 @@ from mindrian_eureka.partner_bundle.builder import (
     BundleReport,
     _pip_download_base,
     build_bundle,
+    filter_requirements_for_target,
     resolve_target,
 )
 from mindrian_eureka.run.contracts import LABEL
@@ -200,12 +201,67 @@ def test_wheel_download_keeps_require_hashes(
     monkeypatch.setattr(builder, "_require_online", lambda *_a, **_k: None)
     bundle = tmp_path / "bundle"
     bundle.mkdir()
+    (bundle / "requirements.txt").write_text(SAMPLE_LOCK, encoding="utf-8")
     options = BundleOptions(target="macos-arm64", out_dir=tmp_path, online=True, repo_root=REPO)
     builder._download_wheels(options, TARGETS["macos-arm64"], bundle, "uv")
     assert len(calls) == 2
     assert "--require-hashes" in calls[0]
+    assert "--no-deps" in calls[0]
     assert "--requirement" in calls[0]
     assert all("--extra-index-url" in call for call in calls)
+
+
+SAMPLE_LOCK = """# header
+colorama==0.4.6 ; sys_platform == 'win32' \\
+    --hash=sha256:aa \\
+    --hash=sha256:bb
+    # via click
+numpy==2.5.4 \\
+    --hash=sha256:cc
+torch==2.14.1 ; sys_platform == 'darwin' \\
+    --hash=sha256:dd
+torch==2.14.1+cpu ; sys_platform != 'darwin' \\
+    --hash=sha256:ee
+hf-xet==1.7.0 ; platform_machine == 'AMD64' or platform_machine == 'arm64' \\
+    --hash=sha256:ff
+"""
+
+
+def _names(text: str) -> list[str]:
+    return [line.split(" ")[0] for line in text.splitlines() if line and line[0].isalpha()]
+
+
+def test_requirements_filter_uses_the_marker_values_of_the_target() -> None:
+    linux = filter_requirements_for_target(SAMPLE_LOCK, TARGETS["linux-x86_64"])
+    windows = filter_requirements_for_target(SAMPLE_LOCK, TARGETS["windows-x86_64"])
+    macos = filter_requirements_for_target(SAMPLE_LOCK, TARGETS["macos-arm64"])
+    assert _names(linux) == ["numpy==2.5.4", "torch==2.14.1+cpu"]
+    assert _names(windows) == [
+        "colorama==0.4.6",
+        "numpy==2.5.4",
+        "torch==2.14.1+cpu",
+        "hf-xet==1.7.0",
+    ]
+    assert _names(macos) == ["numpy==2.5.4", "torch==2.14.1", "hf-xet==1.7.0"]
+    # The hash lines and the comment lines of a kept entry stay; those of a dropped entry go.
+    assert "--hash=sha256:aa" in windows
+    assert "    # via click" in windows
+    assert "--hash=sha256:aa" not in linux
+    assert "--hash=sha256:dd" not in linux
+    assert "--hash=sha256:ee" not in macos
+
+
+def test_requirements_filter_on_the_real_lock_keeps_every_hash_of_a_kept_entry(
+    host_bundle: Path,
+) -> None:
+    locked = (host_bundle / "requirements.txt").read_text(encoding="utf-8")
+    for name in D07_NAMES:
+        filtered = filter_requirements_for_target(locked, TARGETS[name])
+        assert "torch==2.14.1" in filtered
+        assert ("+cpu" in filtered) == (name != "macos-arm64")
+        assert ("colorama==" in filtered) == (name == "windows-x86_64")
+        filtered_hashes = {x for x in filtered.split() if x.startswith("--hash=sha256:")}
+        assert filtered_hashes <= {x for x in locked.split() if x.startswith("--hash=sha256:")}
 
 
 def test_other_targets_refuse_offline(tmp_path: Path) -> None:

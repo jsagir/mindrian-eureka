@@ -104,6 +104,26 @@ MACOS_ARM64_PIP_PLATFORMS: tuple[str, ...] = (
     "macosx_10_15_universal2",
 )
 
+# The marker values of each target, keyed by uv triple. `pip download --platform` picks
+# the wheel tags of the target, but pip still evaluates every environment marker on the
+# builder machine. The builder therefore filters the locked list for the target itself.
+_LINUX_MARKERS = {"sys_platform": "linux", "platform_system": "Linux", "os_name": "posix"}
+_MACOS_MARKERS = {"sys_platform": "darwin", "platform_system": "Darwin", "os_name": "posix"}
+_WINDOWS_MARKERS = {"sys_platform": "win32", "platform_system": "Windows", "os_name": "nt"}
+TARGET_MARKERS: dict[str, dict[str, str]] = {
+    "x86_64-unknown-linux-gnu": {**_LINUX_MARKERS, "platform_machine": "x86_64"},
+    "aarch64-unknown-linux-gnu": {**_LINUX_MARKERS, "platform_machine": "aarch64"},
+    "x86_64-pc-windows-msvc": {**_WINDOWS_MARKERS, "platform_machine": "AMD64"},
+    "aarch64-apple-darwin": {**_MACOS_MARKERS, "platform_machine": "arm64"},
+}
+_COMMON_MARKERS = {
+    "implementation_name": "cpython",
+    "platform_python_implementation": "CPython",
+    "python_version": "3.12",
+    "python_full_version": "3.12.0",
+    "extra": "",
+}
+
 TARGETS: dict[str, Target] = {
     "linux-x86_64": Target(
         "linux-x86_64",
@@ -455,20 +475,55 @@ def _pip_download_base(target: Target, wheels: Path, uv: str) -> list[str]:
     return base
 
 
+def filter_requirements_for_target(text: str, target: Target) -> str:
+    """Return the locked requirement list without the entries that do not apply to the target.
+
+    `uv export` writes one entry per package, with an optional environment marker and
+    indented `--hash` and comment lines below it. The entry stays when it has no marker
+    or when the marker is true for the target. The shipped `requirements.txt` is not
+    changed; the partner machine evaluates the markers there.
+    """
+    try:
+        from packaging.markers import Marker
+    except ImportError as error:  # pragma: no cover - depends on the builder environment
+        raise BundleError(
+            "The wheel download needs the `packaging` module to read the markers.",
+            fix="Run the builder with `uv run --offline` inside the repository checkout.",
+        ) from error
+    environment = {**_COMMON_MARKERS, **TARGET_MARKERS[target.uv_triple]}
+    kept: list[str] = []
+    keep = True
+    for line in text.splitlines():
+        if line and not line[0].isspace() and not line.startswith("#"):
+            head = line.removesuffix("\\").rstrip()
+            _name, _sep, marker = head.partition(" ; ")
+            keep = not marker or Marker(marker.strip()).evaluate(environment)
+        elif not line.strip() or line.startswith("#"):
+            keep = True
+        if keep:
+            kept.append(line)
+    return "\n".join(kept) + "\n"
+
+
 def _download_wheels(options: BundleOptions, target: Target, bundle: Path, uv: str) -> None:
     """Fetch every locked wheel for the target with `pip download --require-hashes`.
 
-    ASSUMED: `pip download --platform` for the 3 targets. Not run on this machine.
+    The lock holds the full closure, so `--no-deps` stops pip from reading the metadata
+    of a wheel and pulling an entry for the builder machine (for example `cuda-toolkit`).
     """
     _require_online(options, f"The wheel download for {target.name}")
     wheels = bundle / "wheels"
     wheels.mkdir()
     base = _pip_download_base(target, wheels, uv)
-    _run(
-        [*base, "--require-hashes", "--requirement", str(bundle / "requirements.txt")],
-        cwd=options.repo_root,
-        what="pip download of the locked wheels",
-    )
+    locked = (bundle / "requirements.txt").read_text(encoding="utf-8")
+    with tempfile.TemporaryDirectory(prefix="eureka-bundle-") as scratch:
+        filtered = Path(scratch) / "requirements-target.txt"
+        filtered.write_text(filter_requirements_for_target(locked, target), encoding="utf-8")
+        _run(
+            [*base, "--no-deps", "--require-hashes", "--requirement", str(filtered)],
+            cwd=options.repo_root,
+            what="pip download of the locked wheels",
+        )
     _run(
         [*base, "setuptools>=75", "wheel"],
         cwd=options.repo_root,
