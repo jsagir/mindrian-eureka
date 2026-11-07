@@ -126,6 +126,7 @@ None yet.
 | 261107-w6v | [Silence the HSI start warning, add the macOS 14 note, declare packaging](quick/261107-w6v-silence-the-hsi-start-warning-add-the-ma/261107-w6v-SUMMARY.md), implementation 2065d46 f4acbf9 | complete |
 | 261107-wif | [Move packaging to an optional bundle extra](quick/261107-wif-move-packaging-to-an-optional-bundle-ext/261107-wif-SUMMARY.md), implementation 727dc23 2b86358 | complete |
 | 261107-wuy | [Windows launcher: pass the uv sync arguments as an array](quick/261107-wuy-windows-launcher-pass-the-uv-sync-argume/261107-wuy-SUMMARY.md), implementation 4be74df | complete |
+| 261108-0ur | [Verify the MCP reach table and tests on the locked mcp 2.3.0](quick/261108-0ur-verify-the-mcp-reach-table-and-tests-on-/261108-0ur-SUMMARY.md), implementation 67617cb 7840888 | complete |
 
 ### Blockers/Concerns
 
