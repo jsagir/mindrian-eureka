@@ -12,6 +12,7 @@ from mindrian_eureka import opportunity_discovery
 from mindrian_eureka.contracts import validate_result
 from mindrian_eureka.decision_patterns.algorithm import analyze_sequence, fit_model
 from mindrian_eureka.discovery_workflows import portfolio_coverage
+from mindrian_eureka.encoder_spec import custom_spec
 from mindrian_eureka.hsi_engine import run_hsi
 from mindrian_eureka.opportunity_pairs.cache import EmbeddingCache
 from mindrian_eureka.opportunity_pairs.runner import run_document
@@ -178,7 +179,11 @@ def _seed_rs_cache(path):
     cache = EmbeddingCache(path)
     for key, text in FIXTURE_TEXTS.items():
         # RS embeds "<title>\n\n<text>"; the fixture title equals the id.
-        cache_key = EmbeddingCache.key(f"{key}\n\n{text}", encoder=ENCODER, model=MODEL_PATH, revision=None, method_version=RS_METHOD)
+        # The runner keys the cache by the full encoder identity of the bare-folder spec.
+        cache_key = EmbeddingCache.key(
+            f"{key}\n\n{text}", encoder=ENCODER, model=MODEL_PATH, revision=None,
+            method_version=RS_METHOD, identity=custom_spec(MODEL_PATH).identity(),
+        )
         cache.put(cache_key, np.asarray([FIXTURE_VECTORS[key]], dtype=float))
 
 
