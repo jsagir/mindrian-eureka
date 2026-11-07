@@ -1,0 +1,294 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.room-seed.v1",
+  "title": "Eureka room seed",
+  "description": "The closed contract of a seed folder written by eureka seed. The folder is not a room. MindrianOS opens it through its own birth gate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "label",
+    "seed_kind",
+    "scope_id",
+    "snapshot_id",
+    "manifest_sha256",
+    "engine_versions",
+    "seed_writer",
+    "selection",
+    "records",
+    "source_refs",
+    "pairs",
+    "bank_entries",
+    "known",
+    "feed_next",
+    "suggested_sections",
+    "score_note",
+    "model_boundary"
+  ],
+  "properties": {
+    "schema_version": { "const": "eureka.room-seed.v1" },
+    "label": { "type": "string", "minLength": 1 },
+    "seed_kind": { "enum": ["pair", "cluster"] },
+    "scope_id": { "type": "string", "pattern": "^eureka-run-[0-9a-f]{16}$" },
+    "snapshot_id": { "$ref": "#/$defs/sha256" },
+    "manifest_sha256": { "$ref": "#/$defs/sha256" },
+    "engine_versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "engines"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "engines": { "type": "object" }
+      }
+    },
+    "seed_writer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "mindrian-eureka" },
+        "version": { "type": "string", "minLength": 1 }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "properties": {
+        "pair_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/pairId" }
+        },
+        "spine_record_id": { "type": "string", "minLength": 1 },
+        "degree": { "type": "integer", "minimum": 1 },
+        "min_degree": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "records": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["record_id", "title", "role", "evidence_file", "evidence_sha256"],
+        "properties": {
+          "record_id": { "type": "string", "minLength": 1 },
+          "title": { "type": "string" },
+          "role": { "enum": ["pair_member", "spine", "neighbour"] },
+          "outcome_class": { "enum": ["licensed", "open"] },
+          "carried": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": { "type": "string", "minLength": 1 }
+          },
+          "text_source": { "type": "string", "minLength": 1 },
+          "evidence_file": { "type": "string", "pattern": "^evidence/[A-Za-z0-9._-]+\\.md$" },
+          "evidence_sha256": { "$ref": "#/$defs/sha256" }
+        }
+      }
+    },
+    "source_refs": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["record_id", "source_ref", "source_file", "text_sha256"],
+        "properties": {
+          "record_id": { "type": "string", "minLength": 1 },
+          "source_ref": { "type": "string" },
+          "source_file": { "type": "string" },
+          "text_sha256": { "$ref": "#/$defs/sha256" }
+        }
+      }
+    },
+    "pairs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["pair_id", "left_id", "right_id", "engines"],
+        "properties": {
+          "pair_id": { "$ref": "#/$defs/pairId" },
+          "left_id": { "type": "string", "minLength": 1 },
+          "right_id": { "type": "string", "minLength": 1 },
+          "pair_class": { "enum": ["cross", "open_open", "licensed_licensed"] },
+          "engines": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "engine",
+                "rank",
+                "wording_similarity",
+                "meaning_similarity",
+                "rank_score",
+                "reading"
+              ],
+              "properties": {
+                "engine": { "enum": ["unusual_pairs", "wording_and_meaning"] },
+                "rank": { "type": "integer", "minimum": 1 },
+                "wording_similarity": { "type": "number" },
+                "meaning_similarity": { "type": "number" },
+                "rank_score": { "type": "number" },
+                "percentile": { "type": "number" },
+                "reading": { "type": "string", "minLength": 1 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "bank_entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entry_id",
+          "pair_id",
+          "left_id",
+          "right_id",
+          "review_status",
+          "statement"
+        ],
+        "properties": {
+          "entry_id": { "$ref": "#/$defs/pairId" },
+          "pair_id": { "$ref": "#/$defs/pairId" },
+          "left_id": { "type": "string", "minLength": 1 },
+          "right_id": { "type": "string", "minLength": 1 },
+          "neighbour_id": { "type": "string", "minLength": 1 },
+          "pair_class": { "enum": ["cross", "open_open", "licensed_licensed"] },
+          "review_status": { "const": "proposed" },
+          "statement": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["text", "fields", "critic", "banked", "label", "method", "basis"],
+            "properties": {
+              "text": { "type": "string", "minLength": 1 },
+              "fields": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["tech_a", "tech_b", "reading"],
+                "properties": {
+                  "tech_a": { "type": "string", "minLength": 1 },
+                  "tech_b": { "type": "string", "minLength": 1 },
+                  "reading": { "type": "string" },
+                  "pair_class": { "enum": ["cross", "open_open", "licensed_licensed"] }
+                }
+              },
+              "critic": { "const": "pending" },
+              "banked": { "const": false },
+              "label": { "type": "string", "minLength": 1 },
+              "method": { "const": "eureka.seed-statement.v1" },
+              "basis": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "known": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/sectionName" },
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["record_id", "column", "held_in"],
+          "properties": {
+            "record_id": { "type": "string", "minLength": 1 },
+            "column": { "type": "string", "minLength": 1 },
+            "held_in": { "enum": ["record_text", "carried", "export_only"] },
+            "value": { "type": "string", "minLength": 1 }
+          },
+          "if": {
+            "properties": { "held_in": { "const": "carried" } },
+            "required": ["held_in"]
+          },
+          "then": { "required": ["value"] },
+          "else": { "not": { "required": ["value"] } }
+        }
+      }
+    },
+    "feed_next": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/sectionName" },
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["record_id", "reason"],
+          "properties": {
+            "record_id": { "type": "string", "minLength": 1 },
+            "reason": { "type": "string", "minLength": 1 },
+            "column": { "type": "string", "minLength": 1 },
+            "item": { "type": "string", "minLength": 1 },
+            "source": { "type": "string", "minLength": 1 }
+          },
+          "oneOf": [
+            {
+              "required": ["column"],
+              "not": { "anyOf": [{ "required": ["item"] }, { "required": ["source"] }] }
+            },
+            {
+              "required": ["item", "source"],
+              "not": { "required": ["column"] }
+            }
+          ]
+        }
+      }
+    },
+    "suggested_sections": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/sectionName" }
+    },
+    "score_note": { "type": "string", "minLength": 1 },
+    "model_boundary": { "type": "string", "minLength": 1 }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "seed_kind": { "const": "pair" } }, "required": ["seed_kind"] },
+      "then": {
+        "properties": {
+          "selection": {
+            "additionalProperties": false,
+            "required": ["pair_ids"],
+            "properties": {
+              "pair_ids": { "maxItems": 1 }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "selection": {
+            "additionalProperties": false,
+            "required": ["spine_record_id", "degree", "min_degree", "pair_ids"],
+            "properties": {
+              "pair_ids": {},
+              "spine_record_id": {},
+              "degree": {},
+              "min_degree": {}
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "pairId": { "type": "string", "pattern": "^pair-[0-9a-f]{20}$" },
+    "sectionName": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" }
+  }
+}
