@@ -16,6 +16,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from . import CAPABILITY_ID, CAPABILITY_VERSION
+from .quiet_import import IMPORT_NOTES  # noqa: F401  (imported first: it captures the HSI start note)
 from .jobs import JobManager
 from .runner import validate_document
 from ..structure_mapping import workflow as sme_workflow
