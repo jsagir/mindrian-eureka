@@ -202,6 +202,7 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 3 → 4
   1. Windows launcher: the `uv sync` command is built as a PowerShell argument array, so a bundle path with spaces stays one argument. A text test pins it. It stays ASSUMED until a Windows machine runs it, because PowerShell is not installed on the build machine.
   2. Each finding of the independent code review (requested 2026-11-07 over the range 874f40b..6741585) that this phase confirms as Critical or Important is fixed with a failing test first, or is recorded as declined with the reason.
   3. No finding is fixed by weakening a test. The full suite stays at or above 1701 passed with 0 failed; ruff 1465 and mypy 88 errors do not rise.
+  4. Close-out: the READMEs (README.md, examples/public-example/README.md, src/README.md and any doc index that lists counts or commands) are refreshed and checked against the code and a run (owner rule 2026-11-07: refresh the READMEs after each version).
 
 **Plans:** 1 plan done, 1 to plan
 
@@ -225,6 +226,7 @@ Plans:
   4. The manifest and every ranked result carry an encoder fingerprint and the label "candidate, not verified". A non-CPU run is compared by ranking overlap, not by bytes.
   5. A recorded spike shows whether `Nemotron-3-Embed-1B-BF16` loads and embeds on the owner's RTX 3060 (dimension, load time, peak memory, prefixes, whether remote code is needed), with every number from a run log.
   6. A measured comparison of MiniLM, `mdbr-leaf-ir` and the Nemotron profile on the 36-record public example gives top-200 pair overlap and texts per second. The owner decides any change of default from it.
+  7. Close-out: the READMEs are refreshed and checked against the code and a run (owner rule 2026-11-07: refresh the READMEs after each version).
 
 **Plans:** 0 plans
 
