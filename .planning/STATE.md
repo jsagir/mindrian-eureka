@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
+status: executing
 stopped_at: Plan 19 complete; stop before Plan 17 and any push.
-last_updated: "2026-10-29T07:07:06.078Z"
-last_activity: "2026-10-29 -- Completed quick task 261029-bfm: Equal-spread lexical fusion so LSA and BM25 each hold half the vote"
+last_updated: "2026-11-07T18:07:25.202Z"
+last_activity: 2026-11-07
 progress:
-  total_phases: 6
-  completed_phases: 2
-  total_plans: 31
-  completed_plans: 30
-  percent: 33
+  total_phases: 7
+  completed_phases: 4
+  total_plans: 51
+  completed_plans: 40
+  percent: 57
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-23)
 
 **Core value:** A user who is not the author can install Eureka, run it on their own collection with one command, and get the same ranked candidates every time, with hashes and settings that prove it. Output stays labeled "candidate, not verified".
-**Current focus:** Phase 2.1 — Opportunity Hub in the mos-brand format
+**Current focus:** Phase 3 — Host Integration and Replay Rebuild
 
 ## Current Position
 
-Phase: 2.2 (Partner export profile and package) - VERIFIED, HUMAN ITEMS OPEN
-Plan: 4 of 4 complete (02.2-VERIFICATION.md: human_needed, 8/8 must-haves)
-Status: Implementation complete. Open for the owner: the visual pass of the hub chips and class filter; the brand-lock reconciliation (`refresh --apply` then `asset --replace` in the book); the online build of the linux-x86_64, windows-x86_64 and macos-arm64 bundles to prove the ASSUMED steps. Phase 2.1 visual review (plan 17) stays open. Phase 2.3 (room seed hand-off) has its context and waits for planning.
-Last activity: 2026-10-29 -- Completed Phase 2.2 execution (4 plans, 3 waves) and verification
+Phase: 3 (Host Integration and Replay Rebuild) — EXECUTING
+Plan: 2 of 7
+Status: Ready to execute
+Last activity: 2026-11-07
 
 Progress: [██████████] 97%
 
@@ -70,6 +70,7 @@ Progress: [██████████] 97%
 | Phase 02.1 P18 | recorded in summary | 3 tasks | 9 files |
 | Phase 02.1 P16 | recorded in summary | 2 tasks | 7 files |
 | Phase 02.1 P19 | 1265 passed; 27 skipped; 45 subtests; 454.33 s |
+| Phase 03 P01 | 15min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -124,6 +125,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-10-25T00:34:49Z
+Last session: 2026-11-07T18:07:11.833Z
 Stopped at: Plan 19 complete; stop before Plan 17 and any push.
-Resume file: .planning/phases/02.1-opportunity-hub-in-the-mos-brand-format/02.1-17-PLAN.md
+Resume file: None
