@@ -62,7 +62,7 @@ This repository packages bounded methods behind CLI and MCP interfaces, with a r
 - **Other analysis:** compare explicitly coded decision sequences under supplied models; validate and package proposed portfolio relationships.
 - **Local graph discovery:** analyze an authorized MindrianOS graph snapshot for bounded structural and semantic relationship leads, with an optional focal-node projection.
 
-Each catalogued algorithm or method is an independently callable service through CLI and MCP; Theo or MindrianOS may compose services when useful, but no single workflow is required to use them. These are not all complete source-engine workflows. Some catalog entries are blocked or planned; some callable services are experimental or need host-brokered research. The [engine jobs guide](docs/engine-jobs.md) explains when to use each family. The [algorithm origins and rationale register](docs/algorithm-origins-and-rationale.md) traces where each cataloged service came from and why it is exposed. The [capability catalog](docs/capability-catalog.md) and `eureka capabilities` command are authoritative for exact IDs, maturity, inputs, and limitations.
+Each catalogued algorithm or method is an independently callable service through CLI and MCP; Theo or MindrianOS may compose services when useful, but no single workflow is required to use them. These are not all complete source-engine workflows. Some catalog entries are blocked or planned; some callable services are experimental or need host-brokered research. The [engine jobs guide](docs/engine-jobs.md) explains when to use each family. The [algorithm origins and rationale register](docs/algorithm-origins-and-rationale.md) traces where each cataloged service came from and why it is exposed. The [capability catalog](docs/capability-catalog.md) and `eureka capabilities` command are authoritative for exact IDs, maturity, inputs, and limitations. The catalog holds 68 entries. 60 of them have a CLI and MCP route. The rest are blocked or planned, or have no route yet.
 
 ## Run Eureka on your own folder
 
@@ -82,7 +82,7 @@ Check your setup first:
 uv run eureka doctor
 ```
 
-The doctor checks Python, uv, the meaning model, the cache folder and the data folder. For each problem it prints the exact fix.
+The doctor checks Python, uv, the encoder libraries, the meaning model, the cache folder, the data folder and the offline settings. For each problem it prints the exact fix. It creates, changes and downloads nothing.
 
 Then run Eureka on your folder:
 
@@ -90,9 +90,9 @@ Then run Eureka on your folder:
 uv run eureka run ./my-sources --out ./eureka-run
 ```
 
-A CSV file needs to know which column holds the text. Give a `--mapping` file or the column flags. Run `uv run eureka run --help` to see them. A mapping for a technology-portfolio export with outcome columns is at `examples/mappings/technology-audit-export.json`; see `docs/partner-run-guide.md`. A carry-in folder for a partner machine is built with `scripts/build-partner-bundle`; see `docs/partner-run-guide.md`.
+A CSV file needs to know which column holds the text. Give a `--mapping` file or the column flags. Run `uv run eureka run --help` to see them. A mapping for a technology-portfolio export with outcome columns is at `examples/mappings/technology-audit-export.json`; see `docs/partner-run-guide.md`. A carry-in folder for a partner machine is built with `scripts/build-partner-bundle --target <linux-x86_64 | windows-x86_64 | macos-arm64> --out dist --online`. The script needs the `bundle` extra and passes it itself. On Windows the launcher `start.ps1` passes its arguments to `uv` as an array. Running the launchers on Windows, Linux and macOS is ASSUMED until a partner machine runs them. See `docs/partner-run-guide.md`.
 
-The run reads your folder and never writes into it. It writes these files into the `--out` folder: `unusual-pairs.json`, `wording-and-meaning-pairs.json`, `ranked-pairs.md`, `corpus/records.jsonl`, `manifest.json` and `run-info.json`.
+The run reads your folder and never writes into it. An earlier Eureka run in the `--out` folder is replaced. Any other non-empty folder is refused. It writes these files into the `--out` folder: `unusual-pairs.json`, `wording-and-meaning-pairs.json`, `ranked-pairs.md`, `corpus/records.jsonl`, `manifest.json` and `run-info.json`.
 
 Two runs on the same input give the same ranked files. `run-info.json` is the only file that holds times.
 
@@ -139,7 +139,7 @@ The hub shows the pair command under each pair. The folder layout and the rules 
 
 ## Reproduce the method on public data
 
-A guide takes a reader who is not the author from install to ranked pairs on a public example of 36 arXiv abstracts (CC0). The command `uv run eureka check-example <run-folder>` compares your run with the shipped expected hashes. The guide states what is reproducible and what is not. Every result is a candidate, not verified.
+A guide takes a reader who is not the author from install to ranked pairs on a public example of 36 arXiv abstracts (CC0). The command `uv run eureka check-example <run-folder>` compares your run with the shipped expected hashes. The guide states what is reproducible and what is not. MATCH shows that the output bytes are the shipped ones. It does not prove that the run was made on this machine. Every result is a candidate, not verified.
 
 Status: internal only. The release record has decision no-go for public distribution of the unusual-pairs engine; see the [release record](docs/rs-release-gate.md).
 
@@ -289,7 +289,7 @@ scripts/run-mcp-container
 
 The wrapper disables network access, mounts the model read-only, makes the container root filesystem read-only, and applies configurable CPU and memory limits. The model must already exist on the host.
 
-A host can plan and start the one-command run through `scout_plan_pair_screen` and `scout_start_pair_screen`. A start needs the plan and an approval reference, and the run writes nothing to a room. The steps and the exact keys are in [the engine run contract](docs/mos-eureka-engine-run-contract.md).
+The server registers 27 tools. A host can plan and start the one-command run through `scout_plan_pair_screen` and `scout_start_pair_screen`. A start needs the plan and an approval reference. Each plan call allows one start. Eureka cannot verify the approval, so the real approval is the card of the host. The run writes nothing to a room. A wrong request shape is a tool error, not a refusal. The steps, the exact keys and what a host sees for each refusal code are in [the engine run contract](docs/mos-eureka-engine-run-contract.md).
 
 ## Engine names
 
@@ -337,13 +337,25 @@ uv run eureka capabilities
 
 Useful entry points:
 
-- `eureka`: inspect capability and host-workflow contracts.
+- `eureka`: run a folder (`run`), check the machine (`doctor`), build the hub page (`hub`), write a room seed (`seed`), check the public example (`check-example`), and inspect capability and host-workflow contracts.
 - `eureka-mcp`: start the stdio MCP server.
 - `eureka-pair-scout`: find cross-domain pair leads from a prepared request (`eureka-rs` remains a compatibility alias).
 - `eureka-structure-mapping`: map structures and prepare host-brokered verification research (`eureka-sme` remains a compatibility alias).
 - `eureka-decision-sequences`: compare decision-sequence models (install the `hmm` extra; `eureka-omm` remains a compatibility alias).
 - `eureka-workflow`: run a named supporting capability stage.
 - `eureka-signal-scout`: run the local Screen One Local Snapshot for Opportunity Pair Leads signal scout (`eureka-scout` remains a compatibility alias).
+
+Optional extras, from `pyproject.toml`:
+
+| Extra | What it adds |
+|---|---|
+| `modern-encoder` | The local meaning model support for `eureka run` and the pair engines. |
+| `mcp-server` | The stdio MCP server, `eureka-mcp`. |
+| `hub-gate` | The optional password gate of the hub page. |
+| `bundle` | What `scripts/build-partner-bundle` needs to build a carry-in folder. |
+| `reference-encoder` | The reference BERT encoder, which is the default encoder of `eureka-pair-scout`. |
+| `hmm` | The decision-sequence models of `eureka-decision-sequences`. |
+| `neo4j` | The optional read-only Neo4j adapter of `eureka-graph`. |
 
 See [Using capabilities](docs/using-capabilities.md) for CLI and MCP examples, [Architecture](docs/architecture.md) for system design, and [Engine jobs](docs/engine-jobs.md) for JTBD and method guidance.
 
