@@ -70,3 +70,27 @@ NOT_REPRODUCED_TEXT = (
     "This run is not reproduced on this machine. "
     "The usual cause is another platform or another library version; read the INFO lines."
 )
+
+# --- Runs that are not CPU-exact ----------------------------------------------
+#
+# The class names repeat the constants of `mindrian_eureka.encoder_spec`. This module does not
+# import that module, because of the import rule of this package. A test compares the two copies.
+
+ENCODER_KEY = "encoder"
+DETERMINISM_CPU_EXACT = "cpu-exact"
+DETERMINISM_GPU_APPROX = "gpu-approx"
+OVERLAP_FILES: tuple[str, ...] = ("unusual-pairs.json", "wording-and-meaning-pairs.json")
+
+# The share of reference pair ids that a gpu-approx run must also list. Only the recorded result
+# of the GPU spike may set this number (plan 05-08 names the record docs/encoder-spike-results.md).
+# While it is None, a gpu-approx run is never a MATCH.
+GPU_APPROX_MIN_OVERLAP: float | None = None
+
+NO_THRESHOLD_TEXT = "no overlap threshold has been measured yet"
+
+GPU_APPROX_NOTE = (
+    "This run used a non-exact encoder setup of class gpu-approx. "
+    "The bytes of the pair files are not compared. "
+    "The ranking overlap with the shipped reference run decides. "
+    'Every result is "candidate, not verified".'
+)

@@ -12,7 +12,7 @@ from pathlib import Path
 from ..run.command import ENGINES_TEXT
 from ..run.console import Console
 from ..run.contracts import EXIT_INTERRUPTED, LABEL, EurekaError, UsageError
-from .contracts import EXAMPLE_DIR, EXPECTED_NAME
+from .contracts import EXAMPLE_DIR, EXPECTED_NAME, REFERENCE_RUN_NAME
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
@@ -28,7 +28,9 @@ _NOTES = (
     "The command compares a finished run folder with the shipped expected hashes. It prints "
     "one PASS or FAIL line for each of 7 checks and a final MATCH or NO MATCH line. The rule "
     "is exact: one changed byte in an output file fails the check. Differences in platform, "
-    "Python or library versions show as INFO lines and never change the result.\n\n"
+    "Python or library versions show as INFO lines and never change the result. A run whose "
+    "manifest says its encoder setup is not exact (class gpu-approx) is compared with the "
+    "shipped reference run by ranking overlap and not by bytes.\n\n"
     "The command reads the folder and never writes into it. It makes no network call and "
     "loads no model. "
     f'Every result is "{LABEL}".'
@@ -77,8 +79,14 @@ def example_command(args: argparse.Namespace) -> int:
         from ..run.output import canonical_json
         from .check import check_run, load_expected
 
-        expected = load_expected(_find_expected(args.expected))
-        report = check_run(Path(args.run_folder).expanduser(), expected)
+        expected_path = _find_expected(args.expected)
+        expected = load_expected(expected_path)
+        reference = expected_path.parent / REFERENCE_RUN_NAME
+        report = check_run(
+            Path(args.run_folder).expanduser(),
+            expected,
+            reference_run=reference if reference.is_dir() else None,
+        )
         if args.json:
             console.out(canonical_json(report.to_json_dict()).decode("utf-8").rstrip("\n"))
         else:

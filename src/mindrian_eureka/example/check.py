@@ -10,13 +10,14 @@ from __future__ import annotations
 
 import json
 import re
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
 
 from ..run.contracts import LABEL, MANIFEST_SCHEMA, SUMMARY_LINE, UsageError
 from ..run.manifest import sha256_file
+from . import contracts as example_contracts
 from .contracts import (
     CHECK_ENGINE,
     CHECK_INPUTS,
@@ -25,11 +26,17 @@ from .contracts import (
     CHECK_OUTPUTS,
     CHECK_RUN_FOLDER,
     CHECK_SETTINGS,
+    DETERMINISM_CPU_EXACT,
+    DETERMINISM_GPU_APPROX,
+    ENCODER_KEY,
     EXPECTED_SCHEMA,
+    GPU_APPROX_NOTE,
     MANIFEST_NAME,
     MAX_JSON_BYTES,
+    NO_THRESHOLD_TEXT,
     NOT_REPRODUCED_TEXT,
     OUTPUT_FILES,
+    OVERLAP_FILES,
     PAIR_FILES,
     REPORT_SCHEMA,
     RESULT_MATCH,
@@ -97,12 +104,16 @@ class CheckReport:
         checks: The 7 checks, in order.
         info: Environment lines. They never change the result.
         note: An extra sentence for the reader, or None.
+        determinism_class: The class that the manifest names for a non-exact run, or None.
+        ranking_overlap: The overlap numbers of a non-exact run, or None.
     """
 
     result: str
     checks: tuple[Check, ...]
     info: tuple[str, ...] = field(default_factory=tuple)
     note: str | None = None
+    determinism_class: str | None = None
+    ranking_overlap: dict[str, Any] | None = None
 
     def to_text(self) -> str:
         """Return the text report, ending with the summary line."""
@@ -120,7 +131,7 @@ class CheckReport:
 
     def to_json_dict(self) -> dict[str, Any]:
         """Return the JSON form of the report."""
-        return {
+        document: dict[str, Any] = {
             "schema": REPORT_SCHEMA,
             "result": self.result,
             "checks": [item.to_json_dict() for item in self.checks],
@@ -128,6 +139,11 @@ class CheckReport:
             "note": self.note,
             "label": LABEL,
         }
+        if self.determinism_class is not None:
+            document["determinism_class"] = self.determinism_class
+        if self.ranking_overlap is not None:
+            document["ranking_overlap"] = self.ranking_overlap
+        return document
 
 
 # --- Expected file ----------------------------------------------------------
@@ -453,6 +469,176 @@ def _check_outputs(
     )
 
 
+# --- Runs that are not CPU-exact ----------------------------------------------
+
+
+def ranking_overlap(run_ids: Sequence[str], reference_ids: Sequence[str]) -> float:
+    """Return the share of reference pair ids that the run also lists.
+
+    Order and repeated ids do not count. An empty reference gives 1.0 for an empty run and
+    0.0 for a run that lists pairs.
+
+    Args:
+        run_ids: The pair ids of the run, in file order.
+        reference_ids: The pair ids of the reference run.
+
+    Returns:
+        A number from 0.0 to 1.0.
+    """
+    reference = set(reference_ids)
+    if not reference:
+        return 1.0 if not set(run_ids) else 0.0
+    return len(reference & set(run_ids)) / len(reference)
+
+
+def _determinism_class(manifest: Mapping[str, Any]) -> tuple[str | None, str | None]:
+    """Return `(class, None)`, or `(None, problem)` when the class cannot be trusted."""
+    if ENCODER_KEY not in manifest:
+        return DETERMINISM_CPU_EXACT, None
+    block = manifest[ENCODER_KEY]
+    name = block.get("determinism_class") if isinstance(block, Mapping) else None
+    if not isinstance(name, str) or not name:
+        return None, (
+            "the encoder block of manifest.json cannot be read "
+            "(it must be an object with a determinism_class)"
+        )
+    if name not in (DETERMINISM_CPU_EXACT, DETERMINISM_GPU_APPROX):
+        return None, f"unknown determinism class {name!r} in the encoder block of manifest.json"
+    return name, None
+
+
+def _pair_ids(path: Path) -> list[str]:
+    document = _read_json(path, "pair file")
+    pairs = document.get("pairs") if isinstance(document, Mapping) else None
+    if not isinstance(pairs, list):
+        raise UsageError(
+            f"The pair file has no list of pairs: {path.name}",
+            fix="Use the file that Eureka wrote. Do not edit it.",
+        )
+    ids: list[str] = []
+    for entry in pairs:
+        pair_id = entry.get("pair_id") if isinstance(entry, Mapping) else None
+        if not isinstance(pair_id, str):
+            raise UsageError(
+                f"A pair in {path.name} has no pair_id",
+                fix="Use the file that Eureka wrote. Do not edit it.",
+            )
+        ids.append(pair_id)
+    return ids
+
+
+def _reference_problem(reference_run: Path | None, expected: Mapping[str, Any]) -> str | None:
+    if reference_run is None or not Path(reference_run).is_dir():
+        return (
+            "the reference run folder was not found, so the ranking cannot be compared "
+            "(the reference run ships next to the expected-hash file)"
+        )
+    root = Path(reference_run).resolve()
+    for item in sorted(expected["outputs"], key=lambda entry: entry["path"]):
+        candidate = Path(reference_run) / item["path"]
+        resolved = candidate.resolve()
+        if not resolved.is_file() or not resolved.is_relative_to(root):
+            return (
+                f"the reference run does not match the expected hashes: {item['path']} is missing"
+            )
+        if sha256_file(candidate) != item["sha256"]:
+            return f"the reference run does not match the expected hashes: {item['path']} differs"
+    return None
+
+
+def _check_outputs_approx(
+    run_folder: Path,
+    manifest: Mapping[str, Any],
+    expected: Mapping[str, Any],
+    reference_run: Path | None,
+) -> tuple[Check, dict[str, Any] | None]:
+    """Check X6 for a run of the class gpu-approx: bytes of the corpus, overlap of the ranking."""
+    cid, name = CHECK_OUTPUTS
+    fix = "Make a fresh run with the command and the unchanged input. Do not edit the output files."
+    listed = _manifest_output_hashes(manifest)
+    failures = [
+        f"{path}: found {sha256_file(run_folder / path)}, but manifest.json lists "
+        f"{listed.get(path)}: changed after the run"
+        for path in OUTPUT_FILES
+        if listed.get(path) != sha256_file(run_folder / path)
+    ]
+    if failures:
+        return Check(cid, name, STATUS_FAIL, " | ".join(failures), fix), None
+    problem = _reference_problem(reference_run, expected)
+    if problem is not None:
+        return (
+            Check(
+                cid,
+                name,
+                STATUS_FAIL,
+                problem,
+                "Use the folder reference-run that ships next to the expected-hash file, "
+                "unchanged.",
+            ),
+            None,
+        )
+    corpus = next(item for item in expected["outputs"] if item["path"] == OUTPUT_FILES[0])
+    found = sha256_file(run_folder / corpus["path"])
+    if found != corpus["sha256"]:
+        line = f"{corpus['path']}: expected {corpus['sha256']}, found {found}"
+        return Check(cid, name, STATUS_FAIL, line, fix), None
+    assert reference_run is not None
+    numbers: dict[str, Any] = {}
+    parts: list[str] = []
+    for file_name in OVERLAP_FILES:
+        run_ids = _pair_ids(run_folder / file_name)
+        reference_ids = _pair_ids(Path(reference_run) / file_name)
+        share = ranking_overlap(run_ids, reference_ids)
+        numbers[file_name] = {
+            "overlap": share,
+            "reference_pairs": len(set(reference_ids)),
+            "run_pairs": len(set(run_ids)),
+        }
+        parts.append(
+            f"{file_name} overlap {share:.4f} of {len(set(reference_ids))} reference pairs"
+        )
+    threshold = example_contracts.GPU_APPROX_MIN_OVERLAP
+    summary = "; ".join(parts)
+    if threshold is None:
+        detail = f"{summary}; {NO_THRESHOLD_TEXT}, so a gpu-approx run is not a match"
+        return (
+            Check(
+                cid,
+                name,
+                STATUS_FAIL,
+                detail,
+                "Compare the ranking by hand with the reference run. "
+                "A threshold is set after the GPU spike has measured the drift.",
+            ),
+            numbers,
+        )
+    low = [file_name for file_name in OVERLAP_FILES if numbers[file_name]["overlap"] < threshold]
+    if low:
+        detail = f"{summary}; below the threshold {threshold:.4f}: {', '.join(low)}"
+        return Check(cid, name, STATUS_FAIL, detail, fix), numbers
+    detail = (
+        f"corpus/records.jsonl has the expected sha256; {summary}; "
+        f"threshold {threshold:.4f} reached"
+    )
+    return Check(cid, name, STATUS_PASS, detail), numbers
+
+
+def _encoder_info(manifest: Mapping[str, Any]) -> list[str]:
+    block = manifest.get(ENCODER_KEY)
+    if not isinstance(block, Mapping):
+        return []
+
+    def fingerprint(key: str) -> Any:
+        part = block.get(key)
+        return part.get("fingerprint") if isinstance(part, Mapping) else None
+
+    return [
+        f"INFO encoder: profile {block.get('profile')}, "
+        f"unusual-pairs fingerprint {fingerprint('unusual_pairs')}, "
+        f"wording-and-meaning fingerprint {fingerprint('wording_and_meaning')}"
+    ]
+
+
 def _holds_label(path: Path) -> bool:
     needle = LABEL.encode("utf-8")
     keep = len(needle) - 1
@@ -516,12 +702,19 @@ def _environment_info(manifest: Mapping[str, Any], expected: Mapping[str, Any]) 
 # --- Entry point ------------------------------------------------------------
 
 
-def check_run(run_folder: Path, expected: Mapping[str, Any]) -> CheckReport:
+def check_run(
+    run_folder: Path, expected: Mapping[str, Any], *, reference_run: Path | None = None
+) -> CheckReport:
     """Compare a finished run folder with the expected hashes.
+
+    A run whose manifest has no `encoder` block, or the class `cpu-exact`, is compared by
+    bytes. A run of the class `gpu-approx` is compared with `reference_run` by ranking overlap
+    and never matches while `GPU_APPROX_MIN_OVERLAP` is None.
 
     Args:
         run_folder: The folder that `eureka run` wrote.
         expected: A document from `load_expected`.
+        reference_run: The shipped reference run folder, or None.
 
     Returns:
         A report. The result is `match` only when checks X2 to X7 all pass.
@@ -536,21 +729,43 @@ def check_run(run_folder: Path, expected: Mapping[str, Any]) -> CheckReport:
         STATUS_PASS,
         f"manifest.json and {len(OUTPUT_FILES)} output files were found",
     )
+    determinism, problem = _determinism_class(manifest)
+    overlap: dict[str, Any] | None = None
+    if problem is not None:
+        outputs = Check(
+            *CHECK_OUTPUTS,
+            STATUS_FAIL,
+            problem,
+            "Make a fresh run with a Eureka version that writes a valid encoder block.",
+        )
+    elif determinism == DETERMINISM_GPU_APPROX:
+        outputs, overlap = _check_outputs_approx(folder, manifest, expected, reference_run)
+    else:
+        outputs = _check_outputs(folder, manifest, expected)
     checks = (
         run_check,
         _check_inputs(manifest, expected),
         _check_settings(manifest, expected),
         _check_model(manifest, expected),
         _check_engine(manifest, expected),
-        _check_outputs(folder, manifest, expected),
+        outputs,
         _check_label(folder),
     )
     failed = {item.id for item in checks if item.status == STATUS_FAIL}
     result = RESULT_NO_MATCH_ID if failed else RESULT_MATCH_ID
-    note = NOT_REPRODUCED_TEXT if failed == {CHECK_OUTPUTS[0]} else None
+    info = _environment_info(manifest, expected)
+    if problem is not None:
+        note = None
+    elif determinism == DETERMINISM_GPU_APPROX:
+        note = GPU_APPROX_NOTE
+        info.extend(_encoder_info(manifest))
+    else:
+        note = NOT_REPRODUCED_TEXT if failed == {CHECK_OUTPUTS[0]} else None
     return CheckReport(
         result=result,
         checks=checks,
-        info=tuple(_environment_info(manifest, expected)),
+        info=tuple(info),
         note=note,
+        determinism_class=DETERMINISM_GPU_APPROX if determinism == DETERMINISM_GPU_APPROX else None,
+        ranking_overlap=overlap,
     )
