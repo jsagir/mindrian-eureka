@@ -480,8 +480,8 @@ def filter_requirements_for_target(text: str, target: Target) -> str:
 
     `uv export` writes one entry per package, with an optional environment marker and
     indented `--hash` and comment lines below it. The entry stays when it has no marker
-    or when the marker is true for the target. The shipped `requirements.txt` is not
-    changed; the partner machine evaluates the markers there.
+    or when the marker is true for the target; a kept entry loses its marker. The shipped
+    `requirements.txt` is not changed; the partner machine evaluates the markers there.
     """
     try:
         from packaging.markers import Marker
@@ -496,8 +496,12 @@ def filter_requirements_for_target(text: str, target: Target) -> str:
     for line in text.splitlines():
         if line and not line[0].isspace() and not line.startswith("#"):
             head = line.removesuffix("\\").rstrip()
-            _name, _sep, marker = head.partition(" ; ")
+            requirement, _sep, marker = head.partition(" ; ")
             keep = not marker or Marker(marker.strip()).evaluate(environment)
+            # pip would evaluate a kept marker again on the builder machine and skip the
+            # entry. The marker is already true for the target, so the copy drops it.
+            if keep and marker:
+                line = requirement + (" \\" if line.endswith("\\") else "")
         elif not line.strip() or line.startswith("#"):
             keep = True
         if keep:

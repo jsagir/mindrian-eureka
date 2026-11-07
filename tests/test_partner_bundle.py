@@ -243,6 +243,10 @@ def test_requirements_filter_uses_the_marker_values_of_the_target() -> None:
         "hf-xet==1.7.0",
     ]
     assert _names(macos) == ["numpy==2.5.4", "torch==2.14.1", "hf-xet==1.7.0"]
+    # A kept entry loses its marker, so pip does not evaluate it again on the builder machine.
+    for text in (linux, windows, macos):
+        assert " ; " not in text
+    assert "colorama==0.4.6 \\\n    --hash=sha256:aa" in windows
     # The hash lines and the comment lines of a kept entry stay; those of a dropped entry go.
     assert "--hash=sha256:aa" in windows
     assert "    # via click" in windows
@@ -258,6 +262,7 @@ def test_requirements_filter_on_the_real_lock_keeps_every_hash_of_a_kept_entry(
     for name in D07_NAMES:
         filtered = filter_requirements_for_target(locked, TARGETS[name])
         assert "torch==2.14.1" in filtered
+        assert " ; " not in filtered
         assert ("+cpu" in filtered) == (name != "macos-arm64")
         assert ("colorama==" in filtered) == (name == "windows-x86_64")
         filtered_hashes = {x for x in filtered.split() if x.startswith("--hash=sha256:")}
