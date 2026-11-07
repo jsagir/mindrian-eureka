@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.provenance-gap-list.v1",
+  "title": "Eureka provenance gap list",
+  "description": "The list of candidates that carry a provenance gap mark, written for the host. The mark in the room is a host-owned write. Eureka writes nothing to a room.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "label",
+    "outcome",
+    "room_mark",
+    "verdict",
+    "record_sha256",
+    "replay",
+    "items",
+    "closes_when",
+    "write_boundary"
+  ],
+  "properties": {
+    "schema_version": { "const": "eureka.provenance-gap-list.v1" },
+    "label": { "const": "candidate, not verified" },
+    "outcome": { "enum": ["provenance_gap"] },
+    "room_mark": { "enum": ["done", "pending_approval"] },
+    "verdict": { "enum": ["provenance_gap"] },
+    "record_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "replay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "date_cited",
+        "claims_cited",
+        "pairs_cited",
+        "similarity_floor_cited",
+        "edge_type_cited",
+        "embedding_model_cited",
+        "output_file_cited",
+        "artifact_found"
+      ],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "date_cited": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "claims_cited": { "type": "integer", "minimum": 1 },
+        "pairs_cited": { "type": "integer", "minimum": 1 },
+        "similarity_floor_cited": { "type": "number" },
+        "edge_type_cited": { "type": "string", "minLength": 1 },
+        "embedding_model_cited": { "type": "string", "minLength": 1 },
+        "output_file_cited": { "type": "string", "minLength": 1 },
+        "artifact_found": { "type": "boolean" }
+      }
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["opportunity_id", "mark", "mark_text", "cites", "host_action"],
+        "properties": {
+          "opportunity_id": { "type": "string", "pattern": "^OPP-[0-9]{3}$" },
+          "mark": { "const": "provenance gap" },
+          "mark_text": { "type": "string", "minLength": 1 },
+          "cites": { "type": "string", "minLength": 1 },
+          "host_action": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "closes_when": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "write_boundary": { "type": "string", "minLength": 1 }
+  }
+}

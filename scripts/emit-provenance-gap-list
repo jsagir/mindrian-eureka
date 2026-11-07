@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Emit the list of candidates that carry a provenance gap mark. See docs/jhtv-replay-record.md.
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+exec uv run --offline python -m mindrian_eureka.provenance.gap_list "$@"

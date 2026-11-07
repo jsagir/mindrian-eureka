@@ -1,0 +1,109 @@
+{
+  "schema_version": "eureka.provenance-gap-record.v1",
+  "label": "candidate, not verified",
+  "checked_on": "2026-11-07",
+  "outcome": "provenance_gap",
+  "room_mark": "pending_approval",
+  "verdict": "provenance_gap",
+  "replay": {
+    "name": "graph-derive replay",
+    "date_cited": "2026-10-21",
+    "claims_cited": 2130,
+    "pairs_cited": 2267385,
+    "similarity_floor_cited": 0.55,
+    "edge_type_cited": "CONVERGES",
+    "embedding_model_cited": "MongoDB/mdbr-leaf-ir",
+    "output_file_cited": "derive_results.json",
+    "cited_in": "The figures are cited in the discovered_from and citation fields of the five candidates in the partner room. No title or room text is copied here.",
+    "artifact_found": false,
+    "extra_step_cited": "a title scan of the full catalog"
+  },
+  "identity_checks": [
+    { "n": 2130, "pairs": 2267385 },
+    { "n": 2117, "pairs": 2239786 }
+  ],
+  "checks": [
+    {
+      "id": "C1",
+      "statement": "The repo holds no replay script, no claim table, no vector table and no derive_results.json.",
+      "label": "PROVEN",
+      "how": "Text and name search of the repo on 2026-11-07, excluding the git folder, the virtual environment and the story folder. The words derive_results and 2,267,385 appear only in planning files and in the files of this plan."
+    },
+    {
+      "id": "C2",
+      "statement": "The figure 2,267,385 equals 2,130 times 2,129 divided by 2, which is the count of every pair of 2,130 items. The figure 2,239,786 equals 2,117 times 2,116 divided by 2.",
+      "label": "PROVEN",
+      "how": "Arithmetic, repeated by the emit script on every run."
+    },
+    {
+      "id": "C3",
+      "statement": "The partner room store holds 2,130 stored vectors of 384 dimensions today. No vector and no text was read.",
+      "label": "PROVEN",
+      "how": "Read-only immutable open of the store file on 2026-11-07. A row count of the vector id table and of the vector metadata table, both 2,130. The vector table definition names a 384 dimension float column."
+    },
+    {
+      "id": "C4",
+      "statement": "No file named derive_results.json was found in the repo, the partner room, the dev folder with the plugin checkouts, the rooms folders, or the work, output, research and tmp folders of the owner home folder.",
+      "label": "PROVEN",
+      "how": "Search by file name to a depth of 8 folders on 2026-11-07, with a 60 second limit for each folder. No hit."
+    },
+    {
+      "id": "C5",
+      "statement": "A copy of derive_results.json outside the searched folders, for example on a cloud drive or on another machine, is not excluded.",
+      "label": "UNVERIFIED",
+      "how": "Not searched. Those places are outside this machine and outside the folders listed in C4."
+    },
+    {
+      "id": "C6",
+      "statement": "The plugin derive code calls a pair CONVERGES at a topical cosine of 0.55 or more, and it counts all pairs as n times n minus 1, divided by 2.",
+      "label": "PROVEN",
+      "how": "Code read of lib/core/graph-derive-classifier.cjs in the MindrianOS-Plugin repository at commit cd6879a98 on 2026-11-07. The default floor constant is 0.55 and the pair count function returns n times n minus 1, divided by 2."
+    },
+    {
+      "id": "C7",
+      "statement": "The plugin changed its pair selection on 2026-10-21 (commit e2e819d43) to keep only the top-k pairs by cosine.",
+      "label": "PROVEN",
+      "how": "Git history of the classifier file in the MindrianOS-Plugin repository. The commit is dated 2026-10-21, the same day as the cited replay."
+    },
+    {
+      "id": "C8",
+      "statement": "The replay of 2026-10-21 was a run of this plugin derive code over all pairs of the room. The cited figures match C6. No run record was found, and the code state of the run is not recorded.",
+      "label": "INFERRED",
+      "how": "Reasoned from C2, C6 and C7. No log, no command text and no output file of the run exists in the folders searched."
+    },
+    {
+      "id": "C9",
+      "statement": "The five candidates also cite a title scan of the full catalog. That step is not a script. A perfect replay of the pair scoring would still not reproduce the five candidates.",
+      "label": "PROVEN",
+      "how": "Proven as a cited claim only: the sentence is read in the partner room fields named in the replay block. The scan itself was not seen."
+    }
+  ],
+  "count_proof": {
+    "stored_vectors": 2130,
+    "dimensions": 384,
+    "all_pairs": 2267385,
+    "pairs_at_floor": 2165,
+    "floor": 0.55,
+    "label": "PROVEN",
+    "basis": "Counts only. The vector count and the dimension of the partner room store were read without writing, and the pairs at the floor were counted in memory on the stored vectors in the feasibility check of 2026-11-07 recorded in the phase context. No vector value or text is kept in this repo. The 2,165 count was not repeated in this plan.",
+    "model_cited": "mdbr-leaf-ir",
+    "model_on_disk": false,
+    "store_dated": "2026-10-29",
+    "replay_dated": "2026-10-21",
+    "same_set_label": "INFERRED",
+    "same_set_note": "The stored vectors are dated 8 days after the cited replay. That they are the same set as the replay used is inferred from the matching count of 2,130. The model that made them is not on this machine, so the vectors cannot be re-made or checked.",
+    "partial_replay_needs": "A partial replay on the stored vectors needs a host-approved read-only vector export. That work is deferred to Phase 3.1. The outcome stays provenance_gap."
+  },
+  "items": [
+    { "opportunity_id": "OPP-027" },
+    { "opportunity_id": "OPP-028" },
+    { "opportunity_id": "OPP-029" },
+    { "opportunity_id": "OPP-030" },
+    { "opportunity_id": "OPP-031" }
+  ],
+  "closes_when": [
+    "The host exports the claim ids and the stored vectors under an approved read-only export, and a recorded replay with the cited floor runs twice with equal output hashes.",
+    "The cited output file derive_results.json is found, and its sha256 is recorded in this record."
+  ],
+  "write_boundary": "Eureka writes nothing to a room. The room mark is a host-owned write that needs approval."
+}

@@ -1,0 +1,348 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eureka.provenance-gap-record.v1",
+  "title": "Eureka provenance gap record",
+  "description": "The closed machine record of the outcome of the graph-derive replay behind five partner candidates. The outcome is provenance_gap or replayed. Eureka writes nothing to a room.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "label",
+    "checked_on",
+    "outcome",
+    "verdict",
+    "replay",
+    "identity_checks",
+    "checks",
+    "count_proof",
+    "items",
+    "closes_when",
+    "write_boundary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "eureka.provenance-gap-record.v1"
+    },
+    "label": {
+      "const": "candidate, not verified"
+    },
+    "checked_on": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "outcome": {
+      "enum": [
+        "provenance_gap",
+        "replayed"
+      ]
+    },
+    "room_mark": {
+      "enum": [
+        "done",
+        "pending_approval"
+      ]
+    },
+    "verdict": {
+      "enum": [
+        "provenance_gap"
+      ]
+    },
+    "replay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "date_cited",
+        "claims_cited",
+        "pairs_cited",
+        "similarity_floor_cited",
+        "edge_type_cited",
+        "embedding_model_cited",
+        "output_file_cited",
+        "cited_in",
+        "artifact_found",
+        "extra_step_cited"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "date_cited": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "claims_cited": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pairs_cited": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "similarity_floor_cited": {
+          "type": "number"
+        },
+        "edge_type_cited": {
+          "type": "string",
+          "minLength": 1
+        },
+        "embedding_model_cited": {
+          "type": "string",
+          "minLength": 1
+        },
+        "output_file_cited": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cited_in": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_found": {
+          "type": "boolean"
+        },
+        "extra_step_cited": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "identity_checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "n",
+          "pairs"
+        ],
+        "properties": {
+          "n": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "pairs": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "statement",
+          "label",
+          "how"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^C[0-9]+$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "enum": [
+              "PROVEN",
+              "INFERRED",
+              "UNVERIFIED"
+            ]
+          },
+          "how": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "count_proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stored_vectors",
+        "dimensions",
+        "all_pairs",
+        "pairs_at_floor",
+        "floor",
+        "label",
+        "basis",
+        "model_cited",
+        "model_on_disk",
+        "store_dated",
+        "replay_dated",
+        "same_set_label",
+        "same_set_note",
+        "partial_replay_needs"
+      ],
+      "properties": {
+        "stored_vectors": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "dimensions": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "all_pairs": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pairs_at_floor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "floor": {
+          "type": "number"
+        },
+        "label": {
+          "enum": [
+            "PROVEN",
+            "INFERRED",
+            "UNVERIFIED"
+          ]
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model_cited": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model_on_disk": {
+          "type": "boolean"
+        },
+        "store_dated": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "replay_dated": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "same_set_label": {
+          "enum": [
+            "PROVEN",
+            "INFERRED",
+            "UNVERIFIED"
+          ]
+        },
+        "same_set_note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "partial_replay_needs": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "opportunity_id"
+        ],
+        "properties": {
+          "opportunity_id": {
+            "type": "string",
+            "pattern": "^OPP-[0-9]{3}$"
+          }
+        }
+      }
+    },
+    "closes_when": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "write_boundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "claims": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "pairs": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "two_run_hashes_equal": {
+      "type": "boolean"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "replayed"
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "required": [
+          "claims",
+          "pairs",
+          "two_run_hashes_equal"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "provenance_gap"
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "required": [
+          "room_mark"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "claims"
+              ]
+            },
+            {
+              "required": [
+                "pairs"
+              ]
+            },
+            {
+              "required": [
+                "two_run_hashes_equal"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "closes_when": [
+    "The host exports the claim ids and the stored vectors under an approved read-only export, and a recorded replay with the cited floor runs twice with equal output hashes.",
+    "The cited output file derive_results.json is found, and its sha256 is recorded in this record."
+  ],
+  "items": [
+    {
+      "cites": "derive_results.json (2026-10-21)",
+      "host_action": "Add this mark to the opportunity in the room after the navigator approves the write. Eureka writes nothing to a room.",
+      "mark": "provenance gap",
+      "mark_text": "Provenance gap. The replay that found this candidate cannot be reproduced from stored files: the output file it cites (derive_results.json, 2026-10-21) was not found, and no script was kept. The candidate stays a lead, candidate, not verified. The similarity behind it is a screening signal, not a verified relationship.",
+      "opportunity_id": "OPP-027"
+    },
+    {
+      "cites": "derive_results.json (2026-10-21)",
+      "host_action": "Add this mark to the opportunity in the room after the navigator approves the write. Eureka writes nothing to a room.",
+      "mark": "provenance gap",
+      "mark_text": "Provenance gap. The replay that found this candidate cannot be reproduced from stored files: the output file it cites (derive_results.json, 2026-10-21) was not found, and no script was kept. The candidate stays a lead, candidate, not verified. The similarity behind it is a screening signal, not a verified relationship.",
+      "opportunity_id": "OPP-028"
+    },
+    {
+      "cites": "derive_results.json (2026-10-21)",
+      "host_action": "Add this mark to the opportunity in the room after the navigator approves the write. Eureka writes nothing to a room.",
+      "mark": "provenance gap",
+      "mark_text": "Provenance gap. The replay that found this candidate cannot be reproduced from stored files: the output file it cites (derive_results.json, 2026-10-21) was not found, and no script was kept. The candidate stays a lead, candidate, not verified. The similarity behind it is a screening signal, not a verified relationship.",
+      "opportunity_id": "OPP-029"
+    },
+    {
+      "cites": "derive_results.json (2026-10-21)",
+      "host_action": "Add this mark to the opportunity in the room after the navigator approves the write. Eureka writes nothing to a room.",
+      "mark": "provenance gap",
+      "mark_text": "Provenance gap. The replay that found this candidate cannot be reproduced from stored files: the output file it cites (derive_results.json, 2026-10-21) was not found, and no script was kept. The candidate stays a lead, candidate, not verified. The similarity behind it is a screening signal, not a verified relationship.",
+      "opportunity_id": "OPP-030"
+    },
+    {
+      "cites": "derive_results.json (2026-10-21)",
+      "host_action": "Add this mark to the opportunity in the room after the navigator approves the write. Eureka writes nothing to a room.",
+      "mark": "provenance gap",
+      "mark_text": "Provenance gap. The replay that found this candidate cannot be reproduced from stored files: the output file it cites (derive_results.json, 2026-10-21) was not found, and no script was kept. The candidate stays a lead, candidate, not verified. The similarity behind it is a screening signal, not a verified relationship.",
+      "opportunity_id": "OPP-031"
+    }
+  ],
+  "label": "candidate, not verified",
+  "outcome": "provenance_gap",
+  "record_sha256": "193f077b69bdf75f2be64804a74ee8a31f75da0d4cb9912b6246daf30e2332df",
+  "replay": {
+    "artifact_found": false,
+    "claims_cited": 2130,
+    "date_cited": "2026-10-21",
+    "edge_type_cited": "CONVERGES",
+    "embedding_model_cited": "MongoDB/mdbr-leaf-ir",
+    "name": "graph-derive replay",
+    "output_file_cited": "derive_results.json",
+    "pairs_cited": 2267385,
+    "similarity_floor_cited": 0.55
+  },
+  "room_mark": "pending_approval",
+  "schema_version": "eureka.provenance-gap-list.v1",
+  "verdict": "provenance_gap",
+  "write_boundary": "Eureka writes nothing to a room. The room mark is a host-owned write that needs approval."
+}
