@@ -118,6 +118,8 @@ Build status of the three targets, run on 2026-11-07 on a Linux builder with `--
 
 For each target, the wheel folder holds every package of the lock that applies to that system, and the manifest lists every file on disk. The builder takes the `torch` build for the CPU from the PyTorch CPU index, accepts the macOS 11 to 14 arm64 wheel tags, and reads the environment markers of the lock for the target system, not for the builder machine. The `requirements.txt` in the bundle is the unchanged output of `uv export`.
 
+The `macos-arm64` bundle carries a `torch` wheel tagged `macosx_14_0_arm64`, so the Mac needs macOS 14 or newer. This minimum is ASSUMED until a Mac runs the bundle.
+
 Running the launchers `start.sh` and `start.ps1` on Linux, Windows and macOS stays ASSUMED. The launchers were not run on any of the three systems, and no bundle was installed on the builder.
 
 ## Privacy
