@@ -9,6 +9,8 @@ earlier run in the output folder.
 from __future__ import annotations
 
 import contextlib
+import hashlib
+import json
 import os
 import re
 import tempfile
@@ -20,6 +22,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from .. import models
+from ..encoder_spec import DEFAULT_PROFILE, PROFILES, encoder_block, profile_spec
 from ..limits import HARD_MAX_ARTIFACTS, MAX_ARTIFACTS, MAX_TOP_K
 from . import corpus, engines
 from .console import Console
@@ -85,6 +88,8 @@ class RunRequest:
         use_cache: False uses a throwaway embedding cache.
         dry_run: True reads the input and reports, but loads no model and writes nothing.
         argv: The command line words, kept in run-info.json.
+        encoder_profile: The name of the encoder profile. The default is the CPU profile that
+            the shipped example uses. Another profile needs `model_path`.
     """
 
     input_dir: Path
@@ -99,6 +104,7 @@ class RunRequest:
     use_cache: bool = True
     dry_run: bool = False
     argv: tuple[str, ...] = ()
+    encoder_profile: str = DEFAULT_PROFILE
 
 
 @dataclass(frozen=True)
@@ -235,6 +241,24 @@ def _validate(request: RunRequest) -> None:
             f"The side-car file {request.text_sidecar.name} does not exist",
             fix="Check the side-car path",
         )
+    names = ", ".join(sorted(PROFILES))
+    if request.encoder_profile not in PROFILES:
+        raise UsageError(
+            f"The encoder profile {request.encoder_profile!r} is not known. The names are: "
+            f"{names}.",
+            fix=f"Use --encoder-profile with one of: {names}",
+        )
+    if (
+        request.encoder_profile != DEFAULT_PROFILE
+        and request.model_path is None
+        and not request.dry_run
+    ):
+        wanted = PROFILES[request.encoder_profile].model_id
+        raise UsageError(
+            f"The encoder profile {request.encoder_profile} needs the folder of its own model "
+            f"({wanted}). Eureka does not use another model for a named profile.",
+            fix=f"Give --model-path with the folder of {wanted}",
+        )
 
 
 def _find_model(request: RunRequest) -> Path:
@@ -278,14 +302,45 @@ def _restored_umask() -> Iterator[None]:
 
 
 @contextlib.contextmanager
-def _cache_path(use_cache: bool) -> Iterator[Path]:
+def _cache_path(use_cache: bool, profile: str = DEFAULT_PROFILE) -> Iterator[Path]:
     if use_cache:
         from mindrian_eureka.opportunity_pairs.cache import default_cache_path
 
-        yield default_cache_path()
+        yield default_cache_path(profile)
         return
     with tempfile.TemporaryDirectory(prefix="eureka-cache-") as folder:
         yield Path(folder) / "embeddings.sqlite3"
+
+
+def _model_digest(files: Mapping[str, str]) -> str | None:
+    """Return one sha256 over the file hashes of the model folder, or None when none is known."""
+    if not files:
+        return None
+    text = json.dumps(dict(files), sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _gpu_details() -> dict[str, str]:
+    """Return the name of the CUDA device and the CUDA version, or an empty dict on any error."""
+    try:
+        import torch
+
+        return {
+            "name": str(torch.cuda.get_device_name(0)),
+            "cuda": str(torch.version.cuda),
+        }
+    except Exception:
+        return {}
+
+
+NON_EXACT_WARNING = (
+    "This run used a non-exact encoder profile (gpu-approx), so two runs on different "
+    "computers can differ in bytes; compare them by ranking overlap and not by bytes."
+)
+WEIGHTS_NOTE = (
+    "The model weights are not pinned: no model file could be hashed, so this identity does "
+    "not tell two model folders apart."
+)
 
 
 def _manifest_output(digest: FileDigest, projected: dict[str, Any]) -> dict[str, Any]:
@@ -320,11 +375,23 @@ def _write_outputs(
     manifest_corpus = built.manifest_corpus()
     files: list[FileDigest] = []
 
+    profile = request.encoder_profile
+    named = profile != DEFAULT_PROFILE
+    model_info = describe_model(model_dir)
+    unusual_spec = profile_spec(
+        profile,
+        revision=model_info["snapshot"],
+        model_digest=_model_digest(model_info["files"]),
+    )
+    wording_spec = unusual_spec.for_caller_chunks()
+    if named:
+        warn(NON_EXACT_WARNING)
+
     console.stage("Writing the clean corpus")
     corpus_digest = staged.write(OUTPUT_CORPUS, corpus_lines(records))
     files.append(corpus_digest)
 
-    with _cache_path(request.use_cache) as cache_file:
+    with _cache_path(request.use_cache, profile) as cache_file:
         console.stage(f"Ranking with {UNUSUAL_PAIRS_NAME}")
         unusual = engines.run_unusual_pairs(
             records,
@@ -334,12 +401,20 @@ def _write_outputs(
             cache_path=cache_file,
             objective=request.objective,
             progress=console.stage,
+            encoder_spec=unusual_spec,
         )
         console.stage("Loading the local model")
-        encode = engines.load_local_encode(model_dir)
+        if named:
+            encode = engines.load_local_encode(model_dir, wording_spec)
+        else:
+            encode = engines.load_local_encode(model_dir)
         console.stage(f"Ranking with {WORDING_AND_MEANING_NAME}")
         wording = engines.run_wording_and_meaning(
-            records, encode=encode, top_k=request.top_k, progress=console.info
+            records,
+            encode=encode,
+            top_k=request.top_k,
+            progress=console.info,
+            model_name=wording_spec.model_id if named else None,
         )
 
     console.stage("Writing files")
@@ -359,6 +434,7 @@ def _write_outputs(
         settings=sections["settings"]["unusual_pairs"],
         top_k=request.top_k,
         notes=unusual_notes,
+        encoder_fingerprint=unusual_spec.fingerprint() if named else None,
     )
     wording_doc = project_wording_and_meaning(
         wording.pairs,
@@ -366,6 +442,7 @@ def _write_outputs(
         settings=sections["settings"]["wording_and_meaning"],
         top_k=request.top_k,
         notes=wording_notes,
+        encoder_fingerprint=wording_spec.fingerprint() if named else None,
     )
     unusual_doc = attach_pair_classes(unusual_doc, records)
     wording_doc = attach_pair_classes(wording_doc, records)
@@ -418,16 +495,22 @@ def _write_outputs(
         _manifest_output(wording_digest, wording_doc),
         markdown_digest.as_dict(),
     ]
+    block = encoder_block(unusual_spec, wording_spec)
+    if unusual_spec.device.startswith("cuda"):
+        block["gpu"] = _gpu_details()
+    if unusual_spec.model_digest is None:
+        block["weights_note"] = WEIGHTS_NOTE
     manifest = build_manifest(
         engines=sections["engines"],
         inputs=built.manifest_inputs(),
         corpus=manifest_corpus,
         settings=settings,
         seeds=sections["seeds"],
-        model=describe_model(model_dir),
+        model=model_info,
         environment=collect_environment(request.threads),
         outputs=outputs,
         engine_notes=sections["engine_notes"],
+        encoder=block,
     )
     manifest_digest = staged.write(OUTPUT_MANIFEST, canonical_json(manifest))
     files.append(manifest_digest)

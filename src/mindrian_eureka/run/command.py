@@ -17,6 +17,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from ..encoder_spec import DEFAULT_PROFILE
 from ..limits import HARD_MAX_ARTIFACTS, MAX_ARTIFACTS, MAX_TOP_K
 from .console import Console
 from .contracts import (
@@ -150,6 +151,15 @@ def register_commands(subparsers: argparse._SubParsersAction[argparse.ArgumentPa
         help="folder of the local meaning model (default: search the usual places)",
     )
     run.add_argument(
+        "--encoder-profile",
+        default=DEFAULT_PROFILE,
+        metavar="NAME",
+        help=(
+            "named encoder profile (default: the CPU profile that the shipped example uses); "
+            "another profile needs --model-path; the names are listed when the name is unknown"
+        ),
+    )
+    run.add_argument(
         "--max-artifacts",
         type=_max_artifacts,
         default=MAX_ARTIFACTS,
@@ -278,6 +288,7 @@ def build_run_request(args: argparse.Namespace, argv: Sequence[str] = ()) -> Run
         use_cache=not args.no_cache,
         dry_run=args.dry_run,
         argv=tuple(argv),
+        encoder_profile=args.encoder_profile,
     )
 
 
