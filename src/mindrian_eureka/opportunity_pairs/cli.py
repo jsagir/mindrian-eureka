@@ -50,10 +50,28 @@ def main() -> None:
 def clear_cache_main() -> None:
     parser = argparse.ArgumentParser(prog="eureka-rs-cache-clear")
     parser.add_argument("--cache-path", default=str(default_cache_path()))
+    parser.add_argument(
+        "--all-profiles", action="store_true",
+        help="Also clear every sibling embeddings-*.sqlite3 file of the cache folder",
+    )
     args = parser.parse_args()
     cache = EmbeddingCache(args.cache_path)
     removed = cache.clear()
-    print(json.dumps({"deleted_embeddings": removed, "cache_path": args.cache_path}))
+    if not args.all_profiles:
+        print(json.dumps({"deleted_embeddings": removed, "cache_path": args.cache_path}))
+        return
+    base = Path(args.cache_path).expanduser()
+    cleared = [str(base)]
+    total = removed
+    for sibling in sorted(base.parent.glob("embeddings-*.sqlite3")):
+        if sibling == base or sibling.is_symlink() or not sibling.is_file():
+            continue
+        total += EmbeddingCache(sibling).clear()
+        cleared.append(str(sibling))
+    print(json.dumps({
+        "deleted_embeddings": total, "cache_path": args.cache_path,
+        "cache_paths": sorted(cleared),
+    }))
 
 
 if __name__ == "__main__":
