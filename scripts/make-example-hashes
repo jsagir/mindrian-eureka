@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Build the expected-hash file of the public example from a finished run folder.
+# Offline: no network call, no model. The script runs from the repo root, so give absolute
+# paths for RUN_FOLDER and --out.
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+exec uv run --offline python -m mindrian_eureka.example.build "$@"

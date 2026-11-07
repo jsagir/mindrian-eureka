@@ -8,6 +8,7 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
+from .example.command import example_command, register_example
 from .hub.command import hub_command, register_hub
 from .run.command import (
     ENGINES_TEXT,
@@ -51,6 +52,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     register_commands(commands)
     register_hub(commands)
     register_seed(commands)
+    register_example(commands)
     raw = list(sys.argv[1:] if argv is None else argv)
     args = parser.parse_args(raw)
     if args.command == "run":
@@ -61,6 +63,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return seed_command(args)
     if args.command == "doctor":
         return doctor_cli(args)
+    if args.command == "check-example":
+        return example_command(args)
 
     if args.command in ("capabilities", "capability", "schema"):
         document = json.loads((DATA_DIR / "capability-catalog.v1.json").read_text(encoding="utf-8"))
