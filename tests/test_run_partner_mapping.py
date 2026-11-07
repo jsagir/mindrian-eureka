@@ -199,6 +199,7 @@ def test_entity_only_abstract_is_decoded_under_html_always(tmp_path: Path) -> No
                 entry.title_column,
                 *entry.carry_columns,
                 *entry.outcome_rule.columns,
+                *getattr(getattr(entry, "room_sections", None), "columns", ()),
             ]
         )
     )
@@ -223,3 +224,61 @@ def test_entity_only_abstract_is_decoded_under_html_always(tmp_path: Path) -> No
     assert "&amp;" not in text
     assert "Problem solved:" in text
     assert corpus.records[0].id.split("/", 1)[1] == "C00001"
+
+
+def test_shipped_mapping_holds_the_room_sections_block() -> None:
+    entry = load_mapping_file(SHIPPED).files["*"]
+    block = entry.room_sections
+    assert block is not None
+    assert block.sections == (
+        ("problem-definition", ("problem_solved", "end_user", "marginal_or_groundbreaking")),
+        ("market-analysis", ("size_of_unmet_need", "target_companies")),
+        ("solution-design", ("abstract", "topics", "stage_work_required")),
+        (
+            "legal-ip",
+            (
+                "status",
+                "licenses",
+                "options",
+                "first_license_or_option_date",
+                "licensed_to_jh_startup",
+                "licensed_externally",
+            ),
+        ),
+        (
+            "financial-model",
+            (
+                "funding_total",
+                "translational_total",
+                "follow_on_total",
+                "startup_funding_after_deal",
+                "corporate_partnership_amount",
+            ),
+        ),
+        (
+            "funding",
+            (
+                "had_translational_funding",
+                "translational_funds",
+                "had_follow_on",
+                "follow_on_summary",
+            ),
+        ),
+        ("team", ("lead_inventor", "licensing_associate")),
+    )
+    assert len(block.columns) == 25
+    assert [(i.item, i.section, i.source) for i in block.not_in_export] == [
+        ("patents", "legal-ip", "Inteum"),
+        ("royalties and license income", "financial-model", "Inteum"),
+        ("true disclosure date", "legal-ip", "Inteum"),
+    ]
+    export_only = (
+        set(block.columns) - set(entry.text_columns) - set(entry.extra_fields)
+        - set(entry.carry_columns)
+    )
+    assert export_only == MONEY | {
+        "translational_funds",
+        "follow_on_summary",
+        "lead_inventor",
+        "licensing_associate",
+    }
