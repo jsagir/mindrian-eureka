@@ -120,6 +120,7 @@ None yet.
 | 261024-v2h | [Synthetic Potential eureka coverage](quick/261024-v2h-add-deterministic-synthetic-potential-eu/261024-v2h-SUMMARY.md), implementation 0398f90 | complete |
 | 261029-184 | [Fix BM25 vocab cap so rare identifiers are kept](quick/261029-184-fix-bm25-vocab-cap-so-rare-identifiers-a/261029-184-SUMMARY.md), implementation 5165aba | complete |
 | 261029-bfm | [Equal-spread lexical fusion so LSA and BM25 each hold half the vote](quick/261029-bfm-equal-spread-lexical-fusion-so-lsa-and-b/261029-bfm-SUMMARY.md), implementation b405fe7 | complete |
+| 261107-vk6 | [Fix partner bundle online wheel download for the three targets](quick/261107-vk6-fix-partner-bundle-online-wheel-download/261107-vk6-SUMMARY.md), implementation 5357443 4f79e3f 05f8bbd | complete |
 
 ### Blockers/Concerns
 
