@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import os
 import platform
+import re
 import shutil
 import stat
 import subprocess
@@ -16,11 +17,15 @@ from pathlib import Path
 
 import pytest
 from mindrian_eureka import models
+from mindrian_eureka.partner_bundle import builder
 from mindrian_eureka.partner_bundle.builder import (
+    MACOS_ARM64_PIP_PLATFORMS,
+    PYTORCH_CPU_INDEX,
     TARGETS,
     BundleError,
     BundleOptions,
     BundleReport,
+    _pip_download_base,
     build_bundle,
     resolve_target,
 )
@@ -99,7 +104,7 @@ def test_targets_and_host_alias() -> None:
     assert TARGETS["macos-arm64"].uv_triple == "aarch64-apple-darwin"
     assert TARGETS["macos-arm64"].archive == "tar.gz"
     assert TARGETS["macos-arm64"].python_platform == "aarch64-apple-darwin"
-    assert TARGETS["macos-arm64"].pip_platforms == ("macosx_11_0_arm64",)
+    assert TARGETS["macos-arm64"].pip_platforms == MACOS_ARM64_PIP_PLATFORMS
     assert TARGETS["macos-arm64"].python_key == "cpython-3.12-macos-aarch64-none"
     assert TARGETS["macos-arm64"].launcher == "sh"
     for name in D07_NAMES:
@@ -117,6 +122,90 @@ def test_targets_and_host_alias() -> None:
     for name in (*D07_NAMES, "host"):
         assert name in caught.value.message
     assert caught.value.exit_code == 2
+
+
+@pytest.mark.parametrize("name", D07_NAMES)
+def test_pip_download_args_carry_the_extra_index(name: str, tmp_path: Path) -> None:
+    args = _pip_download_base(TARGETS[name], tmp_path / "wheels", "uv")
+    assert PYTORCH_CPU_INDEX == "https://download.pytorch.org/whl/cpu"
+    assert args.count("--extra-index-url") == 1
+    assert args[args.index("--extra-index-url") + 1] == PYTORCH_CPU_INDEX
+    # PyPI stays the default index: no `--index-url` and no `--no-index`.
+    assert "--index-url" not in args
+    assert "--no-index" not in args
+    assert "--only-binary=:all:" in args
+    platforms = [args[i + 1] for i, a in enumerate(args) if a == "--platform"]
+    assert tuple(platforms) == TARGETS[name].pip_platforms
+
+
+def test_macos_arm64_tags_reach_the_highest_lock_tag(tmp_path: Path) -> None:
+    lock = (REPO / "uv.lock").read_text(encoding="utf-8")
+    found = {int(m.group(1)) for m in re.finditer(r"macosx_(\d+)_0_arm64", lock)}
+    assert found
+    tags = TARGETS["macos-arm64"].pip_platforms
+    for n in range(11, max(found) + 1):
+        assert f"macosx_{n}_0_arm64" in tags
+    assert "macosx_10_9_universal2" in tags
+    args = _pip_download_base(TARGETS["macos-arm64"], tmp_path, "uv")
+    assert [args[i + 1] for i, a in enumerate(args) if a == "--platform"] == list(tags)
+
+
+def test_hashes_in_requirements_are_not_changed(host_bundle: Path, tmp_path: Path) -> None:
+    uv = shutil.which("uv")
+    if uv is None:
+        pytest.skip("uv is not on PATH")
+    expected = tmp_path / "expected.txt"
+    subprocess.run(
+        [
+            uv,
+            "export",
+            "--frozen",
+            "--no-dev",
+            "--no-emit-project",
+            "--format",
+            "requirements-txt",
+            "--offline",
+            "--extra",
+            "modern-encoder",
+            "--extra",
+            "hub-gate",
+            "-o",
+            str(expected),
+        ],
+        cwd=REPO,
+        check=True,
+        capture_output=True,
+    )
+    built = (host_bundle / "requirements.txt").read_text(encoding="utf-8")
+    hashes = {line.strip(" \\") for line in built.splitlines() if "--hash=sha256:" in line}
+    want = {
+        line.strip(" \\")
+        for line in expected.read_text(encoding="utf-8").splitlines()
+        if "--hash=sha256:" in line
+    }
+    assert hashes
+    assert hashes == want
+
+
+def test_wheel_download_keeps_require_hashes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[list[str]] = []
+
+    def fake_run(args: list[str], **_kwargs: object) -> object:
+        calls.append(list(args))
+        return None
+
+    monkeypatch.setattr(builder, "_run", fake_run)
+    monkeypatch.setattr(builder, "_require_online", lambda *_a, **_k: None)
+    bundle = tmp_path / "bundle"
+    bundle.mkdir()
+    options = BundleOptions(target="macos-arm64", out_dir=tmp_path, online=True, repo_root=REPO)
+    builder._download_wheels(options, TARGETS["macos-arm64"], bundle, "uv")
+    assert len(calls) == 2
+    assert "--require-hashes" in calls[0]
+    assert "--requirement" in calls[0]
+    assert all("--extra-index-url" in call for call in calls)
 
 
 def test_other_targets_refuse_offline(tmp_path: Path) -> None:
@@ -176,13 +265,15 @@ def test_host_bundle_source_requirements_and_files(host_bundle: Path) -> None:
     assert "sentence-transformers==" in requirements
     assert "--hash=sha256:" in requirements
     mapping = host_bundle / "mapping" / "technology-audit-export.json"
-    assert mapping.read_bytes() == (
-        REPO / "examples" / "mappings" / "technology-audit-export.json"
-    ).read_bytes()
+    assert (
+        mapping.read_bytes()
+        == (REPO / "examples" / "mappings" / "technology-audit-export.json").read_bytes()
+    )
     example = host_bundle / "sidecar" / "text-sidecar.example.csv"
-    assert example.read_bytes() == (
-        REPO / "examples" / "mappings" / "text-sidecar.example.csv"
-    ).read_bytes()
+    assert (
+        example.read_bytes()
+        == (REPO / "examples" / "mappings" / "text-sidecar.example.csv").read_bytes()
+    )
     guide = host_bundle / "docs" / "partner-run-guide.md"
     assert guide.read_bytes() == (REPO / "docs" / "partner-run-guide.md").read_bytes()
 
@@ -378,8 +469,16 @@ def test_doctor_runs_from_inside_the_bundle(host_bundle: Path, tmp_path: Path) -
     )
     assert synced.returncode == 0, synced.stderr.strip().splitlines()[:3]
     done = subprocess.run(
-        ["uv", "run", "--offline", "eureka", "doctor", "--json", "--model-path",
-         str(host_bundle / "model")],
+        [
+            "uv",
+            "run",
+            "--offline",
+            "eureka",
+            "doctor",
+            "--json",
+            "--model-path",
+            str(host_bundle / "model"),
+        ],
         cwd=source,
         env=env,
         capture_output=True,

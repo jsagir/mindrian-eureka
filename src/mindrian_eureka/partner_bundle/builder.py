@@ -89,6 +89,21 @@ class Target:
     launcher: str
 
 
+# The PyTorch CPU index of pyproject.toml (index `pytorch-cpu`). The lock pins torch
+# `2.14.1+cpu` from this index, so `pip download` needs it next to PyPI.
+PYTORCH_CPU_INDEX = "https://download.pytorch.org/whl/cpu"
+
+# macOS arm64 wheel tags. Source: the wheel file names in uv.lock. The lock holds
+# `macosx_11_0_arm64`, `macosx_12_0_arm64` and `macosx_14_0_arm64` (14 is the highest N),
+# and the universal2 tags `macosx_10_9`, `macosx_10_13` and `macosx_10_15`.
+# `macosx_11_0_universal2` does not appear in the lock.
+MACOS_ARM64_PIP_PLATFORMS: tuple[str, ...] = (
+    *(f"macosx_{n}_0_arm64" for n in range(11, 15)),
+    "macosx_10_9_universal2",
+    "macosx_10_13_universal2",
+    "macosx_10_15_universal2",
+)
+
 TARGETS: dict[str, Target] = {
     "linux-x86_64": Target(
         "linux-x86_64",
@@ -113,7 +128,7 @@ TARGETS: dict[str, Target] = {
         "aarch64-apple-darwin",
         "tar.gz",
         "aarch64-apple-darwin",
-        ("macosx_11_0_arm64",),
+        MACOS_ARM64_PIP_PLATFORMS,
         "cpython-3.12-macos-aarch64-none",
         "sh",
     ),
@@ -409,14 +424,12 @@ def _write_wheels(options: BundleOptions, target: Target, bundle: Path, uv: str)
     return "download"
 
 
-def _download_wheels(options: BundleOptions, target: Target, bundle: Path, uv: str) -> None:
-    """Fetch every locked wheel for the target with `pip download --require-hashes`.
+def _pip_download_base(target: Target, wheels: Path, uv: str) -> list[str]:
+    """Return the shared `pip download` arguments for one target.
 
-    ASSUMED: `pip download --platform` for the 3 targets. Not run on this machine.
+    PyPI stays the default index. The PyTorch CPU index is added with
+    `--extra-index-url` because the lock pins `torch==2.14.1+cpu` from it.
     """
-    _require_online(options, f"The wheel download for {target.name}")
-    wheels = bundle / "wheels"
-    wheels.mkdir()
     base = [
         uv,
         "run",
@@ -427,6 +440,8 @@ def _download_wheels(options: BundleOptions, target: Target, bundle: Path, uv: s
         "pip",
         "download",
         "--only-binary=:all:",
+        "--extra-index-url",
+        PYTORCH_CPU_INDEX,
         "--python-version",
         "3.12",
         "--implementation",
@@ -437,6 +452,18 @@ def _download_wheels(options: BundleOptions, target: Target, bundle: Path, uv: s
     for name in target.pip_platforms:
         base.extend(["--platform", name])
     base.extend(["--dest", str(wheels)])
+    return base
+
+
+def _download_wheels(options: BundleOptions, target: Target, bundle: Path, uv: str) -> None:
+    """Fetch every locked wheel for the target with `pip download --require-hashes`.
+
+    ASSUMED: `pip download --platform` for the 3 targets. Not run on this machine.
+    """
+    _require_online(options, f"The wheel download for {target.name}")
+    wheels = bundle / "wheels"
+    wheels.mkdir()
+    base = _pip_download_base(target, wheels, uv)
     _run(
         [*base, "--require-hashes", "--requirement", str(bundle / "requirements.txt")],
         cwd=options.repo_root,
