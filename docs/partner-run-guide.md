@@ -110,6 +110,16 @@ Working the room with Larry sends room content to the model provider. You decide
 
 The owner builds one carry-in folder per operating system with `scripts/build-partner-bundle --target <linux-x86_64 | windows-x86_64 | macos-arm64> --out dist --online`. The model folder comes from a local path given with `--model-path`, and the builder never downloads it unless `--allow-model-download` is passed. The folder `eureka-partner-bundle-<target>` holds the `uv` program for that system, the Eureka source at the agreed commit, the locked requirement list with hashes, the wheel folder, the model folder, the mapping file, a `sidecar/` folder with a README and the format example, this guide, and the launchers `start.sh` and `start.ps1`. The file `BUNDLE-MANIFEST.json` lists every file of the folder with its sha256 and byte size, so the receiving side can check each file before anything runs. The side-car file for this export, if one exists, is dropped into `sidecar/` before hand-over. On the partner machine the whole run is `start.sh` on Linux or macOS and `start.ps1` on Windows, with an input folder and an output folder that default to `input` and `output` next to the bundle. Add `--dry-run` (or `-DryRun`) to see the steps without running them. The first step of the launcher, before the 4 steps of section 2 to section 5, is a `uv sync` of the bundled source from the `wheels/` folder, offline, so the first run needs no network and no install on the machine; on the partner machine this sync is ASSUMED until the first real run. The launcher stops when `eureka doctor` finds a problem and leaves the printed fix on the screen. Re-running on a new export is the same click. Nothing in the bundle or the launcher calls the network. Every result stays a candidate, not verified.
 
+Build status of the three targets, run on 2026-11-07 on a Linux builder with `--online`:
+
+- PROVEN on 2026-11-07: the wheel download with hashes and the bundle manifest build finishes for `linux-x86_64` (exit 0, 459 MB, 51 wheels, 1103 files in the manifest).
+- PROVEN on 2026-11-07: the wheel download with hashes and the bundle manifest build finishes for `windows-x86_64` (exit 0, 390 MB, 52 wheels, 1104 files in the manifest).
+- PROVEN on 2026-11-07: the wheel download with hashes and the bundle manifest build finishes for `macos-arm64` (exit 0, 368 MB, 51 wheels, 1103 files in the manifest).
+
+For each target, the wheel folder holds every package of the lock that applies to that system, and the manifest lists every file on disk. The builder takes the `torch` build for the CPU from the PyTorch CPU index, accepts the macOS 11 to 14 arm64 wheel tags, and reads the environment markers of the lock for the target system, not for the builder machine. The `requirements.txt` in the bundle is the unchanged output of `uv export`.
+
+Running the launchers `start.sh` and `start.ps1` on Linux, Windows and macOS stays ASSUMED. The launchers were not run on any of the three systems, and no bundle was installed on the builder.
+
 ## Privacy
 
 - The data never leaves the machine. The run, the doctor and the hub make no network call.
