@@ -96,6 +96,8 @@ Result: NO MATCH. This run differs from the shipped expected hashes.
 
 The rule is exact equality. Lines that start with INFO show your platform and library versions. They explain a difference. They never excuse it.
 
+MATCH shows that the output bytes are the shipped ones. It does not prove that the run was made on this machine. The command reads the `manifest.json` that the run folder holds, and it compares the 4 hashed output files byte for byte. Extra files in the folder are ignored.
+
 ## Step 5. Read the ranked pairs
 
 Open `my-run/ranked-pairs.md`. It has two tables, one for each engine. Each table has these columns: Rank, Left record, Right record, Wording, Meaning, Rank score and Reading.

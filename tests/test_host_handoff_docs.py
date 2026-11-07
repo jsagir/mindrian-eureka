@@ -155,6 +155,26 @@ def test_contract_lists_every_refusal_code() -> None:
     assert missing == []
 
 
+def test_contract_says_what_a_host_sees_over_mcp() -> None:
+    """Review items 2, 7, 8 and 10b (plan 04.1-03): the 15 codes are not all refusals over MCP."""
+    from mindrian_eureka.host_run.contracts import REASONS
+
+    text = _contract()
+    section = _section(text, "## Refusals and errors")
+    assert "| Over MCP |" in section
+    for code in REASONS:
+        row = next(line for line in section.splitlines() if line.startswith(f"| `{code}` |"))
+        cell = row.rstrip("|").rsplit("|", 1)[1].strip()
+        assert cell.startswith(("refused", "tool error", "blocked")), code
+    assert "Do not expect all 15 codes as a refusal over MCP." in section
+    assert "typed `bad_request`" in section
+    assert "Each plan call mints one start." in _section(text, "## The approval step")
+    assert "mkdir(mode=0o700)" in text
+    assert "ACL" in text
+    assert "ASSUMED, not measured" in text
+    assert "No guard exists." in text
+
+
 def test_tool_names_equal_the_registered_functions() -> None:
     from mindrian_eureka.opportunity_pairs import mcp_server
 

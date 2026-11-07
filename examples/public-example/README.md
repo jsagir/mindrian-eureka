@@ -44,6 +44,8 @@ All results are candidates, not verified. They are leads for human review.
 
 Every pair is a candidate, not verified. The pairs are leads for human review. They are not evidence and not a claim of novelty. The label `candidate, not verified` stays on every result file.
 
+MATCH shows that the output bytes are the shipped ones. It does not prove that the run was made on this machine. The check reads the `manifest.json` that the run folder holds, and it compares the 4 hashed output files byte for byte. Extra files in the folder are ignored.
+
 ## Where it was checked
 
 | Setup | Platform | Python | Threads | Cache | Same as reference |

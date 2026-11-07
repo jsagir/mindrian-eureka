@@ -63,7 +63,8 @@ Eureka enforces four rules:
 
 - A start is refused unless the request carries an `approval` block whose `plan_digest` equals the digest of this exact request.
 - A live plan receipt must exist. A receipt lives 24 hours.
-- A receipt has single use. A second start with the same digest is refused with `plan_consumed`.
+- A receipt has single use. A second start with the same digest is refused with `plan_consumed`. This holds even when the job of the first start was deleted.
+- Each plan call mints one start. N plan calls of the same request allow N approved starts. Eureka cannot verify approval anyway (`verified_by_engine` is `false`), so the count of starts is the limit that it can enforce.
 - A retry with the same idempotency key and the same approval reference returns the same job. A failed job start releases the receipt, so the host can try again.
 
 A refusal starts no job. It is an answer, not an exception, with `status: refused` and a reason code.
@@ -169,31 +170,39 @@ About `outputs`: Eureka lists each pair once, even when both engines found it. T
 
 ## Refusals and errors
 
-A refusal is a dictionary with six keys: `status: refused`, `reason`, `message`, `fix`, `label` and `room_write`. The message holds no artifact text and no machine path. The host shows `message` and `fix` in plain words. The 15 codes:
+A refusal is a dictionary with six keys: `status: refused`, `reason`, `message`, `fix`, `label` and `room_write`. The message holds no artifact text and no machine path. The host shows `message` and `fix` in plain words.
 
-| Code | When it appears | What the host shows |
-|------|-----------------|---------------------|
-| `bad_request` | A rule of the request is broken, for example a missing key, an unknown key, or a wrong type. | The message and the fix as written. |
-| `too_many_artifacts` | More than 3,000 artifacts. | Split the room into snapshots of 3,000 artifacts or fewer. |
-| `bundle_too_large` | The text of the bundle is above 20 MiB, or one text is above 1,000,000 characters. | Send fewer or shorter artifacts. |
-| `duplicate_artifact_id` | An id appears twice. | Give each artifact a unique id. |
-| `id_collision` | Two ids give the same record id after the sanitizer. | Rename one id. |
-| `artifact_hash_mismatch` | A sent `sha256` does not match the text. | Send the right hash, or leave it out. |
-| `external_corpus_refused` | An artifact is not from the room corpus. | Send room artifacts only. |
-| `approval_missing` | A start has no `approval` block. | Plan first, ask the person, then start. |
-| `approval_bad_reference` | The digest or the reference has the wrong form. | Send the digest the plan tool returned. |
-| `plan_unknown` | No plan receipt exists for the digest. | Call the plan tool again. |
-| `plan_expired` | The receipt is older than 24 hours. | Call the plan tool again and ask again. |
-| `plan_consumed` | The receipt was already used by another start. | Plan again. Use the idempotency key for a retry. |
-| `plan_mismatch` | The digest does not belong to this request. | Send the same request that was planned. |
-| `local_model_unavailable` | The plan found no local model. | Install a local model. Eureka downloads nothing. |
-| `too_few_usable_records` | Too few usable records stay after the cleaning. | Send more artifacts with longer text. |
+The engine has 15 codes. They do not all reach a host as a refusal. The tool schema checks the shape of the request first, and a wrong shape is a tool error that the engine code never sees. Two codes come back from the plan call as a blocked plan. The last column shows what a host sees over MCP. PROVEN on 2026-11-08: each cell was run through the tool server (`server.call_tool`, the path of a host), and the test file `tests/test_host_run_mcp_reach.py` pins every cell.
 
-The two codes `local_model_unavailable` and `too_few_usable_records` come back from the plan call as a blocked plan (`status: blocked`), not as a start. A blocked plan records no receipt.
+| Code | When it appears | What the host shows | Over MCP |
+|------|-----------------|---------------------|----------|
+| `bad_request` | A rule of the request is broken that the tool schema does not check. | The message and the fix as written. | refused for an empty objective (spaces only), an id with no usable character (for example `...`) and an idempotency key outside 1 to 128 characters. Tool error for a missing key, an unknown key, a wrong type and a lone surrogate. |
+| `too_many_artifacts` | More than 3,000 artifacts. | Split the room into snapshots of 3,000 artifacts or fewer. | tool error. Only a direct call of `host_run.api` gives the refusal. |
+| `bundle_too_large` | The text of the bundle is above 20 MiB, or one text is above 1,000,000 characters. | Send fewer or shorter artifacts. | refused for a total above 20 MiB. Tool error for one text above 1,000,000 characters. |
+| `duplicate_artifact_id` | An id appears twice. | Give each artifact a unique id. | refused |
+| `id_collision` | Two ids give the same record id after the sanitizer. | Rename one id. | refused |
+| `artifact_hash_mismatch` | A sent `sha256` does not match the text. | Send the right hash, or leave it out. | refused |
+| `external_corpus_refused` | An artifact is not from the room corpus. | Send room artifacts only. | refused |
+| `approval_missing` | A start has no `approval` block. | Plan first, ask the person, then start. | refused |
+| `approval_bad_reference` | The digest or the reference has the wrong form. | Send the digest the plan tool returned. | tool error. Only a direct call of `host_run.api` gives the refusal. |
+| `plan_unknown` | No plan receipt exists for the digest. | Call the plan tool again. | refused |
+| `plan_expired` | The receipt is older than 24 hours. | Call the plan tool again and ask again. | refused |
+| `plan_consumed` | The receipt was already used by another start. | Plan again. Use the idempotency key for a retry. | refused |
+| `plan_mismatch` | The digest does not belong to this request. | Send the same request that was planned. | refused |
+| `local_model_unavailable` | The plan found no local model. | Install a local model. Eureka does not download models. | blocked (plan call) |
+| `too_few_usable_records` | Too few usable records stay after the cleaning. | Send more artifacts with longer text. | blocked (plan call) |
+
+Count of the cells: 11 codes reach a host as `status: refused` in at least one case (9 always, 2 in part), 2 codes are tool errors only, and 2 codes come back as `status: blocked`. Do not expect all 15 codes as a refusal over MCP.
+
+A lone surrogate (a text that cannot be encoded as UTF-8) is a typed `bad_request` refusal when the request reaches the engine code directly. Over MCP the tool schema rejects it first with a tool error, because the string is not valid.
+
+A tool error also hides the input. Its text names the field and the rule that failed, and never the value that was sent.
+
+The two codes `local_model_unavailable` and `too_few_usable_records` come back from the plan call as a blocked plan (`status: blocked`), not as a start. A blocked plan records no receipt. A start after a blocked plan gets `plan_unknown`.
 
 These cases are not refusals:
 
-- A bad shape is rejected by the tool schema before the code runs.
+- A bad shape is rejected by the tool schema before the code runs. The host sees a tool error.
 - A job that fails ends with the state `failed`. `scout_status` then shows a `failure_code`: `model_unavailable` or `run_failed`.
 - A cancel takes effect between stages, not inside an engine.
 
@@ -204,6 +213,12 @@ The run reads only the request. It receives no room path. It writes the three lo
 Eureka writes nothing to a room. It never writes a registry, a room database or a portfolio. It never calls Theo or Brain. It makes no network call. It never downloads a model.
 
 The result echoes `scope_id` and `snapshot_id`. The host must reject a result whose scope differs from the request. The result says `room_write: not_performed` and `portfolio_write: not_performed`.
+
+### Known limits and risks
+
+- Windows permissions. Eureka makes its private folders with mode `0o700` and sets owner-only modes on the staged files. On Windows `mkdir(mode=0o700)` and `chmod` have no effect. The privacy of the staged CSV and of the run folder then depends on the access control list (ACL) of the Eureka data directory. UNVERIFIED on Windows: no run was made there. Check the ACL of the data directory on a shared Windows machine.
+- Memory at the top limit. Memory grows with the square of the record count. The comment in `src/mindrian_eureka/limits.py` gives about 1.7 GB at 2,117 records and about 3.4 GB at 3,000 records. The 3.4 GB value is ASSUMED, not measured. A long-lived MCP process that takes a request near 3,000 artifacts can be stopped by the operating system for lack of memory. No guard exists. This is a known limit. A guard is a follow-up and is not part of this page.
+- Approval. Eureka cannot verify that a person approved. N plan calls allow N starts. The real approval is the card of the host.
 
 ## How MindrianOS should wire the command
 

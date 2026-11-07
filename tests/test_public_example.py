@@ -217,6 +217,9 @@ def test_readme_structure_and_wording() -> None:
     assert not re.search(r"\bHSI\b", text)
     assert "Internal only" in text
     assert "docs/rs-release-gate.md" in text
+    # Review item 4 (plan 04.1-03): say what MATCH proves, and what it does not.
+    assert "MATCH shows that the output bytes are the shipped ones. It does not prove that the run was made on this machine." in text
+    assert "Extra files in the folder are ignored." in text
     status = text.split("## Status", 1)[1].split("## ", 1)[0]
     assert "Internal only." in status
     for target in re.findall(r"\]\(([^)#]+)\)", text):
