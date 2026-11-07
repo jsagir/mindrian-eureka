@@ -167,6 +167,9 @@ def test_contract_says_what_a_host_sees_over_mcp() -> None:
         cell = row.rstrip("|").rsplit("|", 1)[1].strip()
         assert cell.startswith(("refused", "tool error", "blocked")), code
     assert "Do not expect all 15 codes as a refusal over MCP." in section
+    assert "verified on `mcp` 2.3.0 with `pydantic` 2.14.1" in section
+    assert "the lock that the plugin runs" in section
+    assert "fails when a cell moves" in section
     assert "typed `bad_request`" in section
     assert "Each plan call mints one start." in _section(text, "## The approval step")
     assert "mkdir(mode=0o700)" in text

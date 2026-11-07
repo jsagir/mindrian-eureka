@@ -174,6 +174,8 @@ A refusal is a dictionary with six keys: `status: refused`, `reason`, `message`,
 
 The engine has 15 codes. They do not all reach a host as a refusal. The tool schema checks the shape of the request first, and a wrong shape is a tool error that the engine code never sees. Two codes come back from the plan call as a blocked plan. The last column shows what a host sees over MCP. PROVEN on 2026-11-08: each cell was run through the tool server (`server.call_tool`, the path of a host), and the test file `tests/test_host_run_mcp_reach.py` pins every cell.
 
+The table was verified on `mcp` 2.3.0 with `pydantic` 2.14.1, the versions in the lock that the plugin runs (`uv run --no-sync --offline --locked --no-python-downloads eureka-mcp`). It gave the same cells on `mcp` 1.25.0 with `pydantic` 2.12.4. A change of library can move a cell, for example a tool error that turns into an `isError` result. The test file `tests/test_host_run_mcp_reach.py` fails when a cell moves.
+
 | Code | When it appears | What the host shows | Over MCP |
 |------|-----------------|---------------------|----------|
 | `bad_request` | A rule of the request is broken that the tool schema does not check. | The message and the fix as written. | refused for an empty objective (spaces only), an id with no usable character (for example `...`) and an idempotency key outside 1 to 128 characters. Tool error for a missing key, an unknown key, a wrong type and a lone surrogate. |

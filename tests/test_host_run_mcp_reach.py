@@ -233,3 +233,18 @@ def test_each_plan_call_mints_one_start(host: Any) -> None:
     assert first[0] == "queued"
     assert second[0] == "queued"
     assert third == ("refused", "plan_consumed")
+
+
+def test_a_tool_error_never_repeats_the_value_that_was_sent(host: Any) -> None:
+    secret = "SECRETVALUE"
+    cases = [
+        lambda r: r.update(bogus=secret),
+        lambda r: r.update(objective=[secret]),
+        lambda r: r["artifacts"][0].update(text=secret + "\ud800"),
+    ]
+    for mutate in cases:
+        request = make_request(12)
+        mutate(request)
+        with pytest.raises(Exception) as caught:
+            asyncio.run(host.server.call_tool(PLAN, {"request": request}))
+        assert secret not in str(caught.value)
