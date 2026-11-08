@@ -58,16 +58,24 @@ SHAPE_CLASSES: dict[str, dict[str, Any]] = {
     "f-red": {"fill": "red"},
     "f-yellow": {"fill": "yellow", "stroke": "ink", "width": 6},
     "f-tick": {"stroke": "ink", "width": 2, "opacity": ".35"},
-    "f-fan": {"stroke": "ink", "width": 2, "opacity": ".55"},
     "f-link": {"stroke": "ink", "width": 8, "dash": "28 32"},
     "f-track": {"fill": "quiet", "stroke": "ink", "width": 3},
     "f-band": {"fill": "ink"},
     "f-chip": {"fill": "paper", "stroke": "ink", "width": 3},
     "f-chip-on": {"fill": "paper", "stroke": "paper", "width": 3},
 }
-TEXT_SIZES = {"f-mono": 28, "f-title": 36, "f-body": 34, "f-num": 72}
+TEXT_SIZES = {
+    "f-mono": 28,
+    "f-title": 36,
+    "f-body": 34,
+    "f-num": 72,
+    "f-label": 60,
+    "f-label-s": 44,
+}
 TEXT_MODIFIERS = {"f-soft", "f-blue-t", "f-red-t", "f-band-t", "f-chip-t"}
 CLASS_TABLE = frozenset(SHAPE_CLASSES) | frozenset(TEXT_SIZES) | frozenset(TEXT_MODIFIERS)
+# Plan 10: 14 shapes (f-fan retired), 6 text sizes (f-label and f-label-s added), 5 modifiers.
+CLASS_COUNT = 25
 
 # The slot names that the figure copy may use (a subset of the deck's SLOT_NAMES).
 FIGURE_SLOTS = frozenset({"engine", "n", "x", "y", "z", "a", "b", "list", "title"})
@@ -79,8 +87,14 @@ COLUMN = (570.0, 830.0)
 BAND_X = (50.0, 1350.0)
 BAND_Y = (702.0, 912.0)
 CANVAS = (1400.0, 934.0)
-CARD_TRACK = 760
+CARD_TRACK = 910
 BAR_MIN = 8
+# Card word columns of plan 10, in canvas units: column A and column B as test containers.
+CARD_COLUMN_A = (70.0, 540.0)
+CARD_COLUMN_B = (540.0, 980.0)
+CARD_WORDS = 3
+WORD_YS = (254.0, 326.0, 398.0)
+LABEL_ADVANCE = 0.6 * 1.1
 
 CLAIM_WORDS = (
     "novel",
@@ -135,7 +149,7 @@ def _bbox(element: ET.Element) -> tuple[float, float, float, float]:
         )
     if _tag(element) == "line":
         # Butt caps: an axis-aligned line grows by half the stroke across its direction
-        # only. A diagonal line (the fan) takes the conservative box on both axes.
+        # only. A diagonal line would take the conservative box on both axes.
         xs = (_num(element, "x1"), _num(element, "x2"))
         ys = (_num(element, "y1"), _num(element, "y2"))
         across_x = half if ys[0] != ys[1] or xs[0] == xs[1] else 0.0
@@ -521,6 +535,9 @@ def test_classes_are_the_vocabulary_and_fallbacks_exist(
     from mindrian_eureka.hub.figures import build_figures
 
     assert MODULE_TABLE == CLASS_TABLE
+    assert len(CLASS_TABLE) == CLASS_COUNT
+    assert "f-fan" not in MODULE_TABLE
+    assert TEXT_SIZES["f-label"] == 60 and TEXT_SIZES["f-label-s"] == 44
     colour = re.compile(r"#[0-9a-fA-F]{3,8}")
     for figures in (public_figures, build_figures(hostile)):
         for key, _, svg in _every_figure(figures):
@@ -590,55 +607,234 @@ def test_size_budget(public_figures: dict[str, Any], hostile: dict[str, Any]) ->
 
 
 def _data_shapes(svg: str) -> list[tuple[str, tuple[str, ...]]]:
-    """Return every shape that is not the rule or the fan, as (tag, sorted attributes)."""
+    """Return every shape that is not the rule, as (tag, sorted attributes)."""
     out = []
     for element in _shapes(svg):
-        classes = _classes(element)
-        if classes & {"f-rule", "f-fan"}:
+        if "f-rule" in _classes(element):
             continue
         out.append((_tag(element), tuple(sorted(element.attrib.items()))))
     return out
 
 
-def _fan(svg: str) -> list[tuple[str, ...]]:
+def _rule_x(svg: str) -> float:
+    rules = [element for element in _shapes(svg) if "f-rule" in _classes(element)]
+    assert len(rules) == 1
+    assert _num(rules[0], "x1") == _num(rules[0], "x2")
+    return _num(rules[0], "x1")
+
+
+def _text_rows(svg: str) -> list[tuple[str, str, float, float]]:
+    """Return (text, classes, x, y) of every text element in document order."""
     return [
-        tuple(sorted(element.attrib.items()))
-        for element in _shapes(svg)
-        if _classes(element) & {"f-rule", "f-fan"}
+        (
+            element.text or "",
+            " ".join(sorted(_classes(element))),
+            _num(element, "x"),
+            _num(element, "y"),
+        )
+        for element in _texts(svg)
     ]
 
 
-def test_card_has_no_text_and_decoration_is_seeded_by_the_pair_id() -> None:
-    base = _card(_one(pair_id="pair-0001", shared=["river", "delta"]))
-    assert not _texts(base)
+def _chip(svg: str) -> tuple[ET.Element | None, ET.Element | None]:
+    rects = [element for element in _shapes(svg) if "f-chip" in _classes(element)]
+    texts = [element for element in _texts(svg) if "f-chip-t" in _classes(element)]
+    assert len(rects) <= 1 and len(texts) <= 1
+    return (rects[0] if rects else None, texts[0] if texts else None)
+
+
+def _label_width(text: str, size: int) -> int:
+    import math
+
+    return math.ceil(len(text) * size * LABEL_ADVANCE)
+
+
+WORDS_A = ["river", "flood", "delta", "channel", "silt"]
+WORDS_B = ["grain", "harvest", "soil", "seed", "field"]
+
+
+def _worded(
+    pair_id: str = "pair-0001",
+    words_a: list[str] | None = None,
+    words_b: list[str] | None = None,
+    shared: list[str] | None = None,
+) -> dict[str, Any]:
+    payload = _one(pair_id=pair_id, shared=["water", "field"] if shared is None else shared)
+    payload["terms"]["records"] = {
+        "r-a": WORDS_A if words_a is None else words_a,
+        "r-b": WORDS_B if words_b is None else words_b,
+    }
+    return payload
+
+
+def test_card_carries_the_words_and_the_rule_is_seeded_by_the_pair_id() -> None:
+    base = _card(_worded())
+    rows = _text_rows(base)
+    # Draw order: the shared chip on the link, then record A, then record B (plan 10).
+    expected = ["water, field", "river", "flood", "delta", "grain", "harvest", "soil"]
+    assert [row[0] for row in rows] == expected
+    assert rows[0][1] == "f-chip-t f-label-s"
+    for index, (text, classes, x, y) in enumerate(rows[1:4]):
+        assert classes == "f-label" and x == 70 and y == WORD_YS[index], text
+    for index, (text, classes, x, y) in enumerate(rows[4:7]):
+        assert classes == "f-label" and y == WORD_YS[index], text
+        assert x == 980 - _label_width(text, 60), text
+        assert x >= CARD_COLUMN_B[0]
+    chip, chip_text = _chip(base)
+    assert chip is not None and chip_text is not None
+    width = _num(chip, "width")
+    assert width == _label_width("water, field", 44) + 30
+    assert abs(_num(chip, "x") + width / 2 - 525) <= 0.5
+    assert _num(chip, "y") == 89 and _num(chip, "height") == 52
+    assert _num(chip_text, "x") == _num(chip, "x") + 15 and _num(chip_text, "y") == 125
+    assert not [element for element in _elements(base) if "f-fan" in _classes(element)]
     _, desc = _title_and_desc(base)
-    assert "The thin lines are decoration" in desc
-    fans = [element for element in _shapes(base) if "f-fan" in _classes(element)]
-    assert len(fans) == 7
-    rules = [element for element in _shapes(base) if "f-rule" in _classes(element)]
-    assert len(rules) == 1
+    assert "Record A words: river, flood, delta." in desc
+    assert "Record B words: grain, harvest, soil." in desc
+    assert "2 shared distinctive words: water, field." in desc
+    assert "The vertical rule is structure, not data." in desc
+    assert "decoration" not in desc.lower()
     first_byte = hashlib.sha256(b"pair-0001").digest()[0]
-    assert _num(rules[0], "x1") == 1100 + 20 * (first_byte % 3)
-    assert _card(_one(pair_id="pair-0001", shared=["river", "delta"])) == base
+    assert _rule_x(base) == 1100 + 20 * (first_byte % 3)
+    # The same input gives the same bytes.
+    assert _card(_worded()) == base
+    # The same words and another id: only the rule moves.
     changed = None
     for index in range(2, 40):
-        other = _card(_one(pair_id=f"pair-{index:04d}", shared=["river", "delta"]))
-        if _fan(other) != _fan(base):
+        other = _card(_worded(pair_id=f"pair-{index:04d}"))
+        if _rule_x(other) != _rule_x(base):
             changed = other
             break
-    assert changed is not None, "no other pair id changed the fan"
+    assert changed is not None, "no other pair id moved the rule"
     assert _data_shapes(changed) == _data_shapes(base)
+    assert _text_rows(changed) == rows
+    # Different words give different text elements (and so a different picture).
+    other_words = _card(
+        _worded(
+            words_a=["enamel", "crown", "molar"],
+            words_b=["antenna", "relay", "signal"],
+            shared=[],
+        )
+    )
+    assert [row[0] for row in _text_rows(other_words)] == [
+        "enamel",
+        "crown",
+        "molar",
+        "antenna",
+        "relay",
+        "signal",
+    ]
+    assert _text_rows(other_words) != rows
+    assert "Record A words: enamel, crown, molar." in _title_and_desc(other_words)[1]
+
+
+def test_card_word_sizes_and_cuts() -> None:
+    eleven = "abcdefghijk"
+    twelve = "abcdefghijkl"
+    fifteen = "abcdefghijklmno"
+    sixteen = "abcdefghijklmnop"
+    svg = _card(_worded(words_a=[eleven, twelve, fifteen], words_b=[sixteen, "soil"], shared=[]))
+    rows = _text_rows(svg)
+    by_text = {row[0]: row for row in rows}
+    assert by_text[eleven][1] == "f-label"
+    assert by_text[twelve][1] == "f-label-s"
+    assert by_text[fifteen][1] == "f-label-s"
+    cut = sixteen[:12] + "..."
+    assert len(cut) == 15
+    assert cut in by_text and by_text[cut][1] == "f-label-s"
+    assert sixteen not in by_text
+    # Record B labels are right-aligned by computation: x = 980 - the model width.
+    assert by_text[cut][2] == 980 - _label_width(cut, 44)
+    assert by_text["soil"][2] == 980 - _label_width("soil", 60)
+    for text, classes, _, _ in rows:
+        size = 60 if classes == "f-label" else 44
+        element = next(e for e in _texts(svg) if (e.text or "") == text)
+        assert element.get("font-size") == str(size)
+    # The description lists the whole word.
+    _, desc = _title_and_desc(svg)
+    assert f"Record A words: {eleven}, {twelve}, {fifteen}." in desc
+    assert f"Record B words: {sixteen}, soil." in desc
+    assert chr(8230) not in svg
+    # Fewer than 3 words draw fewer labels; no words draw none.
+    two = _card(_worded(words_a=["river"], words_b=[], shared=[]))
+    assert [row[0] for row in _text_rows(two)] == ["river"]
+    assert "Record A words: river." in _title_and_desc(two)[1]
+    assert "Record B words: none." in _title_and_desc(two)[1]
+    none = _card(_worded(words_a=[], words_b=[], shared=[]))
+    assert _text_rows(none) == []
+    assert "Record A words: none." in _title_and_desc(none)[1]
+    # Only the first CARD_WORDS of each record are drawn.
+    assert CARD_WORDS == 3
+    full = _card(_worded())
+    assert "channel" not in _all_text(full) and "silt" not in _all_text(full)
+
+
+def test_shared_chip_rule() -> None:
+    def squares(svg: str) -> int:
+        return len(
+            [e for e in _shapes(svg) if "f-ink" in _classes(e) and _num(e, "y") >= 700]
+        )
+
+    # Joined by a comma and a space while the joined text has 22 characters or fewer.
+    svg = _card(_worded(shared=["water", "field", "river"]))
+    chip, text = _chip(svg)
+    assert chip is not None and text is not None
+    assert text.text == "water, field, river"
+    assert len("water, field, river") == 19
+    # The first word that would pass 22 stops the list; the squares count every word.
+    words = ["water", "field", "river", "delta", "silt", "flood", "grain"]
+    svg = _card(_worded(shared=words))
+    chip, text = _chip(svg)
+    assert text is not None and text.text == "water, field, river"
+    assert squares(svg) == 7
+    _, desc = _title_and_desc(svg)
+    assert "7 shared distinctive words: " + ", ".join(words) + "." in desc
+    # A label right at 22 characters is kept.
+    svg = _card(_worded(shared=["abcdefghij", "abcdefghij"]))
+    assert _chip(svg)[1] is not None and _chip(svg)[1].text == "abcdefghij, abcdefghij"
+    assert len("abcdefghij, abcdefghij") == 22
+    # A first word longer than 22 characters: no chip and no chip text, the squares stay.
+    long = "abcdefghijklmnopqrstuvw"
+    assert len(long) == 23
+    svg = _card(_worded(shared=[long, "water"]))
+    assert _chip(svg) == (None, None)
+    assert squares(svg) == 2
+    assert f"2 shared distinctive words: {long}, water." in _title_and_desc(svg)[1]
+    # Nine shared words: 8 squares, every word in the description.
+    nine = [f"word{index}" for index in range(9)]
+    svg = _card(_worded(shared=nine))
+    assert squares(svg) == 8
+    assert ", ".join(nine) in _title_and_desc(svg)[1]
+    # No shared word: no chip.
+    svg = _card(_worded(shared=[]))
+    assert _chip(svg) == (None, None)
+    assert squares(svg) == 0
+    assert "No distinctive word is shared." in _title_and_desc(svg)[1]
 
 
 def test_card_encoding() -> None:
     from mindrian_eureka.hub.figures import scale_for
 
     # (a) the meaning bar width follows the scale, with a minimum of 8.
-    for meaning, expected in ((0.5, 380), (0.0, BAR_MIN), (0.004, BAR_MIN), (1.0, 760), (1.4, 760)):
+    for meaning, expected in ((0.5, 455), (0.0, BAR_MIN), (0.004, BAR_MIN), (1.0, 910), (1.4, 910)):
         bar = _meaning_bar(_card(_one(meaning=meaning)))
         assert _num(bar, "width") == expected, meaning
-        assert _num(bar, "x") == 70 and _num(bar, "y") == 330 and _num(bar, "height") == 126
-    assert round(CARD_TRACK * 0.5) == 380
+        assert _num(bar, "x") == 70 and _num(bar, "y") == 470 and _num(bar, "height") == 110
+    assert round(CARD_TRACK * 0.5) == 455
+    wording_bar = [
+        e
+        for e in _shapes(_card(_one(wording=0.5)))
+        if "f-red" in _classes(e) and _num(e, "x") == 70
+    ]
+    assert len(wording_bar) == 1
+    assert _num(wording_bar[0], "y") == 620 and _num(wording_bar[0], "width") == 455
+    assert _num(wording_bar[0], "height") == 110
+    ticks = [e for e in _shapes(_card(_one())) if "f-tick" in _classes(e)]
+    assert [(_num(t, "x1"), _num(t, "y1"), _num(t, "y2")) for t in ticks] == [
+        (70, 440, 760),
+        (525, 440, 760),
+        (980, 440, 760),
+    ]
     # (b) the wording engine scale is 0 to 1; the unusual-pairs scale spans the extremes.
     wording_card = _card(_one(ENGINE_WORDING, meaning=0.5))
     assert "on a scale from 0 to 1." in _title_and_desc(wording_card)[1]
@@ -675,8 +871,8 @@ def test_card_encoding() -> None:
     )
     desc_u1 = _title_and_desc(_card(unusual, f"{ENGINE_UNUSUAL}:pair-u1"))[1]
     assert "on a scale from 0 to 1.2991." in desc_u1
-    assert _num(_meaning_bar(_card(unusual, f"{ENGINE_UNUSUAL}:pair-u1")), "width") == 760
-    assert _num(_meaning_bar(_card(unusual, f"{ENGINE_UNUSUAL}:pair-u2")), "width") == 380
+    assert _num(_meaning_bar(_card(unusual, f"{ENGINE_UNUSUAL}:pair-u1")), "width") == 910
+    assert _num(_meaning_bar(_card(unusual, f"{ENGINE_UNUSUAL}:pair-u2")), "width") == 455
     # (c) one ink square for each shared word, at most 8.
     for count in (0, 1, 6, 8, 9):
         words = [f"word{index}" for index in range(count)]
@@ -688,7 +884,7 @@ def test_card_encoding() -> None:
         ]
         assert len(squares) == min(count, 8), count
         for index, square in enumerate(squares):
-            assert (_num(square, "x"), _num(square, "y")) == (70 + 96 * index, 720)
+            assert (_num(square, "x"), _num(square, "y")) == (70 + 96 * index, 790)
             assert (_num(square, "width"), _num(square, "height")) == (64, 64)
 
     # (d) and (h): the cobalt block exists exactly when both engines list the pair and a
@@ -777,14 +973,29 @@ def test_card_encoding() -> None:
     assert markers(low) == markers(high)
     panels = [element for element in _shapes(low) if "f-panel" in _classes(element)]
     assert [(_num(p, "x"), _num(p, "y"), _num(p, "width")) for p in panels] == [
-        (70, 110, 150),
-        (400, 110, 150),
+        (70, 60, 110),
+        (870, 60, 110),
+    ]
+    corners = [
+        element
+        for element in _shapes(low)
+        if "f-ink" in _classes(element) and _num(element, "y") < 300
+    ]
+    assert [(_num(c, "x"), _num(c, "y"), _num(c, "width"), _num(c, "height")) for c in corners] == [
+        (70, 60, 36, 36),
+        (870, 60, 36, 36),
     ]
     # (i) the link is dashed 28 on and 32 off.
     links = [element for element in _shapes(low) if "f-link" in _classes(element)]
     assert len(links) == 1
     assert links[0].get("stroke-dasharray") == "28 32"
-    assert (_num(links[0], "x1"), _num(links[0], "x2"), _num(links[0], "y1")) == (226, 394, 185)
+    assert (_num(links[0], "x1"), _num(links[0], "x2"), _num(links[0], "y1")) == (190, 860, 115)
+    # (j) the blocks start 3 units after the rule and reach the frame.
+    both_blocks = _card(together, f"{ENGINE_UNUSUAL}:pair-y")
+    rule_x = _rule_x(both_blocks)
+    for block in _blocks(both_blocks, "f-blue") + _blocks(both_blocks, "f-yellow"):
+        assert _num(block, "x") == rule_x + 3
+        assert _num(block, "x") + _num(block, "width") == 1397
 
 
 # --- the detail -------------------------------------------------------------
@@ -872,6 +1083,20 @@ def _container(element: ET.Element) -> tuple[float, float]:
     return COLUMN
 
 
+def _card_container(element: ET.Element, svg: str) -> tuple[float, float]:
+    classes = _classes(element)
+    if "f-chip-t" in classes:
+        chip, _ = _chip(svg)
+        assert chip is not None
+        return (_num(chip, "x"), _num(chip, "x") + _num(chip, "width"))
+    assert classes & {"f-label", "f-label-s"}, classes
+    x = _num(element, "x")
+    if x == 70:
+        return CARD_COLUMN_A
+    assert x > CARD_COLUMN_B[0], x
+    return CARD_COLUMN_B
+
+
 def test_text_fits_by_the_width_model(
     public_figures: dict[str, Any], hostile: dict[str, Any]
 ) -> None:
@@ -880,6 +1105,16 @@ def test_text_fits_by_the_width_model(
     for figures in (public_figures, build_figures(hostile)):
         for key, kind, svg in _every_figure(figures):
             if kind == "card":
+                for element in _texts(svg):
+                    size = float(element.get("font-size", "0"))
+                    assert size >= 28, (key, _classes(element))
+                    width = len(element.text or "") * LABEL_ADVANCE * size
+                    left, right = _card_container(element, svg)
+                    x = _num(element, "x")
+                    assert x >= left, (key, element.text)
+                    assert x + width <= right, (key, element.text, x + width, right)
+                    on_rows = WORD_YS[0] <= _num(element, "y") <= WORD_YS[-1]
+                    assert on_rows or "f-chip-t" in _classes(element)
                 continue
             title_lines = {"a": 0, "b": 0}
             for element in _texts(svg):
@@ -908,8 +1143,9 @@ ROLE_OVERLAPS_ALLOWED = {
 def _role(element: ET.Element) -> str | None:
     classes = _classes(element)
     x, y = _num(element, "x"), _num(element, "y")
-    if classes & {"f-paper", "f-frame", "f-rule", "f-fan", "f-band", "f-chip", "f-chip-on"}:
+    if classes & {"f-paper", "f-frame", "f-rule", "f-band", "f-chip", "f-chip-on"}:
         return None
+    assert "f-fan" not in classes
     if "f-panel" in classes or ("f-ink" in classes and y < 300):
         return "marker"
     if "f-link" in classes:
@@ -1048,7 +1284,9 @@ def test_figure_copy_module() -> None:
         "G18.card.shared_none",
         "G18.card.agree",
         "G18.card.eureka",
-        "G18.card.decoration",
+        "G18.card.words_a",
+        "G18.card.words_b",
+        "G18.card.rule",
         "G18.card.limit",
         "G18.detail.title",
         "G18.detail.record_a",
@@ -1073,12 +1311,22 @@ def test_figure_copy_module() -> None:
         "G18.legend.detail",
     ):
         assert key in FIGURE_COPY, key
-    assert FIGURE_COPY["G18.card.decoration"] == "The thin lines are decoration."
+    assert "G18.card.decoration" not in FIGURE_COPY
+    assert len(FIGURE_COPY) == 31
+    assert FIGURE_COPY["G18.card.words_a"] == "Record A words: {list}."
+    assert FIGURE_COPY["G18.card.words_b"] == "Record B words: {list}."
+    assert FIGURE_COPY["G18.card.rule"] == "The vertical rule is structure, not data."
     assert FIGURE_COPY["G18.label.record_a"] == "RECORD A"
     assert FIGURE_COPY["G18.label.shared"] == "WORDS BOTH RECORDS SHARE"
     assert LABEL in FIGURE_COPY["G18.card.limit"] and LABEL in FIGURE_COPY["G18.detail.limit"]
     assert "screening aid" in FIGURE_COPY["G18.detail.limit"]
-    assert "decoration" in FIGURE_COPY["G18.legend.caption"]
+    for key in ("G18.legend.caption", "G18.legend.card", "G18.card.title"):
+        assert "decoration" not in FIGURE_COPY[key], key
+    assert "Small words" in FIGURE_COPY["G18.legend.caption"]
+    assert "Chip on the dashed line" in FIGURE_COPY["G18.legend.caption"]
+    assert "most distinctive words of that record" in FIGURE_COPY["G18.legend.card"]
+    assert "chip on the dashed line" in FIGURE_COPY["G18.legend.card"]
+    assert "words of each record" in FIGURE_COPY["G18.card.title"]
 
 
 def test_rules_document() -> None:
@@ -1099,5 +1347,8 @@ def test_rules_document() -> None:
         "5054",
         str(CARD_MAX_BYTES),
         str(DETAIL_MAX_BYTES),
+        "f-label",
+        "display form",
+        "CARD_WORDS",
     ):
         assert needle in text.lower() if needle.islower() else needle in text, needle
