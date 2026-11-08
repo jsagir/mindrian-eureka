@@ -150,6 +150,26 @@ def test_stretched_link_and_separate_controls(tmp_path: Path, browser: str) -> N
 
 
 @pytest.mark.parametrize("browser", ["chromium", "firefox"])
+def test_read_action_is_a_cobalt_text_button(tmp_path: Path, browser: str) -> None:
+    """Plan 11 (L1): the Read action is the prototype's cobalt text link (contract R10)."""
+    require_browser(browser)
+    out = built_hub(tmp_path)
+    result = scenario(out, browser, steps=[
+        viewport(1280), check("light", points=True),
+        {"kind": "click", "selector": "#hub-theme"}, check("dark", points=True, settle=400)])
+    light = result["light"]["points"]["readStyle"]
+    assert light["color"] == COBALT, light
+    assert light["backgroundColor"] == "rgba(0, 0, 0, 0)", light
+    assert light["fontSize"] == "13px" and light["fontWeight"] == "700", light
+    assert light["textDecorationLine"] == "underline", light
+    assert light["borderTopWidth"] == "0px", light
+    assert light["minHeight"] == "44px" and light["height"] >= 44, light
+    dark = result["dark"]["points"]["readStyle"]
+    assert dark["color"] == "rgb(143, 162, 255)", dark
+    assert dark["backgroundColor"] == "rgba(0, 0, 0, 0)", dark
+
+
+@pytest.mark.parametrize("browser", ["chromium", "firefox"])
 def test_legend_details_and_screening_aid_text(tmp_path: Path, browser: str) -> None:
     require_browser(browser)
     out = built_hub(tmp_path)

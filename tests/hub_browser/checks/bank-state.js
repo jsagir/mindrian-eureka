@@ -98,8 +98,15 @@ function points(row) {
   const title = row.querySelector('a.hub-bank-open-link');
   const open = row.querySelector('a.hub-bank-open-btn');
   const after = title ? getComputedStyle(title, '::after') : null;
+  // Plan 11: the Read action is a cobalt text button (contract R10); its computed style.
+  const read = row.querySelector('button.hub-bank-read');
+  const readStyle = read ? getComputedStyle(read) : null;
   return {
     blank: hit(rowBox.left + 12, rowBox.bottom - 8),
+    readStyle: readStyle ? {color: readStyle.color, backgroundColor: readStyle.backgroundColor,
+      fontSize: readStyle.fontSize, fontWeight: readStyle.fontWeight,
+      textDecorationLine: readStyle.textDecorationLine, borderTopWidth: readStyle.borderTopWidth,
+      minHeight: readStyle.minHeight, height: read.getBoundingClientRect().height} : null,
     title: title ? centre(title) : null,
     sources: Array.from(row.querySelectorAll('a.hub-link'), centre),
     open: open ? centre(open) : null,

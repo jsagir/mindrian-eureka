@@ -640,16 +640,21 @@ ROLES: tuple[Role, ...] = (
             (".engine-description a", "font-weight", "700"),
         ),
         (
+            # Plan 11: the Read action is the prototype's text link, as plan 06 R10 wrote it;
+            # plan 06 kept the ink button only because the plan 03 hover pin named .hub-bank-read.
             (".hub-bank-read", "min-block-size", _all("44px")),
-            (".hub-bank-read", "font-size", _all("16px")),
-            (".hub-bank-read", "font-weight", _all("600")),
+            (".hub-bank-read", "font-size", _all("13px")),
+            (".hub-bank-read", "font-weight", _all("700")),
+            (".hub-bank-read", "color", _all("var(--mos-blue)")),
+            (".hub-bank-read", "background", _all("transparent")),
+            (".hub-bank-read", "text-decoration", _all("underline")),
             (".hub-bank-open-btn", "border", _all("1px solid var(--mos-ink)")),
             (".hub-bank-open-btn", "min-block-size", _all("44px")),
             (".hub-bank-open-btn", "font-size", _all("16px")),
             (".hub-bank-open-btn", "font-weight", _all("600")),
             (".hub-bank-open-btn", "background", _all("transparent")),
         ),
-        "LD-23, LD-24, LD-09",
+        "LD-04, LD-23, LD-09",
         "06",
     ),
     Role(

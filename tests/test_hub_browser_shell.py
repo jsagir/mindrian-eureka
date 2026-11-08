@@ -214,9 +214,16 @@ def test_body_and_links(tmp_path: Path, browser: str) -> None:
 @pytest.mark.parametrize("browser", ["chromium", "firefox"])
 def test_primary_button_hover(tmp_path: Path, browser: str) -> None:
     require_browser(browser)
-    out = built_hub(tmp_path)
-    steps = [viewport(1280), shell("rest"), {"kind": "hover", "selector": ".hub-bank-read"},
-             shell("hover", settle=400)]
+    # Plan 11: the primary ink button of the page is the unlock button of the locked page. The
+    # Read this pair control is a cobalt text button since plan 11 (contract R10).
+    # #catalogue-clear and the bank reset button show only in an empty state; the graph and
+    # catalogue buttons are quiet.
+    out = gated_hub(tmp_path)
+    # The gate script adds the class after load and the fill transitions from the browser's
+    # default, so the rest state settles first (Chromium read a mid-transition grey).
+    steps = [viewport(1280), shell("rest", button="#hub-unlock", settle=400),
+             {"kind": "hover", "selector": "#hub-unlock"},
+             shell("hover", button="#hub-unlock", settle=400)]
     result = scenario(out, browser, steps=steps)
     rest = result["rest"]["button"]
     assert rest["backgroundColor"] == INK and rest["color"] == PAPER
@@ -224,7 +231,8 @@ def test_primary_button_hover(tmp_path: Path, browser: str) -> None:
     assert hover["backgroundColor"] == COBALT and hover["color"] == WHITE
     assert hover["transform"] == "none"
     reduced = run_scenario({"browser": browser, "url": file_url(out / "hub.html"),
-                            "steps": [viewport(1280), shell("state")], "reducedMotion": True})
+                            "steps": [viewport(1280), shell("state", button="#hub-unlock")],
+                            "reducedMotion": True})
     assert reduced["ok"], reduced["stepErrors"]
     assert reduced["results"]["state"]["button"]["transitionDuration"] == "0s"
 
