@@ -8,9 +8,11 @@ One lead. A lead is a pair of records that one engine ranked. The picture shows 
 
 ## The two variants
 
-The card has no text inside. It is the small picture of a bank row, a catalogue thumbnail and the reading panel. Its title and its description carry the real numbers and words for a screen reader.
+The card carries the core of the lead in a few words (plan 10, 2026-11-08; owner words: the images must represent the core of the opportunity, not a generic image). Two record markers at the top, record A at the left and record B at the right, joined by a dashed link. Under each marker the `CARD_WORDS` (3) most distinctive words of that record, as small mono labels in the display form of hub-terms-rules.md step 7. On the link a chip with the words both records share, when any. Below, the meaning bar and the wording bar, one ink square for each shared word, and the blocks. It is the small picture of a bank row, a catalogue thumbnail and the reading panel. Its title and its description carry the same words and the real numbers for a screen reader. Two pairs with different words give two different cards; two pairs with the same words differ only in the position of the vertical rule.
 
 The detail has text inside: each record's title, its 5 distinctive words, the two scores and the words both records share. It is the big picture of a pair page. Under 768 px the page shows an HTML twin with the same words as real text (plan 08), because the drawn text would fall under the 13 px floor.
+
+Every word in a card or a detail is a display form: the most frequent whole surface form of the stem in the record's own text (hub-terms-rules.md, step 7). A cut stem such as `claus` never shows.
 
 ## Encoding table
 
@@ -20,16 +22,20 @@ The card:
 
 | Element | Shape and place | Data | Source field | Role word |
 |---------|-----------------|------|--------------|-----------|
-| Rule | ink line, width 6, at x R from y 0 to 934; R = 1100 + 20 * (first byte of sha256(pair id) modulo 3) | none | pair_id | structure |
-| Fan | 7 ink lines, width 2, opacity .55, from (850, 467) to (R - 20, 330 + 60 * (byte i + 2 modulo 5) + 24 * i) | none | pair_id | decoration |
-| Marker A, marker B | white rectangles with an ink stroke 5, 150 by 150, at (70, 110) and (400, 110), each with an ink square of 50 in its top left corner | none; they stand for the two records | left, right | record |
-| Link | dashed ink line, width 8, dash 28 on and 32 off, from x 226 to x 394 at y 185 | none; it stands for the proposed pair | pair | Proposed |
-| Ticks | 3 ink lines, width 2, opacity .35, at x 70, 450 and 830 from y 300 to 650 | the scale: lo, the middle and hi | engine scale | scale |
-| Meaning bar | cobalt rectangle at (70, 330), height 126, width round(760 * t), at least 8 | meaning score | meaning | meaning score |
-| Wording bar | red rectangle at (70, 500), height 126, same width rule | wording score | wording | wording score |
-| Shared squares | ink squares 64 by 64 at x 70 + 96 * i, y 720, one for each shared word, at most 8 | number of shared words | terms.pairs[pair_id] | shared words |
+| Rule | ink line, width 6, at x R from y 0 to 934; R = 1100 + 20 * (first byte of sha256(pair id) modulo 3) | none; the description says it is structure, not data | pair_id | structure |
+| Marker A, marker B | white rectangles with an ink stroke 5, 110 by 110, at (70, 60) and (870, 60), each with an ink square of 36 in its top left corner | none; they stand for the two records | left, right | record |
+| Link | dashed ink line, width 8, dash 28 on and 32 off, from x 190 to x 860 at y 115 | none; it stands for the proposed pair | pair | Proposed |
+| Record A words | up to 3 mono labels (class f-label, 60 units, or f-label-s, 44 units) at x 70, baselines 254, 326 and 398, in column A (x 70 to 510) | the display forms of the first 3 distinctive words of record A | terms.records[left] | distinctive words |
+| Record B words | the same labels right-aligned by computation to x 980: x = 980 minus the label width, in column B (x 540 to 980) | the first 3 distinctive words of record B | terms.records[right] | distinctive words |
+| Shared chip | paper rectangle with an ink stroke 3 (class f-chip), height 52, at y 89, centred on x 525, width = label width + 30; text in f-label-s f-chip-t at (chip x + 15, 125): the shared words joined by a comma and a space while the text has 22 characters or fewer; no chip when no word is shared or the first word alone is longer than 22 | the shared words | terms.pairs[pair_id] | shared words |
+| Ticks | 3 ink lines, width 2, opacity .35, at x 70, 525 and 980 from y 440 to 760 | the scale: lo, the middle and hi | engine scale | scale |
+| Meaning bar | cobalt rectangle at (70, 470), height 110, width round(910 * t), at least 8 | meaning score | meaning | meaning score |
+| Wording bar | red rectangle at (70, 620), height 110, same width rule | wording score | wording | wording score |
+| Shared squares | ink squares 64 by 64 at x 70 + 96 * i, y 790, one for each shared word, at most 8 | number of shared words | terms.pairs[pair_id] | shared words |
 | Cobalt block | cobalt rectangle from x R + 3 to 1397, y 150, height 140 | both engines list the pair and the second signal confirmed it | both engine lists, confirmed | agreement |
 | Yellow block | yellow rectangle with an ink stroke 6, same x, y 3, height 140 | a record of the pair is a Potential eureka | records[].bridge | Potential eureka |
+
+Card label rule (`card_label`, `label_width`): a word of 11 letters or fewer is drawn whole in f-label (60 units); 12 to 15 letters in f-label-s (44 units); a longer word is cut to its first 12 letters plus three ASCII dots and drawn in f-label-s; the description lists the whole word. The label width is `len * size * 66 / 100` rounded up (the mono advance 0.6 with the 10 percent margin of the width model, in exact integer arithmetic), so an 11-letter label at 60 units is 436 units wide and stays in its column. The card draws, in this order: ground, rule, markers, link, shared chip, record A words, record B words, ticks, meaning bar, wording bar, squares, blocks. `CARD_WORDS` is 3; the orchestrator allowed 2 or 3, and 3 is used because every measured card stays under the cap (see Sizes).
 
 The detail (coordinates as built; the executor tuned them inside the plan's rules and records them here):
 
@@ -66,13 +72,14 @@ Every shape and text sets a class. The page stylesheet maps each class to a book
 | f-red | wording bar | fill red |
 | f-yellow | Potential eureka block | fill yellow, stroke ink, width 6 |
 | f-tick | scale tick | stroke ink, width 2, opacity .35 |
-| f-fan | decoration line | stroke ink, width 2, opacity .55 |
 | f-link | dashed proposed link | stroke ink, width 8, dash 28 on and 32 off |
 | f-track | bar track | fill quiet, stroke ink, width 3 |
 | f-band | shared-word band | fill ink |
 | f-chip | word chip | fill paper, stroke ink, width 3 |
 | f-chip-on | word chip on the band | fill paper, stroke paper, width 3 |
-| f-mono | label and chip text | font code, 28 px, weight 500, fill ink |
+| f-mono | label and chip text of the detail | font code, 28 px, weight 500, fill ink |
+| f-label | card word of 11 letters or fewer | font code, 60 px, weight 600, fill ink |
+| f-label-s | card word of 12 to 15 letters, a cut word, the shared chip text | font code, 44 px, weight 600, fill ink |
 | f-soft | quiet text | fill soft (added to f-mono) |
 | f-title | record title | font display, 36 px, weight 700, fill ink |
 | f-body | sentence | font body, 34 px, weight 500, fill ink |
@@ -82,7 +89,13 @@ Every shape and text sets a class. The page stylesheet maps each class to a book
 | f-band-t | text on the band | fill paper |
 | f-chip-t | text on a chip | fill ink |
 
+The table holds 25 classes: 14 shapes, 6 text sizes and 5 text modifiers. Plan 10 retired f-fan (the fan was decoration) and added f-label and f-label-s; the page sizes in px are the canvas units of the 1400-unit drawing, so a 60-unit label is 60 px only when the card is drawn 1400 px wide.
+
 The light palette: paper #F7F5EE, white #FFFFFF, ink #111111, soft #4B4943, quiet #ECEAE2, cobalt #1F3FBF, red #D6281F, yellow #F2C200. No other colour value appears in a figure.
+
+## Why the card words are small
+
+At the 300 px bank column (plan 06) a 60-unit label is about 12.9 px tall and a 44-unit label about 9.4 px; both are under the 13 px floor of page text. The card is an exposed picture whose title and description carry the same words, and the bank row prints the shared words and the titles as real text, so the 13 px floor of page text is kept by the page, not by the picture. The detail and its HTML twin are the readable form. At 1400 px (a pair page) the labels are 60 px and 44 px.
 
 ## Scale
 
@@ -100,7 +113,7 @@ The book allows yellow for a possibility, a tension or a reframe (`foundations/c
 
 ## What a picture never shows
 
-Novelty, evidence, demand or value. Position is not a score: the markers sit at the same place in every card, and the fan is decoration (the description says so). The words are a screening aid, not evidence; the limit sentence is in every description and the label `candidate, not verified` ends it. The HTML next to every picture keeps the label and the word Proposed beside the dashed link.
+Novelty, evidence, demand or value. Position is not a score: the markers and the word labels sit at the same place in every card. The fan of plan 04 was decoration and is retired (plan 10); the only seeded element left is the position of the vertical rule, which is structure, and the description says so. The words are a screening aid, not evidence; the limit sentence is in every description and the label `candidate, not verified` ends it. The HTML next to every picture keeps the label and the word Proposed beside the dashed link.
 
 ## Text and safety
 
@@ -110,13 +123,13 @@ A figure holds only the 7 tags `svg`, `title`, `desc`, `rect`, `line`, `circle` 
 
 ## Sizes
 
-The caps are set by measurement, each the largest measured value rounded up to the next 1024 bytes. Measured on 2026-11-08 over the public fixture, the hostile synthetic run and the 2000-record scale run: cards 2432 to 3123 bytes, details 4762 to 6880 bytes. `CARD_MAX_BYTES` is 4096 and `DETAIL_MAX_BYTES` is 7168. The six goldens: pair-both-engines-card 2615, pair-wording-only-card 2514, pair-unusual-only-card 2445, pair-both-engines-detail 5801, pair-shared-words-detail 5628, pair-no-shared-detail 5599 bytes.
+The caps are set by measurement, each the largest measured value rounded up to the next 1024 bytes. Plan 04 measured on 2026-11-08 over the public fixture, the hostile synthetic run and the 2000-record scale run: cards 2432 to 3123 bytes, details 4762 to 6880 bytes. Plan 10 (the same day, cards with words and no fan, display forms in both variants) measured over the same three runs: cards 2279 to 3220 bytes (public 2279 to 3220, hostile 2281 to 3183, scale 2900 to 3171), details 4762 to 6884 bytes (public 5249 to 6884, hostile 4762 to 6220, scale 5804 to 6208). The 7 fan lines cost about 735 bytes; the 6 labels, the chip and the two description sentences cost about the same, so the cards did not grow. `CARD_MAX_BYTES` stays 4096 and `DETAIL_MAX_BYTES` stays 7168; `CARD_WORDS` is 3 (the cap did not move). The six goldens of plan 10: pair-both-engines-card 2501 (plan 04: 2615), pair-wording-only-card 2629 (2514), pair-unusual-only-card 2303 (2445), pair-both-engines-detail 5813 (5801), pair-shared-words-detail 5630 (5628), pair-no-shared-detail 5599 (5599) bytes.
 
 5054 bytes is the size of the one hand-built SVG of the target site. It is a hard ceiling for a card: a card above it fails the tests and the payload check. It is not a goal, and it does not bind the detail, which carries text.
 
 ## The target's own picture
 
-Kept from the target's hand-built SVG: the paper ground, the 6 px ink frame, the vertical ink rule at the right, flat cobalt, red and yellow blocks, thin ink lines at .55 opacity fanning out from one point. Changed: the fan became decoration and is called decoration; the detail carries text from the run; there is no photograph and no image generator; the data shapes (bars, squares, blocks) carry real values with fixed positions.
+Kept from the target's hand-built SVG: the paper ground, the 6 px ink frame, the vertical ink rule at the right, flat cobalt, red and yellow blocks. Changed: the thin fan lines of the target are no longer kept (plan 04 called them decoration; plan 10 retired them, because they had no readable meaning and their bytes pay for the words); the card and the detail carry text from the run; there is no photograph and no image generator; the data shapes (bars, squares, blocks) carry real values with fixed positions.
 
 ## Book citations
 
@@ -130,6 +143,6 @@ Book silent, proposed segment: lead figure. A data-driven picture of a lead, mad
 
 ## Tests
 
-`tests/test_hub_figures.py` pins the goldens, the determinism, the safety allow-lists, the class vocabulary, the size caps, the card encoding, the detail text, the width model, the frame and overlap rules, the honesty of every description, the figure copy and this file. `tests/test_hub_figures_payload.py` pins the payload keys, the verify checks, the locked privacy, the folder scans, the hostile run and the measured cost. The goldens live in `tests/fixtures/hub_figures/`.
+`tests/test_hub_figures.py` pins the goldens, the determinism, the safety allow-lists, the class vocabulary (25 classes), the size caps, the card encoding, the card words and the seeded rule (`test_card_carries_the_words_and_the_rule_is_seeded_by_the_pair_id`), the label sizes and cuts (`test_card_word_sizes_and_cuts`), the shared chip (`test_shared_chip_rule`), the detail text, the width model for cards and details, the frame and overlap rules, the honesty of every description, the figure copy and this file. `tests/test_hub_figures_payload.py` pins the payload keys, the verify checks, the locked privacy, the folder scans, the hostile run and the measured cost. The goldens live in `tests/fixtures/hub_figures/`.
 
 To rewrite a golden on purpose: delete the six files, run the golden test with `EUREKA_WRITE_FIGURE_GOLDENS=1` (it writes them and fails with `golden written, review it`), render the new files to PNG outside the repository and look at them, then commit with the reason. The write run always fails, so a rewrite is never silent.

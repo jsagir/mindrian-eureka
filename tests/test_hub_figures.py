@@ -644,9 +644,9 @@ def _chip(svg: str) -> tuple[ET.Element | None, ET.Element | None]:
 
 
 def _label_width(text: str, size: int) -> int:
-    import math
-
-    return math.ceil(len(text) * size * LABEL_ADVANCE)
+    """The label width of the module: length times size times 0.66, rounded up, as an
+    exact integer (66 / 100) so no float can move it."""
+    return -(-len(text) * size * 66 // 100)
 
 
 WORDS_A = ["river", "flood", "delta", "channel", "silt"]

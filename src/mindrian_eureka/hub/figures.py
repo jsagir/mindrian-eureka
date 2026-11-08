@@ -3,20 +3,28 @@
 Phase 2.3.1 plan 04 (D-07, HUB-06). The hub draws every picture itself, as SVG, from
 the run data and the run's own record text. The standard library does all of it. The
 same run gives the same bytes: the code reads no clock, no random source and no
-network. The only seed is the pair id, and it places decoration only. A person with an
-image generator may replace a picture later; the generator is never needed.
+network. The only seed is the pair id, and it places the vertical rule only. A person
+with an image generator may replace a picture later; the generator is never needed.
 
 Two variants of one lead:
 
-- The card has no text. Two record markers joined by a dashed link, a meaning bar and
-  a wording bar on the declared scale of the engine, one ink square for each shared
-  distinctive word, a cobalt block when both engines list the pair and the second
-  signal confirmed it, a yellow block only when a record of the pair is a Potential
-  eureka, and a fan of thin lines seeded from the pair id. The fan is decoration and
-  the description calls it decoration.
+- The card carries the core in a few words (plan 10, owner words of 2026-11-08: the
+  picture must show the core of the opportunity, not a generic image). Two record
+  markers at the top joined by a dashed link, the `CARD_WORDS` most distinctive words of
+  record A under its marker and of record B under its marker (small mono labels), a chip
+  on the link with the words both records share, a meaning bar and a wording bar on the
+  declared scale of the engine, one ink square for each shared distinctive word, a
+  cobalt block when both engines list the pair and the second signal confirmed it, and
+  a yellow block only when a record of the pair is a Potential eureka. The only
+  decoration is the position of the vertical rule, seeded from the pair id; the
+  description names the rule as structure, not data. The fan of plan 04 is retired.
 - The detail has text: each record's title (wrapped) and its 5 distinctive words as
   chips, the two scores with their bars, and a band with the words both records share,
   or the sentence that no distinctive word is shared.
+
+Storage: both figures of a pair stay inline in `hub-data.js`, inside the payload, with
+a measured budget (`PAYLOAD_COST_PER_KEY_MAX`). The decision and its reasons are in
+`docs/brand/hub-figure-rules.md`, section Storage.
 
 Record text enters a figure in two forms only: a title (wrapped, XML-escaped, dash
 characters folded to a hyphen) and words made of letters and hyphens (plan 02). The
@@ -126,6 +134,12 @@ bytes. The prototype measured 3318 to 3819 bytes without fallback attributes; th
 generator measured 4762 to 6880 bytes over the public fixture, the hostile run and the
 2000-record scale run (2026-11-08). See docs/brand/hub-figure-rules.md, Sizes."""
 
+PAYLOAD_COST_PER_KEY_MAX = (CARD_MAX_BYTES + DETAIL_MAX_BYTES) * 3 // 2
+"""The largest escaped cost of one pair key in hub-data.js: both figures, after JSON and
+script escaping (the two caps times 1.5), 16896 bytes. The figures stay inline in the
+payload by the decision of plan 10 (docs/brand/hub-figure-rules.md, Storage);
+`tests/test_hub_figures_payload.py::test_scale_cost_is_measured` pins the budget."""
+
 # --- The class vocabulary (plan 03 writes the CSS from the same table) ------
 
 # class: (fill token or "none" or None, stroke token or None, stroke width, dash, opacity)
@@ -139,14 +153,20 @@ _SHAPE_RULES: Mapping[str, tuple[str | None, str | None, int | None, str | None,
     "f-red": ("red", None, None, None, None),
     "f-yellow": ("yellow", "ink", 6, None, None),
     "f-tick": (None, "ink", 2, None, ".35"),
-    "f-fan": (None, "ink", 2, None, ".55"),
     "f-link": (None, "ink", 8, "28 32", None),
     "f-track": ("quiet", "ink", 3, None, None),
     "f-band": ("ink", None, None, None, None),
     "f-chip": ("paper", "ink", 3, None, None),
     "f-chip-on": ("paper", "paper", 3, None, None),
 }
-_TEXT_SIZES: Mapping[str, int] = {"f-mono": 28, "f-title": 36, "f-body": 34, "f-num": 72}
+_TEXT_SIZES: Mapping[str, int] = {
+    "f-mono": 28,
+    "f-title": 36,
+    "f-body": 34,
+    "f-num": 72,
+    "f-label": 60,
+    "f-label-s": 44,
+}
 _TEXT_FILLS: Mapping[str, str] = {
     "f-soft": "soft",
     "f-blue-t": "blue",
@@ -165,37 +185,47 @@ CANVAS_W = 1400
 CANVAS_H = 934
 FRAME_INSET = 3
 
-# The card.
-MARKER_XS = (70, 400)
-MARKER_Y = 110
-MARKER_SIZE = 150
-MARKER_CORNER = 50
-LINK_Y = 185
-LINK_X1 = 226
-LINK_X2 = 394
-TICK_XS = (70, 450, 830)
-TICK_Y1 = 300
-TICK_Y2 = 650
+# The card (plan 10 geometry).
+MARKER_XS = (70, 870)
+MARKER_Y = 60
+MARKER_SIZE = 110
+MARKER_CORNER = 36
+LINK_Y = 115
+LINK_X1 = 190
+LINK_X2 = 860
+CARD_WORDS = 3
+"""The number of distinctive words drawn under each marker of a card. The orchestrator
+allowed 2 or 3; 3 is used because every measured card stays under CARD_MAX_BYTES."""
+WORD_X_A = 70
+WORD_RIGHT_B = 980
+WORD_YS = (254, 326, 398)
+WORD_COLUMN = 440
+LABEL_MAX = 11
+LABEL_S_MAX = 15
+LABEL_CUT = 12
+LABEL_ADVANCE_PERCENT = 66
+"""The mono advance 0.6 with the 10 percent margin of the width model, as a whole
+percentage so the label width is an exact integer on every machine."""
+SHARED_LABEL_MAX = 22
+SHARED_CHIP_X = 525
+SHARED_CHIP_Y = 89
+SHARED_CHIP_TEXT_Y = 125
+TICK_XS = (70, 525, 980)
+TICK_Y1 = 440
+TICK_Y2 = 760
 BAR_X = 70
-MEANING_BAR_Y = 330
-WORDING_BAR_Y = 500
-BAR_H = 126
-CARD_TRACK = 760
+MEANING_BAR_Y = 470
+WORDING_BAR_Y = 620
+BAR_H = 110
+CARD_TRACK = 910
 BAR_MIN = 8
-SQUARE_Y = 720
+SQUARE_Y = 790
 SQUARE_SIZE = 64
 SQUARE_PITCH = 96
 SQUARES_MAX = 8
 RULE_BASE = 1100
 RULE_STEP = 20
 RULE_CHOICES = 3
-FAN_ORIGIN = (850, 467)
-FAN_LINES = 7
-FAN_Y_BASE = 330
-FAN_Y_STEP = 60
-FAN_Y_CHOICES = 5
-FAN_Y_SLOPE = 24
-FAN_END_GAP = 20
 BLOCK_H = 140
 COBALT_BLOCK_Y = 150
 YELLOW_BLOCK_Y = 3
@@ -548,19 +578,66 @@ def _marks(lead: Lead) -> list[str]:
 # --- The card ---------------------------------------------------------------
 
 
+def label_width(text: str, size: int) -> int:
+    """Return the drawn width of a mono label: the length times the size times 0.66,
+    rounded up, in whole units (the width model of the tests, exact integer arithmetic)."""
+    return -(-len(text) * size * LABEL_ADVANCE_PERCENT // 100)
+
+
+def card_label(word: str) -> tuple[str, str, int]:
+    """Return the drawn text, the class and the size of one card word label.
+
+    A word of `LABEL_MAX` letters or fewer is drawn whole in `f-label`; up to
+    `LABEL_S_MAX` letters in `f-label-s`; a longer word is cut to its first `LABEL_CUT`
+    letters plus three ASCII dots, in `f-label-s`. The description lists the whole word.
+    """
+    if len(word) <= LABEL_MAX:
+        return word, "f-label", _TEXT_SIZES["f-label"]
+    if len(word) <= LABEL_S_MAX:
+        return word, "f-label-s", _TEXT_SIZES["f-label-s"]
+    return word[:LABEL_CUT] + "...", "f-label-s", _TEXT_SIZES["f-label-s"]
+
+
+def shared_label(shared: Sequence[str]) -> str:
+    """Return the chip text of a card: the shared words joined by a comma and a space
+    while the joined text has `SHARED_LABEL_MAX` characters or fewer. The first word
+    that would pass the limit stops the list. Empty when no word fits."""
+    text = ""
+    for word in shared:
+        joined = word if not text else f"{text}, {word}"
+        if len(joined) > SHARED_LABEL_MAX:
+            break
+        text = joined
+    return text
+
+
 def card_figure(lead: Lead) -> str:
-    """Draw the card variant of a lead: no text, data shapes and seeded decoration."""
+    """Draw the card variant of a lead: the words of each record, the shared chip, the
+    data shapes and the seeded rule."""
     digest = seed(lead.pair_id)
     rule_x = RULE_BASE + RULE_STEP * (digest[0] % RULE_CHOICES)
     body = _ground()
     body.append(_line("f-rule", rule_x, 0, rule_x, CANVAS_H))
-    for index in range(FAN_LINES):
-        y2 = FAN_Y_BASE + FAN_Y_STEP * (digest[index + 2] % FAN_Y_CHOICES) + FAN_Y_SLOPE * index
-        body.append(_line("f-fan", FAN_ORIGIN[0], FAN_ORIGIN[1], rule_x - FAN_END_GAP, y2))
     for marker_x in MARKER_XS:
         body.append(_rect("f-panel", marker_x, MARKER_Y, MARKER_SIZE, MARKER_SIZE))
         body.append(_rect("f-ink", marker_x, MARKER_Y, MARKER_CORNER, MARKER_CORNER))
     body.append(_line("f-link", LINK_X1, LINK_Y, LINK_X2, LINK_Y))
+    chip_label = shared_label(lead.shared)
+    if chip_label:
+        chip_w = label_width(chip_label, _TEXT_SIZES["f-label-s"]) + CHIP_PAD
+        chip_x = round_half_up(SHARED_CHIP_X - chip_w / 2)
+        body.append(_rect("f-chip", chip_x, SHARED_CHIP_Y, chip_w, CHIP_H))
+        body.append(
+            _text("f-label-s f-chip-t", chip_x + CHIP_TEXT_DX, SHARED_CHIP_TEXT_Y, chip_label)
+        )
+    words_a = lead.words_a[:CARD_WORDS]
+    words_b = lead.words_b[:CARD_WORDS]
+    for index, word in enumerate(words_a):
+        text, cls, _ = card_label(word)
+        body.append(_text(cls, WORD_X_A, WORD_YS[index], text))
+    for index, word in enumerate(words_b):
+        text, cls, size = card_label(word)
+        body.append(_text(cls, WORD_RIGHT_B - label_width(text, size), WORD_YS[index], text))
     for tick_x in TICK_XS:
         body.append(_line("f-tick", tick_x, TICK_Y1, tick_x, TICK_Y2))
     meaning_w = bar_width(lead.meaning, lead.lo, lead.hi, CARD_TRACK, BAR_MIN)
@@ -586,9 +663,11 @@ def card_figure(lead: Lead) -> str:
     desc = " ".join(
         [
             _scores_sentence("G18.card.scores", lead),
+            fill(FIGURE_COPY["G18.card.words_a"], list=_words(words_a)),
+            fill(FIGURE_COPY["G18.card.words_b"], list=_words(words_b)),
             shared,
             *_marks(lead),
-            FIGURE_COPY["G18.card.decoration"],
+            FIGURE_COPY["G18.card.rule"],
             FIGURE_COPY["G18.card.limit"],
         ]
     )
