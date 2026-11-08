@@ -480,6 +480,47 @@ def test_run_info_is_never_opened(run: Path, monkeypatch: pytest.MonkeyPatch) ->
     }
 
 
+# --- the second signal flag (Phase 2.3.1 plan 04) ---------------------------
+
+
+def _first_wording_pair(run: Path):  # type: ignore[no-untyped-def]
+    return load_run(run).engines[ENGINE_WORDING].pairs[0]
+
+
+def test_confirmed_is_none_without_a_second_signal(run: Path) -> None:
+    data = load_run(run)
+    assert all(pair.confirmed is None for pair in data.engines[ENGINE_WORDING].pairs)
+    assert all(pair.confirmed is None for pair in data.engines[ENGINE_UNUSUAL].pairs)
+
+
+@pytest.mark.parametrize(
+    "signal,expected",
+    [
+        ({"method": "synthetic", "confirmed": True}, True),
+        ({"method": "synthetic", "confirmed": False}, False),
+        ({"method": "synthetic", "confirmed": "yes"}, None),
+        ({"method": "synthetic", "confirmed": 1}, None),
+        ({"method": "synthetic"}, None),
+        ("not a mapping", None),
+    ],
+)
+def test_confirmed_follows_the_second_signal(run: Path, signal: Any, expected: bool | None) -> None:
+    def change(doc: dict[str, Any]) -> None:
+        doc["pairs"][0]["scores"]["second_signal"] = signal
+
+    edit_json(run, OUTPUT_WORDING, change)
+    assert _first_wording_pair(run).confirmed is expected
+
+
+def test_unusual_pairs_engine_gives_no_confirmed_flag(run: Path) -> None:
+    edit_json(
+        run,
+        OUTPUT_UNUSUAL,
+        lambda doc: doc["pairs"][0]["scores"].update(second_signal={"confirmed": True}),
+    )
+    assert load_run(run).engines[ENGINE_UNUSUAL].pairs[0].confirmed is None
+
+
 def test_load_run_imports_stay_light() -> None:
     import subprocess
     import sys
