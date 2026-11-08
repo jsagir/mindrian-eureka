@@ -137,7 +137,12 @@ def test_follow_up_sites_are_listed() -> None:
     assert "sha256" in section
     assert "not edited" in section
     rows = [line for line in section.splitlines() if line.startswith("|")][2:]
-    assert len(rows) == 4
+    assert len(rows) == 6
+    assert "Six sites are not routed in this phase" in section
+    assert "only for the `--encoder-profile` path" in section
+    assert "_default_loader" in section
+    assert "ReferenceBertEncoder" in section
+    assert "identity=spec.identity()" in section
     for row in rows:
         cells = _cells(row)
         assert len(cells) == 4, row

@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-09-PLAN.md (README refresh); 05-08 open at owner-run checkpoint
+stopped_at: Phase 5 verified human_needed; quick task 261108-37h closed warnings W1 to W4; 05-08 open at the owner-run GPU spike
 last_updated: "2026-11-08T00:09:08.181Z"
 last_activity: 2026-11-07 -- Phase 5 execution started
 progress:
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-10-23)
 
 ## Current Position
 
-Phase: 5 (Encoder seam, safe cache key and local GPU spike) — EXECUTING
-Plan: 5 of 9
-Status: Ready to execute
-Last activity: 2026-11-07 -- Phase 5 execution started
+Phase: 5 (Encoder seam, safe cache key and local GPU spike) — VERIFIED, human_needed
+Plan: 8 of 9 done; 05-08 built and tested, waits for the owner-run GPU spike on the RTX 3060
+Status: Waiting on the owner (return gpu-spike-log.json); verifier warnings W1 to W4 closed by quick task 261108-37h
+Last activity: 2026-11-08 -- Phase 5 verified (human_needed); quick task 261108-37h
 
-Progress: [██████████] 97%
+Progress: Phase 5 plans 8/9 (05-08 awaits the owner spike). Phase 5 is not marked complete.
 
 ## Performance Metrics
 
@@ -136,6 +136,7 @@ None yet.
 | 261107-wif | [Move packaging to an optional bundle extra](quick/261107-wif-move-packaging-to-an-optional-bundle-ext/261107-wif-SUMMARY.md), implementation 727dc23 2b86358 | complete |
 | 261107-wuy | [Windows launcher: pass the uv sync arguments as an array](quick/261107-wuy-windows-launcher-pass-the-uv-sync-argume/261107-wuy-SUMMARY.md), implementation 4be74df | complete |
 | 261108-0ur | [Verify the MCP reach table and tests on the locked mcp 2.3.0](quick/261108-0ur-verify-the-mcp-reach-table-and-tests-on-/261108-0ur-SUMMARY.md), implementation 67617cb 7840888 | complete |
+| 261108-37h | [Close the Phase 5 verifier warnings W1 to W4 and the bookkeeping](quick/261108-37h-close-the-phase-5-verifier-warnings-and-/261108-37h-SUMMARY.md), implementation 89b55b5 (RED) 59540a2 (fix) | complete |
 
 ### Blockers/Concerns
 
@@ -156,7 +157,7 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-11-08T00:09:08.175Z
-Stopped at: Completed 05-09-PLAN.md (README refresh); 05-08 open at owner-run checkpoint
+Stopped at: Phase 5 verified human_needed; quick task 261108-37h closed warnings W1 to W4; 05-08 open at the owner-run GPU spike
 Resume file: None
 
 ### Roadmap Evolution

@@ -66,7 +66,11 @@ The owner computer is a Windows machine with WSL and an RTX 3060 with 12 GB (D-1
 
 ## Build sites not routed yet
 
-Three sites that build a sentence-transformers model are routed through the encoder factory: `runner.py`, `run/engines.py` and `doctor.py` (PROVEN, plans 05-03 and 05-05). Four sites are not routed in this phase. Line numbers are from 05-RESEARCH.md (lane `repo-encoder-seams`) and may have moved.
+Three sites that build a sentence-transformers model are routed through the encoder factory: `runner.py` (the sentence-transformers path), `run/engines.py` and `doctor.py` (PROVEN, plans 05-03 and 05-05).
+
+The `doctor.py` route holds only for the `--encoder-profile` path (`_default_encoder_loader`). The plain model probe D8 (`_default_loader`) still builds `SentenceTransformer` directly.
+
+Six sites are not routed in this phase. Each one is a row of the table. Line numbers are from 05-RESEARCH.md (lane `repo-encoder-seams`) and may have moved.
 
 | Site | What it does | Why not routed now | Risk when it is routed |
 |------|--------------|--------------------|------------------------|
@@ -74,6 +78,8 @@ Three sites that build a sentence-transformers model are routed through the enco
 | `analogy_fitness.py` line 128 | `SentenceTransformerEncoder`; fixed cosine thresholds 0.5, 0.8 and 0.3 | tests patch the name `analogy_fitness.SentenceTransformerEncoder` | each threshold is tuned to the 384-dimension model; another encoder moves the scores and the classes (PROVEN, 05-RESEARCH.md) |
 | `pitch_analysis/algorithm.py` line 134 | a module-level model with `local_files_only=True`; rule: meaning at least 0.6 and wording at most 0.2 | the model loads at import, so a profile cannot change it without a larger edit | the two cutoffs are encoder-sensitive; a new encoder can flip a verdict (PROVEN, 05-RESEARCH.md) |
 | `hsi_reference.py` line 555 | `SentenceTransformer(model_name)` without `local_files_only` | its sha256 is recorded in manifests, so the file is not edited; the pipeline reaches it only through an injected `encoder` | an edit changes the recorded hash and breaks the replay proof; a load without `local_files_only` can try the network (PROVEN for the hash record) |
+| `doctor.py` lines 113 to 115 (`_default_loader`, check D8) | `SentenceTransformer(model_dir, local_files_only=True)`; encodes one sentence to report the width | the D8 probe has no profile; the profile probe D9 is routed | the probe can pass for a setup that a profile run does not use; it stores no vector, so no cache risk (PROVEN, doctor.py lines 113 to 115) |
+| `runner.py` line 81 (`ReferenceBertEncoder`) | an `AutoModel` encoder for the `reference-bert` path | it is not a sentence-transformers encoder; the factory builds that path only | cache safety holds: its cache key already holds the spec identity (`identity=spec.identity()`); the open risk is that dtype, device and prefix do not come from a profile (PROVEN, runner.py lines 81 to 88) |
 
 The wording-and-meaning engine does not use the embedding cache today (PROVEN, 05-RESEARCH.md). This phase does not add it.
 
