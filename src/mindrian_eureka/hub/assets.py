@@ -14,6 +14,9 @@ EXPECTED_STATIC: dict[str, str] = {
     "assets/brand/mos-lockup-paper-v2.svg": (
         "028ffd9040e769684c78767b890175bf1b2734e7bd0a4bbf953de38051ba4477"
     ),
+    "assets/brand/mos-lockup-reverse-v2.svg": (
+        "3033e523efd4f78cafd1ed28fe311251e5f58454491c8aabd783bb456a99236b"
+    ),
     "assets/faces/theo-boundary.svg": (
         "71c02c9510bac750821e7587e668543f8b51498b80c57b6feb9b08f92686be2c"
     ),
@@ -68,6 +71,9 @@ EXPECTED_STATIC: dict[str, str] = {
 BOOK_SOURCES: dict[str, str] = {
     "assets/brand/mos-lockup-paper-v2.svg": (
         "segments/identity/logo/variants/entries/2026-10-19/asset-dc83869aa5.svg"
+    ),
+    "assets/brand/mos-lockup-reverse-v2.svg": (
+        "segments/identity/logo/variants/entries/2026-10-19/asset-aafc7b2563.svg"
     ),
     "assets/faces/theo-boundary.svg": (
         "segments/identity/theo/states/boundary/entries/2026-10-19/asset-7c79733ea9.svg"

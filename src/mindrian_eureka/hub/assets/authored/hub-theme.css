@@ -1,0 +1,96 @@
+/* The light and dark theme (Phase 2.3.1 plan 05, owner request 2026-11-08: a dark and light
+   toggle). The light values are the book tokens. The dark values are a PROPOSAL: the book is
+   silent on a dark page (register item 26, docs/brand/hub-theme-rules.md). Every other sheet
+   takes its colours through var(--mos-*) and var(--hub-*), so the dark set below changes the
+   whole page, the band, the figures and the graph chrome in one place. This sheet is the last
+   one in the page, so its rules win over equal rules of the other sheets. */
+:root { color-scheme: light; --hub-ring: transparent; --hub-dim: #d8d4c8; }
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --mos-paper: #121210;
+  --mos-white: #1B1A17;
+  --mos-quiet: #22211D;
+  --mos-ink: #F4F2EA;
+  --mos-soft: #B8B5AA;
+  --mos-blue: #8FA2FF;
+  --mos-red: #FF7468;
+  --mos-yellow: #F2C200;
+  --mos-paper-dim: #4B4943;
+  --mos-ink-hairline: #B8B5AA;
+  --hub-line: #3A3833;
+  --hub-ring: var(--mos-ink);
+  --hub-dim: var(--hub-line);
+}
+/* The system preference is the default; a saved choice (data-theme) wins over it. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --mos-paper: #121210;
+    --mos-white: #1B1A17;
+    --mos-quiet: #22211D;
+    --mos-ink: #F4F2EA;
+    --mos-soft: #B8B5AA;
+    --mos-blue: #8FA2FF;
+    --mos-red: #FF7468;
+    --mos-yellow: #F2C200;
+    --mos-paper-dim: #4B4943;
+    --mos-ink-hairline: #B8B5AA;
+    --hub-line: #3A3833;
+    --hub-ring: var(--mos-ink);
+    --hub-dim: var(--hub-line);
+  }
+  :root:not([data-theme="light"]) .hub-lockup--paper { display: none; }
+  :root:not([data-theme="light"]) .hub-lockup--reverse { display: block; }
+  :root:not([data-theme="light"]) .hub-role--bridge,
+  :root:not([data-theme="light"]) .hub-graph-chip { color: var(--mos-paper); }
+  :root:not([data-theme="light"]) .mos-ground-ink :focus-visible { outline-color: var(--mos-paper); }
+}
+/* Lockup: the book's own reverse lockup replaces the paper one in dark (identity/logo, brand
+   rules 2 and 3: the logo is never restyled, so no filter and no blend mode). */
+.hub-lockup--reverse { display: none; }
+:root[data-theme="dark"] .hub-lockup--paper { display: none; }
+:root[data-theme="dark"] .hub-lockup--reverse { display: block; }
+/* Text on a yellow block: the ink token is light in dark (1.50 on yellow), so the dark text is
+   the paper token (11.16). The yellow focus ring on the band would sit on a light band in dark,
+   so the ring there is the paper token (dark on light). Measured in docs/brand/hub-theme-rules.md. */
+:root[data-theme="dark"] .hub-role--bridge,
+:root[data-theme="dark"] .hub-graph-chip { color: var(--mos-paper); }
+:root[data-theme="dark"] .mos-ground-ink :focus-visible { outline-color: var(--mos-paper); }
+/* Theo tile: the face keeps its own paper ground; on the dark page a 3 px ring in the light
+   colour keeps the tile apart from the ground (book ink-ground rule: a paper ring). The ring is
+   transparent in light, so nothing changes there. */
+#hub-face, #hub-panel img { box-shadow: 0 0 0 3px var(--hub-ring); }
+/* The toggle: the same ink border as the header action, a square half-filled mark, 44 px. */
+.hub-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hub-space-2);
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  padding: 10px 13px;
+  border: 1px solid var(--mos-ink);
+  background: transparent;
+  color: var(--mos-ink);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--mos-time-feedback), color var(--mos-time-feedback);
+}
+.hub-theme-toggle:hover { background: var(--mos-ink); color: var(--mos-paper); }
+.hub-theme-dot {
+  display: inline-block;
+  flex: none;
+  inline-size: 14px;
+  block-size: 14px;
+  border: 2px solid currentColor;
+  background-image: linear-gradient(90deg, currentColor 50%, transparent 50%);
+}
+/* Without JavaScript the toggle is a dead control, so it is not shown. The system preference
+   still applies through the media block above. */
+.no-js .hub-theme-toggle { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .hub-theme-toggle { transition: none; }
+}

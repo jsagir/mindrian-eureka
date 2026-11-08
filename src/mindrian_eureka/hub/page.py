@@ -37,7 +37,11 @@ STYLE_ORDER = (
     "hub-panel.css",
     "hub-graph.css",
     "hub-gate.css",
+    # The theme sheet stays last (plan 05): its dark set wins over equal rules of other sheets.
+    "hub-theme.css",
 )
+# The book's reverse lockup (identity/logo), shown by the dark theme in place of the paper one.
+LOCKUP_REVERSE_FILE = "assets/brand/mos-lockup-reverse-v2.svg"
 # Runtime inventory for view, engine, column, cut-off and legend key loops.
 # Payload-backed status and registered engine names are equality-checked by copy coverage.
 # deck keys: B03.both B03.unusual_pairs B03.wording_and_meaning
@@ -54,11 +58,14 @@ STYLE_ORDER = (
 # The run reading band (Phase 2.3.1, D-04) fills the keys that describe_run emits.
 # deck keys: G16 G17.label G17.link G17.read G17.both G17.spread G17.hoods G17.single
 # deck keys: G17.bridges G17.weak G17.copies G17.classes G17.top_k G17.none G17.hidden Gr09
+# The theme toggle (Phase 2.3.1 plan 05, HUB-10): the fixed name and the two theme words.
+# deck keys: G03.theme.dark G03.theme.light G03.theme.name
 
 SCRIPT_ORDER = (
     "hub-copy.js",
     "hub-data.js",
     "hub-core.js",
+    "hub-theme.js",
     "hub-bank.js",
     "hub-catalogue.js",
     "hub-panel.js",
@@ -395,8 +402,18 @@ def _header(*, locked: bool) -> str:
 
     The lockup is not a link (book `identity/logo`). On the locked page the nav and the action
     link carry `hidden` and the nav has no child, so the shell shows no route before unlock.
+    Two lockup images stand in the header (plan 05): the paper one and the book's reverse one;
+    the theme sheet shows one of them, so no filter touches the logo (book rules 2 and 3). The
+    theme toggle stands after the action link on both pages; it is never hidden by the gate.
     """
-    lockup = _el("img", attrs={"src": LOCKUP_FILE, "alt": DECK["G03.lockup_alt"]})
+    alt = DECK["G03.lockup_alt"]
+    lockup = _el(
+        "img", attrs={"src": LOCKUP_FILE, "alt": alt, "class": "hub-lockup hub-lockup--paper"}
+    )
+    lockup += _el(
+        "img",
+        attrs={"src": LOCKUP_REVERSE_FILE, "alt": alt, "class": "hub-lockup hub-lockup--reverse"},
+    )
     context = _el(
         "div",
         _el("span", _copy("G03"), {"class": "hub-header-label"})
@@ -418,7 +435,19 @@ def _header(*, locked: bool) -> str:
             "hidden": locked,
         },
     )
-    links = _el("div", nav + action, {"class": "hub-header-links"})
+    toggle = _el(
+        "button",
+        _el("span", "", {"class": "hub-theme-dot", "aria-hidden": "true"})
+        + _el("span", _copy("G03.theme.light"), {"class": "hub-theme-label"}),
+        {
+            "id": "hub-theme",
+            "class": "hub-theme-toggle",
+            "type": "button",
+            "aria-pressed": "false",
+            "aria-label": DECK["G03.theme.name"],
+        },
+    )
+    links = _el("div", nav + action + toggle, {"class": "hub-header-links"})
     return _el("header", lockup + context + links, {"id": "hub-header"})
 
 

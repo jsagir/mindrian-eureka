@@ -253,7 +253,8 @@ def test_default_follows_the_system_unless_a_choice_is_saved() -> None:
 def test_dark_specific_rules_use_tokens_only() -> None:
     """Rules that are not token sets take colours only through var(); no filter or blend."""
     text = THEME.read_text(encoding="utf-8")
-    assert "filter" not in text and "mix-blend-mode" not in text
+    code = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
+    assert "filter" not in code and "mix-blend-mode" not in code
     scopes = {"explicit": [], "system": []}
     for media, selector, items in parse_rules(text):
         for prop, value in items:
@@ -287,7 +288,8 @@ def test_asset_entry() -> None:
     data = packaged.read_bytes()
     assert len(data) == REVERSE_BYTES
     assert hashlib.sha256(data).hexdigest() == REVERSE_SHA
-    assert b"<svg" in data[:200] and b"<script" not in data and b"http" not in data
+    assert b"<svg" in data[:200] and b"<script" not in data and b"https://" not in data
+    assert data.count(b"http://") == data.count(b"http://www.w3.org/")
     book = Path(os.environ.get("MOS_BRAND_BOOK", str(Path.home() / "mos-brand")))
     if (book / REVERSE_SOURCE).is_file():
         assert data == (book / REVERSE_SOURCE).read_bytes()
