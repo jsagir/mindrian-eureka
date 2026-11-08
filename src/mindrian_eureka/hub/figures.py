@@ -117,14 +117,14 @@ ceiling for a card only, never a goal."""
 CARD_MAX_BYTES = 4096
 """The working cap of a card: the largest measured card rounded up to the next 1024
 bytes. The prototype measured 1426 to 1608 bytes without fallback attributes; this
-generator measured 2432 to 3117 bytes on the public and the hostile payload (Task 2).
-Task 4 of plan 04 re-measures on the goldens."""
+generator measured 2432 to 3123 bytes over the public fixture, the hostile run and the
+2000-record scale run (2026-11-08). See docs/brand/hub-figure-rules.md, Sizes."""
 
 DETAIL_MAX_BYTES = 7168
 """The working cap of a detail: the largest measured detail rounded up to the next 1024
 bytes. The prototype measured 3318 to 3819 bytes without fallback attributes; this
-generator measured 4762 to 6713 bytes on the public and the hostile payload (Task 2).
-Task 4 of plan 04 re-measures on the goldens."""
+generator measured 4762 to 6880 bytes over the public fixture, the hostile run and the
+2000-record scale run (2026-11-08). See docs/brand/hub-figure-rules.md, Sizes."""
 
 # --- The class vocabulary (plan 03 writes the CSS from the same table) ------
 
