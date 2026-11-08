@@ -487,3 +487,102 @@ def test_cache_digest_helper_is_stable() -> None:
     ).hexdigest()
     assert pipeline._model_digest(files) == expected
     assert pipeline._model_digest({}) is None
+
+
+# --- W3: the model fix text of a named profile names its own model ----------
+
+
+def test_bad_model_folder_of_the_default_profile_keeps_the_minilm_fix(
+    env: Path, tmp_inputs: Callable[..., InputSet], tmp_path: Path
+) -> None:
+    empty = tmp_path / "empty-model-folder"
+    empty.mkdir()
+    with pytest.raises(RunError) as caught:
+        run(tmp_inputs("markdown"), tmp_path / "out", empty)
+    text = f"{caught.value.message} {caught.value.fix}"
+    assert "all-MiniLM-L6-v2" in text
+    assert "hf download sentence-transformers/all-MiniLM-L6-v2" in text
+
+
+def test_bad_model_folder_of_a_named_profile_names_its_own_model(
+    env: Path, tmp_inputs: Callable[..., InputSet], tmp_path: Path
+) -> None:
+    empty = tmp_path / "empty-model-folder"
+    empty.mkdir()
+    with pytest.raises(RunError) as caught:
+        run(tmp_inputs("markdown"), tmp_path / "out", empty, encoder_profile="gpu-nemotron")
+    text = f"{caught.value.message} {caught.value.fix}"
+    assert GPU_MODEL_ID in text
+    assert "MiniLM" not in text
+    assert "hf download" not in text
+    assert "spike" in text
+    assert "docs/encoder-spike-results.md" in text
+
+
+# --- W4: the model digest covers every shard of a sharded model -------------
+
+
+def _sharded_folder(tmp_path: Path, shards: dict[str, bytes]) -> Path:
+    folder = tmp_path / "sharded-model"
+    folder.mkdir()
+    (folder / "config.json").write_text("{}", encoding="utf-8")
+    weight_map = {f"layer.{number}": name for number, name in enumerate(sorted(shards))}
+    (folder / "model.safetensors.index.json").write_text(
+        json.dumps({"metadata": {}, "weight_map": weight_map}), encoding="utf-8"
+    )
+    for name, data in shards.items():
+        (folder / name).write_bytes(data)
+    return folder
+
+
+def test_sharded_model_hashes_the_index_and_every_shard(tmp_path: Path) -> None:
+    from mindrian_eureka.run import manifest
+
+    shards = {
+        "model-00001-of-00002.safetensors": b"one",
+        "model-00002-of-00002.safetensors": b"two",
+    }
+    folder = _sharded_folder(tmp_path, shards)
+    files = manifest.model_fingerprint(folder)["files"]
+    assert "model.safetensors.index.json" in files
+    for name, data in shards.items():
+        assert files[name] == hashlib.sha256(data).hexdigest()
+    digest_before = pipeline._model_digest(files)
+    (folder / "model-00002-of-00002.safetensors").write_bytes(b"two-changed")
+    files_after = manifest.model_fingerprint(folder)["files"]
+    assert pipeline._model_digest(files_after) != digest_before
+
+
+def test_sharded_model_lists_a_shard_once(tmp_path: Path) -> None:
+    from mindrian_eureka.run import manifest
+
+    folder = tmp_path / "one-shard"
+    folder.mkdir()
+    (folder / "shard.safetensors").write_bytes(b"data")
+    (folder / "model.safetensors.index.json").write_text(
+        json.dumps({"weight_map": {"a": "shard.safetensors", "b": "shard.safetensors"}}),
+        encoding="utf-8",
+    )
+    files = manifest.model_fingerprint(folder)["files"]
+    assert sorted(files) == ["model.safetensors.index.json", "shard.safetensors"]
+
+
+def test_sharded_model_with_a_missing_shard_is_not_pinned(tmp_path: Path) -> None:
+    from mindrian_eureka.run import manifest
+
+    folder = _sharded_folder(
+        tmp_path,
+        {"model-00001-of-00002.safetensors": b"one", "model-00002-of-00002.safetensors": b"two"},
+    )
+    (folder / "model-00002-of-00002.safetensors").unlink()
+    files = manifest.model_fingerprint(folder)["files"]
+    assert pipeline._model_digest(files) is None
+
+
+def test_single_file_digest_is_unchanged_by_the_shard_rule(
+    fake_model_dir: Path,
+) -> None:
+    from mindrian_eureka.run import manifest
+
+    files = manifest.model_fingerprint(fake_model_dir)["files"]
+    assert sorted(files) == ["config.json", "model.safetensors", "modules.json", "tokenizer.json"]
