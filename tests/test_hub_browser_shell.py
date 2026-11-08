@@ -266,7 +266,8 @@ def test_panel_open_keeps_the_header_links_in_one_row(tmp_path: Path) -> None:
     measured = result["open"]
     assert measured["panelOpen"]
     tops = [child["top"] for child in measured["linkChildren"]]
-    assert len(tops) == 2 and max(tops) - min(tops) < 1
+    # The nav, the action link and the theme toggle of plan 05 share one row.
+    assert len(tops) == 3 and max(tops) - min(tops) < 1
     assert measured["links"]["top"] - measured["lockup"]["top"] < 30
     assert measured["scrollWidth"] <= measured["innerWidth"]
 

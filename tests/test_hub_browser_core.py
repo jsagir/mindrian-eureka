@@ -182,14 +182,17 @@ def test_focus_order(tmp_path: Path) -> None:
     for index in range(8):
         assert result[str(index)]["outline"] == "3px"
     # Phase 2.3.1 plan 03: the nav and the action link sit in the sticky header, so the three
-    # view links are stops 1 to 3, the action link stop 4, and the band link (plan 01) stop 5.
+    # view links are stops 1 to 3 and the action link stop 4. Plan 05 adds the theme toggle
+    # after the action link (stop 5), so the band link (plan 01) is stop 6.
     assert [result[str(index)]["focus"]["href"] for index in (1, 2, 3)] == [
         "#bank", "#graph", "#catalogue"
     ]
     assert result["4"]["focus"]["class"] == "hub-header-action"
     assert result["4"]["focus"]["href"] == "#hub-data-check"
-    assert result["5"]["focus"]["class"] == "hub-band-link"
-    assert result["5"]["focus"]["href"] == "#hub-data-check"
+    assert result["5"]["focus"]["class"] == "hub-theme-toggle"
+    assert result["5"]["focus"]["tag"] == "BUTTON"
+    assert result["6"]["focus"]["class"] == "hub-band-link"
+    assert result["6"]["focus"]["href"] == "#hub-data-check"
 
 
 def test_shell_copy_is_sourced(tmp_path: Path) -> None:

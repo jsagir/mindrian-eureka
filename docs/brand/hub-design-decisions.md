@@ -191,6 +191,32 @@ Look contract deviations. The contract is `tests/hub_look_contract.py`; the stat
 | LD-33 | Red is an interruption in the book | Red names the wording score and cobalt the meaning score in numerals, bars and figures (prototype of 2026-11-08) | Owner ruling over the book meaning of red; words and numbers sit beside every colour. | 04, 06 |
 | LD-34 | Detail picture is a photograph at every width | An SVG from 768 px and a real-text HTML twin under it | The 13 px floor: the owner brief said 640 px, but the figure text must stay at 13 px or more. | 08 |
 
+### Theme (plan 05)
+
+Owner request of 2026-11-08, in the owner's words: "need to add dark/light toggle" (requirement HUB-10). Built by plan 05 on 2026-11-08; the full record is [hub-theme-rules.md](hub-theme-rules.md).
+
+| Item | Value |
+|------|-------|
+| Status of the dark values | A PROPOSAL. The book is silent on a dark page. Register item 26 below ("the dark theme values"). The light values are the book tokens, unchanged. |
+| What the owner saw | The prototype of 2026-11-08 with a working toggle. The hub now offers the same on the book tokens. |
+| Where the dark set lives | `hub-theme.css`, the last sheet of the page: `:root[data-theme="dark"]` and the same list under `prefers-color-scheme: dark` when no choice is saved. |
+| The toggle | `button#hub-theme` in the header after the Data check link, on the open and the locked page; `aria-pressed`; fixed name "Dark mode"; visible word "Light" or "Dark" (copy keys G03.theme.name, G03.theme.dark, G03.theme.light); 44 px; hidden without JavaScript. |
+| The choice | `localStorage` key `hub-theme`, values `dark` and `light`, inside try and catch; the only storage use of the hub; the page works without storage. |
+| No flash | `hub-boot.js` sets `data-theme` before the first paint. No inline script; the Content-Security-Policy constant and its record are unchanged. |
+| Lockup, face, figures | The book's reverse lockup (byte-identical, `mos-lockup-reverse-v2.svg`) replaces the paper one in dark; no filter (brand rules 2 and 3). The Theo tile keeps its paper ground and gets a 3 px light ring in dark (ink-ground rule). Figures follow through the class rules of plan 03 and the tokens. |
+| Contrast | Measured in both themes by `tests/test_hub_theme.py` and swept in the browser by `tests/test_hub_browser_theme.py`; the table is in hub-theme-rules.md. Light on paper: ink 17.31, soft 8.25, cobalt 7.63, red 4.60 (the book report). Dark on paper: ink 16.73, soft 9.13, cobalt 7.84, red 7.10 (the prototype). |
+| Dark rules beyond the tokens | Text on a yellow block uses the paper token in dark (ink would be 1.50 on yellow). The focus ring on the ink ground uses the paper token in dark (the band is light there). Both are in `hub-theme.css` with token values only. |
+| The band in dark | The band inverts: a light band on the dark page with dark text, as in the prototype. A dark band would need a token of its own, which the plan does not allow. Owner question for the plan 09 brand stop. |
+| Book | Under R-01 no book write command ran. Read-only `doctor` on 2026-11-08: NEEDS-ATTENTION, recorded, not fixed. Book silent, proposed segment: dark theme. |
+
+Narrow test extensions of plan 05, each loosened only as far as the dark theme needs, with a positive check in place of the old ban:
+
+- `tests/test_hub_css.py`: the nine dark values are allowed only in `hub-theme.css`, only as the value of a custom property, only inside a rule whose selector names `data-theme="dark"` or inside the `prefers-color-scheme: dark` media block; that query joins the allowed queries. Negative controls: a dark value in another sheet, a dark value as a `color` value, a `max-width` query and a `prefers-color-scheme: light` query all fail.
+- `tests/test_hub_js_rules.py`: `localStorage` is allowed only in `hub-boot.js` and `hub-theme.js`, only as `getItem("hub-theme")` or `setItem("hub-theme", value)` with the value `"dark"` or `"light"` (a literal or a name assigned only from those two words), and only inside a `try` block. Every other script keeps the ban. Negative controls: another key, a payload value, a call outside try, the theme key in another script.
+- `tests/test_hub_page.py`: the header structure gains the toggle and the second lockup; no old assertion was removed.
+- `tests/hub_browser/driver.cjs`: the scenario option `colorScheme` (light, dark, no-preference); every older scenario keeps light.
+- `tests/test_hub_browser_core.py::test_focus_order` and `tests/test_hub_browser_shell.py::test_panel_open_keeps_the_header_links_in_one_row`: the toggle is Tab stop 5 before the band link (stop 6), and the header links row has three children. Both pins describe the header of plan 03, which this plan extends on purpose.
+
 ## Book-silent register, Phase 2.3.1
 
 The numbers continue the register of Phase 2.1. Each item is "Book silent, proposed segment"; the hub does what the item says until the book answers.

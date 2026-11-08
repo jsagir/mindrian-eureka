@@ -60,7 +60,9 @@ let saved;
 try { saved = localStorage.getItem('hub-theme'); } catch (error) { saved = 'unavailable'; }
 const active = document.activeElement;
 const band = document.getElementById('hub-band');
-const link = document.querySelector('#hub-page a[href]');
+// A running-text link (cobalt), not the band link, which is paper on the ink ground.
+const link = ['#hub-data-check a', '#hub-footer a', '#catalogue-list a.hub-link', '#catalogue-list a']
+  .map(selector => document.querySelector(selector)).find(Boolean) || null;
 return {
   theme: root.getAttribute('data-theme'),
   colorScheme: style(root).colorScheme,

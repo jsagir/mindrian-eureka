@@ -80,8 +80,11 @@
   transition: background-color var(--mos-time-feedback), color var(--mos-time-feedback);
 }
 .hub-theme-toggle:hover { background: var(--mos-ink); color: var(--mos-paper); }
+/* The decorative mark shows from 768 px. Under 768 px the header links row scrolls sideways
+   (plan 03), and the mark would push the toggle's word past a 390 px screen; the word and the
+   accessible name stay at every width. */
 .hub-theme-dot {
-  display: inline-block;
+  display: none;
   flex: none;
   inline-size: 14px;
   block-size: 14px;
@@ -91,6 +94,9 @@
 /* Without JavaScript the toggle is a dead control, so it is not shown. The system preference
    still applies through the media block above. */
 .no-js .hub-theme-toggle { display: none; }
+@media (min-width: 768px) {
+  .hub-theme-dot { display: inline-block; }
+}
 @media (prefers-reduced-motion: reduce) {
   .hub-theme-toggle { transition: none; }
 }
