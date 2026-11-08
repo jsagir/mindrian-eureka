@@ -51,8 +51,13 @@ if (args.pair) {
 if (args.record) app.select({type: 'record', id: args.record}, document.querySelector('#hub-nav a'));
 if (args.recordIndex !== undefined) app.select({type: 'record', id: app.data.records[args.recordIndex].id}, document.querySelector('#hub-nav a'));
 if (args.clear) app.clearSelection();
+// The camera position right before a theme emit: the refresh must not move it.
+const instanceBefore = app.graphView.mode === '3d' ? app.graphView.instance : null;
+const cameraBefore = instanceBefore ? {x: instanceBefore.camera().position.x, y: instanceBefore.camera().position.y,
+  z: instanceBefore.camera().position.z} : null;
 if (args.theme !== undefined) { root.setAttribute('data-theme', args.theme); app.emit('theme', args.theme); }
 if (args.toggleGuide) document.getElementById('graph-guide-toggle').click();
+if (args.scrollTo) document.querySelector(args.scrollTo)?.scrollIntoView({block: 'start'});
 await document.fonts.ready;
 await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 const token = name => style(root).getPropertyValue(name).trim();
@@ -176,6 +181,7 @@ return {
   graphRows,
   panel: panelInfo,
   selectedPair: selectedPair ? {key: selectedPair.key, engine: selectedPair.engine, rank: selectedPair.rank} : null,
+  cameraBefore,
   animations: typeof document.getAnimations === 'function' ? document.getAnimations().length : 0,
   reduced: app.motion.reduced
 };

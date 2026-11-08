@@ -56,18 +56,24 @@
 .hub-diagram-hood-19 circle { fill: #7b6ea6; }
 .hub-diagram-hood-20 circle { fill: #a07090; }
 .hub-diagram-hood-21 circle { fill: #708a60; }
-.hub-diagram-record.is-dimmed circle { fill: #d8d4c8; }
+/* The dimmed record follows the theme token of plan 05; the light value is the fallback. */
+.hub-diagram-record.is-dimmed circle { fill: var(--hub-dim, #d8d4c8); }
+/* The page link of a pair in the list (Phase 2.3.1 plan 07; plan 08 routes it). */
+.hub-graph-open { font-size: 13px; font-weight: 700; }
 @media (min-width: 768px) {
   .hub-graph-scene { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .hub-graph-guide, .hub-graph-stage { grid-column: 1 / -1; }
-  .hub-graph-guide { padding: var(--hub-space-5); border: 1px solid var(--mos-ink); background: var(--mos-quiet); }
+  /* The guide is a framed paper panel, as the target's network page shows (Phase 2.3.1 plan 07,
+     D-01; matched by screenshot, not by its stylesheet). */
+  .hub-graph-guide { padding: var(--hub-space-5); border: 1px solid var(--mos-ink); background: var(--mos-paper); }
   .hub-graph-stage--3d { block-size: 560px; }
 }
 @media (min-width: 1024px) {
   .hub-graph-scene { grid-template-columns: repeat(12, minmax(0, 1fr)); inline-size: min(1600px, calc(100vw - 64px)); margin-inline: calc((100% - min(1600px, calc(100vw - 64px))) / 2); }
-  .hub-graph-guide { grid-column: 1 / 5; align-self: start; max-block-size: max(560px, calc(100dvh - 64px)); overflow: auto; }
+  /* Every height that depended on the old 64 px header reads the measured header height. */
+  .hub-graph-guide { grid-column: 1 / 5; align-self: start; max-block-size: max(560px, calc(100dvh - var(--hub-header-height))); overflow: auto; }
   .hub-graph-stage { grid-column: 5 / 13; }
-  .hub-graph-stage--3d { block-size: calc(100dvh - 64px); min-block-size: 560px; max-block-size: none; }
+  .hub-graph-stage--3d { block-size: calc(100dvh - var(--hub-header-height)); min-block-size: 560px; max-block-size: none; }
 }
 .hub-stage-canvas { position: absolute; inset: 0; overflow: hidden; }
 .hub-stage-canvas canvas { display: block; }

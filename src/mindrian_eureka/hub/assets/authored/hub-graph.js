@@ -45,11 +45,21 @@
   let startPending = null;
   let resizeStage = null;
   let cameraFrame = null;
-  const INK = "#111111";
-  const PAPER = "#F7F5EE";
-  const COBALT = "#1F3FBF";
-  const YELLOW = "#F2C200";
-  const DIM = "#d8d4c8";
+  // Phase 2.3.1 plan 07: the stage colours are the book tokens, read from the root element, so
+  // the theme of plan 05 reaches the canvas. The Phase 2.1 values are the fallback when a token
+  // is empty. The palette is read once at build and again on every theme event.
+  const FALLBACK = { ink: "#111111", paper: "#F7F5EE", blue: "#1F3FBF", yellow: "#F2C200", dim: "#d8d4c8" };
+  const TOKENS = { ink: "--mos-ink", paper: "--mos-paper", blue: "--mos-blue", yellow: "--mos-yellow", dim: "--hub-dim" };
+  function colors() {
+    const computed = getComputedStyle(document.documentElement);
+    const out = {};
+    Object.keys(TOKENS).forEach(function (name) {
+      const value = computed.getPropertyValue(TOKENS[name]).trim();
+      out[name] = value || FALLBACK[name];
+    });
+    return out;
+  }
+  let palette = colors();
   function emitReady() {
     if (!readySent) { readySent = true; HubApp.emit("graph-ready"); }
   }
@@ -166,11 +176,11 @@
     let selectedNode = null;
     let finished = false;
     function nodeColor(node) {
-      if (active && !active.has(node.id)) return DIM;
-      return node.record.bridge ? YELLOW : HubApp.index.hoods.get(node.record.hood).tint;
+      if (active && !active.has(node.id)) return palette.dim;
+      return node.record.bridge ? palette.yellow : HubApp.index.hoods.get(node.record.hood).tint;
     }
     function linkColor(link) {
-      return active && !(active.has(link.pair.left.id) && active.has(link.pair.right.id)) ? DIM : COBALT;
+      return active && !(active.has(link.pair.left.id) && active.has(link.pair.right.id)) ? palette.dim : palette.blue;
     }
     function placeLabels() {
       if (!graph || !finished) return;
@@ -217,8 +227,16 @@
           outline.scale.setScalar(1.18);
           mesh.add(outline);
         }
-        outline.material.color.set(active && !active.has(node.id) ? DIM : INK);
+        outline.material.color.set(active && !active.has(node.id) ? palette.dim : palette.ink);
       });
+    }
+    // Theme refresh: colours only. No rebuild, no camera move, no animation; the library's own
+    // render loop draws the new colours on its next frame.
+    function theme() {
+      palette = colors();
+      graph.backgroundColor(palette.paper);
+      graph.nodeColor(nodeColor).linkColor(linkColor);
+      shell();
     }
     function flyTo(id) {
       const node = nodeIndex.get(id);
@@ -234,8 +252,23 @@
         const matrix = graph.camera().matrixWorld.elements;
         const halfView = distance * Math.tan(graph.camera().fov * Math.PI / 360);
         const desktop = window.matchMedia("(min-width: 1024px)").matches;
-        const covered = desktop ? Math.min(400, stageEl.clientWidth * .8)
-          : Math.max(0, stageEl.clientHeight - innerHeight * .38);
+        let covered;
+        if (desktop) covered = Math.min(400, stageEl.clientWidth * .8);
+        else {
+          // Phone: the mark must land in the band of the stage that stays visible, under the
+          // measured sticky header and above the bottom sheet (at most 62 percent of the
+          // viewport, so its top is at least 38 percent down). The band is measured, not
+          // assumed, so a taller header (plan 05's toggle) cannot push the mark under the sheet.
+          const box = stageEl.getBoundingClientRect();
+          const header = document.getElementById("hub-header");
+          const headerBottom = header ? header.getBoundingClientRect().bottom : 0;
+          const sheet = parseFloat(document.documentElement.style.getPropertyValue("--hub-sheet-height")) || 0;
+          const sheetTop = Math.min(innerHeight * .38, sheet ? innerHeight - sheet : innerHeight);
+          const top = Math.max(box.top, headerBottom);
+          const bottom = Math.min(box.bottom, sheetTop);
+          const center = bottom > top ? (top + bottom) / 2 : top;
+          covered = Math.max(0, 2 * (box.top + box.height / 2 - center));
+        }
         const amount = halfView * covered / (desktop ? stageEl.clientWidth : stageEl.clientHeight);
         ["x", "y", "z"].forEach(function (axis, index) {
           aim[axis] += (desktop ? matrix[index] : -matrix[index + 4]) * amount;
@@ -278,8 +311,9 @@
         engine: HubApp.data.engines[link.pair.engine].short_name, z: link.pair.rank_score_text });
     }
     // Stage follows the deviation recorded at the top of this file: every link cobalt, width 1.6 for crossing pairs, no particles.
+    palette = colors();
     graph = window.ForceGraph3D({ controlType: "orbit" })(host)
-      .width(stageEl.clientWidth).height(stageEl.clientHeight).backgroundColor(PAPER)
+      .width(stageEl.clientWidth).height(stageEl.clientHeight).backgroundColor(palette.paper)
       .nodeId("id").nodeVal(function (node) { return node.record.bridge ? 5 : 2.2; })
       .nodeResolution(16).nodeOpacity(.95).nodeColor(nodeColor)
       .nodeLabel(function () { return ""; }).linkLabel(function () { return ""; })
@@ -325,7 +359,7 @@
         if (HubApp.state.view === "graph") stageEl.scrollIntoView({ block: "start", behavior: "instant" });
         refreshSelection(sel, true);
       },
-      clear: function () { refreshSelection(null, false); }, flyTo: flyTo,
+      clear: function () { refreshSelection(null, false); }, flyTo: flyTo, theme: theme,
       zoom: function (factor) {
         if (!finished) return;
         const camera = graph.camera().position, aim = graph.controls().target;
@@ -403,6 +437,10 @@
     const read = button("B08.read");
     read.addEventListener("click", function () { HubApp.select({ type: "pair", key: pair.key }, read); });
     item.appendChild(read);
+    // The page of this pair (Phase 2.3.1 plan 07; plan 08 routes it).
+    item.appendChild(text("a", "Gr16.open", {}, {
+      class: "hub-link hub-graph-open", href: "#/pair/" + pair.engine + "/" + pair.rank
+    }));
     return item;
   }
   function listPairs() {
@@ -641,6 +679,10 @@
     listPairs();
     if (!HubApp.data.graph.earned) emitReady();
   }
+  // The theme event of plan 05: refresh the stage colours only when the stage is in 3D mode.
+  HubApp.on("theme", function () {
+    if (G.mode === "3d" && G.stage && G.instance) G.stage.theme();
+  });
   HubApp.registerView("graph", { render: render, onEvent: function (name, detail) {
     if (name === "select" || name === "clear") {
       marks();

@@ -104,6 +104,9 @@ def test_graph_follows_the_theme(tmp_path: Path, browser: str) -> None:
     result = scenario(positive_hub(tmp_path), browser, steps=[
         look("light", view="graph", waitGraph=True),
         look("selected", record="synthetic-b-000"),
+        # The select step starts a 760 ms camera flight; let it settle before the theme emit.
+        # Under load (parallel browser suites) the eased last frames lag, so the wait is 2000 ms.
+        {"kind": "wait", "ms": 2000},
         look("dark", clear=True, theme="dark"),
         look("back", theme="light")])
     light = result["light"]["stage"]["colors"]
@@ -123,8 +126,14 @@ def test_graph_follows_the_theme(tmp_path: Path, browser: str) -> None:
     assert dark["background"].lower() == tokens["paper"].lower()
     assert dark["links"] and all(color.lower() == tokens["blue"].lower() for color in dark["links"])
     assert dark["bridge"].lower() == tokens["yellow"].lower()
-    # The refresh does not move the camera.
-    assert dark["position"] == selected["position"]
+    # The refresh does not move the camera: the position before the emit equals the one after
+    # (the orbit controls drift by about 1e-14 per frame, so a 1e-6 tolerance is a no-move).
+    for name in ("dark", "back"):
+        before = result[name]["cameraBefore"]
+        after = result[name]["stage"]["colors"]["position"]
+        assert before is not None
+        for axis in ("x", "y", "z"):
+            assert after[axis] == pytest.approx(before[axis], abs=1e-6)
     back = result["back"]["stage"]["colors"]
     assert back["background"].lower() == "#f7f5ee"
     assert all(color.lower() == "#1f3fbf" for color in back["links"])

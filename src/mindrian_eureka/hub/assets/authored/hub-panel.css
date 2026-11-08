@@ -29,8 +29,9 @@ html { scroll-padding-block-end: var(--hub-sheet-height, 0px); }
 .hub-panel-pair-block { padding-block: var(--hub-space-5); border-block-end: 1px solid var(--hub-line); }
 .hub-panel-actions { display: flex; flex-wrap: wrap; gap: var(--hub-space-3); }
 .hub-panel-full p, .hub-panel-excerpt { white-space: pre-wrap; }
-/* The link to the full page (plan 08 routes it). */
-.hub-panel-page { font-size: 13px; font-weight: 700; }
+/* The link to the full page (plan 08 routes it): its own line, content wide, so the status chip
+   that follows never sits on it (seen at 390 px in the record panel). */
+.hub-panel-page { display: flex; inline-size: fit-content; margin-block-end: var(--hub-space-2); font-size: 13px; font-weight: 700; }
 /* The card figure of a pair (D-07) and its legend in words, closed by default. */
 .hub-panel-figure { margin-block: var(--hub-space-4); }
 .hub-panel-figure .hub-figure { inline-size: 100%; block-size: auto; }
