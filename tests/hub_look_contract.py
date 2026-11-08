@@ -242,7 +242,7 @@ ROLES: tuple[Role, ...] = (
             ("#hub-title", "font-weight", _all("700")),
             ("#hub-title", "letter-spacing", _all("-0.04em")),
         ),
-        None,
+        "LD-03",
         "03",
     ),
     Role(

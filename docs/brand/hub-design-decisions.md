@@ -118,3 +118,91 @@ Plan 02.3-04 (D-04, SEED-05) adds one row under each pair of the bank: the exact
 | Interaction | The command is text to copy. The page has no copy button, no clipboard code and no handler for the row. A person with a keyboard or a pointer selects the text. No new control is added, so no new target, focus or motion rule applies. | `segments/experience/accessibility` | path: experience/accessibility, kind: task, reason: Declared surface: website (build/brand-context.json, 2026-10-24; not regenerated, book moved) | 04 |
 
 Observation, not changed in this plan: the Phase 2.2 carried-cell row (`hub-bank-extras`) carries the class `hub-bank-labels`, which the bank CSS places at an explicit grid cell. It therefore shares the cell of the role labels. A measurement on 2026-11-07 in Chromium shows the two boxes overlap at 360, 768 and 1280 px, and a captured image shows the text of the chips and the role labels printed over each other. The owner checks this in the visual pass, and the Phase 2.2 visual pass records it. The seed row does not share this cell.
+
+## Phase 2.3.1 look change
+
+The owner rejected the Phase 2.1 look on 2026-11-08 and named a live target site. This section records the ruling, the book status, the colour roles that change, the cited segments and every difference between the hub and the target stylesheet. The older sections above stay as history; where they conflict with this section, this section rules the page look.
+
+| Item | Value |
+|------|-------|
+| Date | 2026-11-08 |
+| mos-brand CLI version | 2.43.0 |
+| Book commit (`git -C ~/mos-brand rev-parse --short HEAD`) | 2263b84 |
+| `mos-brand doctor` status | NEEDS-ATTENTION, 36 problems (the book moved since the lock; the installed `tokens.css` equals the book file byte for byte, only the lock hash is old) |
+| `mos-brand context`, `catalog`, `checklist`, `refresh`, `image templates` | BLOCKED (stale lock). The segment lines of this section are read from the book checkout at 2263b84 and are not regenerated. |
+| Brand lock reconciliation | Not approved by the owner (BRAND-LOCK-RECONCILE, 2026-11-08). No book write command runs in this phase. |
+| Book review (success criterion 2) | Advisory. Recorded: not run, lock not reconciled, by owner ruling R-01. |
+| Human approval | Pending plan 09 (the owner looks at the built hub in both themes). |
+
+1. Owner ruling 2026-11-08. The Phase 2.1 look was not approved. In the owner's words: "looks very bad, the original look was way way way better". The owner named the live target site (the current build of the partner hub). The hub follows its colour roles, its type scale, its header and section pattern, its finding rows and its black band. Reviewer label: Maintainer.
+
+1a. R-01, 2026-11-08. The decisions made in the redesign session overrule the mos-brand book wherever they conflict. In the owner's words: "make sure the decision we made here overshadow the mos brand". The book stays the reference for everything the session did not decide. Where a session decision differs from a book rule, the session decision is built, the difference is logged as an LD row or a register item, and a proposed book segment is written so the book can follow later. BRAND-LOCK-RECONCILE is not approved. No executor runs `mos-brand asset --replace`, `mos-brand refresh --apply`, `mos-brand adopt --apply`, `init`, `configure` or `run approve`. Read-only book commands may run. The book review is advisory and is recorded "not run: lock not reconciled, by owner ruling R-01". It is not a gate. This applies to the hub only.
+
+2. Owner words and checks. Source: `.planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/02.3.1-CONTEXT.md`, section Owner words, and `02.3.1-OWNER-DECISIONS.md`. Checks the owner did: looked at the page. Checks the owner did not do (recorded as not done): keyboard-only pass, screen reader, Safari, 200 percent zoom, Theo face states. No name of a person or a partner from the target is stored in this repository (D-06); only the target stylesheet is kept as evidence.
+
+3. Colour. Owner ruling 2026-11-08 overrules the Phase 2.1 colour rule (row Colour of the table of 2026-10-24) for the page look. The old row stays above as history. New roles: cobalt for links, the eyebrow, the header label and row numerals; red for the mono rank index and the eyebrow dot (a square); yellow for the band marker and for a Potential eureka; ink for rules, headings and the band ground; paper dominant. Cited segment: `segments/foundations/color` (palette values, "Keep accents restrained", ink ground, contrast table). Where the book meaning differs (red is an interruption, yellow is a possibility, cobalt is inquiry and attention), owner ruling overrides the book meaning for these decorative uses; proposed segment. The uses are listed in the register below (items 24 and 25) and in the deviation rows LD-13, LD-22, LD-24 and LD-33. Contrast, measured by the review test: cobalt on paper 7.63:1, on white 8.33:1, on quiet 6.91:1; paper on ink 17.4:1; soft on paper 8.5:1. Yellow is never text.
+
+| Area | Hub choice | Cited segment path | Plan |
+|------|------------|--------------------|------|
+| Colour | Roles of item 3: cobalt links, eyebrow, header label and numerals; red rank index and square eyebrow dot; yellow band marker and Potential eureka; ink rules and band ground. | `segments/foundations/color` | 01, 03, 06 |
+| Type | Figtree display, DM Sans body, JetBrains Mono for labels, ids and scores. Body 16 px under 768 px and 17 px from 768 px, line height 1.58. Display heading clamp(34px, 4.2vw, 52px) at line height 1.02 and letter spacing -0.04em. Counts numeral 32 px and 42 px. Labels 13 px (the floor). Weights 400, 600, 700; `font-synthesis: none`. | `segments/foundations/typography` | 03 |
+| Layout and sticky header | One wrapper of 1200 px plus two gutters (20 px, 30 px from 768 px). A sticky header on solid paper with the lockup, a two-line context block, the three view links and a bordered action link; two rows under 1024 px, one row from 1024 px. Under 768 px the sub line of the context block is hidden (it would wrap to 4 lines beside the lockup and the sticky header would cover a quarter of a phone screen; the same sentence G05 stays in the footer) and the links row scrolls sideways when it does not fit, as the target's nav does; the phone header is about 104 px. The header sets `--hub-header-height` from its measured height and `scroll-padding-block-start` follows it (the book: a sticky stage sets scroll-padding-top from its own height variable). Active view link: weight 700 and a 2 px ink underline, 44 px high, 13 px text (Beat selector row). | `segments/experience/layout` | 03 |
+| Accessibility | 13 px label floor, 44 px targets, 3 px ink focus ring with 3 px offset, reduced motion honoured, no ambient motion, logical properties only. | `segments/experience/accessibility` | 03 |
+| CSS capabilities | No blur behind the header (the target uses `backdrop-filter`); rule 21 asks for a fallback, an off switch and a test for a new capability, so the hub uses solid paper instead. | `segments/experience/css-capabilities` | 03 |
+| Logo | The exact parent lockup in the header, not a link, 116 px wide under 768 px and 156 px from 768 px. | `segments/identity/logo` | 03 |
+| Motion | Unchanged. No hover transform, no smooth scrolling. Only colour, background colour, border colour and underline thickness transition, 200 ms, none under reduced motion. | `segments/experience/motion` | 03 |
+
+Look contract deviations. The contract is `tests/hub_look_contract.py`; the static test `tests/test_hub_look_tokens.py` proves each row against the stored target stylesheet and the hub stylesheets and checks that every id below is explained here.
+
+| Id | Target | Hub | Reason | Plan |
+|----|--------|-----|--------|------|
+| LD-01 | Line colour #c9c6bd | `--mos-paper-dim` #c7c6bf | Nearest book token; no new colour literal. | 03 |
+| LD-02 | Body 17 px, 16 px only at 470 px and under | Body 16 px under 768 px, 17 px from 768 px | The hub has two breakpoints (LD-16). | 03 |
+| LD-03 | Heading 35 px at 470 px and under | Heading minimum 34 px (the clamp floor) | One clamp rule for every width; 1 px difference at phone width. | 03 |
+| LD-04 | Labels of 12 px and 11 px | 13 px | D-03 floor and the book accessibility segment. | 01, 03, 06 |
+| LD-05 | Index column 38 px | 44 px with a two-digit number; the word Rank in hidden text for assistive technology (the prototype of 2026-11-08 does the same) | 44 px targets. | 06 |
+| LD-06 | Description colour #393731 | `--mos-soft` | Book token. | 06 |
+| LD-07 | Weight 650 | Weight 600 | Book weights 400, 600, 700. | 03 |
+| LD-08 | Header on rgba paper with a 10 px blur | Solid paper, no filter | Rule 21 of css-capabilities and the palette test (no functional colour). | 03 |
+| LD-09 | Button 48 px, action link about 40 px | Both follow the 44 px floor | Book target size. | 03 |
+| LD-10 | Colours on the ink band #eeece5, #d9e1ff, #d4dcff, #c9c6bd | Paper and paper-dim | Book ink ground tokens. | 01 |
+| LD-11 | Counts numeral 36 px and 32 px under 760 px and 470 px | 32 px under 768 px, 42 px from 768 px | Two breakpoints (LD-16). | 03 |
+| LD-12 | Phone gutter 19 px and 22 px | 20 px, 30 px from 768 px | Book phone gutter. | 03 |
+| LD-13 | Eyebrow dot is a circle | A square (radius 0, token `--mos-radius`) | Book radius 0; owner ruling O-08. | 03 |
+| LD-14 | Button hover moves up 2 px | No hover transform | The css test bans a transform transition; motion only on colour. | 03 |
+| LD-15 | Smooth scrolling | None | No ambient motion; reduced motion by default. | 03 |
+| LD-16 | Breakpoints at 470, 760 and 1000 px, desktop first | Two breakpoints, 768 px and 1024 px, mobile first; lockup 116 px and 156 px | Book breakpoints of the Phase 2.1 register (item 4). | 03 |
+| LD-17 | Numeral caption beside the numeral | Caption under the numeral | Reads in one column at every width. | 06 |
+| LD-18 | Band padding 16 px and 18 px | 16 px and 24 px | Book spacing steps. | 01 |
+| LD-19 | Data check panel padding 14 px and 16 px | 16 px and 24 px | Book spacing steps. | 03 |
+| LD-20 | Focus ring cobalt, offset 4 px | Ink on paper, offset 3 px | Book Focus row; the exact string is pinned by the css test. | 03 |
+| LD-21 | Row padding 19 px and 20 px | 24 px | Book spacing step. | 06 |
+| LD-22 | The id in a row is soft code | A cobalt source link | Every pair keeps a source link (D-03); cobalt links (S22). | 06 |
+| LD-23 | The row action is a cobalt arrow link | An outlined button named Open this pair (the prototype of 2026-11-08 uses it) | 44 px target with a clear name. | 06 |
+| LD-24 | Primary button ink to cobalt on hover | The same, while the book primary action is cobalt fill | Owner ruling D-01 over the book button. | 03 |
+| LD-25 | The target's own catalogue page has a dark ground | Catalogue and panel use the paper look; the dark theme gives the dark one | Owner ruling O-05; the catalogue page is not the named target. | 07 |
+| LD-26 | Header 76 px | 76 px (the Phase 2.1 spec said 64 px) | Owner ruling O-07; the owner chose the target. | 03 |
+| LD-27 | Finding rows have no picture | A fifth grid column holds the generated figure of a pair | Owner decision D-07. | 06 |
+| LD-28 | Photographs made by an image tool | Generated SVG figures | Owner decision D-07: no image generator is needed. | 04, 06, 07, 08 |
+| LD-29 | Row title 18 px at line height 1.15 | 20 px under 768 px, 22 px from 768 px, line height 1.25 (prototype 20 px) | Book subheading sizes. | 06 |
+| LD-30 | One count at 27 px | Two numerals, meaning in cobalt and wording in red, 40 px from 768 px and 28 px under (prototype 38 px) | Book heading sizes; both scores shown. | 06 |
+| LD-31 | Row description 13 px at line height 1.48 | 16 px at line height 1.5 (prototype 15.5 px) | Book UI size. | 06 |
+| LD-32 | No dark page | The dark theme values are a proposal | The book is silent on a dark page (register item 26). | 05 |
+| LD-33 | Red is an interruption in the book | Red names the wording score and cobalt the meaning score in numerals, bars and figures (prototype of 2026-11-08) | Owner ruling over the book meaning of red; words and numbers sit beside every colour. | 04, 06 |
+| LD-34 | Detail picture is a photograph at every width | An SVG from 768 px and a real-text HTML twin under it | The 13 px floor: the owner brief said 640 px, but the figure text must stay at 13 px or more. | 08 |
+
+## Book-silent register, Phase 2.3.1
+
+The numbers continue the register of Phase 2.1. Each item is "Book silent, proposed segment"; the hub does what the item says until the book answers.
+
+19. A generated reading of a run (the band of plan 01; rules in `docs/brand/hub-model-rules.md`, section Run reading band). Book silent, proposed segment.
+20. A lead figure made by code from the records' own words (plan 04, `docs/brand/hub-figure-rules.md`). Book silent, proposed segment.
+21. Header height 76 px and a sticky header on solid paper with the view links inside it (plan 03). Book silent, proposed segment.
+22. Hairline colour on paper from the paper-dim token (plan 03, LD-01). Book silent, proposed segment.
+23. Cobalt text links in running text (the layout row says underline and readable ink; plan 03, S22). Book silent, proposed segment.
+24. Red mono rank index (owner ruling over the book meaning of red; plan 06). Book silent, proposed segment.
+25. Yellow square marker in the black band (owner ruling D-01 over the Phase 2.1 colour rule F3 and the book meaning of yellow; plan 01). Book silent, proposed segment.
+26. The dark theme values (plan 05, `docs/brand/hub-theme-rules.md`). Book silent, proposed segment.
+27. Distinctive words by tf-idf as a screening aid (plan 02, `docs/brand/hub-terms-rules.md`). Book silent, proposed segment.
+28. Red names the wording score and cobalt the meaning score (plans 04 and 06). Book silent, proposed segment.
+29. Routes, breadcrumbs and the Back, Previous and Next knobs of a mini site (plan 08, `docs/brand/hub-site-rules.md`). Book silent, proposed segment.

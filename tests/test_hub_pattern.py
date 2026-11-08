@@ -405,9 +405,13 @@ def test_open_page_has_the_band(public_payload: dict[str, Any]) -> None:
     links = [node for node in band.descendants() if node.tag == "a"]
     assert len(links) == 1
     assert links[0].attrs["href"] == "#hub-data-check" and links[0].text == DECK["G17.link"]
-    body = doc.tagged("body")[0]
-    order = [node.attrs.get("id") for node in body.children if node.attrs.get("id")]
-    assert order.index("hub-counts") < order.index("hub-band") < order.index("hub-nav")
+    # Phase 2.3.1 plan 03: the nav moved into the sticky header and the band sits in the page
+    # wrapper after the counts and before the results.
+    wrapper = next(node for node in doc.nodes if node.attrs.get("id") == "hub-page")
+    order = [node.attrs.get("id") for node in wrapper.children if node.attrs.get("id")]
+    assert order.index("hub-counts") < order.index("hub-band") < order.index("hub-results")
+    header = next(node for node in doc.nodes if node.attrs.get("id") == "hub-header")
+    assert any(node.attrs.get("id") == "hub-nav" for node in header.descendants())
 
 
 def _band_fragments() -> list[str]:

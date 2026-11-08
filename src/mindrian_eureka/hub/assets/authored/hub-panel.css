@@ -40,7 +40,6 @@ html { scroll-padding-block-end: var(--hub-sheet-height, 0px); }
   }
   html[data-panel-open] #hub-title-band,
   html[data-panel-open] #hub-counts,
-  html[data-panel-open] #hub-nav,
   html[data-panel-open] #hub-data-check,
   html[data-panel-open] #hub-footer,
   html[data-panel-open]:not([data-panel-view="graph"]) #hub-results {

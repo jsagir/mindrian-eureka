@@ -5,4 +5,4 @@
 #hub-passphrase-toggle, #hub-unlock { min-inline-size: 44px; min-block-size: 44px; padding: var(--hub-space-3); }
 #hub-locked-status { flex-basis: 100%; }
 .hub-gate-error { color: var(--mos-red); border-inline-start: 3px solid var(--mos-red); padding-inline-start: var(--hub-space-3); background: var(--mos-white); }
-#hub-counts[hidden], #hub-nav[hidden], #hub-results[hidden], #hub-panel[hidden], #hub-data-check[hidden], [data-view][hidden] { display: none; }
+#hub-counts[hidden], #hub-nav[hidden], #hub-header-action[hidden], #hub-band[hidden], #hub-results[hidden], #hub-panel[hidden], #hub-data-check[hidden], [data-view][hidden] { display: none; }
