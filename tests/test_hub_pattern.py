@@ -118,6 +118,7 @@ def _both_count(payload: Mapping[str, Any]) -> int:
 def _hidden_payload(payload: Mapping[str, Any]) -> dict[str, Any]:
     """Return a deep copy where every pair is weak, with counts and hoods edited to match."""
     data = copy.deepcopy(dict(payload))
+    data.pop("pattern", None)
     for pair in data["pairs"]:
         pair["weak"] = True
     total = sum(data["counts"]["pairs"].values())
@@ -140,6 +141,7 @@ def fixtures(tmp_path: Path) -> dict[str, dict[str, Any]]:
     """Every state once, plus the optional-line runs. Keys name the case."""
     grouped = _payload(build_run_folder_with_potential_eureka(tmp_path))
     no_bridges = copy.deepcopy(grouped)
+    no_bridges.pop("pattern", None)
     no_bridges["bridges"] = []
     return {
         "public": _payload(PUBLIC / "run"),

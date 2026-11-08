@@ -83,6 +83,48 @@ DECK: dict[str, str] = {
     "G15.wording_and_meaning": WORDING_AND_MEANING_NAME,
     "G15.wording_and_meaning.short": "Wording engine",
     "G16": "Scores are a screening signal. They do not show novelty, evidence, demand or value.",
+    # --- 9.8 run reading band (Phase 2.3.1, D-04) ---------------------------
+    # A count sits after a colon where it can be 0 or 1, and in a sentence only where the
+    # rule that emits the sentence guarantees 2 or more.
+    "G17.label": "What this run shows",
+    "G17.link": "Read the data check",
+    "G17.read": (
+        "This run read {records} records. Pairs ranked: {a} by the unusual-pairs engine, "
+        "{b} by the wording engine."
+    ),
+    "G17.both": "Pairs that both engines list: {n}.",
+    "G17.spread": (
+        "Records in at least one pair that is shown: {a}. "
+        "Records in no pair that is shown: {b}."
+    ),
+    "G17.hoods": (
+        "The pair links group the records into {n} neighborhoods. The largest has {a} records."
+    ),
+    "G17.single": (
+        "The pair links keep every paired record in one neighborhood and no record bridges two. "
+        "This run shows no grouping to read."
+    ),
+    "G17.bridges": (
+        "Records marked Potential eureka: {n}. A mark is a place to look, not a result."
+    ),
+    "G17.weak": "Pairs below the cut-off of their engine: {n}. They are hidden by default.",
+    "G17.copies": (
+        "Records that share their text with another record: {n}. A top pair may be a copy. "
+        "Read the data check."
+    ),
+    "G17.classes": (
+        "Pairs in the lists by class. Open next to licensed: {a}. Both open: {b}. "
+        "Both licensed: {n}."
+    ),
+    "G17.top_k": "{engine}: the list stops at {n} pairs. Lower pairs are not shown.",
+    "G17.none": (
+        "No pairs were ranked, so this run has nothing to read. "
+        "The engine notes are in the Opportunity bank."
+    ),
+    "G17.hidden": (
+        "Every ranked pair sits below its cut-off and is hidden by default. "
+        "Show weaker pairs in the Opportunity bank to read them."
+    ),
     # --- 9.2 Opportunity bank -----------------------------------------------
     "B01": "Which pairs should a person look at first?",
     "B02": "The top pairs come first. Open one to see why it ranks here.",

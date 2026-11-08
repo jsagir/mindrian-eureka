@@ -44,6 +44,43 @@ The model supports these fixed fragments added around B05 and related UI copy:
 - `G03.lockup_alt`: `MindrianOS`
 - `C06.one_pair`: `1 pair`
 
+## Run reading band
+
+Phase 2.3.1, D-04 (HUB-07). `describe_run` in `pattern.py` reads the payload and returns a state and a list of lines. Each line is a deck key (family G17, plus Gr09 and G16) and the values of its slots. The same payload gives the same lines. The function reads no clock, no random source and no network.
+
+State rules, in this order:
+
+1. Add the pair counts of both engines. If the total is 0, the state is `none` and the lines are G17.none and G16.
+2. Else, if no record is in a pair that is shown (`records_in_visible_pairs` is 0), the state is `hidden` and the lines are G17.hidden and G16.
+3. Else build G17.read, then G17.both (only when at least one pair id is in both engine lists), then G17.spread. When there are 2 or more neighborhoods or at least 1 bridge, the state is `grouped`: the next line is G17.hoods, followed by G17.bridges when there is at least 1 bridge, or by Gr09 when there is none. Otherwise the state is `single` and the next line is G17.single.
+4. Then, only when true: G17.weak (weak pairs above 0), G17.copies (identical records above 0), G17.classes (the run has pair classes), one G17.top_k line for each engine, in engine order, whose list reached its limit.
+5. The last line is always G16.
+
+In the states `none`, `hidden` and `single` the band says in words that the run shows no grouping to read.
+
+Where each number comes from:
+
+| Value | Payload field | Run file behind it |
+|-------|---------------|--------------------|
+| records (G17.read) | counts.records | corpus file and manifest corpus section |
+| a, b (G17.read) | counts.pairs.unusual_pairs, counts.pairs.wording_and_meaning | the two pair files |
+| n (G17.both) | count of distinct pair ids with an entry in each engine list | the two pair files (same pair id in both) |
+| a, b (G17.spread) | counts.records_in_visible_pairs, counts.records_in_no_pair | the rules "Neighborhoods" and "Cut-offs and weak pairs" over the pair files |
+| n, a (G17.hoods) | number of hoods, size of the first hood (hoods are sorted by size, largest first) | the rule "Neighborhoods" |
+| n (G17.bridges) | number of bridges | the rule "Bridges" |
+| n (G17.weak) | counts.weak_pairs | pair percentile below the manifest floor |
+| n (G17.copies) | data_check.identical_records | text_sha256 groups of the corpus file |
+| a, b, n (G17.classes) | count of non-weak pair entries by class: cross, open_open, licensed_licensed | the outcome rule of the run (Phase 2.2) |
+| engine, n (G17.top_k) | engines[key].short_name, engines[key].top_k | manifest settings top_k, pair file counts.top_k_reached |
+
+The band holds no threshold constant. The code of `pattern.py` uses no numeric literal other than 0, 1 and 2, and a test checks this. The state rules compare counts with 0, 1 and 2 only.
+
+Label wording (owner ruling O-04): "What this run shows", not the target's "The pattern", because the data may show no pattern.
+
+Honesty limits: a value is an int from the payload or one of the two engine short names. No record id, title or text reaches a value. The band makes no claim of novelty, evidence, demand or value; a test bans the claim words in every line except G16, and G16 ends every band. The locked page holds an empty hidden band, so the band text exists only inside the encrypted payload.
+
+Book silent on a generated reading of a run: proposed segment.
+
 ## Tested size
 
 Measured on 2026-10-24 with `PYTHONPATH=src python3 -m pytest tests/test_hub_writer.py::test_scale_3000 -s -q -p no:cacheprovider`.

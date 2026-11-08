@@ -354,6 +354,24 @@ class PayloadCounts(TypedDict):
     weak_pairs: int
 
 
+# The states of the run reading band (Phase 2.3.1, D-04), in this fixed order.
+PATTERN_STATES: tuple[str, ...] = ("none", "hidden", "single", "grouped")
+
+
+class PatternLine(TypedDict):
+    """One line of the run reading band: a deck key and the values of its slots."""
+
+    key: str
+    values: dict[str, int | str]
+
+
+class PayloadPattern(TypedDict):
+    """The run reading band: a state and its lines, built from the payload only."""
+
+    state: str
+    lines: list[PatternLine]
+
+
 class Payload(TypedDict):
     """The whole payload of `hub-data.js` (`window.HUB`)."""
 
@@ -372,6 +390,7 @@ class Payload(TypedDict):
     graph: PayloadGraph
     has_pair_classes: NotRequired[bool]
     has_seed_commands: NotRequired[bool]
+    pattern: NotRequired[PayloadPattern]
 
 
 # --- Functions --------------------------------------------------------------

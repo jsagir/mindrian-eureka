@@ -1,6 +1,7 @@
 """Validate the hub payload's labels, source links and authored copy.
 
-Import rule: the standard library and `.contracts` only. No numpy.
+Import rule: the standard library, `.contracts` and `.deck` (the key set of the run
+reading band) only. No numpy.
 """
 
 from __future__ import annotations
@@ -11,7 +12,9 @@ from typing import NotRequired, get_origin, get_type_hints
 from ..run.contracts import LABEL
 from .contracts import (
     ENGINE_KEYS,
+    PATTERN_STATES,
     PairSide,
+    PatternLine,
     Payload,
     PayloadBridge,
     PayloadCounts,
@@ -20,10 +23,12 @@ from .contracts import (
     PayloadGraph,
     PayloadHood,
     PayloadPair,
+    PayloadPattern,
     PayloadRecord,
     has_dash,
     has_internal_name,
 )
+from .deck import DECK
 
 _BAD_LINK_PREFIXES = ("http:", "https:", "javascript:", "//")
 
@@ -87,6 +92,31 @@ def _check_link(path: str, value: object, problems: list[str]) -> None:
 
 def _objects(value: object) -> Sequence[object]:
     return value if isinstance(value, list) else ()
+
+
+def _check_pattern(value: object, problems: list[str]) -> None:
+    """Check the run reading band (Phase 2.3.1, D-04): shape, state, keys and values."""
+    pattern = _check_keys(value, PayloadPattern, "pattern", problems)
+    if pattern is None:
+        return
+    if pattern.get("state") not in PATTERN_STATES:
+        problems.append(f"pattern state is not one of {', '.join(PATTERN_STATES)}.")
+    for index, item in enumerate(_objects(pattern.get("lines"))):
+        path = f"pattern lines[{index}]"
+        line = _check_keys(item, PatternLine, path, problems)
+        if line is None:
+            continue
+        key = line.get("key")
+        if key not in DECK:
+            problems.append(f"{path} key {key} is not a deck key.")
+        values = line.get("values")
+        if not isinstance(values, Mapping):
+            problems.append(f"{path} values is not an object.")
+            continue
+        for slot, slot_value in values.items():
+            if isinstance(slot_value, bool) or not isinstance(slot_value, int | str):
+                problems.append(f"{path} value {slot} is not an int or a string.")
+            _check_copy(f"{path} value {slot}", slot_value, problems)
 
 
 def verify_payload(payload: Payload) -> list[str]:
@@ -192,4 +222,6 @@ def verify_payload(payload: Payload) -> list[str]:
 
     _check_keys(top.get("graph"), PayloadGraph, "graph", problems)
     _check_copy("tool_version", top.get("tool_version"), problems)
+    if "pattern" in top:
+        _check_pattern(top.get("pattern"), problems)
     return problems

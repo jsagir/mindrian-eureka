@@ -1,8 +1,8 @@
 """Build deterministic graph model values from hub run data.
 
-Import rule: the standard library, `.contracts`, `..run.output` for the
-4-decimal score text helper, and `..seed.contracts` for the seed constants only. Do not
-import numpy.
+Import rule: the standard library, `.contracts`, `.pattern` for the run reading band,
+`..run.output` for the 4-decimal score text helper, and `..seed.contracts` for the seed
+constants only. Do not import numpy.
 """
 
 from __future__ import annotations
@@ -32,6 +32,7 @@ from .contracts import (
     RunPair,
     deep_link,
 )
+from .pattern import describe_run
 
 
 def pair_key(pair: RunPair) -> str:
@@ -475,4 +476,6 @@ def build_payload(
         payload["has_pair_classes"] = True
     if any("seed_command" in entry for entry in pairs):
         payload["has_seed_commands"] = True
+    # Phase 2.3.1 (D-04): the run reading band, a pure function of the payload above.
+    payload["pattern"] = describe_run(payload)
     return payload
