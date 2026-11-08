@@ -83,3 +83,73 @@ def test_hub_section_commands_position_and_limits() -> None:
     assert not any(char in section for char in (chr(8211), chr(8212)))
     for target in re.findall(r"\]\(([^)#]+)\)", section):
         assert (ROOT / target).is_file(), target
+
+
+PROFILE_HEADING = "### Choose an encoder profile"
+
+
+def _profile_section() -> str:
+    text = _text()
+    assert text.count(PROFILE_HEADING) == 1
+    return text.split(PROFILE_HEADING, 1)[1].split("\n## ", 1)[0]
+
+
+def _help_text(*args: str) -> str:
+    import contextlib
+    import io
+
+    from mindrian_eureka.cli import main
+
+    buffer = io.StringIO()
+    with contextlib.redirect_stdout(buffer), contextlib.suppress(SystemExit):
+        main([*args, "--help"])
+    return buffer.getvalue()
+
+
+def test_profile_section_commands_and_flags_exist_in_the_parser_help() -> None:
+    section = _profile_section()
+    assert "uv run eureka doctor --encoder-profile gpu-nemotron" in section
+    assert "--encoder-profile gpu-nemotron --model-path" in section
+    for command in ("run", "doctor"):
+        assert "--encoder-profile" in _help_text(command)
+    assert "--model-path" in _help_text("run")
+    assert "uv sync --extra gpu-encoder" in section
+
+
+def test_profile_section_names_the_profiles_the_code_defines() -> None:
+    from mindrian_eureka.encoder_spec import DEFAULT_PROFILE, GPU_PROFILE, PROFILES
+
+    section = _profile_section()
+    assert DEFAULT_PROFILE in PROFILES and GPU_PROFILE in PROFILES
+    assert f"`{DEFAULT_PROFILE}`" in section and f"`{GPU_PROFILE}`" in section
+    assert PROFILES[DEFAULT_PROFILE].model_id in section
+    assert PROFILES[GPU_PROFILE].model_id in section
+
+
+def test_profile_section_does_not_overclaim_the_spike() -> None:
+    section = _profile_section()
+    assert "unproven" in section and "not run yet" in section
+    assert "MiniLM stays the default encoder." in section
+    assert "Result: NO MATCH" in section and "eureka.encoder-block.v1" in section
+    assert "candidate, not verified" in _text()
+    assert not any(char in section for char in (chr(8211), chr(8212)))
+    for target in re.findall(r"\]\(([^)#]+)\)", section):
+        assert (ROOT / target).is_file(), target
+
+
+def test_extras_table_lists_every_extra_of_the_project() -> None:
+    import tomllib
+
+    extras = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"][
+        "optional-dependencies"
+    ]
+    table = _text().split("Optional extras, from `pyproject.toml`:", 1)[1].split("\n\n", 2)[1]
+    for name in extras:
+        assert f"| `{name}` |" in table, name
+
+
+def test_public_example_readme_names_the_gpu_approx_behavior() -> None:
+    text = (ROOT / "examples" / "public-example" / "README.md").read_text(encoding="utf-8")
+    assert "gpu-approx" in text and "Result: NO MATCH" in text
+    assert "not run yet" in text and "unproven" in text
+    assert not any(char in text for char in (chr(8211), chr(8212)))

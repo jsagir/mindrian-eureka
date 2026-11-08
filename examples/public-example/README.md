@@ -46,6 +46,10 @@ Every pair is a candidate, not verified. The pairs are leads for human review. T
 
 MATCH shows that the output bytes are the shipped ones. It does not prove that the run was made on this machine. The check reads the `manifest.json` that the run folder holds, and it compares the 4 hashed output files byte for byte. Extra files in the folder are ignored.
 
+Another encoder profile: the reference run uses the default encoder profile `cpu-default` (MiniLM on the CPU, class `cpu-exact`). The shipped hashes are for that profile only. A run made with `--encoder-profile gpu-nemotron` is a different setup. Its vectors, and so its pairs, can differ.
+
+Such a run has the class `gpu-approx` in its manifest. `eureka check-example` then compares `corpus/records.jsonl` by bytes and the two pair files by ranking overlap with `reference-run/`. No overlap threshold has been measured yet, so the check prints the overlap numbers and `Result: NO MATCH`. A `gpu-approx` run is never reported as a match until the GPU spike has measured the drift. The spike is not run yet, and `gpu-nemotron` is unproven. See [docs/encoder-profiles.md](../../docs/encoder-profiles.md) and [docs/encoder-comparison.md](../../docs/encoder-comparison.md). Every result is a candidate, not verified.
+
 ## Where it was checked
 
 | Setup | Platform | Python | Threads | Cache | Same as reference |

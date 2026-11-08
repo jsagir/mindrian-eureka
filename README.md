@@ -82,7 +82,7 @@ Check your setup first:
 uv run eureka doctor
 ```
 
-The doctor checks Python, uv, the encoder libraries, the meaning model, the cache folder, the data folder and the offline settings. For each problem it prints the exact fix. It creates, changes and downloads nothing.
+The doctor checks Python, uv, the encoder libraries, the meaning model, the cache folder, the data folder and the offline settings. For each problem it prints the exact fix. It creates, changes and downloads nothing. Add `--encoder-profile NAME` to check one named encoder profile as well (see [Choose an encoder profile](#choose-an-encoder-profile)).
 
 Then run Eureka on your folder:
 
@@ -97,6 +97,30 @@ The run reads your folder and never writes into it. An earlier Eureka run in the
 Two runs on the same input give the same ranked files. `run-info.json` is the only file that holds times.
 
 Every result is a candidate, not verified. It is a lead for human review.
+
+### Choose an encoder profile
+
+An encoder profile is a named list of every setting that changes a vector: the model, the vector width, the device, the number format and the text prefixes. Eureka never mixes vectors of two profiles. Each profile has its own cache file, and the cache key holds the full identity of the profile. Two profiles exist:
+
+| Profile | Model | Device | State |
+|---|---|---|---|
+| `cpu-default` | `sentence-transformers/all-MiniLM-L6-v2` (384 values per record) | CPU | The default. The shipped example and its reference run use it. |
+| `gpu-nemotron` | `nvidia/Nemotron-3-Embed-1B-BF16` (2048 values per record) | CUDA GPU | A spike profile. It is unproven: the spike on an RTX 3060 computer is not run yet. It is selectable, and it is not a recommendation. |
+
+Without a flag, a run uses `cpu-default`. To select a profile, give its name and the folder of that model. A named profile other than the default needs `--model-path`:
+
+```bash
+uv run eureka doctor --encoder-profile gpu-nemotron
+uv run eureka run ./my-sources --out ./eureka-run --encoder-profile gpu-nemotron --model-path /absolute/path/to/model
+```
+
+The GPU profile needs the optional extra `gpu-encoder`: `uv sync --extra gpu-encoder`. The extra holds `sentence-transformers` and `transformers`. It does not hold a CUDA build of torch, because the project locks the CPU build. Install a CUDA build that fits the computer.
+
+Every run writes an `encoder` block into `manifest.json` (schema `eureka.encoder-block.v1`). The block names the profile, the determinism class and, for each pair engine, a fingerprint of the encoder setup. A run with a profile other than the default also writes `encoder_fingerprint` into both pair files. A default run does not, so the shipped expected hashes keep holding.
+
+The determinism class has two values. `cpu-exact` is a CPU run in float32: bit-exact output is shown for the setups in the table of the public example only. `gpu-approx` is every other setup: a GPU or another number format can differ slightly. `eureka check-example` compares a `cpu-exact` run by bytes. For a `gpu-approx` run it compares `corpus/records.jsonl` by bytes and the two pair files by ranking overlap with the shipped reference run. No overlap threshold has been measured yet, so it prints the overlap numbers and the line `Result: NO MATCH`. A `gpu-approx` run is never reported as a match until the spike has measured the drift.
+
+More: [encoder profiles](docs/encoder-profiles.md), [encoder comparison](docs/encoder-comparison.md) (only the MiniLM column was measured; the `mdbr-leaf-ir` and Nemotron columns are not run) and the [spike record](docs/encoder-spike-results.md) (not run yet; it holds no GPU number). MiniLM stays the default encoder.
 
 ## Open the results as one page
 
@@ -139,7 +163,7 @@ The hub shows the pair command under each pair. The folder layout and the rules 
 
 ## Reproduce the method on public data
 
-A guide takes a reader who is not the author from install to ranked pairs on a public example of 36 arXiv abstracts (CC0). The command `uv run eureka check-example <run-folder>` compares your run with the shipped expected hashes. The guide states what is reproducible and what is not. MATCH shows that the output bytes are the shipped ones. It does not prove that the run was made on this machine. Every result is a candidate, not verified.
+A guide takes a reader who is not the author from install to ranked pairs on a public example of 36 arXiv abstracts (CC0). The command `uv run eureka check-example <run-folder>` compares your run with the shipped expected hashes. The guide states what is reproducible and what is not. A run made with another encoder profile is compared by ranking overlap and not by bytes; see [Choose an encoder profile](#choose-an-encoder-profile). MATCH shows that the output bytes are the shipped ones. It does not prove that the run was made on this machine. Every result is a candidate, not verified.
 
 Status: internal only. The release record has decision no-go for public distribution of the unusual-pairs engine; see the [release record](docs/rs-release-gate.md).
 
@@ -289,7 +313,7 @@ scripts/run-mcp-container
 
 The wrapper disables network access, mounts the model read-only, makes the container root filesystem read-only, and applies configurable CPU and memory limits. The model must already exist on the host.
 
-The server registers 27 tools. A host can plan and start the one-command run through `scout_plan_pair_screen` and `scout_start_pair_screen`. A start needs the plan and an approval reference. Each plan call allows one start. Eureka cannot verify the approval, so the real approval is the card of the host. The run writes nothing to a room. A wrong request shape is a tool error, not a refusal. The steps, the exact keys and what a host sees for each refusal code are in [the engine run contract](docs/mos-eureka-engine-run-contract.md).
+The server registers 27 tools. A host can plan and start the one-command run through `scout_plan_pair_screen` and `scout_start_pair_screen`. A start needs the plan and an approval reference. Each plan call allows one start. Eureka cannot verify the approval, so the real approval is the card of the host. The run writes nothing to a room. The result carries the encoder block as the optional key `encoder`. The request has no field to choose a profile yet; `--encoder-profile` exists on the command line only. A wrong request shape is a tool error, not a refusal. The steps, the exact keys and what a host sees for each refusal code are in [the engine run contract](docs/mos-eureka-engine-run-contract.md).
 
 ## Engine names
 
@@ -313,6 +337,7 @@ The one-line job text of each entry is the `jtbd` field of that catalog id in `s
 | Wording-and-meaning pairs, analogy, Genesis, Jason, BONO, graph stages | Selected CLI/MCP stages are callable; full-family workflows have mixed or incomplete readiness. |
 | OMM decision-sequence analysis | Experimental; not an opportunity finder or validated measure of a person's ability. |
 | MindrianOS integration | Contract is documented; the `/mos:eureka` adapter remains outstanding. |
+| Encoder profiles | `cpu-default` is the default and is measured. `gpu-nemotron` is a spike profile: unproven, the spike run is not run yet. |
 
 See the [machine-readable capability catalog](src/mindrian_eureka/data/capability-catalog.v1.json) for the complete status of each stable capability ID. See the [JHTV opportunity assessment](evaluations/room-runs/jhtv-opportunity-leads-2026-10-18.md) for an example of results framed as diligence leads with supporting evidence and disqualifying questions.
 
@@ -353,6 +378,7 @@ Optional extras, from `pyproject.toml`:
 | `mcp-server` | The stdio MCP server, `eureka-mcp`. |
 | `hub-gate` | The optional password gate of the hub page. |
 | `bundle` | What `scripts/build-partner-bundle` needs to build a carry-in folder. |
+| `gpu-encoder` | `sentence-transformers` and `transformers` for the `gpu-nemotron` spike profile. It holds no CUDA build of torch. |
 | `reference-encoder` | The reference BERT encoder, which is the default encoder of `eureka-pair-scout`. |
 | `hmm` | The decision-sequence models of `eureka-decision-sequences`. |
 | `neo4j` | The optional read-only Neo4j adapter of `eureka-graph`. |
