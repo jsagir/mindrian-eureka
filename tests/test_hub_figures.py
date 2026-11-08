@@ -134,9 +134,17 @@ def _bbox(element: ET.Element) -> tuple[float, float, float, float]:
             y + _num(element, "height") + half,
         )
     if _tag(element) == "line":
+        # Butt caps: an axis-aligned line grows by half the stroke across its direction
+        # only. A diagonal line (the fan) takes the conservative box on both axes.
         xs = (_num(element, "x1"), _num(element, "x2"))
         ys = (_num(element, "y1"), _num(element, "y2"))
-        return (min(xs) - half, min(ys) - half, max(xs) + half, max(ys) + half)
+        across_x = half if ys[0] != ys[1] or xs[0] == xs[1] else 0.0
+        across_y = half if xs[0] != xs[1] or ys[0] == ys[1] else 0.0
+        if xs[0] == xs[1]:
+            across_y = 0.0
+        if ys[0] == ys[1]:
+            across_x = 0.0
+        return (min(xs) - across_x, min(ys) - across_y, max(xs) + across_x, max(ys) + across_y)
     if _tag(element) == "circle":
         cx, cy, r = _num(element, "cx"), _num(element, "cy"), _num(element, "r")
         return (cx - r - half, cy - r - half, cx + r + half, cy + r + half)
