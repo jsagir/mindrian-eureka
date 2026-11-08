@@ -14,6 +14,8 @@ const typeOf = node => {
     borderInlineStartWidth: s.borderInlineStartWidth, borderInlineStartColor: s.borderInlineStartColor,
     textDecorationLine: s.textDecorationLine, padding: s.padding, display: s.display} : null;
 };
+const shown = node => Boolean(node && (typeof node.checkVisibility === 'function'
+  ? node.checkVisibility() : node.getClientRects().length));
 const box = node => {
   if (!node) return null;
   const r = node.getBoundingClientRect();
@@ -152,7 +154,9 @@ const panelInfo = {
   legendCount: panel.querySelectorAll('details.hub-panel-legend').length,
   legend: legendBox ? {open: legendBox.open, summary: legendBox.querySelector('summary')?.textContent || '',
     body: Array.from(legendBox.querySelectorAll('p'), n => n.textContent),
-    bodyVisible: Boolean(legendBox.querySelector('p')?.getClientRects().length),
+    // Closed details content keeps a box under content-visibility: hidden in Chromium, so
+    // checkVisibility (which honours it) decides, not getClientRects.
+    bodyVisible: shown(legendBox.querySelector('p')),
     summaryBox: box(legendBox.querySelector('summary')), summaryFont: style(legendBox.querySelector('summary'))?.fontSize} : null,
   focusId: document.activeElement.id
 };

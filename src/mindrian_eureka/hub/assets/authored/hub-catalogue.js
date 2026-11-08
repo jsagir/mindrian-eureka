@@ -3,6 +3,7 @@
 
   const HubApp = window.HubApp;
   if (!HubApp) return;
+  const engines = ["unusual_pairs", "wording_and_meaning"];
   let entries = [];
   let matches = [];
   let shown = 0;
@@ -33,6 +34,26 @@
       else row.removeAttribute("aria-current");
     });
   }
+  // Phase 2.3.1 plan 07 (D-07): the best-ranked shown pair of a record gives its thumbnail.
+  // Shown means not weak; the order is rank, then engine order, then key, as in the graph list.
+  function bestShownPair(record) {
+    const shown = record.pair_keys.map(function (key) { return HubApp.index.pairs.get(key); })
+      .filter(function (pair) { return pair && !pair.weak; })
+      .sort(function (a, b) {
+        return a.rank - b.rank || engines.indexOf(a.engine) - engines.indexOf(b.engine)
+          || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
+      });
+    return shown.length ? shown[0] : null;
+  }
+  function thumbnail(record) {
+    const figures = HubApp.data.figures;
+    const pair = figures && figures.pairs ? bestShownPair(record) : null;
+    const entry = pair ? figures.pairs[pair.key] : null;
+    const node = entry && typeof entry.card === "string" ? HubApp.figure(entry.card) : null;
+    if (!node) return null;
+    // Decorative: the row text states the pair count and the panel carries the exposed figure.
+    return HubApp.el("div", { class: "hub-catalogue-figure", "aria-hidden": "true", "data-pair-key": pair.key }, node);
+  }
   function row(record) {
     const item = HubApp.el("tr", {
       id: record.catalogue_link.slice(1), "data-record-id": record.id, class: "hub-catalogue-row"
@@ -47,9 +68,13 @@
       if (window.matchMedia("(min-width: 768px)").matches || event.target.closest("a, button")) return;
       HubApp.select({ type: "record", id: record.id }, title);
     });
-    const idCell = HubApp.el("td", { class: "hub-catalogue-id" }, [link,
+    // The page of this record (plan 08 routes it). The id is percent-encoded in the route.
+    const open = text("a", "C07.open", { ID: record.id }, {
+      class: "hub-catalogue-open hub-link", href: "#/record/" + encodeURIComponent(record.id)
+    });
+    const idCell = HubApp.el("td", { class: "hub-catalogue-id" }, [thumbnail(record), link,
       HubApp.el("span", { class: "hub-catalogue-inline-count" }, pairCount(record))]);
-    const titleCell = HubApp.el("td", { class: "hub-catalogue-name" }, title);
+    const titleCell = HubApp.el("td", { class: "hub-catalogue-name" }, [title, open]);
     const fileCell = HubApp.el("td", { class: "hub-catalogue-file" },
       HubApp.el("bdi", { class: "hub-mono" }, record.source_file));
     const pairCell = HubApp.el("td", { class: "hub-catalogue-pairs" }, pairCount(record));

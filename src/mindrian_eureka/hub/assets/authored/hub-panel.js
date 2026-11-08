@@ -51,7 +51,7 @@
     button.addEventListener("click", function () { HubApp.select({ type: "pair", key: pair.key }, button); });
     return button;
   }
-  function header(title, id, bridge) {
+  function header(title, id, bridge, route) {
     const close = text("button", "P02.close", {}, {
       class: "hub-button hub-button--quiet", type: "button", id: "hub-panel-close",
       "aria-label": HubApp.fmt("P02.close_name")
@@ -63,6 +63,24 @@
     strip.appendChild(close);
     panel.appendChild(strip);
     panel.appendChild(HubApp.el("h2", { id: "hub-panel-title", tabindex: "-1" }, title));
+    // Phase 2.3.1 plan 07: the panel is a quick read; the full page (plan 08 routes it) is one
+    // link at the top. Record ids are percent-encoded in the route.
+    panel.appendChild(text("a", "P05.page", {}, { class: "hub-link hub-panel-page", href: route }));
+  }
+  // Phase 2.3.1 plan 07 (D-07): the card figure of a pair, exposed (role img, title, desc), with a
+  // legend in words under it, closed by default. Only HubApp.figure inserts a figure.
+  function pairFigure(pair) {
+    const figures = HubApp.data.figures;
+    const entry = figures && figures.pairs ? figures.pairs[pair.key] : null;
+    const node = entry && typeof entry.card === "string" ? HubApp.figure(entry.card) : null;
+    if (!node) return null;
+    const legend = figures.legend || {};
+    return HubApp.el("div", { class: "hub-panel-figure" }, [node,
+      HubApp.el("details", { class: "hub-panel-legend" }, [
+        HubApp.el("summary", {}, String(legend.summary || "")),
+        HubApp.el("p", {}, String(legend.card || ""))
+      ])
+    ]);
   }
   function sourceProse(value, className) {
     const chunks = [];
@@ -85,7 +103,8 @@
       chunks.map(function (chunk) { return HubApp.el("p", {}, chunk); }));
   }
   function recordView(record) {
-    header(record.title || HubApp.fmt("P02.record"), record.id, record.bridge);
+    header(record.title || HubApp.fmt("P02.record"), record.id, record.bridge,
+      "#/record/" + encodeURIComponent(record.id));
     panel.appendChild(label(record.label));
     const source = HubApp.el("section", { class: "hub-evidence hub-panel-source" }, [
       heading("P03.source"), role("source"),
@@ -144,10 +163,12 @@
     panel.appendChild(meanings(engineKeys.length ? engineKeys : ["unusual_pairs", "wording_and_meaning"]));
   }
   function pairView(pair) {
-    header(HubApp.fmt("P02.pair"), null, false);
+    header(HubApp.fmt("P02.pair"), null, false, "#/pair/" + pair.engine + "/" + pair.rank);
     panel.appendChild(HubApp.el("section", {}, [role("proposed"),
       text("p", "B08.rank", { n: pair.rank }), HubApp.el("p", {}, HubApp.data.engines[pair.engine].name)]));
     panel.appendChild(label(pair.label));
+    const figure = pairFigure(pair);
+    if (figure) panel.appendChild(figure);
     const sources = HubApp.el("section", {}, [heading("P03.two")]);
     [pair.left, pair.right].forEach(function (side) {
       sources.appendChild(HubApp.el("div", { class: "hub-evidence hub-panel-source" }, [role("source"),

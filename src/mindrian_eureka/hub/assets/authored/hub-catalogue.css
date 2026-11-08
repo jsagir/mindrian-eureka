@@ -1,15 +1,26 @@
+/* Catalogue in the look of the target (Phase 2.3.1 plan 07, owner ruling D-01): mono heads and
+   ids, display titles, 1 px hairlines between rows, the paper ground. Every colour is a token,
+   so the theme of plan 05 changes it in one place. The sticky head follows the measured header
+   height (--hub-header-height), never a literal. */
 .hub-catalogue-controls { display: grid; gap: var(--hub-space-4); margin-block: var(--hub-space-5); }
-.hub-catalogue-controls label { display: block; font-size: 16px; font-weight: 600; margin-block-end: var(--hub-space-2); }
+.hub-catalogue-controls label { display: block; font-family: var(--mos-font-code); font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--mos-soft); margin-block-end: var(--hub-space-2); }
 .hub-catalogue-controls input, .hub-catalogue-controls select { inline-size: 100%; min-inline-size: 0; }
 .hub-catalogue-table, .hub-catalogue-table tbody, .hub-catalogue-table tr, .hub-catalogue-table td { display: block; }
 .hub-catalogue-table thead { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); }
-.hub-catalogue-row { padding-block: var(--hub-space-4); border-block-end: 2px solid var(--mos-quiet); cursor: pointer; }
+.hub-catalogue-row { padding-block: var(--hub-space-4); border-block-end: 1px solid var(--hub-line); cursor: pointer; }
 .hub-catalogue-table td { border: 0; padding: 0; text-align: start; }
+.hub-catalogue-table th { font-family: var(--mos-font-code); font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--mos-soft); border-block-end: 1px solid var(--mos-ink); }
 .hub-catalogue-id { display: flex; flex-wrap: wrap; align-items: center; gap: var(--hub-space-3); }
+.hub-catalogue-id a { font-family: var(--mos-font-code); font-size: 13px; letter-spacing: 0.04em; }
 .hub-catalogue-inline-count { font-size: 13px; margin-inline-start: var(--hub-space-3); }
 .hub-catalogue-table .hub-catalogue-pairs { display: none; }
 .hub-catalogue-file { color: var(--mos-soft); overflow-wrap: anywhere; }
-.hub-catalogue-title { border: 0; padding: var(--hub-space-2) 0; font-size: 16px; font-weight: 600; background: transparent; text-align: start; inline-size: 100%; }
+.hub-catalogue-title { display: block; border: 0; padding: var(--hub-space-2) 0; font-family: var(--mos-font-display); font-size: 18px; font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; color: var(--mos-ink); background: transparent; text-decoration: none; text-align: start; inline-size: 100%; }
+.hub-catalogue-title:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.hub-catalogue-open { font-size: 13px; font-weight: 700; }
+/* The thumbnail of the best-ranked shown pair (D-07): decorative, 96 px wide, the card figure. */
+.hub-catalogue-figure { inline-size: 96px; margin-block-end: var(--hub-space-2); }
+.hub-catalogue-figure .hub-figure { inline-size: 100%; block-size: auto; }
 #catalogue-more { margin-block: var(--hub-space-5); }
 @media (min-width: 768px) {
   .hub-catalogue-controls { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--hub-space-5); }
@@ -20,11 +31,13 @@
   .hub-catalogue-table tbody { display: table-row-group; }
   .hub-catalogue-table tr { display: table-row; cursor: auto; }
   .hub-catalogue-table th, .hub-catalogue-table td { display: table-cell; padding: var(--hub-space-3); }
+  .hub-catalogue-table td { border-block-end: 1px solid var(--hub-line); }
   .hub-catalogue-table thead { display: table-header-group; position: static; inline-size: auto; block-size: auto; overflow: visible; clip-path: none; }
-  .hub-catalogue-table .hub-catalogue-id { inline-size: 16.6667%; }
+  .hub-catalogue-table .hub-catalogue-id { display: table-cell; inline-size: 16.6667%; }
   .hub-catalogue-table .hub-catalogue-name { inline-size: 50%; }
   .hub-catalogue-table .hub-catalogue-file { inline-size: 33.3333%; }
   .hub-catalogue-inline-count { display: block; margin-inline-start: 0; }
+  .hub-catalogue-figure { margin-block-end: var(--hub-space-3); }
 }
 @media (min-width: 1024px) {
   .hub-catalogue-controls { grid-template-columns: repeat(12, minmax(0, 1fr)); }
@@ -32,7 +45,7 @@
   .hub-catalogue-control { grid-column: span 3; }
   .hub-catalogue-control + .hub-catalogue-control { grid-column: span 2; }
   #catalogue-status { grid-column: span 2; font-size: 13px; }
-  .hub-catalogue-table thead { position: sticky; inset-block-start: 64px; background: var(--mos-paper); }
+  .hub-catalogue-table thead { position: sticky; inset-block-start: var(--hub-header-height); background: var(--mos-paper); }
   .hub-catalogue-table .hub-catalogue-name { inline-size: 41.6667%; }
   .hub-catalogue-table .hub-catalogue-file { inline-size: 25%; }
   .hub-catalogue-table .hub-catalogue-pairs { display: table-cell; inline-size: 16.6667%; }

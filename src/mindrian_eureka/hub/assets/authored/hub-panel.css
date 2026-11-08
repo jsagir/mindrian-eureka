@@ -1,3 +1,6 @@
+/* Reading panel (Phase 2.3.1 plan 07): the white plane with a 1 px ink frame, the 3 px cobalt
+   evidence rule, cobalt source links. The sheet under 1024 px; the 400 px panel from 1024 px,
+   placed under the measured header (--hub-header-height), never a literal. Tokens only. */
 html { scroll-padding-block-end: var(--hub-sheet-height, 0px); }
 #hub-panel.hub-panel-empty { display: none; }
 #hub-panel[data-panel-open] {
@@ -23,20 +26,28 @@ html { scroll-padding-block-end: var(--hub-sheet-height, 0px); }
 .hub-panel-source a, .hub-panel-pair-block a { display: flex; }
 .hub-panel-source h4, .hub-panel-source p, .hub-panel-scores p { font-size: 13px; line-height: 1.5; }
 .hub-panel-scores p { font-family: var(--mos-font-code); font-variant-numeric: tabular-nums; }
-.hub-panel-pair-block { padding-block: var(--hub-space-5); border-block-end: 2px solid var(--mos-quiet); }
+.hub-panel-pair-block { padding-block: var(--hub-space-5); border-block-end: 1px solid var(--hub-line); }
 .hub-panel-actions { display: flex; flex-wrap: wrap; gap: var(--hub-space-3); }
 .hub-panel-full p, .hub-panel-excerpt { white-space: pre-wrap; }
+/* The link to the full page (plan 08 routes it). */
+.hub-panel-page { font-size: 13px; font-weight: 700; }
+/* The card figure of a pair (D-07) and its legend in words, closed by default. */
+.hub-panel-figure { margin-block: var(--hub-space-4); }
+.hub-panel-figure .hub-figure { inline-size: 100%; block-size: auto; }
+.hub-panel-legend { margin-block-start: var(--hub-space-3); }
+.hub-panel-legend summary { font-size: 13px; font-weight: 600; }
+.hub-panel-legend p { font-size: 13px; line-height: 1.5; color: var(--mos-soft); margin-block: var(--hub-space-2); }
 @media (min-width: 1024px) {
   #hub-panel.hub-panel-empty { display: block; }
   #hub-panel.hub-panel-empty img { inline-size: 48px; block-size: 48px; }
   #hub-panel[data-panel-open] {
-    inset-block-start: var(--hub-space-9);
+    inset-block-start: calc(var(--hub-header-height) + var(--hub-space-4));
     inset-block-end: auto;
     inset-inline-start: auto;
     inset-inline-end: max(32px, calc((100vw - 1200px) / 2));
     inline-size: 400px;
-    max-block-size: calc(100vh - 128px);
-    max-block-size: calc(100dvh - 128px);
+    max-block-size: calc(100vh - var(--hub-header-height) - var(--hub-space-6));
+    max-block-size: calc(100dvh - var(--hub-header-height) - var(--hub-space-6));
   }
   html[data-panel-open] #hub-title-band,
   html[data-panel-open] #hub-counts,

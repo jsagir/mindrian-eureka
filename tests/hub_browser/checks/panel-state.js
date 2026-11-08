@@ -81,7 +81,8 @@ const figure = figureBox ? {
 } : null;
 const legend = legendBox ? {open: legendBox.open, summary: legendBox.querySelector('summary')?.textContent || '',
   body: Array.from(legendBox.querySelectorAll('p'), n => n.textContent),
-  bodyVisible: Boolean(legendBox.querySelector('p')?.getClientRects().length)} : null;
+  bodyVisible: Boolean(legendBox.querySelector('p') && (typeof legendBox.querySelector('p').checkVisibility === 'function'
+    ? legendBox.querySelector('p').checkVisibility() : legendBox.querySelector('p').getClientRects().length))} : null;
 const pageLinks = Array.from(panel.querySelectorAll('a.hub-panel-page'), n => ({text: n.textContent, href: n.getAttribute('href')}));
 const bounds = panel.getBoundingClientRect();
 const face = panel.querySelector('img');

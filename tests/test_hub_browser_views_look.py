@@ -284,10 +284,12 @@ def test_panel_look(tmp_path: Path, width: int) -> None:
     steps = [look("light", view="bank", pair=True),
              {"kind": "eval", "file": METRICS, "as": "metrics-light"},
              {"kind": "eval", "file": CONTRAST, "as": "contrast-light"},
-             look("dark", theme="dark"),
+             # The theme of plan 05 transitions colours (the reframe token is 760 ms), so the
+             # dark measurements wait for the settled values.
+             look("dark", theme="dark"), {"kind": "wait", "ms": 1000},
              {"kind": "eval", "file": METRICS, "as": "metrics-dark"},
              {"kind": "eval", "file": CONTRAST, "as": "contrast-dark"},
-             look("back", theme="light"),
+             look("back", theme="light"), {"kind": "wait", "ms": 1000},
              {"kind": "eval", "file": SPACING, "as": "spacing"}]
     result = scenario(public_hub(tmp_path), viewport={"width": width, "height": 900}, steps=steps)
     panel = result["light"]["panel"]
