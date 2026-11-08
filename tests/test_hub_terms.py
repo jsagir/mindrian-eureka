@@ -269,8 +269,95 @@ def test_deterministic_and_order_independent() -> None:
     assert json.dumps(first, sort_keys=True) == json.dumps(reversed_result, sort_keys=True)
 
 
+def test_display_form_is_the_most_frequent_surface_form() -> None:
+    from collections import Counter
+
+    from mindrian_eureka.hub.terms import build_terms, display_form, fold, surface_counts
+
+    # Plan 10, G2. The stem matches; the most frequent surface form of the record's own
+    # text is displayed. `clauses` folds to `claus` but `clause` stays `clause` (it ends in
+    # `e`), so the two are two stems; the record below keeps both and the test checks that
+    # the stem `claus` displays as the whole word `clauses`.
+    text = "clauses clauses clause programs program program Program tubules tubule"
+    counts = surface_counts(text)
+    assert set(counts) == {"claus", "clause", "program", "tubule"}
+    assert counts["claus"] == Counter({"clauses": 2})
+    assert counts["program"] == Counter({"program": 3, "programs": 1})
+    assert counts["tubule"] == Counter({"tubules": 1, "tubule": 1})
+    assert display_form(counts["claus"]) == "clauses"
+    assert display_form(counts["program"]) == "program"
+    # A tie of counts: the shorter form wins.
+    assert display_form(counts["tubule"]) == "tubule"
+    # A tie of counts and of length is broken alphabetically. No two real tokens of equal
+    # length fold to one stem (every fold shortens by a fixed amount), so the pair is
+    # constructed: two forms of one invented stem.
+    assert display_form(Counter({"analyze": 1, "analyse": 1})) == "analyse"
+    assert display_form(Counter({"zzz-form": 2, "aaa-form": 2})) == "aaa-form"
+    # Every surface form folds back to its own stem.
+    for stem, counter in counts.items():
+        for raw in counter:
+            assert fold(raw) == stem, (stem, raw)
+    # The same filter as `tokens`: a stop word and a short word give no stem.
+    assert set(surface_counts("The models and the Uses of a cut")) == set()
+    result = build_terms(_records(("r1", text)), [])
+    assert result["records"]["r1"] == ["clauses", "program", "clause", "tubule"]
+    assert "claus" not in result["records"]["r1"]
+
+
+def test_shared_words_display_uses_both_records() -> None:
+    from mindrian_eureka.hub.terms import build_terms
+
+    # The plan's example used `clauses` against `clause`; those are two stems under the
+    # fold (see the test above), so the pair here uses `programs` against `program`,
+    # which both fold to `program`.
+    records = _records(
+        ("r-a", "programs programs logic"),
+        ("r-b", "program program program logic"),
+    )
+    result = build_terms(records, [("p1", "r-a", "r-b")])
+    assert result["records"]["r-a"] == ["programs", "logic"]
+    assert result["records"]["r-b"] == ["program", "logic"]
+    # Over both texts `program` has 3 against 2 for `programs`.
+    assert result["pairs"]["p1"] == ["program", "logic"]
+
+
+def test_no_displayed_word_is_a_cut_stem() -> None:
+    from mindrian_eureka.hub.terms import build_terms, record_text
+
+    verify_shape = re.compile(r"^[a-z][a-z-]{3,}$")
+    token = re.compile(r"[a-z][a-z-]{3,}")
+    run = load_run(FIXTURE_RUN)
+    records = list(run.records)
+    by_id = {record.id: record for record in records}
+    pairs = [
+        (pair.pair_id, pair.left_id, pair.right_id)
+        for engine in run.engines.values()
+        for pair in engine.pairs
+    ]
+    result = build_terms(records, pairs)
+    whole = {
+        rid: {match.strip("-") for match in token.findall(record_text(record).lower())}
+        for rid, record in by_id.items()
+    }
+    shown: list[str] = []
+    for rid, words in result["records"].items():
+        for word in words:
+            assert word in whole[rid], (rid, word)
+            shown.append(word)
+    pair_sides = {pair_id: (left, right) for pair_id, left, right in pairs}
+    for pair_id, words in result["pairs"].items():
+        left, right = pair_sides[pair_id]
+        for word in words:
+            assert word in whole[left] or word in whole[right], (pair_id, word)
+            shown.append(word)
+    assert shown
+    for word in shown:
+        assert verify_shape.match(word), word
+        assert word not in {"claus", "phas"}, word
+
+
 def test_golden_lists_of_the_public_fixture() -> None:
-    from mindrian_eureka.hub.terms import DEPTH, STOP_WORDS, build_terms, rank_records
+    from mindrian_eureka.hub.terms import DEPTH, STOP_WORDS, build_terms, fold, rank_records
 
     run = load_run(FIXTURE_RUN)
     records = list(run.records)
@@ -313,7 +400,8 @@ def test_golden_lists_of_the_public_fixture() -> None:
         depth_right = ranked[pair.right_id][:DEPTH]
         assert len(words) <= 6
         for word in words:
-            assert word in depth_left and word in depth_right, (pair_id, word)
+            # Plan 10: the list holds the surface form; its stem is in both depth lists.
+            assert fold(word) in depth_left and fold(word) in depth_right, (pair_id, word)
             assert WORD_SHAPE.match(word), word
 
 
@@ -373,6 +461,9 @@ def test_rules_document() -> None:
         "English letters only",
         "book silent, proposed segment",
         "180",
+        "display form",
+        "surface",
+        "stems match",
     ):
         assert needle in text, needle
     assert re.search(r"\b5\b", text)
