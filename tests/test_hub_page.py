@@ -34,6 +34,7 @@ CHROME = {
     "hub-meaning",
     "hub-status",
     "hub-counts",
+    "hub-band",
     "hub-nav",
     "hub-results",
     "hub-panel",

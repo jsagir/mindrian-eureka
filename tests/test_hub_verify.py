@@ -56,3 +56,43 @@ def test_verifier_reports_missing_payload_key(tmp_path: Path) -> None:
     payload = _payload(tmp_path)
     del payload["graph"]
     assert any("graph" in problem and "key" in problem for problem in verify_payload(payload))
+
+
+# --- The run reading band (Phase 2.3.1, D-04) ---------------------------------
+
+
+def test_pattern_with_unknown_deck_key_is_a_problem(tmp_path: Path) -> None:
+    payload = _payload(tmp_path)
+    payload["pattern"]["lines"][0]["key"] = "G99.nothing"
+    assert any("pattern" in problem and "G99.nothing" in problem for problem in verify_payload(payload))
+
+
+def test_pattern_value_with_a_dash_is_a_problem(tmp_path: Path) -> None:
+    payload = _payload(tmp_path)
+    payload["pattern"]["lines"][0]["values"]["records"] = "36 " + chr(0x2013) + " 40"
+    assert any("pattern" in problem and "dash" in problem for problem in verify_payload(payload))
+
+
+def test_pattern_state_outside_the_four_values_is_a_problem(tmp_path: Path) -> None:
+    payload = _payload(tmp_path)
+    payload["pattern"]["state"] = "clear"
+    assert any("pattern" in problem and "state" in problem for problem in verify_payload(payload))
+
+
+def test_pattern_without_lines_is_a_problem(tmp_path: Path) -> None:
+    payload = _payload(tmp_path)
+    del payload["pattern"]["lines"]
+    assert any("pattern" in problem and "lines" in problem for problem in verify_payload(payload))
+
+
+def test_pattern_line_with_an_extra_key_is_a_problem(tmp_path: Path) -> None:
+    payload = _payload(tmp_path)
+    payload["pattern"]["lines"][0]["text"] = "not allowed"
+    assert any("pattern" in problem and "text" in problem for problem in verify_payload(payload))
+
+
+def test_payload_without_pattern_still_verifies(tmp_path: Path) -> None:
+    payload = _payload(tmp_path)
+    assert "pattern" in payload
+    del payload["pattern"]
+    assert verify_payload(payload) == []
