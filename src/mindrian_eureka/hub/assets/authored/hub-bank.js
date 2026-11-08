@@ -8,6 +8,8 @@
   // 2026-11-08) fill these keys by the numeral kind and the reading kind of a pair.
   // deck keys: B08.use.meaning B08.use.wording B08.use.agree B08.caption.meaning B08.caption.wording B08.shared B08.shared_none B08.open B08.use.label
   const readingKinds = ["meaning", "wording", "agree"];
+  // From 768 px the figure caption shows open; under it the caption folds (plan 11).
+  const wide = window.matchMedia("(min-width: 768px)");
   let shown = 0;
   let controls;
   let list;
@@ -70,15 +72,30 @@
     }
     return text("p", "B08.shared_none", {}, { class: "hub-bank-shared" });
   }
-  // The card figure of plan 04 through the safe inserter of plan 03, or null.
+  // The card figure of plan 04 through the safe inserter of plan 03, or null. Its caption
+  // folds under 768 px: a details element whose summary is the legend summary of the payload;
+  // from 768 px it shows open. One media query, no clock, no storage (plan 11).
   function figure(pair) {
     const figures = HubApp.data.figures;
     if (!figures || !own(figures.pairs, pair.key) || !figures.legend) return null;
     const picture = HubApp.figure(figures.pairs[pair.key].card);
     if (!picture) return null;
-    return HubApp.el("figure", { class: "hub-bank-figure" }, [
-      picture, HubApp.el("figcaption", {}, figures.legend.caption)
+    const caption = HubApp.el("details", { class: "hub-bank-figure-caption" }, [
+      HubApp.el("summary", {}, figures.legend.summary),
+      HubApp.el("p", {}, figures.legend.caption)
     ]);
+    // The property, not the attribute: an attribute value "false" would open the element.
+    caption.open = wide.matches;
+    return HubApp.el("figure", { class: "hub-bank-figure" }, [
+      picture, HubApp.el("figcaption", {}, caption)
+    ]);
+  }
+  if (typeof wide.addEventListener === "function") {
+    wide.addEventListener("change", function (event) {
+      document.querySelectorAll("#bank-list details.hub-bank-figure-caption").forEach(function (node) {
+        node.open = event.matches;
+      });
+    });
   }
   function row(pair) {
     const item = HubApp.el("li", {

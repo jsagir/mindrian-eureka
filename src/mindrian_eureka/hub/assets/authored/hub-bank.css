@@ -74,7 +74,7 @@
   text-decoration: underline;
 }
 /* Controls stay separate hit areas above the stretched link. */
-.hub-bank-ids a, .hub-bank-body a, .hub-bank-body button, .hub-bank-seed { position: relative; z-index: 2; }
+.hub-bank-ids a, .hub-bank-body a, .hub-bank-body button, .hub-bank-figure-caption summary, .hub-bank-seed { position: relative; z-index: 2; }
 /* The numerals: meaning in cobalt, wording in red (owner ruling O-02, LD-30, LD-33). */
 .hub-bank-nums { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--hub-space-3); }
 .hub-bank-nums > .hub-role, .hub-bank-rank-score { grid-column: 1 / -1; }
@@ -142,12 +142,25 @@
 }
 /* hub.css gives .hub-button:hover a cobalt fill; this later sheet of equal specificity wins. */
 .hub-bank-read:hover { background: transparent; border-color: transparent; color: var(--mos-ink); }
-/* The picture: the card figure of plan 04 with a caption that names the colours in words.
-   Under 1024 px it is a bounded object of 420 px at most, not the full row width: a full-width
-   card made the row about 1100 px tall at 768 px (visual check of 2026-11-08). */
-.hub-bank-figure { margin: 0; max-inline-size: 420px; }
+/* The picture: the card figure of plan 04, 300 px wide on a phone and in the 1024 px column
+   (the card labels are 15 px and 11 px in both), 420 px at most from 768 px (plan 06). Its
+   caption folds under 768 px: a details element with the legend summary as a 44 px target;
+   from 768 px the script opens it and the summary is not drawn, so the legend reads as before
+   plan 11 (plan 11, L5). The class is hub-bank-figure-caption: hub-bank-caption is the mono
+   caption of a numeral (R08) and must not style the legend. */
+.hub-bank-figure { margin: 0; max-inline-size: 300px; }
 .hub-bank-figure .hub-figure { display: block; inline-size: 100%; block-size: auto; }
-.hub-bank-figure figcaption { margin-block-start: var(--hub-space-2); font-size: 13px; line-height: 1.4; color: var(--mos-soft); }
+.hub-bank-figure figcaption { margin-block-start: var(--hub-space-2); }
+.hub-bank-figure-caption summary {
+  display: flex;
+  align-items: center;
+  min-block-size: 44px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mos-soft);
+}
+.hub-bank-figure-caption p { margin: 0; font-size: 13px; line-height: 1.4; color: var(--mos-soft); }
 .hub-row--weak { background: var(--mos-quiet); color: var(--mos-soft); padding-inline: var(--hub-space-4); }
 /* A flagged weak row gives the red flag its own approved paper surface. */
 .hub-bank-reading .hub-flag { background: var(--mos-paper); }
@@ -167,6 +180,8 @@
   .hub-bank-nums { grid-template-columns: minmax(0, 1fr); }
   .hub-bank-pair { font-size: 22px; }
   .hub-bank-numeral { font-size: 40px; }
+  .hub-bank-figure { max-inline-size: 420px; }
+  .hub-bank-figure-caption summary { display: none; }
 }
 @media (min-width: 1024px) {
   .hub-bank-row {

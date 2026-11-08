@@ -145,7 +145,7 @@ def test_phone_row_is_bounded_and_the_caption_folds(tmp_path: Path) -> None:
     legend = build_payload(load_run(tmp_path / "run"))["figures"]["legend"]
     result = scenario(out, steps=[
         viewport(390), check("390", parts=1),
-        {"kind": "click", "selector": "#bank-list details.hub-bank-caption summary"},
+        {"kind": "click", "selector": "#bank-list details.hub-bank-figure-caption summary"},
         check("390-open", parts=1), viewport(1280), check("1280", parts=1)])
     height = result["390"]["metrics"][0]["rowHeight"]
     print(f"first row at 390 px: {height:.1f} px (bound 1050)")
