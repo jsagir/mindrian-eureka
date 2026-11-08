@@ -1350,5 +1350,11 @@ def test_rules_document() -> None:
         "f-label",
         "display form",
         "CARD_WORDS",
+        # Plan 10, G3: the storage decision with its reasons and its budget.
+        "## Storage",
+        "inline",
+        "connect-src",
+        "locked",
+        "16896",
     ):
         assert needle in text.lower() if needle.islower() else needle in text, needle

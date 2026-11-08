@@ -10,6 +10,8 @@ under `EUREKA_REQUIRE_BROWSER=1`.
 from __future__ import annotations
 
 import io
+import json
+import os
 import time
 from pathlib import Path
 
@@ -26,6 +28,10 @@ from test_hub_browser_core import scenario
 
 CHECKS = Path(__file__).parent / "hub_browser/checks"
 BANK = str(CHECKS / "bank-state.js")
+LOAD_TIMING = str(CHECKS / "load-timing.js")
+LOAD_TIME_MAX_MS = 5000
+"""A generous first bound on loadEventEnd of the 2000-record hub (plan 10, G3). ASSUMED
+until measured; the measured value is printed and copied into the look record by plan 09."""
 RECORDS = 2000
 PAIRS = 100
 BLANK_TITLES = 40
@@ -100,3 +106,21 @@ def test_scale_hub_opens_in_a_browser(scale: tuple[Path, Path, HubSummary, float
     assert result["after"]["filters"]["pairClass"] == "cross"
     assert result["before"]["violations"] == []
     assert result["after"]["violations"] == []
+
+
+def test_scale_hub_load_time_is_measured(scale: tuple[Path, Path, HubSummary, float]) -> None:
+    """Plan 10, G3: the figures stay inline in hub-data.js; the load time is measured."""
+    require_browser()
+    out = scale[1]
+    data_bytes = (out / "hub-data.js").stat().st_size
+    steps = [{"kind": "eval", "file": LOAD_TIMING, "as": "timing", "args": {"bytes": data_bytes}}]
+    result = scenario(out, steps=steps)
+    timing = result["timing"]
+    line = dict(timing)
+    line["loadavg_1m"] = round(os.getloadavg()[0], 2) if hasattr(os, "getloadavg") else None
+    print(json.dumps(line, sort_keys=True))
+    assert timing["bytes"] == data_bytes
+    assert timing["readyState"] == "complete"
+    assert timing["domContentLoadedEventEnd"] <= timing["loadEventEnd"]
+    assert timing["loadEventEnd"] <= LOAD_TIME_MAX_MS, timing
+    assert timing["bankRows"] >= 1

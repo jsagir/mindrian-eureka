@@ -195,15 +195,19 @@ def test_scale_3000(tmp_path: Path) -> None:
     summary = build(run, first)
     seconds = time.perf_counter() - started
     assert seconds < 120
-    assert (first / "hub-data.js").stat().st_size < 80_000_000
+    # Plan 10, G3: 9946779 bytes on 2026-11-08 with the inline figures; the bound was 80000000.
+    hub_data_bytes = (first / "hub-data.js").stat().st_size
+    assert hub_data_bytes < 12_000_000
     build(run, second)
     assert tree(first) == tree(second)
     small = make_run_folder(tmp_path, name="small", n_records=3)
     build(small, tmp_path / "small-hub")
     assert set(tree(first)) == set(tree(tmp_path / "small-hub"))
+    pair_keys = sum(summary.pairs.values())
     print(json.dumps({"records": summary.records, "pairs": summary.pairs,
                       "build_seconds": round(seconds, 4),
-                      "hub_data_bytes": (first / "hub-data.js").stat().st_size,
+                      "hub_data_bytes": hub_data_bytes,
+                      "hub_data_bytes_per_pair_key": round(hub_data_bytes / pair_keys, 1),
                       "hub_html_bytes": (first / "hub.html").stat().st_size,
                       "logical_cpus": os.cpu_count(),
                       "memory_bytes": os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")}))

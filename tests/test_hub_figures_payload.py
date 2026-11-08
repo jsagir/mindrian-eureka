@@ -268,13 +268,25 @@ def test_locked_build_holds_no_word_and_no_figure_in_clear(tmp_path: Path) -> No
     clear = _assignment(open_dir / "hub-data.js", "HUB")
     files = [(locked / "hub.html").read_bytes(), (locked / "hub-data.js").read_bytes()]
     first_record = sorted(clear["records"], key=lambda record: record["id"])[0]
+    # Plan 10: the card carries the words, so the shared words of a pair and the label
+    # class must stay inside the envelope too. The first pair (by key) with shared words.
+    shared_pair = next(
+        pair["pair_id"]
+        for pair in sorted(clear["pairs"], key=lambda pair: pair["key"])
+        if clear["terms"]["pairs"][pair["pair_id"]]
+    )
+    shared_words = clear["terms"]["pairs"][shared_pair]
+    assert len(shared_words) >= 1
     for raw in files:
         assert b"<svg" not in raw
         assert b"\\u003csvg" not in raw
         assert b"hub-figure" not in raw
+        assert b"f-label" not in raw
         for text in clear["figures"]["legend"].values():
             assert text.encode() not in raw
         for word in clear["terms"]["records"][first_record["id"]]:
+            assert word.encode() not in raw, word
+        for word in shared_words:
             assert word.encode() not in raw, word
         for record in clear["records"]:
             assert record["title"].encode() not in raw
@@ -283,6 +295,7 @@ def test_locked_build_holds_no_word_and_no_figure_in_clear(tmp_path: Path) -> No
     assert decrypted["terms"] == clear["terms"]
     assert decrypted["figures"] == clear["figures"]
     assert len(clear["terms"]["records"][first_record["id"]]) >= 1
+    assert "f-label" in clear["figures"]["pairs"][clear["pairs"][0]["key"]]["card"]
 
 
 def test_built_folder_scans_clean(tmp_path: Path) -> None:
@@ -311,8 +324,16 @@ def test_hostile_run_figures_hold_no_markup(tmp_path: Path) -> None:
 
 
 def test_scale_cost_is_measured(tmp_path: Path) -> None:
-    from mindrian_eureka.hub.figures import CARD_MAX_BYTES, DETAIL_MAX_BYTES
+    from mindrian_eureka.hub.figures import (
+        CARD_MAX_BYTES,
+        DETAIL_MAX_BYTES,
+        PAYLOAD_COST_PER_KEY_MAX,
+    )
     from test_hub_scale import build_scale_run
+
+    # Plan 10, G3: the figures stay inline; the escaped cost of one pair key is budgeted.
+    assert PAYLOAD_COST_PER_KEY_MAX == 16896
+    assert PAYLOAD_COST_PER_KEY_MAX == (CARD_MAX_BYTES + DETAIL_MAX_BYTES) * 3 // 2
 
     run, out, summary, seconds = build_scale_run(tmp_path)
     payload = build_payload(load_run(run))
@@ -332,6 +353,8 @@ def test_scale_cost_is_measured(tmp_path: Path) -> None:
     with_all = len(js_assignment("HUB", payload))
     slim = {k: v for k, v in payload.items() if k not in {"figures", "terms"}}
     without = len(js_assignment("HUB", slim))
+    per_key = (with_all - without) / len(keys)
+    assert per_key <= PAYLOAD_COST_PER_KEY_MAX, per_key
     print(
         json.dumps(
             {
@@ -339,6 +362,8 @@ def test_scale_cost_is_measured(tmp_path: Path) -> None:
                 "figure_bytes": total,
                 "hub_data_bytes": with_all,
                 "hub_data_bytes_without_figures_and_terms": without,
+                "escaped_cost_per_pair_key": round(per_key, 1),
+                "payload_cost_per_key_max": PAYLOAD_COST_PER_KEY_MAX,
                 "hub_data_bytes_on_disk": (out / "hub-data.js").stat().st_size,
                 "build_seconds": round(seconds, 3),
                 "records": summary.records,
