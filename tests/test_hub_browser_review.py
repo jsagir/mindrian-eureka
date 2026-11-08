@@ -151,5 +151,7 @@ def test_desktop_graph_escapes_reading_measure_and_uses_viewport(
         scene = measured["scene"]
         assert abs(scene["width"] - min(1600, width - 64)) < 1
         assert abs(scene["x"] - (width - scene["width"]) / 2) < 1
-        assert abs(measured["stage"]["height"] - 836) < 1
+        # Phase 2.3.1 plan 07: the stage height is the viewport minus the measured header.
+        assert measured["headerHeight"] > 0
+        assert abs(measured["stage"]["height"] - (900 - measured["headerHeight"])) < 1
         assert measured["scrollWidth"] <= width

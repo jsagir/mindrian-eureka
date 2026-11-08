@@ -46,7 +46,10 @@ def test_fallback_legend_and_all_pair_provenance(tmp_path: Path, browser: str) -
     for row in state["rows"]:
         assert row["labelCount"] == 1 and row["proposed"] == "Proposed"
         assert [a["href"] for a in row["anchors"]] == row["expected"]
+        # Phase 2.3.1 plan 07: exactly 2 source links (class hub-link, not hub-graph-open);
+        # the page link of class hub-graph-open is pinned in test_hub_browser_views_look.
         assert len(row["anchors"]) == 2 and all(a["text"] for a in row["anchors"])
+        assert row["anchorCount"] == 2 + len(row["openLinks"])
     assert state["negative"] is True
     assert state["pairStatus"] == fill(DECK["B09.status"],
                                        a=state["pairCount"], b=state["pairCount"])

@@ -32,9 +32,12 @@ function message(id) {const n = document.getElementById(id); return {visible: vi
 function dimensions(node) {const r = node.getBoundingClientRect(); return {width:r.width,height:r.height};}
 const rows = Array.from(root.querySelectorAll('.hub-graph-pair')).map(row => {
   const pair = app.index.pairs.get(row.dataset.pairKey);
-  const anchors = Array.from(row.querySelectorAll('a')).map(a => ({text:a.textContent,href:a.getAttribute('href')}));
-  return {key:pair.key, labelCount:Array.from(row.querySelectorAll('.hub-chip')).filter(n => n.textContent === label).length,
-    anchors, expected:[pair.left.source_link,pair.right.source_link],
+  // Phase 2.3.1 plan 07: anchors are counted by class. The two source links carry hub-link
+  // and not hub-graph-open; the page link of plan 07 carries hub-graph-open.
+  const anchors = Array.from(row.querySelectorAll('a.hub-link:not(.hub-graph-open)')).map(a => ({text:a.textContent,href:a.getAttribute('href')}));
+  const openLinks = Array.from(row.querySelectorAll('a.hub-graph-open')).map(a => ({text:a.textContent,href:a.getAttribute('href')}));
+  return {key:pair.key, engine:pair.engine, rank:pair.rank, labelCount:Array.from(row.querySelectorAll('.hub-chip')).filter(n => n.textContent === label).length,
+    anchors, openLinks, anchorCount:row.querySelectorAll('a').length, expected:[pair.left.source_link,pair.right.source_link],
     proposed:row.querySelector('.hub-role--proposed').textContent,
     selected:row.classList.contains('hub-row--selected')};
 });

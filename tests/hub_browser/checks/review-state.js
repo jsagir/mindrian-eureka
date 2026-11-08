@@ -36,7 +36,8 @@ const sourceGroups=Array.from(document.querySelectorAll('#hub-panel .hub-source-
 const sourceRecord=app.state.selection?.type==='record' ? app.index.records.get(app.state.selection.id) : null;
 const scene=document.querySelector(".hub-graph-scene")?.getBoundingClientRect();
 const stage=document.getElementById("graph-stage")?.getBoundingClientRect();
-return {scene:scene ? {x:scene.x,width:scene.width}:null,stage:stage ? {height:stage.height}:null,sourceJoined:sourceGroups.map(n=>n.textContent).join(''),sourceText:sourceRecord?.text || '',
+const headerHeight=document.getElementById('hub-header')?.offsetHeight ?? null;
+return {headerHeight,scene:scene ? {x:scene.x,width:scene.width}:null,stage:stage ? {height:stage.height}:null,sourceJoined:sourceGroups.map(n=>n.textContent).join(''),sourceText:sourceRecord?.text || '',
   paragraphWords:sourceGroups.flatMap(n=>Array.from(n.querySelectorAll('p')).map(p=>p.textContent.trim().split(/\s+/u).filter(Boolean).length)),
   view:app.state.view,h1:document.getElementById('hub-title').textContent,
   face:document.getElementById('hub-face').getAttribute('src'),mode:app.graphView.mode,

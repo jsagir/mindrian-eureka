@@ -29,7 +29,11 @@ const expectedRecords = app.data.records.filter(record => {
 }).map(record => record.id).sort();
 const table = document.querySelector('.hub-catalogue-table');
 const header = table.querySelector('thead');
+// Phase 2.3.1 plan 07: the sticky head follows the measured header height (the root custom
+// property set by the core script), in px.
+const headerVar = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hub-header-height'));
 return {
+  headerVar: headerVar,
   ids: visibleRecords, first: visibleRecords[0], last: visibleRecords[visibleRecords.length - 1],
   expected: expectedRecords, violations: violations, measured: measured,
   status: document.getElementById('catalogue-status').textContent,

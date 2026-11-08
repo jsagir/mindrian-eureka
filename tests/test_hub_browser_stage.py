@@ -170,7 +170,10 @@ def test_widths_fonts_targets_and_reflow(tmp_path: Path) -> None:
     for width in (320, 390, 768, 1280, 1600):
         state = result[str(width)]
         assert_selection_uncovered(result[f"selected-{width}"])
-        assert state["stage"]["height"] == (836 if width >= 1024 else 560)
+        # Phase 2.3.1 plan 07: from 1024 px the stage is the viewport height minus the measured
+        # header height (never a literal); 560 px below 1024 px stays.
+        assert state["headerHeight"] > 0
+        assert state["stage"]["height"] == (900 - state["headerHeight"] if width >= 1024 else 560)
         assert state["scrollWidth"] <= width
         assert result[f"metrics-{width}"]["minimum"] >= 13
         assert result[f"metrics-{width}"]["targets"] == []

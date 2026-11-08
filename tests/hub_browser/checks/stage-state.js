@@ -72,7 +72,9 @@ const selectedNode=graph && app.state.selection?.type==='record'
 const selectedPoint=selectedNode ? graph.graph2ScreenCoords(selectedNode.x,selectedNode.y,selectedNode.z) : null;
 const panelBox=document.getElementById('hub-panel').getBoundingClientRect();
 const box=stage.getBoundingClientRect();
-return {mode:app.graphView.mode,readyCount,readyMs:readyAt===null ? null : readyAt-began,
+// Phase 2.3.1 plan 07: the measured header height; the 3D stage height follows it from 1024 px.
+const headerHeight=document.getElementById('hub-header').offsetHeight;
+return {headerHeight,mode:app.graphView.mode,readyCount,readyMs:readyAt===null ? null : readyAt-began,
   role:stage.getAttribute('role'),aria:stage.getAttribute('aria-label'),tabindex:stage.getAttribute('tabindex'),
   class:stage.className,canvas:Boolean(stage.querySelector('canvas')),
   canvasTab:stage.querySelector('canvas')?.getAttribute('tabindex'),

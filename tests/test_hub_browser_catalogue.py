@@ -121,7 +121,11 @@ def test_five_widths_table_semantics(tmp_path: Path) -> None:
         else:
             assert state["display"] == {"table": "table", "row": "table-row", "cell": "table-cell"}
         if width >= 1024:
-            assert state["header"]["position"] == "sticky" and state["header"]["top"] == "64px"
+            # Phase 2.3.1 plan 07: the sticky head sits exactly under the measured header
+            # (the --hub-header-height variable), not under a 64 px literal.
+            assert state["header"]["position"] == "sticky"
+            assert state["headerVar"] > 0
+            assert state["header"]["top"] == f'{state["headerVar"]:g}px'
         metric = result[f"metrics-{width}"]
         assert metric["scrollWidth"] <= width
         assert metric["minimum"] >= 13 and metric["targets"] == []

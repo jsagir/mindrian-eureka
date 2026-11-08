@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import io
 from pathlib import Path
+from xml.etree import ElementTree
 
 import pytest
 from hub_browser_support import require_browser
@@ -191,12 +192,14 @@ def test_panel_copy_is_deck_or_source(tmp_path: Path) -> None:
     require_browser()
     out = positive_hub(tmp_path)
     payload = build_payload(load_run(tmp_path / "synthetic-potential-eureka"))
-    state = scenario(out, steps=[check("state", record="bridge")])["state"]
+    result = scenario(out, steps=[check("state", record="bridge"), check("pair", pair=True)])
+    state = result["state"]
     allowed = {value for value in DECK.values() if "{" not in value}
     for record in payload["records"]:
         allowed.update(record[key] for key in ("id", "title", "text", "source_ref", "source_file"))
         allowed.update({record["text"][:600], record["text"][600:],
-                        fill(DECK["P03.pairs"], n=len(record["pair_keys"]))})
+                        fill(DECK["P03.pairs"], n=len(record["pair_keys"])),
+                        fill(DECK["P05.read"], ID=record["id"])})
         if record["bridge"]:
             names = ", ".join(DECK["P03.hood"] + " " + str(n) for n in record["bridge_hoods"])
             allowed.add(fill(DECK["P07"], n=len(record["bridge_hoods"]), list=names))
@@ -209,6 +212,17 @@ def test_panel_copy_is_deck_or_source(tmp_path: Path) -> None:
         allowed.add(fill(DECK["P08"], k=hood["number"], n=hood["size"]))
     for engine in payload["engines"].values():
         allowed.update({engine["name"], engine["score_meaning"]})
+    # Phase 2.3.1 plan 07: the pair panel holds the card figure (its title, description and any
+    # text element, read from the payload at run time) and the legend strings of the payload.
+    # The figure of the first pair is the one that panel-state.js selects with pair=True.
+    figures = payload["figures"]
+    card = ElementTree.fromstring(figures["pairs"][payload["pairs"][0]["key"]]["card"])
+    allowed.update(node.text for node in card.iter() if node.text and node.text.strip())
+    allowed.update({figures["legend"]["summary"], figures["legend"]["card"]})
     allowed = {value.strip() for value in allowed}
     assert set(state["texts"]) <= allowed
     assert not any(char in state["text"] for char in (chr(0x2013), chr(0x2014)))
+    pair_state = result["pair"]
+    assert pair_state["selection"]["type"] == "pair"
+    assert set(pair_state["texts"]) <= allowed, set(pair_state["texts"]) - allowed
+    assert not any(char in pair_state["text"] for char in (chr(0x2013), chr(0x2014)))

@@ -69,6 +69,20 @@ if (args.focusLast) {
 if (args.scrollWhy) panel.querySelector(".hub-panel-why").scrollIntoView({block: "start"});
 const selected = app.state.selection;
 const record = selected?.type === 'record' ? app.index.records.get(selected.id) : null;
+// Phase 2.3.1 plan 07: the card figure, its legend and the page link of the open panel.
+const figureBox = panel.querySelector('.hub-panel-figure');
+const figureSvg = figureBox?.querySelector('svg.hub-figure');
+const legendBox = panel.querySelector('details.hub-panel-legend');
+const figure = figureBox ? {
+  containerAriaHidden: figureBox.getAttribute('aria-hidden'), svgCount: figureBox.querySelectorAll('svg').length,
+  ariaHidden: figureSvg?.getAttribute('aria-hidden') ?? null, role: figureSvg?.getAttribute('role') ?? null,
+  title: figureSvg?.querySelector('title')?.textContent || '', desc: figureSvg?.querySelector('desc')?.textContent || '',
+  serialised: figureSvg ? new XMLSerializer().serializeToString(figureSvg) : ''
+} : null;
+const legend = legendBox ? {open: legendBox.open, summary: legendBox.querySelector('summary')?.textContent || '',
+  body: Array.from(legendBox.querySelectorAll('p'), n => n.textContent),
+  bodyVisible: Boolean(legendBox.querySelector('p')?.getClientRects().length)} : null;
+const pageLinks = Array.from(panel.querySelectorAll('a.hub-panel-page'), n => ({text: n.textContent, href: n.getAttribute('href')}));
 const bounds = panel.getBoundingClientRect();
 const face = panel.querySelector('img');
 const opener = document.querySelector('#bank-list .hub-bank-read');
@@ -93,6 +107,7 @@ while (walker.nextNode()) {
 }
 return {
   texts: texts,
+  figure: figure, legend: legend, pageLinks: pageLinks,
   audit: audit, text: panel.textContent,
   headings: Array.from(panel.querySelectorAll('h2,h3'), n => n.textContent),
   roles: Array.from(panel.querySelectorAll('.hub-role'), n => n.textContent),
