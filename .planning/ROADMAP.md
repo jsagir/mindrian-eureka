@@ -86,6 +86,27 @@ Plans:
 - [x] 02.3-04: Seed command row in the hub bank
 - [x] 02.3-05: Plugin hand-off contract doc `docs/room-seed-contract.md`
 
+### Phase 02.3.1: Hub look matches the live JHTV site: cobalt, red and yellow accents, sticky header, finding rows, black pattern band (INSERTED)
+
+**Goal:** The hub page that `eureka hub` writes looks like the live JHTV hub site the owner named (cobalt, red and yellow accents, sticky header with section navigation, large cobalt numerals, finding rows, a black pattern band), while it stays offline, accessible and honest, and the brand stop is re-recorded on the new look.
+**Requirements**: HUB-02 (re-open: the owner's verdict on 2026-11-08 was NOT APPROVED)
+**Depends on:** Phase 2.3
+**Success Criteria** (what must be TRUE):
+
+  1. The page built from the public fixture matches the target's look at 320, 390, 768, 1280 and 1600 px: the same colour roles, type scale, header and navigation, eyebrow plus heading, finding rows, and black band. A side-by-side check against the target stylesheet tokens passes.
+  2. The owner's ruling (D-01) is recorded with its date, and each UI decision cites a mos-brand book segment or a proposed segment where the book is silent. `mos-brand review` on the built pages ends with no finding.
+  3. The hub stays offline and keeps its behavior: no network request, the locked page, the data check, the reading panel, all three views, keyboard routes, 44 px targets, reduced motion honoured. The black band is generated from run data with sourced numbers only.
+  4. Every test and hash that pinned the old look is updated on purpose with the reason recorded; the full suite stays green (baseline 1941 passed, 0 failed); ruff 1452 and mypy 87 errors do not rise.
+  5. No name from the target site is committed. Close-out: READMEs refreshed (owner rule 2026-11-07) and plan 02.1-17 re-opened as pending the owner's look at the new page.
+
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run $gsd-plan-phase 02.3.1 to break down)
+
+**Scope notes**: Owner-requested urgent insert after the Phase 2.1 brand stop (2026-11-08). Evidence and decisions: `.planning/phases/02.3.1-*/02.3.1-CONTEXT.md`.
+
 ### Phase 02.2: Partner export profile and package (INSERTED)
 
 **Goal:** A partner who holds a technology-portfolio CSV export (one row per case number, outcome flags and dates, abstract possibly blank) runs `eureka run` on their own offline machine with a shipped mapping, gets cross pairs (an open technology next to one with a commercial outcome) and open-open bundle candidates, sees the outcome columns beside every pair in the run output and the hub, fills thin text from a case-number side-car with the coverage stated in numbers, and installs it all from a one-page partner guide. The owner's ruling on partner-internal distribution is recorded in the release gate.
