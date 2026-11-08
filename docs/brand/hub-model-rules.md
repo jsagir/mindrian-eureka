@@ -81,6 +81,35 @@ Honesty limits: a value is an int from the payload or one of the two engine shor
 
 Book silent on a generated reading of a run: proposed segment.
 
+## Distinctive words
+
+Phase 2.3.1 plan 02 (HUB-06). The payload key `terms` holds, for every record id, its 5 most distinctive words, and for every pair id the words both records share, at most 6. One rule: `score = tf * log((N + 1) / (df + 0.5))` over the title and the text of each record, scores rounded to 9 decimals, ties broken by the word. The words are a screening aid for a person who decides where to read first. They are never evidence. The full rule, the stop list and the limits are in `hub-terms-rules.md`. `verify_payload` checks that every id is an id of the payload, that a list has at most 5 or 6 words, and that every word is lower-case letters and hyphens of 4 characters or more.
+
+## Figures
+
+Phase 2.3.1 plan 04 (D-07, HUB-06, HUB-04). The payload key `figures` holds `pairs` (for every pair key a `card` and a `detail`, each one SVG string), `legend` (`summary`, `card`, `detail`, `caption`) and `labels` (the 7 fixed words drawn inside a detail). `build_figures` in `figures.py` draws every picture from the payload and the words of `terms`, with the standard library only. The same payload gives the same bytes. The code reads no clock, no random source and no network. The only seed is the pair id and it places decoration only. The encoding is written in `hub-figure-rules.md`.
+
+The two variants: the card has no text (two record markers, a dashed proposed link, a meaning bar and a wording bar, one ink square for each shared word, a cobalt block for agreement, a yellow block for a Potential eureka, 7 thin fan lines that are decoration). The detail has text (each record's title and its 5 distinctive words as chips, the two scores with bars and numerals, a black band with the shared words or the sentence that no distinctive word is shared).
+
+Agreement rule: a pair gets the cobalt block when its pair id has an entry in both engine lists and a wording-engine entry has `confirmed` true. `confirmed` is the `scores.second_signal.confirmed` flag of the wording engine's pair file; the reader keeps it only when it is a boolean, and the payload writes it only then. The unusual-pairs engine writes no second signal.
+
+Potential eureka rule: a pair gets the yellow block when `bridge` is true for either of its records (the rule "Bridges" above). Yellow has no other use in a figure (book `foundations/color`: yellow is a possibility; owner default O-03).
+
+Every pair entry also carries `reading_kind` (`meaning`, `wording` or `agree`), the kind of its fixed reading sentence, so a page picks its guidance line from the kind and not from the sentence text.
+
+Size caps, measured on 2026-11-08 over the public fixture, the hostile synthetic run and the 2000-record scale run: cards 2432 to 3123 bytes, details 4762 to 6880 bytes. `CARD_MAX_BYTES` is 4096 and `DETAIL_MAX_BYTES` is 7168 (the largest measured value rounded up to the next 1024 bytes). 5054 bytes, the size of the one hand-built SVG of the target site, is a hard ceiling for a card and never a goal. `verify_payload` refuses a payload with a figure above its cap, a figure that fails `figure_problems` (7 tags, 21 attributes, no id, no href, no style, no script, no image, no handler), a pair key that is not in the payload, a missing card or detail, or a legend or label string with a dash or an internal name.
+
+Locked privacy (HUB-04): the words and the figures live in the payload only. A locked hub holds them inside the encrypted envelope; `hub.html` and `hub-data.js` of a locked build hold no svg text, no legend string, no distinctive word and no record title. A test proves it on the public fixture.
+
+Measured cost on 2026-11-08 (`tests/test_hub_figures_payload.py::test_scale_cost_is_measured` and `tests/test_hub_writer.py::test_scale_3000`, this machine, 12 logical CPUs):
+
+- 2000 records, 100 pairs for each engine (200 pair keys): figures 1783526 bytes raw; `hub-data.js` 4543244 bytes with figures and terms, 2033013 bytes without; hub build 0.55 seconds.
+- 3000 records, 200 pairs for each engine (400 pair keys): `hub-data.js` 9946779 bytes (5021056 bytes on 2026-10-24, before the words and the figures); `hub.html` 212941 bytes; hub build 1.12 seconds (0.31 seconds on 2026-10-24). Two builds were byte-identical.
+
+The data file grows by about 5 to 6 KB of SVG for each pair key, plus the 6-character escapes that `js_assignment` writes for `<`, `>` and `&` inside strings. The scale test fails above pairs times the sum of the two caps.
+
+Book silent, proposed segment: lead figure (see hub-figure-rules.md).
+
 ## Tested size
 
 Measured on 2026-10-24 with `PYTHONPATH=src python3 -m pytest tests/test_hub_writer.py::test_scale_3000 -s -q -p no:cacheprovider`.

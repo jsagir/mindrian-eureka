@@ -304,6 +304,12 @@ def _read_pair(engine: str, file_name: str, item: Any, record_ids: set[str]) -> 
     pair_class = pair.get("pair_class")
     if pair_class is not None and pair_class not in _PAIR_CLASSES:
         raise _damaged(f"{file_name} holds a pair class that the hub does not know")
+    # Phase 2.3.1: the second signal flag of the wording engine, when it is a boolean. The
+    # unusual-pairs engine writes no second signal; a flag in its file is not read.
+    signal = scores.get("second_signal") if engine == ENGINE_WORDING else None
+    confirmed = signal.get("confirmed") if isinstance(signal, dict) else None
+    if not isinstance(confirmed, bool):
+        confirmed = None
     return RunPair(
         engine=engine,
         rank=_integer(pair.get("rank"), f"a rank in {file_name}"),
@@ -320,6 +326,7 @@ def _read_pair(engine: str, file_name: str, item: Any, record_ids: set[str]) -> 
         right_extras=_extras(
             pair.get("right_extras"), f"the right extras of a pair in {file_name}"
         ),
+        confirmed=confirmed,
     )
 
 

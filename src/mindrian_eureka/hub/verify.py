@@ -1,11 +1,13 @@
-"""Validate the hub payload's labels, source links and authored copy.
+"""Validate the hub payload's labels, source links, authored copy, words and figures.
 
-Import rule: the standard library, `.contracts` and `.deck` (the key set of the run
-reading band) only. No numpy.
+Import rule: the standard library, `.contracts`, `.deck` (the key set of the run
+reading band) and `.figures` (the safety check and the size caps of a figure) only. No
+numpy.
 """
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping, Sequence
 from typing import NotRequired, get_origin, get_type_hints
 
@@ -13,6 +15,7 @@ from ..run.contracts import LABEL
 from .contracts import (
     ENGINE_KEYS,
     PATTERN_STATES,
+    READING_KINDS,
     PairSide,
     PatternLine,
     Payload,
@@ -20,17 +23,26 @@ from .contracts import (
     PayloadCounts,
     PayloadDataCheck,
     PayloadEngine,
+    PayloadFigures,
+    PayloadFigureSet,
     PayloadGraph,
     PayloadHood,
+    PayloadLabels,
+    PayloadLegend,
     PayloadPair,
     PayloadPattern,
     PayloadRecord,
+    PayloadTerms,
     has_dash,
     has_internal_name,
 )
 from .deck import DECK
+from .figures import CARD_MAX_BYTES, DETAIL_MAX_BYTES, figure_problems
 
 _BAD_LINK_PREFIXES = ("http:", "https:", "javascript:", "//")
+# A distinctive word: lower-case letters and hyphens, 4 characters or more (plan 02).
+_WORD = re.compile(r"^[a-z][a-z-]{3,}$")
+_TERM_LIMITS = {"records": 5, "pairs": 6}
 
 
 def _typed_dict_keys(shape: object) -> tuple[set[str], set[str]]:
@@ -119,6 +131,82 @@ def _check_pattern(value: object, problems: list[str]) -> None:
             _check_copy(f"{path} value {slot}", slot_value, problems)
 
 
+def _check_terms(
+    value: object, record_ids: set[str], pair_ids: set[str], problems: list[str]
+) -> None:
+    """Check the distinctive words (Phase 2.3.1 plan 02): ids, list lengths and word shape."""
+    terms = _check_keys(value, PayloadTerms, "terms", problems)
+    if terms is None:
+        return
+    known = {"records": record_ids, "pairs": pair_ids}
+    for section, limit in _TERM_LIMITS.items():
+        lists = terms.get(section)
+        if not isinstance(lists, Mapping):
+            problems.append(f"terms {section} is not an object.")
+            continue
+        for item_id, words in lists.items():
+            path = f"terms {section} {item_id}"
+            if item_id not in known[section]:
+                problems.append(f"{path} is not an id of the payload.")
+            if not isinstance(words, list):
+                problems.append(f"{path} is not a list of words.")
+                continue
+            if len(words) > limit:
+                problems.append(f"{path} holds more than {limit} words.")
+            for word in words:
+                if not isinstance(word, str) or not _WORD.match(word):
+                    problems.append(f"{path} holds a word that is not lower-case letters.")
+                    break
+
+
+def _check_figure(path: str, value: object, cap: int, problems: list[str]) -> None:
+    if not isinstance(value, str):
+        problems.append(f"{path} is not a string.")
+        return
+    size = len(value.encode("utf-8"))
+    if size > cap:
+        problems.append(f"{path} is {size} bytes, above the cap of {cap} bytes.")
+        return
+    for sentence in figure_problems(value):
+        problems.append(f"{path}: {sentence}")
+
+
+def _check_figures(value: object, pair_keys: set[str], problems: list[str]) -> None:
+    """Check the figures (Phase 2.3.1 plan 04): key set, safety, size, legend and labels."""
+    figures = _check_keys(value, PayloadFigures, "figures", problems)
+    if figures is None:
+        return
+    sets = figures.get("pairs")
+    if not isinstance(sets, Mapping):
+        problems.append("figures pairs is not an object.")
+    else:
+        missing = sorted(pair_keys - set(sets))
+        extra = sorted(set(sets) - pair_keys)
+        if missing or extra:
+            details: list[str] = []
+            if missing:
+                details.append(f"missing {', '.join(missing)}")
+            if extra:
+                details.append(f"extra {', '.join(extra)}")
+            problems.append(f"figures pairs keys differ from the pair keys: {'; '.join(details)}.")
+        for key in sorted(sets):
+            figure_set = _check_keys(sets[key], PayloadFigureSet, f"figure {key}", problems)
+            if figure_set is None:
+                continue
+            _check_figure(f"figure {key} card", figure_set.get("card"), CARD_MAX_BYTES, problems)
+            _check_figure(
+                f"figure {key} detail", figure_set.get("detail"), DETAIL_MAX_BYTES, problems
+            )
+    for section, shape in (("legend", PayloadLegend), ("labels", PayloadLabels)):
+        strings = _check_keys(figures.get(section), shape, f"figures {section}", problems)
+        if strings is None:
+            continue
+        for name, text in strings.items():
+            if not isinstance(text, str) or not text:
+                problems.append(f"figures {section} {name} is not a string.")
+            _check_copy(f"figures {section} {name}", text, problems)
+
+
 def verify_payload(payload: Payload) -> list[str]:
     """Return deterministic problems with payload shape, labels, links or copy.
 
@@ -193,6 +281,11 @@ def verify_payload(payload: Payload) -> list[str]:
         if pair.get("label") != LABEL:
             problems.append(f"pair {pair_key} does not have the required label.")
         _check_copy(f"pair {pair_key} reading", pair.get("reading"), problems)
+        if pair.get("reading_kind") not in READING_KINDS:
+            kinds = ", ".join(READING_KINDS)
+            problems.append(f"pair {pair_key} reading kind is not one of {kinds}.")
+        if "confirmed" in pair and not isinstance(pair.get("confirmed"), bool):
+            problems.append(f"pair {pair_key} confirmed is not a boolean.")
         for side_name in ("left", "right"):
             side = _check_keys(
                 pair.get(side_name), PairSide, f"pair {pair_key} {side_name}", problems
@@ -224,4 +317,17 @@ def verify_payload(payload: Payload) -> list[str]:
     _check_copy("tool_version", top.get("tool_version"), problems)
     if "pattern" in top:
         _check_pattern(top.get("pattern"), problems)
+    if "terms" in top or "figures" in top:
+        record_ids = {
+            str(record.get("id"))
+            for record in _objects(top.get("records"))
+            if isinstance(record, Mapping)
+        }
+        pairs = [pair for pair in _objects(top.get("pairs")) if isinstance(pair, Mapping)]
+        pair_ids = {str(pair.get("pair_id")) for pair in pairs}
+        pair_keys = {str(pair.get("key")) for pair in pairs}
+        if "terms" in top:
+            _check_terms(top.get("terms"), record_ids, pair_ids, problems)
+        if "figures" in top:
+            _check_figures(top.get("figures"), pair_keys, problems)
     return problems

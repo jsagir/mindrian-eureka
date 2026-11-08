@@ -1,8 +1,9 @@
 """Build deterministic graph model values from hub run data.
 
 Import rule: the standard library, `.contracts`, `.pattern` for the run reading band,
-`..run.output` for the 4-decimal score text helper, and `..seed.contracts` for the seed
-constants only. Do not import numpy.
+`.terms` for the distinctive words, `.figures` for the lead figures, `..run.output` for
+the 4-decimal score text helper, `..run.project` for the three reading sentences, and
+`..seed.contracts` for the seed constants only. Do not import numpy.
 """
 
 from __future__ import annotations
@@ -11,6 +12,7 @@ from collections.abc import Mapping, Sequence
 
 from ..run.contracts import LABEL
 from ..run.output import _score
+from ..run.project import READING_AGREE, READING_MEANING_HIGHER, READING_WORDING_HIGHER
 from ..seed.contracts import PAIR_ID_PATTERN, pair_command
 from .contracts import (
     ENGINE_KEYS,
@@ -32,7 +34,17 @@ from .contracts import (
     RunPair,
     deep_link,
 )
+from .figures import build_figures
 from .pattern import describe_run
+from .terms import build_terms
+
+# The kind of each fixed reading sentence (Phase 2.3.1): the pages pick the guidance line
+# from the kind, never from the sentence text.
+_READING_KIND: Mapping[str, str] = {
+    READING_MEANING_HIGHER: "meaning",
+    READING_WORDING_HIGHER: "wording",
+    READING_AGREE: "agree",
+}
 
 
 def pair_key(pair: RunPair) -> str:
@@ -371,6 +383,7 @@ def build_payload(
             "rank_score_text": score_text(pair.rank_score),
             "percentile": pair.percentile,
             "reading": pair.reading,
+            "reading_kind": _READING_KIND[pair.reading],
             "label": LABEL,
             "weak": weak,
             "weight": 0.0 if weak else weights[pair_key(pair)],
@@ -390,6 +403,9 @@ def build_payload(
             entry["left_extras"] = dict(pair.left_extras)
         if pair.right_extras:
             entry["right_extras"] = dict(pair.right_extras)
+        # Phase 2.3.1 (plan 04): the second signal flag, only when the run holds a boolean.
+        if pair.confirmed is not None:
+            entry["confirmed"] = pair.confirmed
         # Phase 2.3 (D-04, SEED-05): the exact seed command, as text to copy. Only for a
         # run that holds a section map, a pair id of the known form, and cell states for
         # both records. A hostile id never reaches a command that a person could paste.
@@ -478,4 +494,11 @@ def build_payload(
         payload["has_seed_commands"] = True
     # Phase 2.3.1 (D-04): the run reading band, a pure function of the payload above.
     payload["pattern"] = describe_run(payload)
+    # Phase 2.3.1 (D-07, HUB-06): the distinctive words of every record and the words both
+    # records of a pair share (plan 02), then the card and the detail of every pair (plan
+    # 04). Both are pure functions of the run text and the payload above.
+    payload["terms"] = build_terms(
+        run.records, [(pair.pair_id, pair.left_id, pair.right_id) for pair in all_pairs]
+    )
+    payload["figures"] = build_figures(payload)
     return payload

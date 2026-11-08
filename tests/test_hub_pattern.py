@@ -91,7 +91,7 @@ OLD_KEYS = {
     "graph",
 }
 OLD_OPTIONAL_KEYS = {"has_pair_classes", "has_seed_commands"}
-LATER_OPTIONAL_KEYS = {"pattern", "figures"}
+LATER_OPTIONAL_KEYS = {"pattern", "terms", "figures"}
 
 
 def _payload(folder: Path) -> dict[str, Any]:

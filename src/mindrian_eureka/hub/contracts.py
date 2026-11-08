@@ -145,6 +145,8 @@ class RunPair:
             no rule (Phase 2.2, D-02).
         left_extras: The carried cells of the left record; empty without carry columns.
         right_extras: The carried cells of the right record; empty without carry columns.
+        confirmed: The second signal flag of a wording-engine pair (`scores.second_signal
+            .confirmed`), or None when the pair file has no boolean flag (Phase 2.3.1).
     """
 
     engine: str
@@ -160,6 +162,7 @@ class RunPair:
     pair_class: str | None = None
     left_extras: Mapping[str, str] = field(default_factory=dict)
     right_extras: Mapping[str, str] = field(default_factory=dict)
+    confirmed: bool | None = None
 
 
 @dataclass(frozen=True)
@@ -249,6 +252,7 @@ class PayloadPair(TypedDict):
     rank_score_text: str
     percentile: float | None
     reading: str
+    reading_kind: str
     label: str
     weak: bool
     weight: float
@@ -260,6 +264,12 @@ class PayloadPair(TypedDict):
     left_extras: NotRequired[dict[str, str]]
     right_extras: NotRequired[dict[str, str]]
     seed_command: NotRequired[str]
+    confirmed: NotRequired[bool]
+
+
+# The kinds of the three fixed reading sentences of a run (Phase 2.3.1): the pages pick
+# the guidance line from the kind, never from the sentence text.
+READING_KINDS: tuple[str, ...] = ("meaning", "wording", "agree")
 
 
 class PayloadRecord(TypedDict):
@@ -372,6 +382,54 @@ class PayloadPattern(TypedDict):
     lines: list[PatternLine]
 
 
+class PayloadTerms(TypedDict):
+    """The distinctive words of a run (Phase 2.3.1 plan 02): a screening aid, not evidence.
+
+    Attributes:
+        records: The record id to its 5 most distinctive words, best first.
+        pairs: The pair id to the words both records share, at most 6.
+    """
+
+    records: dict[str, list[str]]
+    pairs: dict[str, list[str]]
+
+
+class PayloadFigureSet(TypedDict):
+    """The two pictures of one pair (Phase 2.3.1 plan 04), as SVG text."""
+
+    card: str
+    detail: str
+
+
+class PayloadLegend(TypedDict):
+    """The legend a page prints beside the pictures."""
+
+    summary: str
+    card: str
+    detail: str
+    caption: str
+
+
+class PayloadLabels(TypedDict):
+    """The fixed words drawn inside a detail figure, for the HTML twin of the detail."""
+
+    record_a: str
+    record_b: str
+    distinctive: str
+    shared: str
+    meaning: str
+    wording: str
+    none_shared: str
+
+
+class PayloadFigures(TypedDict):
+    """The figures of a run: one card and one detail for each pair key, plus the words."""
+
+    pairs: dict[str, PayloadFigureSet]
+    legend: PayloadLegend
+    labels: PayloadLabels
+
+
 class Payload(TypedDict):
     """The whole payload of `hub-data.js` (`window.HUB`)."""
 
@@ -391,6 +449,8 @@ class Payload(TypedDict):
     has_pair_classes: NotRequired[bool]
     has_seed_commands: NotRequired[bool]
     pattern: NotRequired[PayloadPattern]
+    terms: NotRequired[PayloadTerms]
+    figures: NotRequired[PayloadFigures]
 
 
 # --- Functions --------------------------------------------------------------
