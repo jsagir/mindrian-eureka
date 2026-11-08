@@ -277,3 +277,22 @@ Plans:
 - [x] 05-09: README refresh close-out (wave 5)
 
 **Scope notes**: In-process on the user's own computer only. No sockets, no loopback HTTP client, no NIM and no tunnel in this phase; local NIM stays a later option the owner wants to keep. No ontology work (OpenAlex Topics is parked as an optional later layer). Never mix vectors from two encoders in one store. The partner room store holds 2,130 vectors of 384 dimensions made by `mdbr-leaf-ir`; a 2048-dimension profile needs its own table. Keep stable for the MindrianOS plugin: the `eureka-mcp` script, the tool names, the `eureka.doctor.v1` shape, and a `uv.lock` in sync (the plugin starts with `--locked`). A new device or backend setting needs a plugin allowlist entry, which is a hand-off to the plugin session.
+
+### Phase 6: Job store hardening for the MindrianOS plugin
+
+**Goal:** The Eureka job store behaves the way the MindrianOS plugin (phases 383-388) assumes it does: one owner per job record (an owner lock so two hosts never both drive one job), a status read that writes nothing (today recover_interrupted can mutate state on a read path), a terminal-state guard (a done, failed or cancelled job never leaves that state), a cooperative cancel flag the worker checks between steps (eureka_capability_job_cancel today is a request the worker can miss), and a child process lifetime bound to its job (no engine child outlives the job that started it). Each item lands as a failing test against the current store first. Source: the 2026-11-08 cross-session review with the plugin session; details in 06-CONTEXT.md when planned.
+**Success Criteria** (what must be TRUE):
+
+  1. Two hosts opening the same job record: the second gets a typed owner_locked result and changes nothing.
+  2. A status read on an interrupted job returns its recorded state and mutates no file; recovery runs only on an explicit recover call.
+  3. A terminal job (done, failed, cancelled) refuses every state change with a typed terminal_state result.
+  4. A cancel sets a flag the worker observes between steps; the job ends as cancelled within one step, and its result says so.
+  5. No engine child process survives its job: the job record names the child, and job end (any state) ends the child; a test proves it with a sleeping fake engine.
+  6. The plugin's own tests for these behaviours (named by the plugin session) pass against the hardened store; README refreshed.
+**Requirements**: TBD
+**Depends on:** Phase 5
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run $gsd-plan-phase 6 to break down)
