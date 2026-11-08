@@ -178,7 +178,7 @@ Look contract deviations. The contract is `tests/hub_look_contract.py`; the stat
 | LD-20 | Focus ring cobalt, offset 4 px | Ink on paper, offset 3 px | Book Focus row; the exact string is pinned by the css test. | 03 |
 | LD-21 | Row padding 19 px and 20 px | 24 px | Book spacing step. | 06 |
 | LD-22 | The id in a row is soft code | A cobalt source link | Every pair keeps a source link (D-03); cobalt links (S22). | 06 |
-| LD-23 | The row action is a cobalt arrow link | An outlined button named Open this pair (the prototype of 2026-11-08 uses it) | 44 px target with a clear name. | 06 |
+| LD-23 | The row action is a cobalt arrow link | An outlined button named Open this pair and a cobalt text button named Read this pair (the prototype of 2026-11-08 shows one outlined button and one text link in each row; plan 06 kept an ink Read button because of the plan 03 hover pin; plan 11 restyled it and moved the pin to the unlock button) | 44 px target with a clear name. | 06, 11 |
 | LD-24 | Primary button ink to cobalt on hover | The same, while the book primary action is cobalt fill | Owner ruling D-01 over the book button. | 03 |
 | LD-25 | The target's own catalogue page has a dark ground | Catalogue and panel use the paper look; the dark theme gives the dark one | Owner ruling O-05; the catalogue page is not the named target. | 07 |
 | LD-26 | Header 76 px | 76 px (the Phase 2.1 spec said 64 px) | Owner ruling O-07; the owner chose the target. | 03 |

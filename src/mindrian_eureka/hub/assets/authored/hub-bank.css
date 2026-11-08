@@ -111,7 +111,9 @@
 .hub-bank-shared, .hub-bank-use { color: var(--mos-soft); }
 .hub-bank-use strong { color: var(--mos-ink); }
 .hub-bank-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--hub-space-3); }
-/* Open this pair: an outlined button to the page (LD-23); Read this pair: the quick read. */
+/* Open this pair: an outlined button to the page (LD-23). Read this pair: a cobalt text button,
+   the prototype's text link (R10, LD-23, LD-04); the 44 px block size keeps the target floor
+   (LD-09). */
 .hub-bank-open-btn {
   display: inline-flex;
   align-items: center;
@@ -125,7 +127,21 @@
   text-decoration: none;
 }
 .hub-bank-open-btn:hover { background: var(--mos-ink); border-color: var(--mos-ink); color: var(--mos-paper); }
-.hub-bank-read { min-block-size: 44px; min-inline-size: 44px; font-size: 16px; font-weight: 600; }
+.hub-bank-read {
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  padding-inline: 0;
+  border: 0;
+  background: transparent;
+  color: var(--mos-blue);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+/* hub.css gives .hub-button:hover a cobalt fill; this later sheet of equal specificity wins. */
+.hub-bank-read:hover { background: transparent; border-color: transparent; color: var(--mos-ink); }
 /* The picture: the card figure of plan 04 with a caption that names the colours in words.
    Under 1024 px it is a bounded object of 420 px at most, not the full row width: a full-width
    card made the row about 1100 px tall at 768 px (visual check of 2026-11-08). */
