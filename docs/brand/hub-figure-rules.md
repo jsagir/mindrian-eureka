@@ -131,6 +131,23 @@ The caps are set by measurement, each the largest measured value rounded up to t
 
 Kept from the target's hand-built SVG: the paper ground, the 6 px ink frame, the vertical ink rule at the right, flat cobalt, red and yellow blocks. Changed: the thin fan lines of the target are no longer kept (plan 04 called them decoration; plan 10 retired them, because they had no readable meaning and their bytes pay for the words); the card and the detail carry text from the run; there is no photograph and no image generator; the data shapes (bars, squares, blocks) carry real values with fixed positions.
 
+## Storage
+
+Decision of plan 10 (2026-11-08): the figures stay inline in `hub-data.js`, inside the payload, under `figures.pairs[key].card` and `.detail`. No figure file is written next to `hub.html`.
+
+Four reasons, all proven by reading the code and the tests:
+
+1. The hub opens from `file://` and its content security policy says `connect-src 'none'`, so the page cannot fetch a figure file at run time.
+2. An `img` element cannot follow the `data-theme` toggle. Plan 05 tests that the figure shapes follow the theme through the class rules of `hub.css`, which needs the SVG inline in the document.
+3. A locked hub must hold no svg text, no word and no title in clear (`test_locked_build_holds_no_word_and_no_figure_in_clear`, which now also checks the shared words and the class `f-label`). Plain figure files next to `hub.html` would leak the words of a locked hub.
+4. Plans 03, 05, 06, 07 and 08 read `HubApp.data.figures.pairs[key]` synchronously through `HubApp.figure`. A separate store needs script shards with per-shard envelopes and asynchronous consumers.
+
+The budget. The escaped cost of one pair key in `hub-data.js` (both figures after JSON and script escaping) is `PAYLOAD_COST_PER_KEY_MAX` = 16896 bytes, the two caps 4096 and 7168 times 1.5. Measured on 2026-11-08 by `test_scale_cost_is_measured` on the 2000-record run with 200 pair keys: 12669 bytes a key (`hub-data.js` 4566857 bytes with figures and terms, 2033013 without; figures 1795864 bytes raw). `test_scale_3000` bounds `hub-data.js` of the 3000-record run (400 pair keys) at 12000000 bytes; measured 9993906 bytes (9946779 with the plan 04 cards; 5021056 before the words and the figures). The public fixture (36 records, 263 pair keys) gives a `hub-data.js` of 3106070 bytes (3122578 with the plan 04 cards, 393655 before the words and the figures).
+
+The load-time probe. `tests/hub_browser/checks/load-timing.js` reads the navigation timing entry of the 2000-record hub in Chromium and returns `domContentLoadedEventEnd`, `loadEventEnd`, `duration`, the ready state and the count of rendered bank rows. `test_scale_hub_load_time_is_measured` prints the line and bounds `loadEventEnd` at 5000 ms, a generous first bound that is ASSUMED until measured on the owner's machine. Plan 09 copies the printed JSON of this test and of `test_scale_3000` into the Measurements part of the Phase 2.3.1 look record.
+
+The alternative, recorded and not built: script shards under `hub-figures/`, one shard for a group of pair keys, loaded by a `script` element on demand, each shard an encrypted envelope in a locked hub, with asynchronous consumers in every view. Trigger: a follow-up plan opens after plan 08 if the measured `loadEventEnd` of the 2000-record hub passes 2000 ms in Chromium on the owner's machine, or if the owner says the page is slow.
+
 ## Book citations
 
 - `segments/experience/visual-language/entries/2026-10-20/GUIDE.md`: choose the encoding first; position is not a numerical score; a connector is not proof; the complete still. Applied: the encoding table above, fixed marker positions, the dashed link with the word Proposed in the HTML, no motion.
