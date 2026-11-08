@@ -34,6 +34,9 @@ FIGURE_ATTRS = (
     "xmlns", "viewBox", "role", "class", "x", "y", "width", "height", "x1", "y1", "x2", "y2",
     "cx", "cy", "r", "fill", "stroke", "stroke-width", "stroke-dasharray", "opacity",
     "aria-hidden",
+    # Phase 2.3.1 plan 06: every generated text carries font-size (plan 04), so the page
+    # accepts it; tests/test_hub_figure_lists.py pins the page list against the generator.
+    "font-size",
 )
 NS = "http://www.w3.org/2000/svg"
 GOOD_FIGURE = (
@@ -43,7 +46,8 @@ GOOD_FIGURE = (
     'stroke="#111111" stroke-width="6" class="f-frame"/><line x1="226" y1="185" x2="394" '
     'y2="185" stroke="#111111" stroke-width="8" stroke-dasharray="28 32" opacity="0.55" '
     'class="f-link"/><circle cx="700" cy="467" r="40" fill="#1F3FBF" aria-hidden="true" '
-    'class="f-blue"/><text x="70" y="900" fill="#111111" class="f-mono">word</text></svg>'
+    'class="f-blue"/><text x="70" y="900" fill="#111111" font-size="28" class="f-mono">word'
+    '</text></svg>'
 )
 BAD_FIGURES = [
     f'<svg xmlns="{NS}"><script>window.__pwned=1</script></svg>',

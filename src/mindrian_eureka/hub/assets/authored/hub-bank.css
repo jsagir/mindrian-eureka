@@ -126,8 +126,10 @@
 }
 .hub-bank-open-btn:hover { background: var(--mos-ink); border-color: var(--mos-ink); color: var(--mos-paper); }
 .hub-bank-read { min-block-size: 44px; min-inline-size: 44px; font-size: 16px; font-weight: 600; }
-/* The picture: the card figure of plan 04 with a caption that names the colours in words. */
-.hub-bank-figure { margin: 0; }
+/* The picture: the card figure of plan 04 with a caption that names the colours in words.
+   Under 1024 px it is a bounded object of 420 px at most, not the full row width: a full-width
+   card made the row about 1100 px tall at 768 px (visual check of 2026-11-08). */
+.hub-bank-figure { margin: 0; max-inline-size: 420px; }
 .hub-bank-figure .hub-figure { display: block; inline-size: 100%; block-size: auto; }
 .hub-bank-figure figcaption { margin-block-start: var(--hub-space-2); font-size: 13px; line-height: 1.4; color: var(--mos-soft); }
 .hub-row--weak { background: var(--mos-quiet); color: var(--mos-soft); padding-inline: var(--hub-space-4); }
