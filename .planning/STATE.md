@@ -5,7 +5,7 @@ milestone_name: milestone
 status: executing
 stopped_at: Phase 5 verified human_needed; quick task 261108-37h closed warnings W1 to W4; 05-08 open at the owner-run GPU spike
 last_updated: "2026-11-08T08:36:37.465Z"
-last_activity: 2026-11-08 -- Phase 02.3.1 execution started
+last_activity: 2026-11-08 -- Phase 02.3.1 wave 1 closed (01, 02 done; full suite 2011 passed, 8 skipped); wave 2 starting
 progress:
   total_phases: 10
   completed_phases: 8
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-10-23)
 ## Current Position
 
 Phase: 02.3.1 (Hub look matches the live JHTV site) — EXECUTING
-Plan: 1 of 9
+Plan: 3 of 9
 Status: Executing Phase 02.3.1
 Last activity: 2026-11-08 -- Phase 02.3.1 execution started
 
