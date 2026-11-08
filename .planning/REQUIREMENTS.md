@@ -37,10 +37,16 @@
 ### Hub (HUB)
 
 - [ ] **HUB-01**: The hub is generated from `eureka run` output (opportunity bank, connection graph and catalogue views, with search and filter on the catalogue). It makes no network call and no data leaves the machine.
-- [x] **HUB-02**: Every design choice (colour, type, layout, motion, Theo face) is ruled by the mos-brand book through its CLI (`mos-brand context`, `mos-brand review`), with the ruling cited in a design-decisions file.
+- [ ] **HUB-02**: Every design choice (colour, type, layout, motion, Theo face) is ruled by the mos-brand book through its CLI (`mos-brand context`, `mos-brand review`), with the ruling cited in a design-decisions file. Re-opened 2026-11-08 by the owner: the Phase 2.1 look was NOT APPROVED; from this date the owner rulings of the redesign session overrule the book where they conflict (02.3.1-OWNER-DECISIONS.md, R-01).
 - [ ] **HUB-03**: Every claim and opportunity on the hub shows its "candidate, not verified" status and its source link.
 - [ ] **HUB-04**: The hub can be password-gated by an option, and the page reads from a local file only (enclave-safe).
 - [ ] **HUB-05**: The existing JHTV hub (opportunity bank, idea graph, October leads page; reference files live in the partner room's solution-design folder) is reproduced in the new format from a public-data example, not from private room data.
+- [ ] **HUB-06**: Every picture in the hub is an SVG that the hub's own code generates from the run data and from the text of the records. Same run, same bytes. No random value, no clock, no network, no raster, and no image generator is needed. Each pair has a small card picture (no text) and a larger detail picture (the titles, the five most distinctive words of each record, the two scores, and the words both records share, or a sentence that none is shared). The distinctive words come from a fixed rule (tf-idf, standard library only) and are a screening aid, not evidence. Each figure has `role="img"`, a plain-words title and description with the real numbers, no id and no external reference; a real-text HTML version of the detail carries the same facts, is read by screen readers, and is shown instead of the drawing where the drawing text would fall under 13 px. A figure never means that a pair is new, wanted or valuable. A locked hub holds the figures and the word lists only inside its encrypted data.
+- [ ] **HUB-07**: The hub page opens with a black band that reads the whole run in plain words from sourced numbers only (counts, neighborhoods, cut-offs, limits). It adds no threshold figure, makes no claim of novelty or value, says in words when the run shows no grouping to read, and is absent from a locked hub until unlock.
+- [ ] **HUB-08**: The hub page looks like the live target the owner named: same colour roles, type scale, sticky header with section links, eyebrow and display heading with a rule, counts strip, black band and finding rows, at 320, 390, 768, 1280 and 1600 px. A look contract proves it against the stored target stylesheet; every difference is a recorded deviation. The offline, accessibility and honesty rules stay.
+- [ ] **HUB-09**: The READMEs (README.md, src/README.md, examples/public-example/README.md) are refreshed for the new hub, and every claim and number is checked against the code or a run (owner rule 2026-11-07).
+- [ ] **HUB-10**: The hub has a light and a dark theme. Both are sets of CSS custom properties; the page follows the system setting until a person presses the header button (`aria-pressed`, a fixed accessible name, at least 44 px); the choice is kept in `localStorage` inside try and catch and the page works when storage is blocked; there is no flash on load (an external head script sets the theme before the first paint, and the Content-Security-Policy does not change); the figures, the lockup and the Theo face follow the theme. The dark values are a proposal because the book is silent on a dark page; a test measures the contrast of every text and graphic pair in both themes.
+- [ ] **HUB-11**: The hub is a small site. A pair opens at `#/pair/<engine>/<rank>` and a record at `#/record/<id>`; the catalogue and the connection graph have routes too; the old routes keep working. Every page has a breadcrumb, a Back knob (it runs `history.back()` when the previous page is the parent, otherwise it follows its link), Previous and Next knobs with a position such as "Pair 3 of 63", and no dead link at either end. ArrowLeft and ArrowRight move between pages, Escape closes the reading panel or goes back. On every route change the document title is set and focus moves to the page heading. An unknown route shows the existing notice and keeps the page. Every row of the bank is clickable (a stretched title link and an Open button), and the catalogue, the graph list and the reading panel link to the pages. Targets are at least 44 px.
 
 ### Public example (EXM)
 
@@ -100,10 +106,16 @@
 | HOST-01 | Phase 3 - Host Integration and Replay Rebuild | Eureka side complete; plugin wiring open |
 | HOST-02 | Phase 3 - Host Integration and Replay Rebuild | Eureka side complete (provenance gap recorded); room mark open |
 | HUB-01 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
-| HUB-02 | Phase 2.1 - Opportunity Hub in the mos-brand format | Complete |
+| HUB-02 | Phase 2.1 - Opportunity Hub in the mos-brand format; re-opened in Phase 2.3.1 | Pending (re-opened) |
 | HUB-03 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
 | HUB-04 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
 | HUB-05 | Phase 2.1 - Opportunity Hub in the mos-brand format | Pending |
+| HUB-06 | Phase 2.3.1 - Hub look matches the live JHTV site | Pending |
+| HUB-07 | Phase 2.3.1 - Hub look matches the live JHTV site | Pending |
+| HUB-08 | Phase 2.3.1 - Hub look matches the live JHTV site | Pending |
+| HUB-09 | Phase 2.3.1 - Hub look matches the live JHTV site | Pending |
+| HUB-10 | Phase 2.3.1 - Hub look matches the live JHTV site | Pending |
+| HUB-11 | Phase 2.3.1 - Hub look matches the live JHTV site | Pending |
 | EXM-01 | Phase 4 - Public Example and Reproduction Guide | Complete |
 | EXM-02 | Phase 4 - Public Example and Reproduction Guide | Complete (owner check: non-author run) |
 | ENC-01 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Complete |
@@ -120,8 +132,8 @@
 
 **Coverage:**
 
-- v1 requirements: 32 total
-- Mapped to phases: 32 (Phase 1: 5, Phase 2: 7, Phase 2.1: 5, Phase 3: 2, Phase 4: 2, Phase 5: 11)
+- v1 requirements: 38 total
+- Mapped to phases: 38 (Phase 1: 5, Phase 2: 7, Phase 2.1: 5, Phase 2.3.1: 6, Phase 3: 2, Phase 4: 2, Phase 5: 11)
 - Unmapped: 0
 
 ---
