@@ -64,7 +64,8 @@ def test_verifier_reports_missing_payload_key(tmp_path: Path) -> None:
 def test_pattern_with_unknown_deck_key_is_a_problem(tmp_path: Path) -> None:
     payload = _payload(tmp_path)
     payload["pattern"]["lines"][0]["key"] = "G99.nothing"
-    assert any("pattern" in problem and "G99.nothing" in problem for problem in verify_payload(payload))
+    problems = verify_payload(payload)
+    assert any("pattern" in problem and "G99.nothing" in problem for problem in problems)
 
 
 def test_pattern_value_with_a_dash_is_a_problem(tmp_path: Path) -> None:

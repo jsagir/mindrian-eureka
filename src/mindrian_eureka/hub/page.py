@@ -31,6 +31,7 @@ CONTENT_SECURITY_POLICY: str | None = (
 STYLE_ORDER = (
     "tokens.css",
     "hub.css",
+    "hub-band.css",
     "hub-bank.css",
     "hub-catalogue.css",
     "hub-panel.css",
@@ -50,6 +51,9 @@ STYLE_ORDER = (
 # deck keys: Gr03.unusual_pairs Gr03.wording_and_meaning P06.source
 # deck keys: B15.all B15.cross B15.licensed_licensed B15.open_open
 # deck keys: P10.cross P10.licensed_licensed P10.open_open
+# The run reading band (Phase 2.3.1, D-04) fills the keys that describe_run emits.
+# deck keys: G16 G17.label G17.link G17.read G17.both G17.spread G17.hoods G17.single
+# deck keys: G17.bridges G17.weak G17.copies G17.classes G17.top_k G17.none G17.hidden Gr09
 
 SCRIPT_ORDER = (
     "hub-copy.js",
@@ -342,6 +346,35 @@ def _counts(payload: Payload) -> str:
     )
 
 
+def _band(payload: Payload) -> str:
+    """Return the run reading band (Phase 2.3.1, D-04), or an empty string without data.
+
+    The band sits on the ink ground (book `.mos-ground-ink`). Its sentences come from the
+    deck keys and the values that `describe_run` wrote into `payload["pattern"]`. The last
+    line, G16, is the limit sentence and gets its own paragraph.
+    """
+    pattern = payload.get("pattern")
+    if pattern is None:
+        return ""
+    sentences = [
+        _copy(line["key"], **line["values"]) for line in pattern["lines"] if line["key"] != "G16"
+    ]
+    label = _el("span", "", {"class": "hub-band-mark", "aria-hidden": "true"}) + _copy("G17.label")
+    content = _el("p", label, {"id": "hub-band-label", "class": "hub-band-label"})
+    content += _el("p", " ".join(sentences), {"class": "hub-band-reading"})
+    content += _el("p", _copy("G16"), {"class": "hub-band-limit mos-secondary"})
+    content += _el("a", _copy("G17.link"), {"class": "hub-band-link", "href": "#hub-data-check"})
+    return _el(
+        "section",
+        content,
+        {
+            "id": "hub-band",
+            "class": "hub-band mos-ground-ink",
+            "aria-labelledby": "hub-band-label",
+        },
+    )
+
+
 def _nav() -> str:
     return "".join(
         _el(
@@ -446,6 +479,7 @@ def _locked_page(files: Collection[str], csp: str | None) -> bytes:
         _el("div", title, {"id": "hub-title-band"}),
         _el("div", locked, {"id": "hub-locked", "class": "hub-panel"}),
         _el("div", attrs={"id": "hub-counts", "hidden": True}),
+        _el("section", attrs={"id": "hub-band", "hidden": True}),
         _el("nav", attrs={"id": "hub-nav", "aria-label": DECK["G10"], "hidden": True}),
         _el("main", "".join(views), {"id": "hub-results", "hidden": True}),
         _el(
@@ -512,6 +546,7 @@ def render_page(
         _el("header", header, {"id": "hub-header"}),
         _el("div", title_band, {"id": "hub-title-band"}),
         _el("div", _counts(payload), {"id": "hub-counts"}),
+        _band(payload),
         _el("nav", _nav(), {"id": "hub-nav", "aria-label": DECK["G10"]}),
         _el("main", _views(payload), {"id": "hub-results"}),
         _el(

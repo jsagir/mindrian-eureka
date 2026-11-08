@@ -1,0 +1,54 @@
+/* The run reading band (Phase 2.3.1, D-01, D-04). Owner ruling D-01: the black band of the
+   target, on the book ink ground (tokens.css .mos-ground-ink: ink fill, paper text, paper-dim
+   secondary text, yellow focus ring). The yellow square is a marker, never text. The target
+   pads 16 px and 18 px; 18 px is not a book spacing step, so the band uses the steps 16 and
+   24 (look contract LD-18). The target label is 11 px; 13 px keeps the floor (LD-04).
+   Tokens only, no colour literal, so the dark theme of plan 05 can override them. */
+.hub-band {
+  display: grid;
+  gap: var(--hub-space-3);
+  padding: var(--hub-space-4) var(--hub-space-5);
+  margin-block: var(--hub-space-5) var(--hub-space-2);
+}
+.hub-band[hidden] { display: none; }
+.hub-band p { margin: 0; max-inline-size: none; }
+.hub-band-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mos-font-code);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.hub-band-mark {
+  display: inline-block;
+  flex: none;
+  inline-size: 10px;
+  block-size: 10px;
+  background: var(--mos-yellow);
+}
+.hub-band-reading { font-size: 14px; line-height: 1.5; }
+.hub-band-limit { font-size: 13px; line-height: 1.5; }
+.hub-band-link {
+  color: var(--mos-paper);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+@media (min-width: 768px) {
+  .hub-band {
+    grid-template-columns: 150px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--hub-space-5);
+  }
+  .hub-band-label { grid-column: 1; grid-row: 1 / span 2; }
+  .hub-band-reading { grid-column: 2; }
+  .hub-band-limit { grid-column: 2; }
+  .hub-band-link { grid-column: 3; grid-row: 1 / span 2; }
+}
+@media (min-width: 1024px) {
+  html[data-panel-open] #hub-band { margin-inline-end: calc(400px + var(--hub-space-5)); }
+}

@@ -181,7 +181,11 @@ def test_focus_order(tmp_path: Path) -> None:
     assert result["1"]["focus"]["tag"] == "A"
     for index in range(8):
         assert result[str(index)]["outline"] == "3px"
-    assert [result[str(index)]["focus"]["href"] for index in (1, 2, 3)] == [
+    # Phase 2.3.1 plan 01: the run reading band sits between the counts and the nav, so its
+    # link is the first stop after the skip link; the three view links follow it.
+    assert result["1"]["focus"]["class"] == "hub-band-link"
+    assert result["1"]["focus"]["href"] == "#hub-data-check"
+    assert [result[str(index)]["focus"]["href"] for index in (2, 3, 4)] == [
         "#bank", "#graph", "#catalogue"
     ]
 

@@ -5,6 +5,12 @@
   const listeners = new Map();
   const names = ["bank", "graph", "catalogue"];
   const headings = { bank: "B01", graph: "Gr01", catalogue: "C01" };
+  // The run reading band (Phase 2.3.1, D-04) fills the keys that payload.pattern carries.
+  // deck keys: G16 G17.label G17.link G17.read G17.both G17.spread G17.hoods G17.single
+  // deck keys: G17.bridges G17.weak G17.copies G17.classes G17.top_k G17.none G17.hidden Gr09
+  // In-page anchors of the shell. Record ids that start with "hub-" use the "#record:" form
+  // (deepLink), so no record collides with these names.
+  const anchors = ["hub-results", "hub-data-check", "hub-footer", "hub-band"];
   const attrsAllowed = new Set([
     "id", "class", "type", "href", "src", "alt", "title", "role", "tabindex",
     "hidden", "disabled", "value", "name", "for", "placeholder", "scope",
@@ -205,6 +211,7 @@
           app.el("strong", {}, value), app.el("span", {}, app.fmt("G11." + key))
         ]));
       });
+      band(payload.pattern);
       const nav = document.getElementById("hub-nav");
       nav.replaceChildren();
       names.forEach(function (name) {
@@ -256,6 +263,28 @@
     document.getElementById("hub-face").setAttribute("src", "assets/faces/theo-" + state + ".svg");
   }
   function fallback() { document.documentElement.classList.remove("js"); }
+  function band(pattern) {
+    // Render the run reading band from the same deck strings as the server markup. Without
+    // a pattern the band stays empty and hidden (a locked page before unlock has none).
+    const section = document.getElementById("hub-band");
+    if (!section) return;
+    section.replaceChildren();
+    if (!pattern || !Array.isArray(pattern.lines) || !pattern.lines.length) {
+      section.hidden = true;
+      return;
+    }
+    const lines = pattern.lines.slice(0, -1);
+    const reading = lines.map(function (line) { return app.fmt(line.key, line.values); }).join(" ");
+    section.appendChild(app.el("p", { id: "hub-band-label", class: "hub-band-label" }, [
+      app.el("span", { class: "hub-band-mark", "aria-hidden": "true" }), app.fmt("G17.label")
+    ]));
+    section.appendChild(app.el("p", { class: "hub-band-reading" }, reading));
+    section.appendChild(app.el("p", { class: "hub-band-limit mos-secondary" }, app.fmt("G16")));
+    section.appendChild(app.el("a", { class: "hub-band-link", href: "#hub-data-check" }, app.fmt("G17.link")));
+    section.className = "hub-band mos-ground-ink";
+    section.setAttribute("aria-labelledby", "hub-band-label");
+    section.hidden = false;
+  }
   function showError(heading, body) {
     fallback();
     face("limit");
@@ -267,6 +296,10 @@
     if (!started) return;
     const raw = window.location.hash.slice(1);
     if (!raw || names.includes(raw)) { app.go(raw || "bank", { focus: focus, route: true }); return; }
+    // An in-page anchor is not a record: the browser scrolls to it by itself, and no E05
+    // notice is raised. Record ids that start with "hub-" use the "#record:" form, so no
+    // record collides with these four names.
+    if (anchors.includes(raw)) return;
     let id;
     try { id = decodeURIComponent(raw.startsWith("record:") ? raw.slice(7) : raw); }
     catch (_) { app.notice(app.fmt("E05", { ID: raw })); return; }
