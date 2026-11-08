@@ -202,14 +202,11 @@ def test_script_and_css_static_facts() -> None:
     assert "hub-bank-labels hub-bank-seed" not in script
     assert "hub-bank-seed hub-bank-labels" not in script
     css = BANK_CSS.read_text(encoding="utf-8")
-    assert re.search(r"\.hub-bank-seed\s*\{", css)
-    full_width = [
-        line
-        for line in css.splitlines()
-        if ".hub-bank-records" in line and "grid-column: 1 / -1" in line
-    ]
-    assert len(full_width) == 1
-    assert ".hub-bank-seed" in full_width[0]
+    # Phase 2.3.1 plan 06: the row is a named-area grid, so the seed row has a rule of its
+    # own that spans every column. The browser test below proves the geometry.
+    seed_rules = re.findall(r"^\.hub-bank-seed\s*\{([^}]*)\}", css, re.MULTILINE)
+    assert len(seed_rules) == 1
+    assert "grid-column: 1 / -1" in seed_rules[0]
     assert not re.search(r"#[0-9a-fA-F]{3,6}\b", css)
 
 

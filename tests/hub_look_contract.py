@@ -483,6 +483,183 @@ ROLES: tuple[Role, ...] = (
         "LD-04, LD-07, LD-10",
         "03",
     ),
+    # Finding rows (plan 06, owner decision D-01 and the prototype of 2026-11-08). The target
+    # values are the `.engine-*` rules of the target stylesheet; the hub values are the
+    # `.hub-bank-*` rules of hub-bank.css by width key.
+    Role(
+        "R01",
+        "row grid",
+        (
+            (
+                ".engine-row",
+                "grid-template-columns",
+                "38px minmax(155px,.82fr) 108px minmax(300px,1.7fr)",
+            ),
+        ),
+        (
+            (
+                ".hub-bank-row",
+                "grid-template-columns",
+                {
+                    "base": "36px minmax(0, 1fr)",
+                    "768": "44px minmax(0, 1fr) 130px",
+                    "1024": "44px minmax(0, 1.15fr) 150px minmax(0, 1.2fr) 300px",
+                },
+            ),
+        ),
+        "LD-05, LD-17, LD-27",
+        "06",
+    ),
+    Role(
+        "R02",
+        "row spacing",
+        (
+            (".engine-row", "gap", "16px"),
+            (".engine-row", "padding", "19px 4px 20px 0"),
+        ),
+        (
+            (".hub-bank-row", "column-gap", _all("var(--hub-space-5)")),
+            (".hub-bank-row", "padding-block", _all("var(--hub-space-5)")),
+        ),
+        "LD-21",
+        "06",
+    ),
+    Role(
+        "R03",
+        "row rule",
+        ((".engine-row", "border-bottom", "1px solid var(--line)"),),
+        ((".hub-bank-row", "border-block-end", _all("1px solid var(--hub-line)")),),
+        "LD-01",
+        "06",
+    ),
+    Role(
+        "R04",
+        "row index",
+        (
+            (".engine-index", "color", "var(--red)"),
+            (".engine-index", "font-size", "12px"),
+            (".engine-index", "padding-top", "3px"),
+        ),
+        (
+            (".hub-bank-rank-n", "font-family", _all("var(--mos-font-code)")),
+            (".hub-bank-rank-n", "font-size", _all("13px")),
+            (".hub-bank-rank-n", "font-weight", _all("600")),
+            (".hub-bank-rank-n", "color", _all("var(--mos-red)")),
+            (".hub-bank-rank-n", "padding-block-start", _all("3px")),
+        ),
+        "LD-04, LD-05",
+        "06",
+    ),
+    Role(
+        "R05",
+        "row title",
+        (
+            (".engine-name h3", "font", "700 18px/1.15 var(--display)"),
+            (".engine-name h3", "letter-spacing", "-.02em"),
+        ),
+        (
+            (".hub-bank-pair", "font-size", _from_768("20px", "22px")),
+            (".hub-bank-pair", "line-height", _all("1.25")),
+            (".hub-bank-pair", "font-weight", _all("700")),
+            (".hub-bank-pair", "letter-spacing", _all("-0.02em")),
+        ),
+        "LD-29",
+        "06",
+    ),
+    Role(
+        "R06",
+        "row id",
+        (
+            (".engine-name code", "font-size", "12px"),
+            (".engine-name code", "color", "var(--soft)"),
+        ),
+        (
+            (".hub-bank-ids a", "font-family", _all("var(--mos-font-code)")),
+            (".hub-bank-ids a", "font-size", _all("13px")),
+            (".hub-bank-ids a", "color", _all("var(--mos-blue)")),
+            (".hub-bank-ids a", "text-decoration", _all("underline")),
+        ),
+        "LD-04, LD-22",
+        "06",
+    ),
+    Role(
+        "R07",
+        "row numeral",
+        (
+            (".engine-count strong", "font", "700 27px/1 var(--display)"),
+            (".engine-count strong", "letter-spacing", "-.04em"),
+            (".engine-count", "color", "var(--blue)"),
+        ),
+        (
+            (".hub-bank-numeral", "font-size", _from_768("28px", "40px")),
+            (".hub-bank-numeral", "font-weight", _all("700")),
+            (".hub-bank-numeral", "line-height", _all("1")),
+            (".hub-bank-numeral", "letter-spacing", _all("-0.04em")),
+            (".hub-bank-numeral--meaning", "color", _all("var(--mos-blue)")),
+            (".hub-bank-numeral--wording", "color", _all("var(--mos-red)")),
+        ),
+        "LD-30, LD-33",
+        "06",
+    ),
+    Role(
+        "R08",
+        "row caption",
+        (
+            (".engine-count span", "font-size", "12px"),
+            (".engine-count span", "color", "var(--soft)"),
+        ),
+        (
+            (".hub-bank-caption", "font-family", _all("var(--mos-font-code)")),
+            (".hub-bank-caption", "font-size", _all("13px")),
+            (".hub-bank-caption", "color", _all("var(--mos-soft)")),
+            (".hub-bank-caption", "display", _all("block")),
+        ),
+        "LD-04, LD-17",
+        "06",
+    ),
+    Role(
+        "R09",
+        "row description",
+        (
+            (".engine-description p", "font-size", "13px"),
+            (".engine-description p", "line-height", "1.48"),
+            (".engine-description p", "color", "#393731"),
+        ),
+        (
+            (".hub-bank-reading p", "font-size", _all("16px")),
+            (".hub-bank-reading p", "line-height", _all("1.5")),
+        ),
+        "LD-06, LD-31",
+        "06",
+    ),
+    Role(
+        "R10",
+        "row actions",
+        (
+            (".engine-description a", "font-size", "12px"),
+            (".engine-description a", "font-weight", "700"),
+        ),
+        (
+            (".hub-bank-read", "min-block-size", _all("44px")),
+            (".hub-bank-read", "font-size", _all("16px")),
+            (".hub-bank-read", "font-weight", _all("600")),
+            (".hub-bank-open-btn", "border", _all("1px solid var(--mos-ink)")),
+            (".hub-bank-open-btn", "min-block-size", _all("44px")),
+            (".hub-bank-open-btn", "font-size", _all("16px")),
+            (".hub-bank-open-btn", "font-weight", _all("600")),
+            (".hub-bank-open-btn", "background", _all("transparent")),
+        ),
+        "LD-23, LD-24, LD-09",
+        "06",
+    ),
+    Role(
+        "R11",
+        "list rule",
+        ((".engine-list", "border-top", "1px solid var(--line)"),),
+        ((".hub-bank-list", "border-block-start", _all("1px solid var(--hub-line)")),),
+        "LD-01",
+        "06",
+    ),
 )
 
 WIDTH_KEYS: tuple[str, ...] = ("base", "768", "1024")
