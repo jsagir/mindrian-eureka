@@ -122,6 +122,10 @@ async function main() {
       javaScriptEnabled: scenario.javaScript !== false,
       reducedMotion: scenario.reducedMotion ? "reduce" : "no-preference",
       forcedColors: scenario.forcedColors === "active" ? "active" : "none",
+      // The system colour preference (plan 02.3.1-05). Every older scenario keeps light.
+      colorScheme: ["light", "dark", "no-preference"].includes(scenario.colorScheme)
+        ? scenario.colorScheme
+        : "light",
       serviceWorkers: "block",
       acceptDownloads: false,
       locale: "en-US",

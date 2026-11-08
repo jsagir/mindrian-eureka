@@ -439,22 +439,41 @@ def _classes(node: Element) -> set[str]:
 def _header_checks(doc: Document, *, locked: bool) -> None:
     header = doc.by_id("hub-header")
     assert header.tag == "header"
-    assert [node.tag for node in header.children] == ["img", "div", "div"]
-    lockup, context, links = header.children
+    # Plan 02.3.1-05: two lockups, the paper one and the book's reverse one; the theme shows one.
+    assert [node.tag for node in header.children] == ["img", "img", "div", "div"]
+    lockup, reverse, context, links = header.children
     assert lockup.attrs["src"] == LOCKUP_FILE and lockup.attrs["alt"] == DECK["G03.lockup_alt"]
-    assert not any(lockup in node.descendants() for node in header.descendants() if node.tag == "a")
+    assert _classes(lockup) == {"hub-lockup", "hub-lockup--paper"}
+    assert reverse.attrs["src"] == page.LOCKUP_REVERSE_FILE
+    assert reverse.attrs["src"] == "assets/brand/mos-lockup-reverse-v2.svg"
+    assert reverse.attrs["alt"] == DECK["G03.lockup_alt"]
+    assert _classes(reverse) == {"hub-lockup", "hub-lockup--reverse"}
+    for image in (lockup, reverse):
+        assert not any(
+            image in node.descendants() for node in header.descendants() if node.tag == "a"
+        )
     assert _classes(context) == {"hub-header-context"}
     assert [_classes(node) for node in context.children] == [
         {"hub-header-label"}, {"hub-header-sub"}
     ]
     assert context.children[0].text == DECK["G03"] and context.children[1].text == DECK["G05"]
     assert _classes(links) == {"hub-header-links"}
-    assert [node.tag for node in links.children] == ["nav", "a"]
-    nav, action = links.children
+    assert [node.tag for node in links.children] == ["nav", "a", "button"]
+    nav, action, toggle = links.children
     assert nav.attrs["id"] == "hub-nav" and nav.attrs["aria-label"] == DECK["G10"]
     assert action.attrs["id"] == "hub-header-action"
     assert "hub-header-action" in _classes(action)
     assert action.attrs["href"] == "#hub-data-check" and action.text == DECK["D01"]
+    # Plan 02.3.1-05: the theme toggle, present and not hidden on both pages (HUB-10).
+    assert toggle.attrs["id"] == "hub-theme" and _classes(toggle) == {"hub-theme-toggle"}
+    assert toggle.attrs["type"] == "button" and toggle.attrs["aria-pressed"] == "false"
+    assert toggle.attrs["aria-label"] == DECK["G03.theme.name"] == "Dark mode"
+    assert "hidden" not in toggle.attrs
+    assert [node.tag for node in toggle.children] == ["span", "span"]
+    dot, label = toggle.children
+    assert _classes(dot) == {"hub-theme-dot"} and dot.attrs["aria-hidden"] == "true"
+    assert dot.text == ""
+    assert _classes(label) == {"hub-theme-label"} and label.text == DECK["G03.theme.light"]
     if locked:
         assert "hidden" in nav.attrs and not nav.children
         assert "hidden" in action.attrs
