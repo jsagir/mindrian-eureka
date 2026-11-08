@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 5 verified human_needed; quick task 261108-37h closed warnings W1 to W4; 05-08 open at the owner-run GPU spike
-last_updated: "2026-11-08T00:09:08.181Z"
-last_activity: 2026-11-07 -- Phase 5 execution started
+last_updated: "2026-11-08T08:23:43.300Z"
+last_activity: 2026-11-08 -- Phase 02.3.1 execution started
 progress:
-  total_phases: 9
-  completed_phases: 7
-  total_plans: 62
-  completed_plans: 61
-  percent: 78
+  total_phases: 10
+  completed_phases: 8
+  total_plans: 71
+  completed_plans: 62
+  percent: 80
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-23)
 
 **Core value:** A user who is not the author can install Eureka, run it on their own collection with one command, and get the same ranked candidates every time, with hashes and settings that prove it. Output stays labeled "candidate, not verified".
-**Current focus:** Phase 5 — Encoder seam, safe cache key and local GPU spike
+**Current focus:** Phase 02.3.1 — Hub look matches the live JHTV site
 
 ## Current Position
 
-Phase: 5 (Encoder seam, safe cache key and local GPU spike) — VERIFIED, human_needed
-Plan: 8 of 9 done; 05-08 built and tested, waits for the owner-run GPU spike on the RTX 3060
-Status: Waiting on the owner (return gpu-spike-log.json); verifier warnings W1 to W4 closed by quick task 261108-37h
-Last activity: 2026-11-08 -- Phase 5 verified (human_needed); quick task 261108-37h
+Phase: 02.3.1 (Hub look matches the live JHTV site) — EXECUTING
+Plan: 1 of 9
+Status: Executing Phase 02.3.1
+Last activity: 2026-11-08 -- Phase 02.3.1 execution started
 
 Progress: Phase 5 plans 8/9 (05-08 awaits the owner spike). Phase 5 is not marked complete.
 
@@ -90,6 +90,7 @@ Progress: Phase 5 plans 8/9 (05-08 awaits the owner spike). Phase 5 is not marke
 | Phase 05 P08 | about 40min (PARTIAL, checkpoint pending) | 2 tasks | 4 files |
 | Phase 05 P07 | 45min | 2 tasks | 5 files |
 | Phase 05 P09 | 35min | 1 tasks | 4 files |
+| Phase 02.3.1 P02 | 10min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -156,7 +157,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-11-08T00:09:08.175Z
+Last session: 2026-11-08T08:23:43.295Z
 Stopped at: Phase 5 verified human_needed; quick task 261108-37h closed warnings W1 to W4; 05-08 open at the owner-run GPU spike
 Resume file: None
 
