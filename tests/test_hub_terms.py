@@ -299,8 +299,10 @@ def test_display_form_is_the_most_frequent_surface_form() -> None:
             assert fold(raw) == stem, (stem, raw)
     # The same filter as `tokens`: a stop word and a short word give no stem.
     assert set(surface_counts("The models and the Uses of a cut")) == set()
+    # One record, so every idf is equal: the order is by tf (program 4, claus 2, tubule 2,
+    # clause 1), ties by the stem; the list shows the display forms.
     result = build_terms(_records(("r1", text)), [])
-    assert result["records"]["r1"] == ["clauses", "program", "clause", "tubule"]
+    assert result["records"]["r1"] == ["program", "clauses", "tubule", "clause"]
     assert "claus" not in result["records"]["r1"]
 
 

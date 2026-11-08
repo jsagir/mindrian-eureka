@@ -20,8 +20,9 @@ The same records give the same lists, byte for byte, on every computer.
 4. Weight. For record r and word w: `score = tf * idf`, with `idf = log((N + 1) / (df + 0.5))`. `tf` is the count of w in the tokens of r. `df` is the number of records whose tokens hold w. `N` is the number of records of the run. The logarithm is the natural one.
 5. Order. Round every score to 9 decimals. Sort the words of r by the rounded score, highest first, then by the word. The first 5 are the distinctive words of r. The first 30 are the depth list of r.
 6. Shared words of a pair of records a and b. Take the words that are in the depth list of both. Sort by the larger of the two ranks (0 is first), then by the word. Keep at most 6.
+7. Display form (plan 10, 2026-11-08). Matching uses the folded stem. Display uses the most frequent surface form of that stem in the record's own text (title and text, lower case). Ties: the shorter form, then alphabetical. For the shared words of a pair the counts of both records are added before the choice. So the page shows `clauses`, never `claus`. In short: stems match, surface forms display. A displayed word is always a whole word of its own record.
 
-The numbers 5, 30 and 6 and the formula of step 4 come from the owner brief. Any change of a number or of the stop list changes the golden lists and needs a recorded reason.
+The numbers 5, 30 and 6 and the formula of step 4 come from the owner brief. Any change of a number or of the stop list changes the golden lists and needs a recorded reason. Step 7 changed the golden lists on 2026-11-08 (26 record lists and 21 pair lists moved from a stem to a surface form); the reason is the owner's reading of a cut word as a defect.
 
 ## Stop list
 
@@ -46,7 +47,7 @@ A float holds about 15 to 17 significant digits. Two computers can differ in the
 ## Limits
 
 - English letters only. A record written in another script gives no word, and its list is empty. The page says so.
-- The folding is light and mechanical. `analyses` and `analysis` stay two words. The `es` fold cuts a word that ends in `ses` too short: `clauses` gives `claus` and `phases` gives `phas`. A word of 5 letters is not cut by the `es` fold, so `boxes` gives `boxe`. A final `s` after a consonant is cut even when it is not a plural, so `canvas` gives `canva`. These are recorded limits of the rule, not goals. The rule is not changed for them, so the golden lists stay stable.
+- The folding is light and mechanical, and it concerns matching only. `analyses` and `analysis` stay two stems, so they never count as one word and never match as a shared word. The `es` fold cuts a word that ends in `ses` short for matching: `clauses` gives the stem `claus` and `phases` gives the stem `phas`; `clause` stays its own stem, so `clauses` and `clause` do not match each other. A word of 5 letters is not cut by the `es` fold, so `boxes` gives the stem `boxe`. A final `s` after a consonant is cut even when it is not a plural, so `canvas` gives the stem `canva`. A stem never shows: step 7 displays the surface form (`clauses`, `boxes`, `canvas`). These are recorded limits of the matching rule, not goals. The fold is not changed for them, so the stems and the shared-word matching stay stable.
 - A word is distinctive in this run, not in general. A word that is rare in this collection of 36 records can be common elsewhere.
 - Two long records with one shared rare word can look alike without being alike. Read both records.
 - A single-letter or short token (3 letters or fewer) is never a word, so an acronym of 3 letters is not shown.
@@ -64,5 +65,6 @@ Brand rule 5 (keep facts and proposed connections distinct) and brand rule 15 (h
 ## Tests
 
 - `tests/test_hub_terms.py` pins the token rule, the fold, the stop list, the formula, the tie rule, the rounding, the shared words, the depth of 30, the shape of the result, the determinism, hostile text and a timing print for 2000 records.
+- The display form (step 7) is pinned by `test_display_form_is_the_most_frequent_surface_form` (the count, the length tie and the alphabetical tie), `test_shared_words_display_uses_both_records` (the counts of both records are added) and `test_no_displayed_word_is_a_cut_stem` (every displayed word of the public fixture is a whole lower-case token of its own record; `claus` and `phas` appear in no list).
 - `tests/fixtures/hub_terms/records-top5.json` holds the 5 words of every record of the public fixture run. `tests/fixtures/hub_terms/pairs-shared.json` holds the shared words of every pair of both engines. Sorted keys, one line for each key.
 - To rewrite a golden on purpose: delete the two files, run the test file with `EUREKA_WRITE_TERM_GOLDENS=1`, read the new lists, and commit them with the reason in the commit message. The test fails with "golden written, review it" when it writes, so a rewrite is never silent.

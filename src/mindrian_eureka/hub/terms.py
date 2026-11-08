@@ -11,6 +11,13 @@ Deterministic: the same records give the same lists. No clock, no random source,
 no network and no model is used. Every input is sorted by id before use, so the order of
 the input cannot change the output. Scores are rounded to `SCORE_DECIMALS` before the sort,
 so a last-bit difference of a platform cannot change an order. Ties are broken by the word.
+
+Stems match, surface forms display (step 7 of the rule, plan 10). The count, the ranking
+and the shared words work on the folded stem (`claus` for `clauses`). The lists that leave
+`build_terms` hold, for each stem, the most frequent surface form of that stem in the
+record's own text, lower case. Ties: the shorter form, then the alphabetical one. For the
+shared words of a pair the counts of both records are added before the choice. So a
+displayed word is always a whole word of its own record, and a cut stem never shows.
 """
 
 from __future__ import annotations
@@ -111,6 +118,32 @@ def tokens(text: str) -> list[str]:
     return out
 
 
+def surface_counts(text: str) -> dict[str, Counter[str]]:
+    """Return, for each stem of a text, the count of each surface form of that stem.
+
+    Step 7 of the rule. The same filter as `tokens`, so the stems equal the tokens
+    exactly: the raw form is the match in lower case with the hyphens of both ends
+    removed; the stem is `fold(raw)`; a stem of 3 letters or fewer or in `STOP_WORDS`
+    counts nothing.
+    """
+    counts: dict[str, Counter[str]] = {}
+    for match in _TOKEN.findall(text.lower()):
+        raw = match.strip("-")
+        stem = fold(raw)
+        if len(stem) > 3 and stem not in STOP_WORDS:
+            counts.setdefault(stem, Counter())[raw] += 1
+    return counts
+
+
+def display_form(counter: Counter[str]) -> str:
+    """Return the surface form to display for one stem: the most frequent form.
+
+    Ties are broken by the shorter form, then alphabetically. The sort key is
+    `(-count, len(form), form)` and the first form wins. The counter must not be empty.
+    """
+    return sorted(counter, key=lambda form: (-counter[form], len(form), form))[0]
+
+
 def record_text(record: RecordLike) -> str:
     """Return the text of a record for the rule: its title, one space, its text."""
     return f"{record.title} {record.text}"
@@ -164,18 +197,29 @@ def build_terms(
             twice (one from each engine) appears once in the output.
 
     Returns:
-        `{"records": {id: first TOP_N words}, "pairs": {pair_id: shared words}}`. A record
-        with no token maps to an empty list. A pair id whose record is unknown maps to an
-        empty list.
+        `{"records": {id: first TOP_N words}, "pairs": {pair_id: shared words}}`. Every
+        word is the display form of its stem (step 7). A record with no token maps to an
+        empty list. A pair id whose record is unknown maps to an empty list.
     """
     ranked = rank_records(records)
+    by_id = {record.id: record for record in sorted(records, key=lambda item: item.id)}
+    counts = {rid: surface_counts(record_text(record)) for rid, record in by_id.items()}
+    empty: Counter[str] = Counter()
     unique_pairs = sorted({(pair_id, left, right) for pair_id, left, right in pairs})
     pair_words: dict[str, list[str]] = {}
     for pair_id, left, right in unique_pairs:
         if pair_id in pair_words:
             continue
-        pair_words[pair_id] = shared_words(ranked.get(left, []), ranked.get(right, []))
+        shown: list[str] = []
+        for stem in shared_words(ranked.get(left, []), ranked.get(right, [])):
+            both = counts.get(left, {}).get(stem, empty) + counts.get(right, {}).get(stem, empty)
+            # The sum is empty only for an unknown record; the stem is the safe branch.
+            shown.append(display_form(both) if both else stem)
+        pair_words[pair_id] = shown
     return {
-        "records": {rid: words[:TOP_N] for rid, words in ranked.items()},
+        "records": {
+            rid: [display_form(counts[rid][stem]) for stem in words[:TOP_N]]
+            for rid, words in ranked.items()
+        },
         "pairs": pair_words,
     }
