@@ -12,6 +12,10 @@ if (args.listen && window.HubApp && !window.__themeListening) {
 }
 if (args.settle) await new Promise(resolve => setTimeout(resolve, args.settle));
 await document.fonts.ready;
+// Plan 11: under 768 px the links row scrolls sideways; the toggle must be reachable by scroll.
+if (args.scrollToggle && document.getElementById('hub-theme')) {
+  document.getElementById('hub-theme').scrollIntoView({inline: 'end', block: 'nearest'});
+}
 await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 const root = document.documentElement;
 const style = node => (node ? getComputedStyle(node) : null);
@@ -23,6 +27,8 @@ const box = node => {
 };
 const toggle = document.getElementById('hub-theme');
 const label = toggle ? toggle.querySelector('.hub-theme-label') : null;
+const links = document.querySelector('.hub-header-links');
+const action = document.getElementById('hub-header-action');
 const lockups = Array.from(document.querySelectorAll('#hub-header img'), img => ({
   src: img.getAttribute('src'), rects: img.getClientRects().length,
   display: style(img).display, filter: style(img).filter, width: img.getBoundingClientRect().width
@@ -76,8 +82,15 @@ return {
     color: style(toggle).color, background: style(toggle).backgroundColor,
     borderColor: style(toggle).borderTopColor, borderWidth: style(toggle).borderTopWidth,
     transition: style(toggle).transitionDuration, display: style(toggle).display,
-    hidden: toggle.hidden, type: toggle.getAttribute('type')
+    hidden: toggle.hidden, type: toggle.getAttribute('type'),
+    scrollWidth: toggle.scrollWidth, clientWidth: toggle.clientWidth,
+    justifyContent: style(toggle).justifyContent, labelBox: box(label)
   } : null,
+  // Plan 11: the links row and the Data check link, whose words were cut at 320 px.
+  links: links ? {box: box(links), scrollWidth: links.scrollWidth, clientWidth: links.clientWidth,
+    scrollLeft: links.scrollLeft} : null,
+  action: action ? {box: box(action), scrollWidth: action.scrollWidth, clientWidth: action.clientWidth,
+    text: action.textContent} : null,
   lockups,
   visibleLockup: visible ? visible.src : null,
   face: face ? {boxShadow: style(face).boxShadow, outlineStyle: style(face).outlineStyle,

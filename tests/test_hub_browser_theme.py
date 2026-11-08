@@ -12,6 +12,7 @@ from pathlib import Path
 import pytest
 from hub_browser_support import file_url, require_browser, run_scenario
 from mindrian_eureka.hub.deck import DECK
+from mindrian_eureka.hub.figures import CLASS_TABLE
 from test_hub_browser_core import CHECKS, built_hub, scenario
 from test_hub_browser_gate import PASS, gated_hub, submit
 from test_hub_browser_review import CONTRAST, public_hub
@@ -31,10 +32,12 @@ NONE_RING = ("none", "rgba(0, 0, 0, 0) 0px 0px 0px 3px")
 PAPER_LOCKUP = "mos-lockup-paper-v2.svg"
 REVERSE_LOCKUP = "mos-lockup-reverse-v2.svg"
 NS = "http://www.w3.org/2000/svg"
+# Plan 11 (L3): pinned to CLASS_TABLE of the generator; plan 10 retired f-fan and added the
+# two label classes.
 FIGURE_CLASSES = (
     "f-paper", "f-frame", "f-rule", "f-panel", "f-ink", "f-blue", "f-red", "f-yellow", "f-tick",
-    "f-fan", "f-link", "f-track", "f-band", "f-chip", "f-chip-on", "f-mono", "f-title", "f-body",
-    "f-num", "f-soft", "f-blue-t", "f-red-t", "f-band-t", "f-chip-t",
+    "f-link", "f-track", "f-band", "f-chip", "f-chip-on", "f-mono", "f-title", "f-body",
+    "f-num", "f-label", "f-label-s", "f-soft", "f-blue-t", "f-red-t", "f-band-t", "f-chip-t",
 )
 SAVE_DARK = 'try { localStorage.setItem("hub-theme", "dark"); } catch (error) { }\n'
 SAVE_LIGHT = 'try { localStorage.setItem("hub-theme", "light"); } catch (error) { }\n'
@@ -63,9 +66,10 @@ Storage.prototype.setItem = function () { throw new Error('storage is blocked');
 def figure_markup() -> str:
     shapes = []
     for index, name in enumerate(FIGURE_CLASSES):
-        if name.endswith("-t") or name in {"f-mono", "f-title", "f-body", "f-num"}:
+        if name.endswith("-t") or name in {"f-mono", "f-title", "f-body", "f-num", "f-label",
+                                           "f-label-s"}:
             shapes.append(f'<text x="70" y="{100 + 30 * index}" class="{name}">word</text>')
-        elif name in {"f-rule", "f-tick", "f-fan", "f-link"}:
+        elif name in {"f-rule", "f-tick", "f-link"}:
             shapes.append(f'<line x1="0" y1="{index}" x2="100" y2="{index}" class="{name}"/>')
         else:
             shapes.append(f'<rect x="{index}" y="{index}" width="40" height="40" class="{name}"/>')
@@ -225,6 +229,50 @@ def test_toggle_target_and_keyboard(tmp_path: Path, browser: str) -> None:
     assert tabbed["active"]["outlineWidth"] == "3px" and tabbed["active"]["outlineStyle"] == "solid"
     assert_dark(result["enter"])
     assert_light(result["space"])
+
+
+@pytest.mark.parametrize("browser", ["chromium", "firefox"])
+def test_toggle_word_is_whole_at_phone_widths(tmp_path: Path, browser: str) -> None:
+    """Plan 11 (L2): the toggle word and the Data check words are whole at 320 and 390 px.
+
+    At 390 px the links row does not scroll; at 320 px it scrolls sideways (the plan 03 rule)
+    and the toggle is reachable by scroll. The document never overflows.
+    """
+    require_browser(browser)
+    result = scenario(public_hub(tmp_path), browser, steps=[
+        viewport(320), theme("320"), theme("320-scrolled", scrollToggle=True),
+        viewport(390), theme("390"), click(), theme("390-dark", settle=50)])
+    widths = []
+    for name in ("320", "320-scrolled", "390", "390-dark"):
+        state = result[name]
+        toggle, links, action = state["toggle"], state["links"], state["action"]
+        label = toggle["labelBox"]
+        widths.append(f"{name}: links {links['clientWidth']}/{links['scrollWidth']} px, "
+                      f"toggle {toggle['box']['width']:.1f} px "
+                      f"({toggle['clientWidth']}/{toggle['scrollWidth']}), "
+                      f"action {action['box']['width']:.1f} px")
+        assert toggle["scrollWidth"] <= toggle["clientWidth"], (name, toggle)
+        assert label["left"] >= toggle["box"]["left"], (name, toggle)
+        assert label["left"] + label["width"] <= toggle["box"]["left"] + toggle["box"]["width"] \
+            + 0.5, (name, toggle)
+        assert action["scrollWidth"] <= action["clientWidth"], (name, action)
+        assert links["box"]["height"] < 60, (name, links)
+        assert state["scrollWidth"] == state["innerWidth"], (name, state["scrollWidth"])
+        assert toggle["box"]["width"] >= 44 and toggle["box"]["height"] >= 44, (name, toggle)
+        row_end = links["box"]["left"] + links["box"]["width"] + 0.5
+        if name.startswith("390"):
+            assert links["scrollWidth"] <= links["clientWidth"], (name, links)
+            assert toggle["box"]["left"] + toggle["box"]["width"] <= row_end, (name, toggle)
+        elif name == "320":
+            assert 0 < links["scrollWidth"] - links["clientWidth"] <= 80, (name, links)
+        else:
+            assert toggle["box"]["left"] + toggle["box"]["width"] <= row_end, (name, toggle)
+    print(f"{browser} phone header: " + "; ".join(widths))
+
+
+def test_figure_class_list_matches_the_generator() -> None:
+    assert set(FIGURE_CLASSES) == set(CLASS_TABLE)
+    assert len(FIGURE_CLASSES) == 25
 
 
 @pytest.mark.parametrize("browser", ["chromium", "firefox"])
