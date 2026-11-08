@@ -6,7 +6,7 @@ Phase 2.3.1, plan 05. Owner request of 2026-11-08: "need to add dark/light toggl
 
 The header holds a button, `#hub-theme`. Its accessible name is fixed: "Dark mode" (`aria-label`). Its visible word names the theme that is on now: "Light" or "Dark". `aria-pressed` is `true` while the dark theme is on and `false` while the light theme is on. The button is at least 44 px high and wide at every width. One click switches the theme; the next click switches it back. Without JavaScript the button is not shown (`.no-js .hub-theme-toggle { display: none; }`), because a dead control is never shown; the system preference still applies through the stylesheet.
 
-The button carries a decorative square mark (half filled) from 768 px. Under 768 px the mark is not drawn: the header links row scrolls sideways on a phone (plan 03), and the mark pushed the toggle's word past the edge of a 390 px screen. Measured in Chromium: at 390 px the row is 350 px wide in a 350 px box and the toggle ends at 370 px; at 320 px the row scrolls by 16 px, as it did before the toggle. The toggle is 44 px high at every width and adds no height to the header (76 px at 1280 px, 115 px at 390 px).
+The button carries a decorative square mark (half filled) from 768 px. Under 768 px the mark is not drawn: the header links row scrolls sideways on a phone (plan 03), and the mark pushed the toggle's word past the edge of a 390 px screen. Measured in Chromium on 2026-11-08 (plan 11): at 390 px the row content is 343 px in a 350 px box and the toggle is 44 px wide with its word whole in both themes; at 320 px the row content is 343 px in a 280 px box, so the row scrolls sideways by 63 px, as the plan 03 rule says, and nothing is cut. The toggle and the Data check link never shrink (`flex: none`); the toggle's phone padding is 4 px with the word centred; the 13 px padding returns from 768 px with the mark. The gaps of the links row are 12 px under 768 px (16 px from 768 px): the Data check link is 99 px at its natural width, and with 16 px gaps the row was 351 px, 1 px over the box. Before plan 11 the row squeezed both controls to 44 px at 320 px and cut their words. The toggle is 44 px high at every width and adds no height to the header (76 px at 1280 px, 115 px at 390 px).
 
 The theme is one attribute on the root element, `data-theme="dark"` or `data-theme="light"`. Every colour of the page reads a token, so one attribute changes the page, the band, the figures, the panel and the graph chrome.
 
@@ -116,7 +116,7 @@ Cited segments (read from the checkout): `foundations/color` (ink ground: paper 
 
 - The 3D stage of the graph draws its own colours in script (plan 07 owns `hub-graph.js`); it reads `--hub-dim` for dimmed nodes and lines. Any stage colour that does not follow the theme is plan 07's item.
 - The pair and record pages (plan 08) inherit the theme through the same tokens; plan 08 checks the page chrome in both themes.
-- A band token of its own (a dark band on the dark page) is an owner question for the plan 09 brand stop.
+- A band token of its own (a dark band on the dark page) is an owner question for the plan 09 brand stop. The book has no dark set and no band token (checked 2026-11-08, plan 11: no colour token in `~/mos-brand/segments` names dark, and `tokens.json` has no key with band or dark), so plan 11 changed no code; two renders in the session scratchpad folder closeout-11 show the question: band-dark-1280.png (the page band in dark) and figure-band-dark.png (the band of a detail picture in dark).
 
 ## Tests
 

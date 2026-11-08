@@ -127,7 +127,9 @@ input { caret-color: var(--mos-ink); }
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: var(--hub-space-3) var(--hub-space-4);
+  /* 12 px gaps under 768 px: the nav (176 px), the Data check link (99 px) and the toggle (44 px)
+     then fit a 390 px screen with 7 px to spare; 16 px returns from 768 px (plan 11). */
+  gap: var(--hub-space-3);
   overflow-x: auto;
   scrollbar-width: thin;
 }
@@ -161,6 +163,8 @@ input { caret-color: var(--mos-ink); }
   color: var(--mos-ink);
   text-decoration: none;
   white-space: nowrap;
+  /* The link keeps its width inside the scrolling links row; at 320 px flex shrink cut its words (plan 11). */
+  flex: none;
   transition: background-color var(--mos-time-feedback), color var(--mos-time-feedback);
 }
 .hub-header-action:hover { background: var(--mos-ink); color: var(--mos-paper); }
@@ -333,7 +337,7 @@ caption { text-align: start; font-size: 16px; }
   #hub-header { padding-inline: max(28px, calc((100vw - 1200px) / 2)); min-block-size: 76px; }
   #hub-header img { inline-size: 156px; }
   .hub-header-sub { display: block; }
-  .hub-header-links { flex-wrap: wrap; overflow: visible; }
+  .hub-header-links { flex-wrap: wrap; overflow: visible; gap: var(--hub-space-3) var(--hub-space-4); }
   #hub-nav { flex-wrap: wrap; }
   #hub-face { inline-size: 64px; block-size: 64px; }
   #hub-counts { grid-template-columns: repeat(4, minmax(0, 1fr)); }

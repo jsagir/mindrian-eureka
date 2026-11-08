@@ -68,7 +68,7 @@
   gap: var(--hub-space-2);
   min-block-size: 44px;
   min-inline-size: 44px;
-  padding: 10px 13px;
+  padding: 10px var(--hub-space-1);
   border: 1px solid var(--mos-ink);
   background: transparent;
   color: var(--mos-ink);
@@ -77,12 +77,15 @@
   line-height: 1.5;
   white-space: nowrap;
   cursor: pointer;
+  flex: none;
+  justify-content: center;
   transition: background-color var(--mos-time-feedback), color var(--mos-time-feedback);
 }
 .hub-theme-toggle:hover { background: var(--mos-ink); color: var(--mos-paper); }
-/* The decorative mark shows from 768 px. Under 768 px the header links row scrolls sideways
-   (plan 03), and the mark would push the toggle's word past a 390 px screen; the word and the
-   accessible name stay at every width. */
+/* Under 768 px the header links row scrolls sideways (plan 03) and the toggle never shrinks
+   (flex: none), so its word is never cut; measured in plan 11, the row content is about 342 px
+   in a 350 px box at 390 px and scrolls by about 62 px at 320 px. The mark and the 13 px padding
+   return from 768 px; the word and the accessible name stay at every width. */
 .hub-theme-dot {
   display: none;
   flex: none;
@@ -96,6 +99,7 @@
 .no-js .hub-theme-toggle { display: none; }
 @media (min-width: 768px) {
   .hub-theme-dot { display: inline-block; }
+  .hub-theme-toggle { padding: 10px 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hub-theme-toggle { transition: none; }
