@@ -363,8 +363,11 @@ def test_row_content_fits(public_hub: Path, browser: str) -> None:
     steps: list[dict[str, object]] = []
     for width in WIDTHS:
         steps.append({"kind": "setViewport", "width": width, "height": 900})
+        # The filter first (it resets the paging), then 8 more pages reach rank 200.
+        steps.append({"kind": "eval", "file": BANK, "as": f"filter-{width}",
+                      "args": {"engine": "wording_and_meaning"}})
         steps.append({"kind": "eval", "file": BANK, "as": str(width),
-                      "args": {"engine": "wording_and_meaning", "more": 8, "fit": True}})
+                      "args": {"more": 8, "fit": True}})
     result = run_scenario({"browser": browser, "url": file_url(public_hub / "hub.html"),
                            "steps": steps})
     assert result["ok"], result["stepErrors"]

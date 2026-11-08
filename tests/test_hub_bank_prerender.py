@@ -43,7 +43,8 @@ def test_prerendered_rows_keep_their_classes_and_stay_plain(tmp_path: Path) -> N
         assert "<svg" not in row
         assert "#/pair/" not in row
         assert "hub-bank-" not in row
-    assert html.count(DECK["B14"]) == 2
+    # One pointer under each cut engine list of the bank (the graph list repeats them).
+    assert html.split('id="graph-list"')[0].count(DECK["B14"]) == 2
 
 
 def test_seed_rows_of_the_no_script_page_are_unchanged(tmp_path: Path) -> None:

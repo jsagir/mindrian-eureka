@@ -155,9 +155,16 @@ const metrics = allRows().map(row => {
 const legend = Array.from(document.querySelectorAll('#bank-controls details.hub-bank-figures'), details => ({
   open: details.open, summary: details.querySelector('summary')?.textContent ?? null,
   body: Array.from(details.querySelectorAll('p'), p => p.textContent), text: details.textContent}));
+// The row text without the picture: the figure's title and desc are the picture's own
+// accessible text (they repeat the label by D-07), not words of the row.
+const rowText = row => {
+  const copy = row.cloneNode(true);
+  copy.querySelectorAll('svg').forEach(node => node.remove());
+  return copy.textContent;
+};
 return {
   rows: allRows().map(row => ({key: row.dataset.pairKey, rank: Number(row.dataset.rank),
-    engine: row.dataset.engine, text: row.textContent,
+    engine: row.dataset.engine, text: rowText(row),
     labels: row.querySelectorAll('.hub-bank-status').length,
     anchors: Array.from(row.querySelectorAll('a.hub-link'), a => ({text: a.textContent,
       href: a.getAttribute('href'), name: a.getAttribute('aria-label')})),

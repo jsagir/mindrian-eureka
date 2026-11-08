@@ -31,7 +31,8 @@
   const figureTags = ["svg", "title", "desc", "rect", "line", "circle", "text"];
   const figureAttrs = [
     "xmlns", "viewBox", "role", "class", "x", "y", "width", "height", "x1", "y1", "x2", "y2",
-    "cx", "cy", "r", "fill", "stroke", "stroke-width", "stroke-dasharray", "opacity", "aria-hidden"
+    "cx", "cy", "r", "fill", "stroke", "stroke-width", "stroke-dasharray", "opacity", "aria-hidden",
+    "font-size"
   ];
   const figureTextTags = ["text", "title", "desc"];
   let panel = null;

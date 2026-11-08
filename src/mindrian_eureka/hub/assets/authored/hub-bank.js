@@ -4,6 +4,10 @@
   const HubApp = window.HubApp;
   if (!HubApp) return;
   const engines = ["unusual_pairs", "wording_and_meaning"];
+  // The finding rows (Phase 2.3.1 plan 06, owner decision D-01 and the prototype of
+  // 2026-11-08) fill these keys by the numeral kind and the reading kind of a pair.
+  // deck keys: B08.use.meaning B08.use.wording B08.use.agree B08.caption.meaning B08.caption.wording B08.shared B08.shared_none B08.open B08.use.label
+  const readingKinds = ["meaning", "wording", "agree"];
   let shown = 0;
   let controls;
   let list;
@@ -15,6 +19,9 @@
 
   function text(tag, key, values, attrs) {
     return HubApp.el(tag, attrs || {}, HubApp.fmt(key, values));
+  }
+  function own(object, key) {
+    return Boolean(object) && typeof object === "object" && Object.prototype.hasOwnProperty.call(object, key);
   }
   // The carried outcome cells of one record as ink-on-paper chips (Phase 2.2, D-03).
   // Blank cells are skipped; keys are sorted; text nodes only.
@@ -43,12 +50,65 @@
       "aria-label": HubApp.fmt("B08.source_name", { ID: side.id, title: side.title })
     }, HubApp.el("bdi", {}, side.id));
   }
+  // The page route of a pair (the router and the pages are plan 08). The engine key is one
+  // of two fixed keys and the rank is an integer, so the route is a fixed grammar.
+  function route(pair) {
+    return "#/pair/" + pair.engine + "/" + pair.rank;
+  }
+  function numeral(kind, value) {
+    return HubApp.el("p", { class: "hub-bank-num" }, [
+      HubApp.el("b", { class: "hub-bank-numeral hub-bank-numeral--" + kind }, value),
+      text("span", "B08.caption." + kind, {}, { class: "hub-bank-caption" })
+    ]);
+  }
+  // The shared distinctive words of a pair, or the line that none is shared.
+  function sharedLine(pair) {
+    const terms = HubApp.data.terms;
+    const words = terms && own(terms.pairs, pair.pair_id) ? terms.pairs[pair.pair_id] : null;
+    if (Array.isArray(words) && words.length) {
+      return text("p", "B08.shared", { list: words.join(", ") }, { class: "hub-bank-shared" });
+    }
+    return text("p", "B08.shared_none", {}, { class: "hub-bank-shared" });
+  }
+  // The card figure of plan 04 through the safe inserter of plan 03, or null.
+  function figure(pair) {
+    const figures = HubApp.data.figures;
+    if (!figures || !own(figures.pairs, pair.key) || !figures.legend) return null;
+    const picture = HubApp.figure(figures.pairs[pair.key].card);
+    if (!picture) return null;
+    return HubApp.el("figure", { class: "hub-bank-figure" }, [
+      picture, HubApp.el("figcaption", {}, figures.legend.caption)
+    ]);
+  }
   function row(pair) {
     const item = HubApp.el("li", {
       class: "hub-row hub-bank-row" + (pair.weak ? " hub-row--weak" : ""),
       "data-pair-key": pair.key, "data-engine": pair.engine, "data-rank": pair.rank
     });
-    const rank = text("p", "B08.rank", { n: pair.rank }, { class: "hub-bank-rank hub-mono" });
+    const href = route(pair);
+    // (1) The index: a two-digit number for the eye, the word Rank for assistive technology.
+    const rank = HubApp.el("p", { class: "hub-bank-rank" }, [
+      HubApp.el("span", { class: "hub-bank-rank-n", "aria-hidden": "true" }, String(pair.rank).padStart(2, "0")),
+      text("span", "B08.rank", { n: pair.rank }, { class: "hub-visually-hidden" })
+    ]);
+    // (2) The two titles as one stretched link to the pair page, then the two source ids.
+    const title = HubApp.el("a", { class: "hub-bank-open-link", href: href }, [
+      pair.left.title,
+      HubApp.el("span", { class: "hub-bank-and" }, " " + HubApp.fmt("B08.and") + " "),
+      pair.right.title
+    ]);
+    const records = HubApp.el("div", { class: "hub-bank-records" }, [
+      HubApp.el("h3", { class: "hub-bank-pair" }, title),
+      HubApp.el("div", { class: "hub-bank-ids" }, [source(pair.left), source(pair.right)])
+    ]);
+    // (3) The two numerals: meaning in cobalt, wording in red (owner ruling O-02).
+    const nums = HubApp.el("div", { class: "hub-bank-nums" }, [
+      numeral("meaning", pair.meaning_text),
+      numeral("wording", pair.wording_text),
+      text("span", "P06.inferred", {}, { class: "hub-role hub-role--inferred" }),
+      text("p", "B08.rank_score", { z: pair.rank_score_text }, { class: "hub-bank-rank-score" })
+    ]);
+    // (4) The body: labels, carried cells, the reading, the words, the actions.
     const role = HubApp.el("div", { class: "hub-bank-labels" }, [
       HubApp.el("p", { class: "hub-bank-engine" }, HubApp.data.engines[pair.engine].short_name),
       text("span", "P06.proposed", {}, { class: "hub-role hub-role--proposed" }),
@@ -58,20 +118,13 @@
     if (pair.pair_class) {
       role.appendChild(HubApp.el("span", { class: "hub-chip hub-bank-class" }, HubApp.fmt("P10." + pair.pair_class)));
     }
-    const records = HubApp.el("div", { class: "hub-bank-records" });
-    [pair.left, pair.right].forEach(function (side) {
-      records.appendChild(HubApp.el("div", { class: "hub-bank-record" }, [
-        source(side), HubApp.el("p", { class: "hub-bank-title" }, side.title)
+    const reading = HubApp.el("div", { class: "hub-bank-reading" }, HubApp.el("p", {}, pair.reading));
+    reading.appendChild(sharedLine(pair));
+    if (readingKinds.includes(pair.reading_kind)) {
+      reading.appendChild(HubApp.el("p", { class: "hub-bank-use" }, [
+        text("strong", "B08.use.label"), " " + HubApp.fmt("B08.use." + pair.reading_kind)
       ]));
-    });
-    const scores = HubApp.el("div", { class: "hub-bank-scores" }, [
-      text("span", "P06.inferred", {}, { class: "hub-role hub-role--inferred" }),
-      text("p", "B08.wording", { x: pair.wording_text }),
-      text("p", "B08.meaning", { y: pair.meaning_text }),
-      text("p", "B08.rank_score", { z: pair.rank_score_text })
-    ]);
-    const reading = HubApp.el("div", { class: "hub-bank-reading" },
-      HubApp.el("p", {}, pair.reading));
+    }
     [pair.left, pair.right].forEach(function (side) {
       const record = HubApp.index.records.get(side.id);
       if (pair.flag_identical && record.identical_to.length) {
@@ -81,12 +134,18 @@
         reading.appendChild(text("p", "P09.no_text", {}, { class: "hub-flag" }));
       }
     });
+    const open = text("a", "B08.open", {}, { class: "hub-button hub-button--quiet hub-bank-open-btn", href: href });
     const button = text("button", "B08.read", {}, { type: "button", class: "hub-button hub-bank-read" });
     button.addEventListener("click", function () { HubApp.select({ type: "pair", key: pair.key }, button); });
-    // Reading order stays rank, words/status, source records, scores, reading, action.
-    // CSS places these fields in the prescribed responsive grid without focus reordering.
+    const actions = HubApp.el("div", { class: "hub-bank-actions" }, [open, button]);
     const extrasRows = [extrasRow(pair.left, pair.left_extras), extrasRow(pair.right, pair.right_extras)];
-    [rank, role].concat(extrasRows).concat([records, scores, reading, button]).forEach(function (part) {
+    const body = HubApp.el("div", { class: "hub-bank-body" });
+    [role].concat(extrasRows).concat([reading, actions]).forEach(function (part) {
+      if (part) body.appendChild(part);
+    });
+    // Reading order stays index, titles and sources, numerals, body, picture, seed. CSS places
+    // the picture in its own column from 1024 px; it only adds a description of the same facts.
+    [rank, records, nums, body, figure(pair)].forEach(function (part) {
       if (part) item.appendChild(part);
     });
     // Phase 2.3 (D-04): the exact seed command as text to copy. It is the last child.
@@ -170,6 +229,15 @@
     }
     return box;
   }
+  // One legend for the pictures of the rows: the payload carries its words (plan 04).
+  function figureLegend() {
+    const figures = HubApp.data.figures;
+    if (!figures || !figures.legend) return null;
+    return HubApp.el("details", { class: "hub-bank-figures" }, [
+      HubApp.el("summary", {}, figures.legend.summary),
+      HubApp.el("p", {}, figures.legend.card)
+    ]);
+  }
   function render(container) {
     const heading = text("h2", "B01", {}, { "data-view-heading": "" });
     const lede = text("p", "B02");
@@ -188,6 +256,8 @@
       filters.appendChild(HubApp.el("label", { for: input.id }, [input, text("span", "B03." + key)]));
     });
     controls.appendChild(about);
+    const legend = figureLegend();
+    if (legend) controls.appendChild(legend);
     controls.appendChild(filters);
     classRadios = [];
     if (HubApp.data.has_pair_classes === true) {
