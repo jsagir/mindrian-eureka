@@ -28,6 +28,8 @@ FILES = (
 VOID = {"meta", "link", "img", "input", "br", "hr"}
 CHROME = {
     "hub-header",
+    "hub-header-action",
+    "hub-page",
     "hub-title-band",
     "hub-face",
     "hub-title",
@@ -424,3 +426,100 @@ def test_gate_and_payload_modes_cannot_be_mixed(payload: Payload) -> None:
         page.render_page(payload, files=FILES, gated=True)
     with pytest.raises(ValueError, match="requires a payload"):
         page.render_page(None, files=FILES)
+
+
+# Phase 2.3.1 plan 03 (D-01): the shell of the target, a sticky header with the nav inside,
+# one page wrapper and a title band with an eyebrow and a display heading.
+
+
+def _classes(node: Element) -> set[str]:
+    return set((node.attrs.get("class") or "").split())
+
+
+def _header_checks(doc: Document, *, locked: bool) -> None:
+    header = doc.by_id("hub-header")
+    assert header.tag == "header"
+    assert [node.tag for node in header.children] == ["img", "div", "div"]
+    lockup, context, links = header.children
+    assert lockup.attrs["src"] == LOCKUP_FILE and lockup.attrs["alt"] == DECK["G03.lockup_alt"]
+    assert not any(lockup in node.descendants() for node in header.descendants() if node.tag == "a")
+    assert _classes(context) == {"hub-header-context"}
+    assert [_classes(node) for node in context.children] == [
+        {"hub-header-label"}, {"hub-header-sub"}
+    ]
+    assert context.children[0].text == DECK["G03"] and context.children[1].text == DECK["G05"]
+    assert _classes(links) == {"hub-header-links"}
+    assert [node.tag for node in links.children] == ["nav", "a"]
+    nav, action = links.children
+    assert nav.attrs["id"] == "hub-nav" and nav.attrs["aria-label"] == DECK["G10"]
+    assert action.attrs["id"] == "hub-header-action"
+    assert "hub-header-action" in _classes(action)
+    assert action.attrs["href"] == "#hub-data-check" and action.text == DECK["D01"]
+    if locked:
+        assert "hidden" in nav.attrs and not nav.children
+        assert "hidden" in action.attrs
+    else:
+        assert "hidden" not in nav.attrs and "hidden" not in action.attrs
+        assert [node.attrs["href"] for node in nav.children] == ["#bank", "#graph", "#catalogue"]
+
+
+def _wrapper_checks(doc: Document) -> None:
+    body = doc.tagged("body")[0]
+    assert [(node.tag, node.attrs.get("id") or node.attrs.get("class")) for node in body.children
+            if node.tag != "script"] == [
+        ("a", "hub-skip"), ("header", "hub-header"), ("div", "hub-page"), ("noscript", None)
+    ]
+    wrapper = doc.by_id("hub-page")
+    ids = [node.attrs.get("id") for node in wrapper.children]
+    expected = ["hub-title-band", "hub-counts", "hub-band", "hub-results", "hub-panel",
+                "hub-data-check", "hub-footer"]
+    assert [item for item in ids if item in expected] == expected
+    assert set(ids) - set(expected) <= {"hub-locked"}
+
+
+def _shape(node: Element) -> list[tuple[str, str | None]]:
+    return [
+        (child.tag, child.attrs.get("id") or child.attrs.get("class")) for child in node.children
+    ]
+
+
+def _title_band_checks(doc: Document, heading: str, meaning: str) -> None:
+    band = doc.by_id("hub-title-band")
+    assert _shape(band) == [("div", "hub-title-row"), ("p", "hub-meaning"), ("p", "hub-status")]
+    row = band.children[0]
+    assert _shape(row) == [("div", "hub-title-main"), ("img", "hub-face")]
+    main = row.children[0]
+    assert _shape(main) == [("p", "hub-eyebrow"), ("h1", "hub-title")]
+    eyebrow, title = main.children
+    assert [node.tag for node in eyebrow.children] == ["span"]
+    dot = eyebrow.children[0]
+    assert _classes(dot) == {"hub-eyebrow-dot"} and dot.attrs["aria-hidden"] == "true"
+    assert not dot.text and eyebrow.text == DECK["G04"]
+    assert title.text == heading and title.attrs["tabindex"] == "-1"
+    assert band.children[1].text == meaning
+    assert len(doc.tagged("h1")) == 1
+
+
+def test_header_structure(payload: Payload) -> None:
+    _header_checks(_doc(payload), locked=False)
+
+
+def test_wrapper_structure(payload: Payload) -> None:
+    _wrapper_checks(_doc(payload))
+
+
+def test_title_band_structure(payload: Payload) -> None:
+    _title_band_checks(_doc(payload), DECK["B01"], DECK["G07"])
+
+
+def test_locked_page_shell() -> None:
+    doc = Document(page.render_page(None, files=FILES, gated=True))
+    _header_checks(doc, locked=True)
+    _wrapper_checks(doc)
+    _title_band_checks(doc, DECK["L01"], DECK["L02"])
+    wrapper = doc.by_id("hub-page")
+    ids = [node.attrs.get("id") for node in wrapper.children]
+    assert ids.index("hub-locked") == ids.index("hub-title-band") + 1
+    for name in ("hub-counts", "hub-band", "hub-results", "hub-panel", "hub-data-check"):
+        assert "hidden" in doc.by_id(name).attrs
+    assert doc.by_id("hub-face").attrs["src"] == FACE_FILES["Boundary"]
