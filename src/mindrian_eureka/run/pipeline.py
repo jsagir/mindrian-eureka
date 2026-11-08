@@ -261,12 +261,29 @@ def _validate(request: RunRequest) -> None:
         )
 
 
+def _profile_fix_text(profile: str) -> str:
+    """Return the fix block for a model folder of a named profile (not the default)."""
+    wanted = PROFILES[profile].model_id
+    return (
+        f"1. The profile {profile} needs the folder of its own model: {wanted}. "
+        "Eureka does not use another model for it.\n"
+        "2. The weights of this profile are fetched by the owner-run spike steps in "
+        "docs/encoder-spike-results.md, not by the fix lines of the default model.\n"
+        f"3. Pass --model-path with the folder of {wanted}."
+    )
+
+
 def _find_model(request: RunRequest) -> Path:
     resolution = models.discover_model(request.model_path)
     if not resolution.ok or resolution.path is None:
+        fix_text = (
+            None
+            if request.encoder_profile == DEFAULT_PROFILE
+            else _profile_fix_text(request.encoder_profile)
+        )
         raise RunError(
             models.missing_model_message(
-                resolution, explicit_given=request.model_path is not None
+                resolution, explicit_given=request.model_path is not None, fix_text=fix_text
             )
         )
     return resolution.path

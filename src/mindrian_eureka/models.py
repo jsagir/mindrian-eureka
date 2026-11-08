@@ -260,12 +260,18 @@ def model_fix_text() -> str:
     )
 
 
-def missing_model_message(resolution: ModelResolution, *, explicit_given: bool = False) -> str:
+def missing_model_message(
+    resolution: ModelResolution,
+    *,
+    explicit_given: bool = False,
+    fix_text: str | None = None,
+) -> str:
     """Explain why no model was found and how to fix it.
 
     Args:
         resolution: The result of `discover_model`.
         explicit_given: True when the user passed `--model-path`.
+        fix_text: The fix block to print, or None for the block of the default model.
 
     Returns:
         A message that starts with "No local model found." when nothing was found, or
@@ -281,5 +287,6 @@ def missing_model_message(resolution: ModelResolution, *, explicit_given: bool =
     if explicit_given:
         parts.append("The folder given with --model-path was checked first and decides.")
     parts.append("Fix:")
-    parts.extend(f"  {line}" for line in model_fix_text().splitlines())
+    block = model_fix_text() if fix_text is None else fix_text
+    parts.extend(f"  {line}" for line in block.splitlines())
     return "\n".join(parts)

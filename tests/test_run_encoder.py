@@ -586,3 +586,18 @@ def test_single_file_digest_is_unchanged_by_the_shard_rule(
 
     files = manifest.model_fingerprint(fake_model_dir)["files"]
     assert sorted(files) == ["config.json", "model.safetensors", "modules.json", "tokenizer.json"]
+
+
+def test_sharded_model_with_a_shard_name_outside_the_folder_is_not_pinned(
+    tmp_path: Path,
+) -> None:
+    from mindrian_eureka.run import manifest
+
+    (tmp_path / "outside.safetensors").write_bytes(b"outside")
+    folder = tmp_path / "model"
+    folder.mkdir()
+    (folder / "model.safetensors.index.json").write_text(
+        json.dumps({"weight_map": {"a": "../outside.safetensors"}}), encoding="utf-8"
+    )
+    files = manifest.model_fingerprint(folder)["files"]
+    assert pipeline._model_digest(files) is None

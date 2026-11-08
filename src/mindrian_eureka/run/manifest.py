@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.metadata
+import json
 import platform
 import re
 import sys
@@ -24,6 +25,8 @@ from .contracts import LABEL, MANIFEST_SCHEMA, RUN_INFO_SCHEMA, SCORE_MEANING
 _BLOCK_SIZE = 1024 * 1024
 _SNAPSHOT_NAME = re.compile(r"^[0-9a-f]{40}$")
 _CACHE_FOLDER_PREFIX = "models--"
+
+SHARD_INDEX = "model.safetensors.index.json"
 
 MODEL_FILES: tuple[str, ...] = (
     "config.json",
@@ -103,7 +106,39 @@ def model_fingerprint(model_dir: Path) -> dict[str, Any]:
         candidate = folder.joinpath(*relative.split("/"))
         if candidate.is_file():
             files[relative] = sha256_file(candidate)
+    if (folder / SHARD_INDEX).is_file():
+        shard_hashes = _shard_hashes(folder)
+        if shard_hashes is None:
+            files = {}
+        else:
+            files.update(shard_hashes)
     return {"name": name, "snapshot": snapshot, "files": files}
+
+
+def _shard_hashes(folder: Path) -> dict[str, str] | None:
+    """Hash the index file and every shard that its weight map names.
+
+    Returns:
+        The hashes, or None when the index cannot be read or a listed shard is missing, is not
+        a file, or has a name that leaves the folder. Links are followed because the Hugging
+        Face cache layout uses them.
+    """
+    index = folder / SHARD_INDEX
+    try:
+        document = json.loads(index.read_text(encoding="utf-8"))
+        names = sorted({str(name) for name in document["weight_map"].values()})
+    except (OSError, ValueError, KeyError, AttributeError, TypeError):
+        return None
+    result = {SHARD_INDEX: sha256_file(index)}
+    for name in names:
+        parts = name.split("/")
+        if name.startswith(("/", "\\")) or ".." in parts or "" in parts:
+            return None
+        candidate = folder.joinpath(*parts)
+        if not candidate.is_file():
+            return None
+        result[name] = sha256_file(candidate)
+    return result
 
 
 def _library_version(name: str) -> str | None:
