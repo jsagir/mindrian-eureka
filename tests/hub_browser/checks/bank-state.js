@@ -77,7 +77,12 @@ function parts(row) {
     figure: figure ? {
       tree: svg ? tree(svg) : null, role: svg ? svg.getAttribute('role') : null,
       svgCount: figure.querySelectorAll('svg').length,
-      caption: figure.querySelector('figcaption')?.textContent ?? null
+      // Plan 11: the caption is a details element; the legend text is its p, the summary folds it.
+      caption: figure.querySelector('figcaption p')?.textContent ?? null,
+      captionSummary: figure.querySelector('figcaption summary')?.textContent ?? null,
+      captionOpen: figure.querySelector('details.hub-bank-caption')?.open ?? null,
+      summaryVisible: (figure.querySelector('figcaption summary')?.getClientRects().length ?? 0) > 0,
+      figureWidth: svg ? svg.getBoundingClientRect().width : null
     } : null,
     hasSeed: Boolean(row.querySelector('.hub-bank-seed')),
     seedLast: row.lastElementChild.classList.contains('hub-bank-seed')

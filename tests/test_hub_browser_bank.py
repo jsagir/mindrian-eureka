@@ -78,7 +78,7 @@ def test_row_has_the_prototype_parts(tmp_path: Path, browser: str) -> None:
     pairs = {pair["key"]: pair for pair in payload["pairs"]}
     terms = payload["terms"]["pairs"]
     figures = payload["figures"]
-    state = scenario(out, browser, steps=[check("state", parts=4)])["state"]
+    state = scenario(out, browser, steps=[viewport(1280), check("state", parts=4)])["state"]
     assert len(state["parts"]) == 4
     for part in state["parts"]:
         pair = pairs[part["key"]]
@@ -127,7 +127,38 @@ def test_row_has_the_prototype_parts(tmp_path: Path, browser: str) -> None:
         assert figure["svgCount"] == 1 and figure["role"] == "img"
         assert figure["tree"] == canonical(figures["pairs"][pair["key"]]["card"])
         assert figure["caption"] == figures["legend"]["caption"]
+        # Plan 11: the caption is a details element, open from 768 px.
+        assert figure["captionSummary"] == figures["legend"]["summary"]
+        assert figure["captionOpen"] is True
         assert not part["hasSeed"]
+
+
+def test_phone_row_is_bounded_and_the_caption_folds(tmp_path: Path) -> None:
+    """Plan 11 (L5): at 390 px the first row is at most 1050 px tall and its caption folds.
+
+    The bound: the tallest prototype row at 390 px (940.3 px) plus the shared words line
+    (24 px), the caption summary (44 px) and the two grid gaps that carry them (24 px) is
+    1032.3 px, rounded up to 1050 px. Before plan 11 the row was 1153.3 px tall.
+    """
+    require_browser()
+    out = built_hub(tmp_path)
+    legend = build_payload(load_run(tmp_path / "run"))["figures"]["legend"]
+    result = scenario(out, steps=[
+        viewport(390), check("390", parts=1),
+        {"kind": "click", "selector": "#bank-list details.hub-bank-caption summary"},
+        check("390-open", parts=1), viewport(1280), check("1280", parts=1)])
+    height = result["390"]["metrics"][0]["rowHeight"]
+    print(f"first row at 390 px: {height:.1f} px (bound 1050)")
+    assert height <= 1050, height
+    phone = result["390"]["parts"][0]["figure"]
+    assert phone["captionOpen"] is False and phone["summaryVisible"] is True, phone
+    assert phone["captionSummary"] == legend["summary"]
+    assert phone["caption"] == legend["caption"]
+    assert phone["figureWidth"] <= 300.5, phone["figureWidth"]
+    assert result["390-open"]["parts"][0]["figure"]["captionOpen"] is True
+    wide = result["1280"]["parts"][0]["figure"]
+    assert wide["captionOpen"] is True and wide["summaryVisible"] is False, wide
+    assert wide["caption"] == legend["caption"]
 
 
 @pytest.mark.parametrize("browser", ["chromium", "firefox"])
