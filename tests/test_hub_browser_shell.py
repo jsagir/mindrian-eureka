@@ -276,7 +276,15 @@ def test_figure_helper(tmp_path: Path, browser: str) -> None:
     require_browser(browser)
     step = {"kind": "eval", "file": FIGURE, "as": "figure",
             "args": {"good": GOOD_FIGURE, "bad": BAD_FIGURES, "other": OTHER_VALUES}}
-    result = scenario(built_hub(tmp_path), browser, steps=[step])["figure"]
+    out = built_hub(tmp_path)
+    raw = run_scenario({"browser": browser, "url": file_url(out / "hub.html"), "steps": [step]})
+    assert raw["ok"], raw["stepErrors"]
+    assert raw["blockedRequests"] == [] and raw["pageErrors"] == [] and raw["cspViolations"] == []
+    # Firefox reports the malformed control string on the console as an XML parsing error.
+    # That is the refused input, not a page error; no other console error is allowed.
+    errors = [message for message in raw["console"] if message["type"] == "error"]
+    assert all("XML Parsing Error" in message["text"] for message in errors), errors
+    result = raw["results"]["figure"]
     assert result["hasFunction"] and not result["threw"]
     assert result["returned"]
     assert result["tag"] == "svg" and result["namespace"] == NS and result["role"] == "img"

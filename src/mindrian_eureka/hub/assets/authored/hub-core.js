@@ -24,6 +24,16 @@
     "li", "nav", "ol", "option", "p", "section", "select", "small", "span",
     "strong", "summary", "table", "tbody", "td", "th", "thead", "tr", "ul"
   ]);
+  // Generated figures (Phase 2.3.1, D-07): the only tags and attributes a figure string may
+  // carry. The figure generator of the build uses the same two lists; a static test compares
+  // them. Anything else makes app.figure return null. Nothing is ever executed.
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const figureTags = ["svg", "title", "desc", "rect", "line", "circle", "text"];
+  const figureAttrs = [
+    "xmlns", "viewBox", "role", "class", "x", "y", "width", "height", "x1", "y1", "x2", "y2",
+    "cx", "cy", "r", "fill", "stroke", "stroke-width", "stroke-dasharray", "opacity", "aria-hidden"
+  ];
+  const figureTextTags = ["text", "title", "desc"];
   let panel = null;
   let opener = null;
   let started = false;
@@ -177,6 +187,7 @@
         return Number.isFinite(parsed) ? parsed * (value.endsWith("ms") ? 1 : 1000) : 0;
       }
     },
+    figure: function (markup) { return safeFigure(markup); },
     notice: function (text) {
       let region = document.getElementById("hub-notice");
       if (!region) {
@@ -237,16 +248,62 @@
         app.el("p", {}, app.fmt("G14", { version: payload.tool_version,
           fingerprint: payload.run_fingerprint.slice(0, 12), records: payload.counts.records }))
       );
-      ["hub-counts", "hub-nav", "hub-results", "hub-data-check", "hub-panel"].forEach(function (id) {
-        document.getElementById(id).hidden = false;
-      });
+      ["hub-counts", "hub-nav", "hub-header-action", "hub-results", "hub-data-check", "hub-panel"]
+        .forEach(function (id) {
+          const node = document.getElementById(id);
+          if (node) node.hidden = false;
+        });
       app.notice("");
       views.forEach(function (view, name) { view.render(document.getElementById(name)); });
       app.go("bank", { focus: false, route: true });
       route(false);
+      measureHeader();
       app.emit("start", payload);
     }
   };
+
+  function measureHeader() {
+    // The sticky header exposes its measured height, so scroll-padding and the stage of
+    // plan 07 follow the real header (book layout: a sticky stage sets scroll-padding-top
+    // from its own height variable). One read on start, resize and fonts ready; no loop,
+    // because the header height never depends on the variable.
+    const header = document.getElementById("hub-header");
+    if (!header) return;
+    document.documentElement.style.setProperty("--hub-header-height", header.offsetHeight + "px");
+  }
+  function figureNodeOk(element) {
+    if (element.namespaceURI !== SVG_NS || !figureTags.includes(element.localName)) return false;
+    const attributes = Array.from(element.attributes);
+    for (let i = 0; i < attributes.length; i += 1) {
+      const name = attributes[i].name;
+      const value = String(attributes[i].value).toLowerCase();
+      if (name === "id" || !figureAttrs.includes(name)) return false;
+      if (value.includes("url(") || value.includes("javascript:") || value.includes("href")) return false;
+    }
+    const children = Array.from(element.childNodes);
+    if (figureTextTags.includes(element.localName)) {
+      return children.length === 0 || (children.length === 1 && children[0].nodeType === Node.TEXT_NODE);
+    }
+    return children.every(function (child) {
+      return child.nodeType === Node.ELEMENT_NODE && figureNodeOk(child);
+    });
+  }
+  function safeFigure(markup) {
+    // Turn a figure string into a safe SVG element, or return null. XML parse only, an
+    // allow-list of tags and attributes, no id, no url(), no javascript:, no href. The node
+    // is imported, never written as HTML text.
+    if (typeof markup !== "string" || markup.length === 0) return null;
+    try {
+      const parsed = new DOMParser().parseFromString(markup, "image/svg+xml");
+      if (!parsed || parsed.doctype || parsed.getElementsByTagName("parsererror").length) return null;
+      const root = parsed.documentElement;
+      if (!root || root.namespaceURI !== SVG_NS || root.localName !== "svg") return null;
+      if (!figureNodeOk(root)) return null;
+      return document.importNode(root, true);
+    } catch (_) {
+      return null;
+    }
+  }
 
   function localURL(value) {
     return value.length > 0 && !/^[\\/]|[\u0000-\u0020\u007f]|^[a-z][a-z0-9+.-]*:/i.test(value);
@@ -315,7 +372,10 @@
     if (event.key === "Escape" && app.state.panelOpen) app.clearSelection();
   });
   window.HubApp = app;
+  window.addEventListener("resize", measureHeader);
   document.addEventListener("DOMContentLoaded", function () {
+    measureHeader();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureHeader);
     if (!window.HUB_COPY) { fallback(); return; }
     if (!window.HUB && document.getElementById("hub-locked")) return;
     app.start(window.HUB);

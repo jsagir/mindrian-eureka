@@ -390,6 +390,59 @@ def _nav() -> str:
     )
 
 
+def _header(*, locked: bool) -> str:
+    """Return the sticky header (Phase 2.3.1, D-01): lockup, context block, view links, action.
+
+    The lockup is not a link (book `identity/logo`). On the locked page the nav and the action
+    link carry `hidden` and the nav has no child, so the shell shows no route before unlock.
+    """
+    lockup = _el("img", attrs={"src": LOCKUP_FILE, "alt": DECK["G03.lockup_alt"]})
+    context = _el(
+        "div",
+        _el("span", _copy("G03"), {"class": "hub-header-label"})
+        + _el("span", _copy("G05"), {"class": "hub-header-sub"}),
+        {"class": "hub-header-context"},
+    )
+    nav = _el(
+        "nav",
+        "" if locked else _nav(),
+        {"id": "hub-nav", "aria-label": DECK["G10"], "hidden": locked},
+    )
+    action = _el(
+        "a",
+        _copy("D01"),
+        {
+            "id": "hub-header-action",
+            "class": "hub-header-action",
+            "href": "#hub-data-check",
+            "hidden": locked,
+        },
+    )
+    links = _el("div", nav + action, {"class": "hub-header-links"})
+    return _el("header", lockup + context + links, {"id": "hub-header"})
+
+
+def _title_band(face: str, heading: str, meaning: str, status: str) -> str:
+    """Return the title band: eyebrow with a square dot, the display heading, the face."""
+    eyebrow = _el(
+        "p",
+        _el("span", "", {"class": "hub-eyebrow-dot", "aria-hidden": "true"}) + _copy("G04"),
+        {"class": "hub-eyebrow"},
+    )
+    main = _el(
+        "div",
+        eyebrow + _el("h1", heading, {"id": "hub-title", "tabindex": "-1"}),
+        {"class": "hub-title-main"},
+    )
+    image = _el("img", attrs={"id": "hub-face", "src": face, "alt": "", "aria-hidden": "true"})
+    row = _el("div", main + image, {"class": "hub-title-row"})
+    return _el(
+        "div",
+        row + _el("p", meaning, {"id": "hub-meaning"}) + _el("p", status, {"id": "hub-status"}),
+        {"id": "hub-title-band"},
+    )
+
+
 def _data_check(payload: Payload) -> str:
     check = payload["data_check"]
     removed = fill(DECK["D02.removed"], n=check["removed_count"], reason=check["removed_text"])
@@ -421,21 +474,6 @@ def _finish(body: list[str], files: Collection[str], csp: str | None, *, gated: 
 
 
 def _locked_page(files: Collection[str], csp: str | None) -> bytes:
-    header = _el("img", attrs={"src": LOCKUP_FILE, "alt": DECK["G03.lockup_alt"]})
-    header += _el("span", _copy("G03"))
-    title = _el(
-        "img",
-        attrs={
-            "id": "hub-face",
-            "src": FACE_FILES["Boundary"],
-            "alt": "",
-            "aria-hidden": "true",
-        },
-    )
-    title += _el("p", _copy("G04"), {"class": "hub-eyebrow"})
-    title += _el("h1", _copy("L01"), {"id": "hub-title", "tabindex": "-1"})
-    title += _el("p", _copy("L02"), {"id": "hub-meaning"})
-    title += _el("p", attrs={"id": "hub-status"})
     form = _el("label", _copy("L03.label"), {"for": "hub-passphrase"})
     form += _el(
         "input",
@@ -473,14 +511,11 @@ def _locked_page(files: Collection[str], csp: str | None) -> bytes:
                 {"id": name, "data-view": name, "hidden": True},
             )
         )
-    body = [
-        _el("a", _copy("G02"), {"href": "#hub-results", "class": "hub-skip"}),
-        _el("header", header, {"id": "hub-header"}),
-        _el("div", title, {"id": "hub-title-band"}),
+    wrapper = [
+        _title_band(FACE_FILES["Boundary"], _copy("L01"), _copy("L02"), ""),
         _el("div", locked, {"id": "hub-locked", "class": "hub-panel"}),
         _el("div", attrs={"id": "hub-counts", "hidden": True}),
         _el("section", attrs={"id": "hub-band", "hidden": True}),
-        _el("nav", attrs={"id": "hub-nav", "aria-label": DECK["G10"], "hidden": True}),
         _el("main", "".join(views), {"id": "hub-results", "hidden": True}),
         _el(
             "aside",
@@ -494,6 +529,11 @@ def _locked_page(files: Collection[str], csp: str | None) -> bytes:
         ),
         _el("section", attrs={"id": "hub-data-check", "hidden": True}),
         _el("footer", _el("p", _copy("G05")), {"id": "hub-footer"}),
+    ]
+    body = [
+        _el("a", _copy("G02"), {"href": "#hub-results", "class": "hub-skip"}),
+        _header(locked=True),
+        _el("div", "\n".join(wrapper), {"id": "hub-page"}),
         _el("noscript", _el("p", _copy("G13"))),
     ]
     return _finish(body, files, csp, gated=True)
@@ -527,27 +567,14 @@ def render_page(
     if payload is None:
         raise ValueError("An open page requires a payload")
     face = "Rest" if payload["pairs"] else "Limit"
-    header = _el("img", attrs={"src": LOCKUP_FILE, "alt": DECK["G03.lockup_alt"]}) + _el(
-        "span", _copy("G03")
-    )
-    title_band = _el(
-        "img", attrs={"id": "hub-face", "src": FACE_FILES[face], "alt": "", "aria-hidden": "true"}
-    )
-    title_band += _el("p", _copy("G04"), {"class": "hub-eyebrow"})
-    title_band += _el("h1", _copy("B01"), {"id": "hub-title", "tabindex": "-1"})
-    title_band += _el("p", _copy("G07"), {"id": "hub-meaning"})
     status = "" if payload["pairs"] else _copy("B10") + " " + _copy("B11")
-    title_band += _el("p", status, {"id": "hub-status"})
     panel = _el("h2", _copy("P01.heading"), {"id": "hub-panel-title"})
     panel += _el("p", _copy("P01.body"))
     panel += _el("img", attrs={"src": FACE_FILES["Rest"], "alt": "", "aria-hidden": "true"})
-    body = [
-        _el("a", _copy("G02"), {"href": "#hub-results", "class": "hub-skip"}),
-        _el("header", header, {"id": "hub-header"}),
-        _el("div", title_band, {"id": "hub-title-band"}),
+    wrapper = [
+        _title_band(FACE_FILES[face], _copy("B01"), _copy("G07"), status),
         _el("div", _counts(payload), {"id": "hub-counts"}),
         _band(payload),
-        _el("nav", _nav(), {"id": "hub-nav", "aria-label": DECK["G10"]}),
         _el("main", _views(payload), {"id": "hub-results"}),
         _el(
             "aside",
@@ -569,6 +596,11 @@ def render_page(
             ),
             {"id": "hub-footer"},
         ),
+    ]
+    body = [
+        _el("a", _copy("G02"), {"href": "#hub-results", "class": "hub-skip"}),
+        _header(locked=False),
+        _el("div", "\n".join(part for part in wrapper if part), {"id": "hub-page"}),
         _el("noscript", _el("p", _copy("G12"))),
     ]
     return _finish(body, files, csp, gated=False)

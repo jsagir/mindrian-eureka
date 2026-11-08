@@ -5,15 +5,26 @@ with several strings uses dotted keys, for example `G01.bank`. A slot is written
 `{name}` and is filled by `fill`. The deck holds ASCII characters only, no dash
 characters and no internal engine names.
 
-Import rule: the standard library, `..run.contracts` and `.contracts` only.
+The deck is one dict assembled from the literal below and four part modules (Phase 2.3.1,
+plan 03): `copy_theme` (plan 05), `copy_bank` (plan 06), `copy_views` (plan 07) and
+`copy_pages` (plan 08). Each later plan fills its own part, so plans of one wave never edit
+the same file. A key that two sources define raises `ValueError` at import.
+
+Import rule: the standard library, `..run.contracts`, `.contracts` and the four `copy_*`
+part modules only.
 """
 
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable, Mapping
 
 from ..run.contracts import LABEL, UNUSUAL_PAIRS_NAME, WORDING_AND_MEANING_NAME
 from .contracts import js_assignment
+from .copy_bank import COPY as _BANK_COPY
+from .copy_pages import COPY as _PAGES_COPY
+from .copy_theme import COPY as _THEME_COPY
+from .copy_views import COPY as _VIEWS_COPY
 
 # The slot names that the deck may use. `fill` refuses any other name.
 SLOT_NAMES: frozenset[str] = frozenset(
@@ -336,6 +347,26 @@ DECK: dict[str, str] = {
     "E04": "Build the hub again with the current version of MindrianOS Eureka.",
     "E05": "No record has the ID {ID}. Check the ID or search for a word.",
 }
+
+# The four deck parts, in merge order. Empty until their plans land.
+PARTS: tuple[Mapping[str, str], ...] = (_THEME_COPY, _BANK_COPY, _VIEWS_COPY, _PAGES_COPY)
+
+
+def merge_parts(base: dict[str, str], parts: Iterable[Mapping[str, str]]) -> dict[str, str]:
+    """Merge the deck parts into `base` and return it.
+
+    Raises:
+        ValueError: A part defines a key that `base` or an earlier part already holds.
+    """
+    for part in parts:
+        for key, value in part.items():
+            if key in base:
+                raise ValueError(f"deck key defined twice: {key}")
+            base[key] = value
+    return base
+
+
+merge_parts(DECK, PARTS)
 
 
 def fill(text: str, **values: object) -> str:
