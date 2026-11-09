@@ -141,6 +141,7 @@ None yet.
 | 261107-wuy | [Windows launcher: pass the uv sync arguments as an array](quick/261107-wuy-windows-launcher-pass-the-uv-sync-argume/261107-wuy-SUMMARY.md), implementation 4be74df | complete |
 | 261108-0ur | [Verify the MCP reach table and tests on the locked mcp 2.3.0](quick/261108-0ur-verify-the-mcp-reach-table-and-tests-on-/261108-0ur-SUMMARY.md), implementation 67617cb 7840888 | complete |
 | 261108-37h | [Close the Phase 5 verifier warnings W1 to W4 and the bookkeeping](quick/261108-37h-close-the-phase-5-verifier-warnings-and-/261108-37h-SUMMARY.md), implementation 89b55b5 (RED) 59540a2 (fix) | complete |
+| 261109-stage-camera-sample | [Stage camera test: choose the early sample by time and settle the flight before reading](quick/261109-stage-camera-sample/261109-stage-camera-sample-SUMMARY.md), implementation 3c784d7 (RED) f430472 (early sample by time) 622e22c (settled sample) | complete |
 
 ### Blockers/Concerns
 
