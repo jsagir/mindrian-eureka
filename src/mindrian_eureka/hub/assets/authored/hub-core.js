@@ -15,15 +15,22 @@
     "id", "class", "type", "href", "src", "alt", "title", "role", "tabindex",
     "hidden", "disabled", "value", "name", "for", "placeholder", "scope",
     "autocomplete", "autocapitalize", "spellcheck", "checked", "selected",
-    "open", "min", "max", "step", "width", "height", "colspan", "rowspan"
+    "open", "min", "max", "step", "width", "height", "colspan", "rowspan", "rel"
   ]);
   const tagsAllowed = new Set([
     "a", "abbr", "article", "aside", "b", "bdi", "br", "button", "caption", "code",
     "dd", "details", "div", "dl", "dt", "em", "fieldset", "figcaption", "figure",
-    "form", "h1", "h2", "h3", "h4", "hr", "img", "input", "label", "legend",
+    "form", "h1", "h2", "h3", "h4", "header", "hr", "img", "input", "label", "legend",
     "li", "nav", "ol", "option", "p", "section", "select", "small", "span",
     "strong", "summary", "table", "tbody", "td", "th", "thead", "tr", "ul"
   ]);
+  // The pages of the mini site (Phase 2.3.1 plan 08, HUB-11): two page kinds, built by the
+  // page script through registerPage. The route grammar is fixed (docs/brand/hub-site-rules.md).
+  const pageKinds = ["pair", "record"];
+  const pages = new Map();
+  const pageParents = { pair: "bank", record: "catalogue" };
+  const RANK = /^[1-9][0-9]{0,8}$/;
+  let site = null;
   // Generated figures (Phase 2.3.1, D-07): the only tags and attributes a figure string may
   // carry. The figure generator of the build uses the same two lists; a static test compares
   // them. Anything else makes app.figure return null. Nothing is ever executed.
@@ -45,9 +52,12 @@
     state: {
       view: "bank", selection: null,
       filters: { engine: "both", weak: false, query: "", file: "all", inPair: "all", pairClass: "all" },
-      panelOpen: false
+      panelOpen: false, page: null
     },
-    index: { records: new Map(), pairs: new Map(), hoods: new Map() },
+    // Where the person is and was (a view name or "kind:key"), the scroll offset and the
+    // opener link of each view, so a return from a page keeps the place.
+    nav: { current: null, previous: null, scroll: {}, opener: {} },
+    index: { records: new Map(), pairs: new Map(), hoods: new Map(), byRank: new Map() },
     fmt: function (id, values) {
       const text = app.copy && app.copy[id];
       if (typeof text !== "string") throw new Error("Unknown copy key: " + id);
@@ -104,6 +114,11 @@
       panel = value;
       if (app.state.selection) panel.show(app.state.selection, opener);
     },
+    registerPage: function (kind, builder) {
+      if (!pageKinds.includes(kind)) throw new Error("Unknown page kind");
+      if (typeof builder !== "function") throw new Error("A page builder is a function");
+      pages.set(kind, builder);
+    },
     select: function (selection, source) {
       const index = selection && selection.type === "record" ? app.index.records : app.index.pairs;
       const key = selection && (selection.type === "record" ? selection.id : selection.key);
@@ -137,6 +152,7 @@
     },
     go: function (name, options) {
       if (!started || !names.includes(name)) return;
+      leavePage();
       app.state.view = name;
       names.forEach(function (view) {
         const section = document.getElementById(view);
@@ -154,6 +170,7 @@
       document.getElementById("hub-title").textContent = app.fmt(headings[name]);
       document.title = app.fmt("G01." + name);
       if (!options || !options.route) address("#" + name);
+      track(name);
       app.emit("view", name);
       if (!options || options.focus !== false) document.getElementById("hub-title").focus();
     },
@@ -209,6 +226,7 @@
       app.index.records = new Map(payload.records.map(function (r) { return [r.id, r]; }));
       app.index.pairs = new Map(payload.pairs.map(function (p) { return [p.key, p]; }));
       app.index.hoods = new Map(payload.hoods.map(function (h) { return [h.number, h]; }));
+      app.index.byRank = new Map(payload.pairs.map(function (p) { return [p.engine + ":" + p.rank, p]; }));
       started = true;
       document.documentElement.classList.add("js");
       document.getElementById("hub-meaning").textContent = app.fmt("G07");
@@ -231,7 +249,13 @@
           app.el("span", { class: "hub-nav-short", "aria-hidden": "true" }, app.fmt("G09." + name + ".short")),
           app.el("span", { class: "hub-nav-long", "aria-hidden": "true" }, app.fmt("G09." + name + ".long"))
         ]);
-        link.addEventListener("click", function (event) { event.preventDefault(); app.go(name); });
+        link.addEventListener("click", function (event) {
+          event.preventDefault();
+          // From a page the view is a route change, so the page stays in the history and the
+          // browser's own Back returns to it. On a view the switch is in place, as before.
+          if (app.state.page) window.location.hash = "#/" + (name === "bank" ? "" : name);
+          else app.go(name);
+        });
         nav.appendChild(link);
       });
       const check = payload.data_check;
@@ -255,9 +279,17 @@
           if (node) node.hidden = false;
         });
       app.notice("");
+      // The hub places the scroll itself: a page opens at its top and a view gets its saved
+      // offset back (restorePlace), so the browser's own restoration must not overwrite it.
+      if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
+      // The page section sits after the views; empty and hidden until a page route is shown.
+      site = app.el("section", { id: "hub-site", hidden: true });
+      document.getElementById("hub-results").appendChild(site);
       views.forEach(function (view, name) { view.render(document.getElementById(name)); });
       app.go("bank", { focus: false, route: true });
       route(false);
+      // A page opened by a direct link has no previous page in this document.
+      app.nav.previous = null;
       measureHeader();
       app.emit("start", payload);
     }
@@ -350,10 +382,113 @@
     status.classList.add("hub-error");
     status.replaceChildren(app.el("h2", {}, app.fmt(heading)), app.el("p", {}, app.fmt(body)));
   }
+  function track(key) {
+    if (app.nav.current === key) return;
+    app.nav.previous = app.nav.current;
+    app.nav.current = key;
+  }
+  // The route grammar of the mini site (plan 08). Every hash that starts with "/" is parsed
+  // here; any other hash keeps the Phase 2.1 path (view names, in-page anchors, record ids).
+  // A rank is 1 to 9 digits with no leading zero; an engine key must be an own property of
+  // the payload engines; a record id is decoded in a try block and looked up in the index.
+  function parseHash(raw) {
+    if (raw === "/") return { kind: "view", name: "bank" };
+    if (raw === "/graph" || raw === "/catalogue") return { kind: "view", name: raw.slice(1) };
+    if (raw.startsWith("/pair/")) {
+      const parts = raw.slice(6).split("/");
+      if (parts.length !== 2 || !RANK.test(parts[1])) return { kind: "unknown" };
+      if (!Object.prototype.hasOwnProperty.call(app.data.engines, parts[0])) return { kind: "unknown" };
+      const pair = app.index.byRank.get(parts[0] + ":" + parts[1]);
+      return pair ? { kind: "pair", key: pair.key, item: pair } : { kind: "unknown" };
+    }
+    if (raw.startsWith("/record/")) {
+      let id;
+      try { id = decodeURIComponent(raw.slice(8)); } catch (_) { return { kind: "unknown" }; }
+      const record = app.index.records.get(id);
+      return record ? { kind: "record", key: id, item: record } : { kind: "unknown" };
+    }
+    return { kind: "unknown" };
+  }
+  function leavePage() {
+    if (!app.state.page) return;
+    document.getElementById("hub-page").classList.remove("hub-on-page");
+    if (site) { site.hidden = true; site.replaceChildren(); }
+    app.state.page = null;
+    app.emit("page", null);
+  }
+  function showPage(kind, key, item, focus) {
+    const builder = pages.get(kind);
+    const built = builder ? builder(item) : null;
+    if (!built || !site) { app.notice(app.fmt("E05", { ID: window.location.hash.slice(1) })); return; }
+    if (app.state.panelOpen) app.clearSelection();
+    if (!app.state.page) {
+      // Coming from a view: keep its place (the scroll offset and the link that was used).
+      const view = app.state.view;
+      const section = document.getElementById(view);
+      const active = document.activeElement;
+      // Only the view that was just left keeps its place; an older place of another view
+      // would otherwise come back when the knob follows its link to that view.
+      app.nav.scroll = {};
+      app.nav.opener = {};
+      app.nav.scroll[view] = window.scrollY;
+      app.nav.opener[view] = active && active.tagName === "A" && section && section.contains(active)
+        ? active.getAttribute("href") : null;
+    }
+    app.state.page = { kind: kind, key: key };
+    document.getElementById("hub-page").classList.add("hub-on-page");
+    site.replaceChildren.apply(site, built.nodes);
+    site.hidden = false;
+    document.querySelectorAll("#hub-nav a").forEach(function (link) { link.removeAttribute("aria-current"); });
+    const parent = document.querySelector('#hub-nav a[href="#' + pageParents[kind] + '"]');
+    if (parent) parent.setAttribute("aria-current", "true");
+    document.title = String(built.title);
+    track(kind + ":" + key);
+    const region = document.getElementById("hub-notice");
+    if (region && region.textContent) region.textContent = "";
+    if (focus !== false) {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      built.heading.focus({ preventScroll: true });
+    }
+    app.emit("page", app.state.page);
+  }
+  function restorePlace(name, fromPage) {
+    if (!fromPage) return;
+    const section = document.getElementById(name);
+    const href = app.nav.opener[name];
+    if (section && typeof href === "string") {
+      const match = Array.from(section.querySelectorAll("a[href]")).find(function (link) {
+        return link.getAttribute("href") === href && link.getClientRects().length > 0;
+      });
+      if (match) match.focus({ preventScroll: true });
+    }
+    if (typeof app.nav.scroll[name] === "number") {
+      window.scrollTo({ top: app.nav.scroll[name], left: 0, behavior: "instant" });
+    }
+  }
   function route(focus) {
     if (!started) return;
     const raw = window.location.hash.slice(1);
-    if (!raw || names.includes(raw)) { app.go(raw || "bank", { focus: focus, route: true }); return; }
+    // Read before the view changes: a return from a page (by the Back knob through
+    // history.back(), which lands on the entry's own hash, "" or "#bank" as well as "#/")
+    // gets its place on the list back.
+    const fromPage = app.state.page !== null;
+    if (raw.startsWith("/")) {
+      const parsed = parseHash(raw);
+      if (parsed.kind === "view") {
+        app.go(parsed.name, { focus: focus, route: true });
+        restorePlace(parsed.name, fromPage);
+      } else if (parsed.kind === "unknown") {
+        app.notice(app.fmt("E05", { ID: raw }));
+      } else {
+        showPage(parsed.kind, parsed.key, parsed.item, focus);
+      }
+      return;
+    }
+    if (!raw || names.includes(raw)) {
+      app.go(raw || "bank", { focus: focus, route: true });
+      restorePlace(raw || "bank", fromPage);
+      return;
+    }
     // An in-page anchor is not a record: the browser scrolls to it by itself, and no E05
     // notice is raised. Record ids that start with "hub-" use the "#record:" form, so no
     // record collides with these four names.
@@ -369,8 +504,34 @@
   }
   media.addEventListener("change", function (event) { app.motion.reduced = event.matches; });
   window.addEventListener("hashchange", function () { route(true); });
+  function backKnob() { return site ? site.querySelector("a[data-back]") : null; }
+  // The Back knob rule (plan 08): when the previous page is the parent of this page, go back
+  // in the history so the place on the list returns; otherwise the link navigates.
+  document.addEventListener("click", function (event) {
+    if (event.defaultPrevented || event.button !== 0) return;
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    const knob = event.target instanceof Element ? event.target.closest("#hub-site a[data-back]") : null;
+    if (!knob) return;
+    if (app.nav.previous === knob.getAttribute("data-back") && window.history.length > 1) {
+      event.preventDefault();
+      window.history.back();
+    }
+  });
   document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape" && app.state.panelOpen) app.clearSelection();
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+    const target = event.target instanceof Element ? event.target : null;
+    if (target && (target.matches("input, textarea, select") || target.isContentEditable)) return;
+    if (event.key === "Escape") {
+      if (app.state.panelOpen) { app.clearSelection(); return; }
+      const knob = app.state.page ? backKnob() : null;
+      if (knob) knob.click();
+      return;
+    }
+    if (!app.state.page || !site) return;
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      const link = site.querySelector(event.key === "ArrowLeft" ? 'a[rel="prev"]' : 'a[rel="next"]');
+      if (link) window.location.hash = link.getAttribute("href");
+    }
   });
   window.HubApp = app;
   window.addEventListener("resize", measureHeader);

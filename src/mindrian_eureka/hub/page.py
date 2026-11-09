@@ -36,6 +36,8 @@ STYLE_ORDER = (
     "hub-catalogue.css",
     "hub-panel.css",
     "hub-graph.css",
+    # The pair and record pages (plan 08): after the views, before the gate and the theme.
+    "hub-pages.css",
     "hub-gate.css",
     # The theme sheet stays last (plan 05): its dark set wins over equal rules of other sheets.
     "hub-theme.css",
@@ -70,6 +72,7 @@ SCRIPT_ORDER = (
     "hub-catalogue.js",
     "hub-panel.js",
     "hub-graph.js",
+    "hub-pages.js",
     "hub-gate.js",
 )
 _VOID_TAGS = frozenset({"meta", "link", "img", "input"})
