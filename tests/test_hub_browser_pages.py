@@ -477,10 +477,11 @@ def test_unknown_and_hostile_routes(tmp_path: Path, browser: str) -> None:
     out = built_hub(tmp_path, hostile=True)
     hostile = build_payload(load_run(tmp_path / "run"))
     steps = []
-    for record_id in ("bank", "hub-results", "__proto__"):
+    # The probe name is not the id: a result key "__proto__" would not survive JSON.
+    for index, record_id in enumerate(("bank", "hub-results", "__proto__")):
         steps.append(
             pages(
-                record_id,
+                f"hostile-{index}",
                 hash=record_route(record_id),
                 waitHash=record_route(record_id),
                 content=True,
@@ -493,8 +494,8 @@ def test_unknown_and_hostile_routes(tmp_path: Path, browser: str) -> None:
         pages("legacy-catalogue", hash="#catalogue"),
     ]
     result = scenario(out, browser, steps=steps)
-    for record_id in ("bank", "hub-results", "__proto__"):
-        state = result[record_id]
+    for index, record_id in enumerate(("bank", "hub-results", "__proto__")):
+        state = result[f"hostile-{index}"]
         record = record_of(hostile, record_id)
         assert state["page"] == {"kind": "record", "key": record_id}
         assert state["h1s"] == [record["title"]], state["h1s"]
@@ -685,7 +686,7 @@ def test_pair_page_content(tmp_path: Path, browser: str) -> None:
     assert len(bare["content"]["numerals"]) == 2 and len(bare["content"]["records"]) == 2
     assert bare["siteCounts"]["svg"] == 0
     # A weak pair carries the same hidden wording as its bank row.
-    out = built_hub(tmp_path / "weak")
+    out = built_hub(tmp_path / "weak", wording_floor=0.5, percentile_below_floor=3)
     synthetic = build_payload(load_run(tmp_path / "weak" / "run"))
     weak = next((p for p in synthetic["pairs"] if p["weak"]), None)
     assert weak is not None, "the synthetic run has a weak pair"
@@ -901,10 +902,22 @@ def test_record_page_content(tmp_path: Path, browser: str) -> None:
         in result["copy"]["content"]["flags"]
     )
     assert DECK["P09.no_text"] in result["empty"]["content"]["flags"]
-    assert (
-        result["empty"]["content"]["words"] == []
-        and result["empty"]["content"]["noWords"] == DECK["G19.record.no_words"]
-    )
+    # Without the words of plan 02 (the key removed), the record page says so.
+    state = scenario(
+        out,
+        browser,
+        steps=[
+            pages(
+                "no-terms",
+                deleteKeys=["terms"],
+                hash=record_route(copy["id"]),
+                waitPage="page",
+                content=True,
+            )
+        ],
+    )["no-terms"]
+    assert state["content"]["words"] == []
+    assert state["content"]["noWords"] == DECK["G19.record.no_words"]
     # A record in no pair.
     out = built_hub(tmp_path / "few", n_records=30, pairs_per_engine=2)
     few = build_payload(load_run(tmp_path / "few" / "run"))

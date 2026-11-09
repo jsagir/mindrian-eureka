@@ -1,0 +1,179 @@
+/* The pair and record pages of the mini site (Phase 2.3.1 plan 08, HUB-11, HUB-06). Colours
+   come only from the tokens, so the dark theme of plan 05 works with no second set. Page mode:
+   the title band, the counts, the run reading band and the three views hide; the header, the
+   footer and the data check stay. The twin and the drawing switch at 768 px (LD-34,
+   docs/brand/hub-site-rules.md section 6). Patterns: the owner's prototype of 2026-11-08,
+   not Refero. */
+#hub-page.hub-on-page #hub-title-band,
+#hub-page.hub-on-page #hub-counts,
+#hub-page.hub-on-page #hub-band,
+#hub-page.hub-on-page [data-view] { display: none; }
+/* The empty desktop panel ("nothing selected") belongs to the views; a page is the full read. */
+#hub-page.hub-on-page #hub-panel.hub-panel-empty { display: none; }
+#hub-site[hidden] { display: none; }
+#hub-site { padding-block-end: var(--hub-space-8); }
+/* Crumbs: mono, soft, a slash between items, 44 px links. */
+.hub-crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
+  margin: var(--hub-space-6) 0 var(--hub-space-3);
+  padding: 0;
+  font-family: var(--mos-font-code);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--mos-soft);
+}
+.hub-crumbs li { display: inline-flex; align-items: center; min-block-size: 44px; }
+.hub-crumbs li + li::before { content: "/"; margin-inline: 8px; }
+.hub-crumbs a { color: var(--mos-soft); display: inline-flex; align-items: center; min-block-size: 44px; font-size: 13px; }
+.hub-crumbs [aria-current="page"] { color: var(--mos-ink); font-weight: 600; }
+/* Knobs: Back, the position, Previous and Next. A missing knob is a dimmed word, not a control
+   (PS-02). Chevrons are drawn with borders, no image. */
+.hub-knobs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--hub-space-3) var(--hub-space-4);
+  margin-block: var(--hub-space-3) var(--hub-space-5);
+  padding-block: var(--hub-space-3);
+  border-block: 1px solid var(--hub-line);
+}
+.hub-knob {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--mos-ink);
+  background: var(--mos-paper);
+  color: var(--mos-ink);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color var(--mos-time-feedback), color var(--mos-time-feedback);
+}
+.hub-knob:hover, .hub-knob:focus-visible { background: var(--mos-ink); color: var(--mos-paper); }
+.hub-knob--back { border-width: 2px; }
+.hub-knob--off { border-color: var(--hub-line); color: var(--mos-soft); cursor: default; }
+.hub-knob--off:hover { background: var(--mos-paper); color: var(--mos-soft); }
+.hub-knob--back::before, .hub-knob--prev::before, .hub-knob--next::after {
+  content: "";
+  display: inline-block;
+  inline-size: 8px;
+  block-size: 8px;
+  border-block-end: 2px solid currentColor;
+}
+.hub-knob--back::before, .hub-knob--prev::before { border-inline-start: 2px solid currentColor; transform: rotate(45deg); }
+.hub-knob--next::after { border-inline-end: 2px solid currentColor; transform: rotate(-45deg); }
+.hub-knob-pos {
+  font-family: var(--mos-font-code);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--mos-soft);
+}
+.hub-knob-pair { display: flex; gap: var(--hub-space-3); inline-size: 100%; justify-content: space-between; }
+/* Head and text of a page. */
+.hub-site-head {
+  padding-block-end: var(--hub-space-4);
+  margin-block-end: var(--hub-space-5);
+  border-block-end: 1px solid var(--mos-ink);
+}
+.hub-site-head .hub-eyebrow { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--hub-space-3); }
+.hub-site-head .hub-eyebrow .hub-eyebrow-dot { margin-inline-end: 0; }
+.hub-site-title {
+  font-family: var(--mos-font-display);
+  font-weight: 700;
+  font-size: clamp(30px, 3.6vw, 44px);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  max-inline-size: 28ch;
+  margin: 0 0 var(--hub-space-3);
+}
+.hub-site-and { font-weight: 400; color: var(--mos-soft); }
+.hub-site-head .hub-chip { margin-inline-end: var(--hub-space-3); }
+.hub-site-nums { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--hub-space-5); margin-block: var(--hub-space-4); }
+.hub-site-nums .hub-mono { align-self: center; margin: 0; color: var(--mos-soft); }
+.hub-site-reading { font-size: 18px; line-height: 1.5; font-weight: 500; max-inline-size: 62ch; }
+.hub-pair-also-line { font-size: 16px; }
+.hub-site-use { margin-block: var(--hub-space-5); border-block-start: 1px solid var(--hub-line); padding-block-start: var(--hub-space-3); max-inline-size: 72ch; }
+/* The detail figure and its real-text twin. Under 768 px the twin shows and the drawing is
+   not drawn (its text would fall under the 13 px floor); from 768 px the drawing shows and the
+   twin is visually hidden but read by assistive technology. */
+.hub-pair-figure-block { margin: var(--hub-space-5) 0; }
+.hub-pair-figure { display: none; }
+.hub-pair-twin {
+  border: 1px solid var(--mos-ink);
+  background: var(--mos-white);
+  padding: var(--hub-space-4);
+  margin-block: var(--hub-space-4);
+}
+.hub-pair-twin h2 { margin-block: 0 var(--hub-space-3); font-size: 20px; }
+.hub-pair-twin dl { display: grid; gap: var(--hub-space-3); margin: 0; }
+.hub-pair-twin dt {
+  font-family: var(--mos-font-code);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--mos-soft);
+}
+.hub-pair-twin dd { margin: 0; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
+.hub-pair-twin p { font-size: 14px; line-height: 1.5; color: var(--mos-soft); margin-block: var(--hub-space-3) 0; }
+.hub-pair-figure-block figcaption { font-size: 14px; line-height: 1.5; color: var(--mos-soft); max-inline-size: 72ch; }
+.hub-pair-legend summary { display: flex; align-items: center; min-block-size: 44px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.hub-pair-legend p { font-size: 14px; line-height: 1.5; color: var(--mos-soft); margin-block: var(--hub-space-2); }
+/* The meaning of the score and the two record cards. */
+.hub-site-meaning details summary { font-size: 16px; font-weight: 600; }
+.hub-site-record-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--hub-space-5); }
+.hub-site-record { border-block-start: 2px solid var(--mos-ink); padding-block-start: var(--hub-space-3); min-inline-size: 0; }
+.hub-site-record h3 { font-size: 22px; line-height: 1.25; margin-block: var(--hub-space-3); }
+.hub-site-record h3 a { color: var(--mos-ink); text-decoration: none; min-block-size: 44px; }
+.hub-site-record h3 a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
+.hub-site-record a.hub-mono { min-block-size: 44px; }
+.hub-site-excerpt { font-size: 16px; line-height: 1.55; }
+.hub-site-record-read { font-weight: 600; min-block-size: 44px; }
+/* The record page: the source line, the prose, the words, the pair list. */
+.hub-site-source { display: flex; flex-wrap: wrap; align-items: center; gap: var(--hub-space-2) var(--hub-space-4); color: var(--mos-soft); margin-block: var(--hub-space-4); }
+.hub-site-source a { min-block-size: 44px; font-size: 13px; }
+.hub-site-prose p { font-size: 17px; line-height: 1.6; max-inline-size: 68ch; }
+.hub-site-words ul { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
+.hub-site-words li { font-size: 13px; }
+.hub-site-pair-list { list-style: none; padding: 0; margin: 0; }
+.hub-site-pair {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: var(--hub-space-4);
+  padding-block: var(--hub-space-4);
+  border-block-end: 1px solid var(--hub-line);
+}
+.hub-site-thumb { inline-size: 96px; }
+.hub-site-thumb .hub-figure { inline-size: 100%; block-size: auto; }
+.hub-site-pair-body p { margin-block: 0 var(--hub-space-2); }
+.hub-site-pair a { display: inline-flex; align-items: center; min-block-size: 44px; }
+.hub-site-pair-link { font-weight: 700; }
+.hub-site-pair-engine { font-size: 13px; color: var(--mos-soft); }
+.hub-site-pair-nums { display: flex; flex-wrap: wrap; gap: var(--hub-space-4); }
+.hub-site-pair-nums .hub-bank-numeral { font-size: 22px; }
+@media (min-width: 768px) {
+  .hub-knob-pair { inline-size: auto; margin-inline-start: auto; }
+  .hub-pair-figure { display: block; margin-block: var(--hub-space-5) var(--hub-space-3); }
+  .hub-pair-twin {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+  .hub-site-record-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub-knob { transition: none; }
+}
