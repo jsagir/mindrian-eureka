@@ -5,7 +5,7 @@ milestone_name: milestone
 status: executing
 stopped_at: Phase 5 verified human_needed; quick task 261108-37h closed warnings W1 to W4; 05-08 open at the owner-run GPU spike
 last_updated: "2026-11-08T09:32:20.640Z"
-last_activity: 2026-11-09 -- Phase 02.3.1 wave 4 closed (gap plan 11 done; full suite green); plan 08 starting
+last_activity: 2026-11-09 -- Phase 02.3.1 wave 5 closed (plan 08 pages and router done; full suite 2306 passed, 8 skipped); waiting on the owner look (plan 09)
 progress:
   total_phases: 10
   completed_phases: 8
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-10-23)
 ## Current Position
 
 Phase: 02.3.1 (Hub look matches the live JHTV site) — EXECUTING
-Plan: 10 of 11 (9 done: 01 to 07, 10, 11; next 08 pages and router, then 09 owner brand stop)
+Plan: 11 of 11 (10 done: 01 to 08, 10, 11; plan 09 = owner brand stop, hub built for the look at Downloads/eureka-hub-look-09)
 Status: Executing Phase 02.3.1
 Last activity: 2026-11-08 -- Phase 02.3.1 execution started
 
