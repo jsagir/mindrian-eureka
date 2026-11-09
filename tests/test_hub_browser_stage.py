@@ -123,6 +123,33 @@ def test_camera_selection_tour_find_zoom_reset(tmp_path: Path, browser: str, red
     assert not selected["unwantedControls"]
 
 
+def test_early_sample_is_chosen_by_time_not_index() -> None:
+    """A browser-free fixture that mimics starved animation frames under machine load.
+
+    The check script samples the camera by timer at 100, 600 and 1200 ms and records the
+    elapsed time `at`. Under load the 600 ms timer fires after the 760 ms flight has drawn
+    its final frame, so the sample by index sits at the final geometry (distance 100) and
+    the early-geometry assertion fails. The early sample is chosen by `at`, never by index.
+    """
+    origin = {"x": 0.0, "y": 0.0, "z": 0.0}
+
+    def sample(at: float, z: float) -> dict:
+        return {"at": at, "position": {"x": 0.0, "y": 0.0, "z": z}, "aim": origin, "calls": 1}
+
+    starved = [sample(101.0, 300.0), sample(901.0, 100.0), sample(1201.0, 100.0)]
+    # The index-based pick lands on the final geometry: this is the failure under load.
+    assert not distance(starved[1]["position"], starved[1]["aim"]) > 100.01
+    early = early_sample(starved, 760)
+    assert early is starved[0]
+    assert distance(early["position"], early["aim"]) > 100.01
+    # Below 40 percent of 760 ms (304 ms) is early; at or past it is not.
+    assert early_sample([sample(303.0, 200.0)], 760) is not None
+    assert early_sample([sample(304.0, 200.0)], 760) is None
+    # Every timer late: no early sample exists, the early-geometry assertion is not applicable.
+    assert early_sample([sample(400.0, 100.0), sample(901.0, 100.0)], 760) is None
+    assert early_sample([], 760) is None
+
+
 @pytest.mark.parametrize("browser", ["chromium", "firefox"])
 @pytest.mark.parametrize("failure", ["webgl", "missing", "throwing"])
 def test_fallbacks(tmp_path: Path, browser: str, failure: str) -> None:
