@@ -47,6 +47,14 @@ if (graph && args.action) {
     await new Promise(r=>setTimeout(r,Math.max(0,started+delay-performance.now())));
     timeline.push({at:performance.now()-started,position:position(),aim:{...graph.controls().target},calls:moves.length});
   }
+  // Quick 261109: under machine load the browser starves animation frames, so the time-based
+  // 760 ms flight may not have drawn its final frame by the last timer. The flight's pending
+  // frame callback was registered first, so the next frame moves the camera to the final
+  // geometry and the frame after it renders it (the renderer updates the camera matrices that
+  // graph2ScreenCoords reads). The settled sample is additive: it is the last timeline entry
+  // and carries settled:true.
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  timeline.push({at:performance.now()-started,position:position(),aim:{...graph.controls().target},calls:moves.length,settled:true});
 }
 if (graph && args.nodeTip) {
   const node=graph.graphData().nodes.find(n=>n.record.title.includes('<script>')) || graph.graphData().nodes[0];
