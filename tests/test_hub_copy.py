@@ -44,8 +44,8 @@ def test_every_spec_id_has_a_deck_key() -> None:
     ids = spec_ids()
     assert len(ids) == len(set(ids))
     # G01-G16, B01-B16, Gr01-Gr19, C01-C11, P01-P10, D01-D03, L01-L08, E01-E05,
-    # plus G17 (the run reading band, Phase 2.3.1 D-04)
-    assert len(ids) == 16 + 16 + 19 + 11 + 10 + 3 + 8 + 5 + 1
+    # plus G17 (the run reading band, Phase 2.3.1 D-04) and G19 (the pages, plan 08)
+    assert len(ids) == 16 + 16 + 19 + 11 + 10 + 3 + 8 + 5 + 2
     missing = [
         spec_id
         for spec_id in ids
