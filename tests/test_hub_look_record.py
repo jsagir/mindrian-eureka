@@ -181,7 +181,7 @@ def test_capture_script_runs_no_book_write_command() -> None:
     assert calls, "the script has no book CLI call list"
     assert all(call.strip() == '"doctor"' for call in calls), calls
     assert len(calls) == 1, "every book CLI call goes through one helper"
-    control = text + "\nsubprocess.run(['node', 'mos-brand.cjs', 'asset', '--replace'])\n"
+    control = text + "\n# node ~/mos-brand/bin/mos-brand.cjs asset --replace\n"
     assert WRITE_VERB.search(control), "the negative control did not trip the check"
 
 

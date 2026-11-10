@@ -1,0 +1,243 @@
+{
+  "budget_bytes": 8000000,
+  "capture_command": "PYTHONPATH=src python3 scripts/hub_look_capture.py --shots-dir /tmp/claude-1000/-home-jsagi/14832b10-ed3e-4b02-b77a-c3e107ee0136/scratchpad/hub-look-shots",
+  "files": [
+    {
+      "bytes": 132681,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/bank-1280.jpg",
+      "sha256": "82fde25696ab1fea4a3d086a9e4a6f63fbc806ebd2780f9fb368c7a00d7eb4f2"
+    },
+    {
+      "bytes": 135785,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/bank-1600.jpg",
+      "sha256": "3af579874fcf0788b5d5e329cdaecf9da4402e3ba6301ea145b0c705518bdf29"
+    },
+    {
+      "bytes": 52420,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/bank-320.jpg",
+      "sha256": "320b7be4c48d2d8afcf489538e2613bb42f9651037af4a87bf5f998b90847858"
+    },
+    {
+      "bytes": 55901,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/bank-390.jpg",
+      "sha256": "d3607811c2db277969d1e2e814a17e16d97b1216caeca983fc723b0450cb3450"
+    },
+    {
+      "bytes": 82445,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/bank-768.jpg",
+      "sha256": "a450269e1cee147d567752a0a60a5cef47c424a797a2a7fa999827cadd96bd23"
+    },
+    {
+      "bytes": 106753,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/catalogue-1280.jpg",
+      "sha256": "8c07c92eb4514b411dea3a6cd851169700f843b8ab78d6ce64b3f4329bc90f91"
+    },
+    {
+      "bytes": 109843,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/catalogue-1600.jpg",
+      "sha256": "dc67a2516ea1118f3510270846d9ecd0a4014f74f52756a7cf5964fc12142480"
+    },
+    {
+      "bytes": 39306,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/catalogue-320.jpg",
+      "sha256": "36acd36f4e9f0bae139ab15454964874a378e036b53281494099436e8fccb685"
+    },
+    {
+      "bytes": 41592,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/catalogue-390.jpg",
+      "sha256": "6a142e812d6f6975ba7621f5c2b1618ab1785cfb41dcbe1d925b01e717f65f4d"
+    },
+    {
+      "bytes": 73016,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/catalogue-768.jpg",
+      "sha256": "c242008a713d5db80588a1d45f78162588741092bd3f913e894cac619774d915"
+    },
+    {
+      "bytes": 130137,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/dark-bank-1280.jpg",
+      "sha256": "73748396363a22e0568f5a777b77932e06ad543962987a68a13492ee7ea20bfa"
+    },
+    {
+      "bytes": 55160,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/dark-bank-390.jpg",
+      "sha256": "07ffa8d43b4a37707bee27efc880e0f5a71dcaab76266ec28a4a8c820fbab06e"
+    },
+    {
+      "bytes": 104185,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/dark-catalogue-1280.jpg",
+      "sha256": "77633d7bd7e057f1e76e321ad4b3bda0dfe2c3cb765c3dd53da89cc0fa57453e"
+    },
+    {
+      "bytes": 149979,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/dark-graph-1280.jpg",
+      "sha256": "c2252b444f331a7d3cad1a64837ed542655cb9477d44078a5458569c381e8da8"
+    },
+    {
+      "bytes": 112454,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/dark-pair-1280.jpg",
+      "sha256": "e83f2a3979575b8e6d53cbbf8b85f9f37361824082c9b7faa51ffccf48172ed0"
+    },
+    {
+      "bytes": 122312,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/dark-panel-pair-1280.jpg",
+      "sha256": "43b5442ed98003c781142635db8d74f3699caee65c865e37cf330bbf9534a5cc"
+    },
+    {
+      "bytes": 60555,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/dark-record-390.jpg",
+      "sha256": "429f65f1f4a6e986c673e630864cfe1537c9ab9ffcf48405f848f9a8c00236af"
+    },
+    {
+      "bytes": 119243,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/dark-top-1280.jpg",
+      "sha256": "306bc19a599deeb2ac9dae116c0a3f7909a8f0fde57ae47b327d7aa01549a943"
+    },
+    {
+      "bytes": 173616,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/diagram-1280.jpg",
+      "sha256": "f2b31ae004c2f69bdca62f54c907a25e6b74f80bb6649fdd7bd802e8613e1f16"
+    },
+    {
+      "bytes": 93082,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/empty-1280.jpg",
+      "sha256": "c99542f0c08d9eed412751dcd5e9b37cb39f4ec1b86d51ab369c9f1b5a09bb9c"
+    },
+    {
+      "bytes": 158974,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/graph-1280.jpg",
+      "sha256": "22c5a5e828d0072b17e4637ed8411e7363ffa0ff9b738eaef26c8c6393412f50"
+    },
+    {
+      "bytes": 169702,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/graph-1600.jpg",
+      "sha256": "1e0db2a871a2249fe0446e047d32affb24f6d2b67bbf0114663a246375c2fe5b"
+    },
+    {
+      "bytes": 37448,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/graph-320.jpg",
+      "sha256": "b81a403b40b4a8780e6c56012db88413b3120921672d12c6c00df2dffb69ed5f"
+    },
+    {
+      "bytes": 43362,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/graph-390.jpg",
+      "sha256": "772bcada2cf2f655d2172dfa610d52ee689b064d173ae74fbf919a131c1549f8"
+    },
+    {
+      "bytes": 103601,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/graph-768.jpg",
+      "sha256": "3618c613337e9032f89e5d7debb17dab6ec0f776b23f3b9971a2f6ff7ee1e508"
+    },
+    {
+      "bytes": 67665,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/locked-1280.jpg",
+      "sha256": "b880440b850fd351555f9585bc6d05c66d6aea48b4ba1032bfc4e807d05b5000"
+    },
+    {
+      "bytes": 46283,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/locked-390.jpg",
+      "sha256": "df67f178cdb4d43eba1ccb621277c89e9609f858953f8b1498c949ecbd4a50ff"
+    },
+    {
+      "bytes": 115435,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/pair-1280.jpg",
+      "sha256": "4923b9935d50cee2421df145da9e1061d805b6bc65a28456083990040dcb6a08"
+    },
+    {
+      "bytes": 118584,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/pair-1600.jpg",
+      "sha256": "1d68fa0ecaabcdfa2def06276b01d917b27a84e019fc9a2120eea0c111878f09"
+    },
+    {
+      "bytes": 55960,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/pair-320.jpg",
+      "sha256": "913bae37563c63963b3ca59f81fa6c602d8656f92ddf02f647319bb0a7ced241"
+    },
+    {
+      "bytes": 60382,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/pair-390.jpg",
+      "sha256": "be93a80edfaa3e799d1b17867f24d877eeaddb20bc21f32038b6dfb1a63ec17e"
+    },
+    {
+      "bytes": 94685,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/pair-768.jpg",
+      "sha256": "1b8e269c488b44143b79c4c80e9e218474996c06a3a8e652a13e81f6d108d23a"
+    },
+    {
+      "bytes": 126899,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/panel-pair-1280.jpg",
+      "sha256": "ce18da467fdb0503c25497dfd606f86798efe5f516d03680f5fddcbf1daa915a"
+    },
+    {
+      "bytes": 48062,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/panel-record-390.jpg",
+      "sha256": "ddecc5e5f6753e1f38a6660da98b541e63a2063adca707ad648fb2165e05d04b"
+    },
+    {
+      "bytes": 159550,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/record-1280.jpg",
+      "sha256": "8d6da0feb71f8b0173ed286d66ff706abc586d9f73b0583bb72c13464287b60f"
+    },
+    {
+      "bytes": 163057,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/record-1600.jpg",
+      "sha256": "27c6110f45bcda95db9e84fad3be47154ad1a6f09e071c0f6123de81e36ffbfe"
+    },
+    {
+      "bytes": 50947,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/record-320.jpg",
+      "sha256": "93c133a57f12ee98083623f51c2c591b2f2de0a88dcee54c592b47e730886cb1"
+    },
+    {
+      "bytes": 61411,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/record-390.jpg",
+      "sha256": "ee1e816f1e082def83bcb3ee5417a97ee8a5d03426b3e405394869bf77ca05e6"
+    },
+    {
+      "bytes": 120711,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/record-768.jpg",
+      "sha256": "106b89231fc08130284560f0f77e946ea9b4625fa22d34c99cde99767986b8af"
+    },
+    {
+      "bytes": 121019,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/top-1280.jpg",
+      "sha256": "b30a0a834ab4e26531860a8e3af63f246136200f658bee1853dbfe5c4835344a"
+    },
+    {
+      "bytes": 124218,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/top-1600.jpg",
+      "sha256": "c220027aeea6f4d215101d5754f4b6ebfae073292f05c09e377e91de80c908c6"
+    },
+    {
+      "bytes": 51820,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/top-320.jpg",
+      "sha256": "6c6191714bcfc459ef91c0ce5fbede479ef6ba4b18ae40fb5937e154042423fb"
+    },
+    {
+      "bytes": 68476,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/top-390.jpg",
+      "sha256": "83f700b8699c71dad375844da82565e5b7cad96d57db02c4e24c87ba19aeabf5"
+    },
+    {
+      "bytes": 101728,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/screens/top-768.jpg",
+      "sha256": "d735cabcc5521060a04bc345e0b95b28053744397bb06b899fbc076c31b411ab"
+    },
+    {
+      "bytes": 395,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/data/public-subset-1.json",
+      "sha256": "2fee25e4a9f50e436c6451b1d62f0e9cd8b400790dfb5b692ce56a52cc6c4860"
+    },
+    {
+      "bytes": 675,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/data/public-subset-12.json",
+      "sha256": "b6e78ed714432addead19b63b82832ae3c556b6601b513221510c4fe1544061f"
+    },
+    {
+      "bytes": 360,
+      "path": ".planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence/data/review-status.json",
+      "sha256": "b0abc756a971b22c64157b34fcbeedb99a68a6e52cfd669598c44b1d0e73388b"
+    }
+  ],
+  "screens": 44,
+  "screens_total_bytes": 4220444
+}

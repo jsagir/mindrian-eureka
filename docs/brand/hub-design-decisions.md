@@ -231,6 +231,24 @@ Gap plan 11 closed the loose ends that the RISKS and NEXT sections of the SUMMAR
 | L6 HUB-06 | The clause "small card picture (no text)" became "it carries the records' distinctive words and the shared words; no sentence" in `02.3.1-REQUIREMENTS-NOTE.md` and `.planning/REQUIREMENTS.md`, with the amendment line that names gap plan 02.3.1-10. | grep: "(no text)" 0 times, "no sentence" once in each file. | grep in the plan verification |
 | L7 The band in dark | No code: the book has no dark set and no band token (checked 2026-11-08). Recorded as an owner question for plan 09 with two renders in the session scratchpad folder closeout-11: band-dark-1280.png and figure-band-dark.png. | The page band and the figure band invert to a light band with dark text (16.73). | `test_hub_decisions` (this record), `test_record_document` (theme rules) |
 
+### Results of the build (plan 09)
+
+Plan 09 collected the evidence of the new look on 2026-11-10 and put it in front of the owner. The record is the section "Phase 2.3.1 look" of [hub-review-result.md](hub-review-result.md); the status there is "Implementation complete; visual verification pending the owner." until the owner answers. The evidence folder is `.planning/phases/02.3.1-hub-look-matches-the-live-jhtv-site-cobalt-red-and-yellow-ac/evidence` (44 screens at 320, 390, 768, 1280 and 1600 px in the light theme and 8 in the dark theme, the inventory `data/files.json`, the read-only doctor result `data/review-status.json` and the two projection provenance files). The Phase 2.1 evidence is untouched (its inventory is re-checked by `tests/test_hub_look_record.py`).
+
+The rules of the phase, one file each, all linked here as the plan asks: [hub-model-rules.md](hub-model-rules.md) (the run reading band and the model limits), [hub-figure-rules.md](hub-figure-rules.md) (the lead figure), [hub-terms-rules.md](hub-terms-rules.md) (the distinctive words), [hub-theme-rules.md](hub-theme-rules.md) (the dark theme) and [hub-site-rules.md](hub-site-rules.md) (the routes, the knobs and the keys).
+
+Tests that prove the look (static unless named as browser tests): `test_hub_look_tokens` (the look contract against the stored target stylesheet, LD-01 to LD-34), `test_hub_look_parity` (browser; computed styles of the shell, the band and the rows), `test_hub_css`, `test_hub_page`, `test_hub_theme` (contrast of both themes), `test_hub_browser_theme` (browser; the toggle, the saved choice, the storage block), `test_hub_browser_review` (browser; the 13 px floor, the 44 px targets, reflow, contrast), `test_hub_browser_shell` (browser; the sticky header and the phone header), `test_hub_browser_bank` (browser; the row parts and the phone row bound), `test_hub_browser_pages` (browser; the routes, the knobs, the keys, focus, the twin and the detail text fit with the vendored fonts), `test_hub_figures` and `test_hub_figures_payload` (the SVG pictures, their sizes and their safety), `test_hub_terms` (the words), `test_hub_pattern` (the band from run numbers), `test_hub_public_example` (two byte-identical builds), `test_hub_scale` (load time and the 3000 record bound), `test_hub_look_record` (this evidence and the record forms).
+
+The carried-cell overlap of Phase 2.2 (the observation above under Phase 2.3 additions: the `hub-bank-extras` row shared the grid cell of the role labels) is resolved: plan 06 rebuilt the row grid, and `test_hub_browser_bank::test_row_has_the_prototype_parts` measures that no two parts of a row overlap at 390 and 1280 px.
+
+Decisions of the later plans carried into this record:
+
+- Plan 07: the graph canvas re-reads the tokens on the theme event (register item 30 below).
+- Plan 08: the empty desktop panel is hidden in page mode (a page is the full read; the panel belongs to the views), and `history.scrollRestoration` is set to manual so that a page opens at its top and a view gets its saved place back through `restorePlace`. Both are owner questions for the look (Q-6 and Q-7 of the record).
+- Plan 10: the card carries the top 3 distinctive words of each record and the shared words in a chip; the fan of plan 04 is retired; the only seeded element is the rule position, named structure in the description (D-07, D-09, owner words of 2026-11-08; register item 31 below).
+
+UNVERIFIED after this plan (the record lists each): a keyboard-only pass by a person; a screen reader (the panel announcement with a picture inside, the twin on a pair page); Safari and WebKit; 200 percent zoom; the Theo face states in both themes by a person; real touch; the network page against its stylesheet (matched by screenshot only); the dark values by eye; the owner's own look, which is the brand stop of plan 09 Task 3. The book review is advisory and not run (R-01). Refero was not connected (O-12).
+
 ## Book-silent register, Phase 2.3.1
 
 The numbers continue the register of Phase 2.1. Each item is "Book silent, proposed segment"; the hub does what the item says until the book answers.
@@ -246,3 +264,5 @@ The numbers continue the register of Phase 2.1. Each item is "Book silent, propo
 27. Distinctive words by tf-idf as a screening aid (plan 02, `docs/brand/hub-terms-rules.md`). Book silent, proposed segment.
 28. Red names the wording score and cobalt the meaning score (plans 04 and 06). Book silent, proposed segment.
 29. Routes, breadcrumbs and the Back, Previous and Next knobs of a mini site (plan 08, `docs/brand/hub-site-rules.md`). Book silent, proposed segment.
+30. A canvas that re-reads the colour tokens on a theme event, so the 3D map follows the dark theme (plan 07, carried by plan 09). Book silent, proposed segment: theme-aware canvas.
+31. A card picture that carries the records' own distinctive words and the shared words in a chip, with no fan and the rule position as the only seeded element (plan 10, carried by plan 09; `docs/brand/hub-figure-rules.md`). Book silent, proposed segment: lead figure (amended).

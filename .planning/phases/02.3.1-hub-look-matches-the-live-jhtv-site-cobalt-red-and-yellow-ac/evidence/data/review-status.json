@@ -1,0 +1,9 @@
+{
+  "checked": "2026-11-09",
+  "doctor_exit_code": 1,
+  "doctor_status": "NEEDS-ATTENTION",
+  "doctor_version": "2.43.0",
+  "note": "Read-only doctor output, recorded as it is. No book write command runs in this phase. The book review is not a gate.",
+  "problems": 36,
+  "review": "book review: not run, lock not reconciled, by owner ruling R-01; advisory"
+}
