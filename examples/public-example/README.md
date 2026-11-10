@@ -50,6 +50,16 @@ Another encoder profile: the reference run uses the default encoder profile `cpu
 
 Such a run has the class `gpu-approx` in its manifest. `eureka check-example` then compares `corpus/records.jsonl` by bytes and the two pair files by ranking overlap with `reference-run/`. No overlap threshold has been measured yet, so the check prints the overlap numbers and `Result: NO MATCH`. A `gpu-approx` run is never reported as a match until the GPU spike has measured the drift. The spike is not run yet, and `gpu-nemotron` is unproven. See [docs/encoder-profiles.md](../../docs/encoder-profiles.md) and [docs/encoder-comparison.md](../../docs/encoder-comparison.md). Every result is a candidate, not verified.
 
+## Open it as one page
+
+Build a local page from your run folder and open the file it names:
+
+```sh
+uv run eureka hub my-run --out my-hub
+```
+
+Open `my-hub/hub.html` in a current browser. The page runs from local files and sends nothing over the internet. Checked on 2026-11-10 with this command on `reference-run/` (the same 36 records, 63 and 200 pairs) and on the frozen fixture `tests/fixtures/hub_public/run`: the page shows a header with the three views and a Light or Dark button, a black band "What this run shows" that reads the run in plain words from its own numbers, the Opportunity bank with one row and one small picture for each pair, the Connection graph and the Catalogue. Every pair and every record opens as its own page with Back, Previous and Next knobs. Every result on the page is labelled candidate, not verified.
+
 ## Where it was checked
 
 | Setup | Platform | Python | Threads | Cache | Same as reference |

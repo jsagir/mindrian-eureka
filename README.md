@@ -134,6 +134,30 @@ Open `eureka-hub/hub.html` in a current browser. The Opportunity bank ranks the 
 
 The page runs from local files and sends nothing over the internet. It needs no running server or meaning model. The default source links open the record in the catalogue. Add `--source-dir ./my-sources` to link to the original files instead; keep their relative location when moving the hub.
 
+### What the page shows
+
+A sticky header holds the three view links (Opportunity bank, Connection graph, Catalogue), a link to the Data check and a "Light" or "Dark" button. Under the title and the counts, a black band labelled "What this run shows" reads the whole run in plain words. Every number in it comes from the run files. When the run shows no grouping to read, the band says so. On the public example the band reads: 36 records, 63 pairs from the unusual-pairs engine and 200 from the wording engine, 38 pairs that both engines list, and the note that the pair links keep every paired record in one neighborhood. Scores are a screening signal; the band never claims novelty, evidence, demand or value.
+
+The Opportunity bank lists the pairs as finding rows: the rank, the two titles, the two record ids, the meaning score in cobalt and the wording score in red, the words the two records share, a line that says when to use the pair, and a small picture. The Connection graph shows the neighborhoods as a map. The Catalogue lists every record with a small picture of its words. The reading panel at the side stays as the quick look at one record or pair.
+
+### Light and dark
+
+The page follows the system setting until you press the button. Your choice is kept in your browser on this machine (the key `hub-theme`, nothing else is stored). The page also works when the browser blocks storage; the choice then holds for the open page. The dark colours are a proposal; see [the theme rules](docs/brand/hub-theme-rules.md).
+
+### Every pair and every record is a page
+
+Every pair opens as its own page at `#/pair/<engine>/<rank>`, and every record at `#/record/<id>`. A page has a knob that goes back to its list ("Back to the opportunity bank" or "Back to the catalogue"), Previous and Next knobs with the position ("Pair 3 of 63"), and the keys ArrowLeft and ArrowRight (the left and right arrow keys) for Previous and Next; Escape goes back. The page title and the focus follow the page. The reading panel stays as the quick look. The rules are in [the site rules](docs/brand/hub-site-rules.md).
+
+### The pictures and the words
+
+Eureka draws a small picture for each pair as SVG from the run data: the ranks, the two scores and the most distinctive words of each record. There is no image generator and no network in this step; the same run gives the same picture. The pair page has a larger picture with the words of both records. On narrow screens, and for screen readers, the same facts are given as real text; the drawing is shown when the page is 768 px wide or more. A picture never means that a pair is new, wanted or valuable. See [the figure rules](docs/brand/hub-figure-rules.md).
+
+The distinctive words are the 5 most distinctive words of each record in this collection, and at most 6 words that both records share, taken from the top 30 words of each record. They are a screening aid, not evidence. See [the word rules](docs/brand/hub-terms-rules.md).
+
+### Without JavaScript, and when locked
+
+Without JavaScript the page shows the band and a short list of the top pairs of each engine, with a pointer to the full list. The pictures, the pages, the search, the filters, the theme button and the map need JavaScript. In a locked hub the band, the words and the pictures are inside the encrypted data; the pages are built in the browser after the passphrase.
+
 ### Optional password gate
 
 Install the gate support while keeping the local encoder support from the run setup:

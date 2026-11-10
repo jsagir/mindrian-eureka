@@ -8,7 +8,7 @@ The package has these parts:
 - `opportunity_pairs/`: the unusual-pairs engine, the wording-and-meaning engine, the job store and the MCP server.
 - `host_run/`: the plan, the approval receipt and the start of the pair screen run that a connected host calls.
 - `encoder_spec.py` and `opportunity_pairs/encoders.py`: the encoder profiles `cpu-default` and `gpu-nemotron`, the fingerprint of an encoder setup, and the one place that builds an encoder. The profile `gpu-nemotron` is a spike profile and is unproven. `doctor.py` checks a profile with `eureka doctor --encoder-profile NAME`.
-- `hub/` and `seed/`: the local hub page and the room seed folder, both built from a finished run.
+- `hub/` and `seed/`: the local hub page and the room seed folder, both built from a finished run. The hub package also holds `pattern.py` (the plain-words reading of a run, built from the run numbers only), `terms.py` (the distinctive words of each record and the words a pair shares) and `figures.py` (the SVG pictures of each pair, drawn from the run data with no image generator).
 - `partner_bundle/`: the builder of the carry-in folder for a partner machine.
 - `graph_relations/`, `structure_mapping/`, `decision_patterns/` and `pitch_analysis/`: the other engines.
 - `provenance/`: records of results that cannot be rebuilt from this repository.

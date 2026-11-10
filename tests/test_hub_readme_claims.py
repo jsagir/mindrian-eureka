@@ -113,8 +113,9 @@ def test_picture_claims_match_the_code(public: dict[str, Any]) -> None:
     keys = {pair["key"] for pair in public["pairs"]}
     assert set(pairs) == keys
     assert all("card" in item and "detail" in item for item in pairs.values())
-    sentence = next(line for line in section.splitlines() if "small picture for each pair" in line)
-    for number in re.findall(r"\b(\d+)\b", sentence):
+    sentence = re.search(r"[^.]*small picture for each pair[^.]*\.", section)
+    assert sentence
+    for number in re.findall(r"\b(\d+)\b", sentence.group(0)):
         assert int(number) == len(keys), number
     switch = re.search(r"(\d+) px wide", section)
     assert switch, "the README does not name the switch width"
