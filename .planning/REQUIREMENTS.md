@@ -67,6 +67,15 @@
 - [x] **ENC-10**: The hand-offs for the MindrianOS plugin session (environment allowlist, request field for the profile, contract version marker, one `vec0` table for each profile, re-tuned 0.55 floor, failure reasons, start stderr, doctor checks that are not added) are written in `docs/encoder-profiles.md` with a source and a mark for each; no plugin checkout is edited.
 - [x] **ENC-11**: The READMEs (README.md, examples/public-example/README.md, src/README.md) are refreshed for the encoder profiles, `--encoder-profile`, `doctor --encoder-profile`, the `gpu-encoder` extra and the `cpu-exact` / `gpu-approx` classes, and every claim is checked against the code and a run (owner rule 2026-11-07).
 
+### Job store (JOB)
+
+- [ ] **JOB-01**: Two engine processes opening the same job record: the second gets a typed `owner_locked` result and changes nothing; the owner lock ends on the terminal state and when the owner process dies.
+- [ ] **JOB-02**: A status read on an interrupted job returns its recorded state and mutates no file; recovery runs only on an explicit `scout_recover` call.
+- [ ] **JOB-03**: A terminal job (`completed`, `completed_empty`, `failed`, `blocked`, `cancelled`, `expired`) refuses every state change with a typed `terminal_state` result.
+- [ ] **JOB-04**: A cancel sets a persisted flag the worker observes between steps; the job ends as `cancelled` within one step, and its result names the stage and the reason.
+- [ ] **JOB-05**: No engine work survives its job or its host: the job record names the owner process, job end in any state ends the work, host close ends every job and the engine process; a test with a sleeping fake engine inside the real `eureka-mcp` proves it.
+- [ ] **JOB-06**: The plugin's expectations for these behaviours pass against the hardened store through the plugin's own MCP client and the real route; the READMEs are refreshed with every claim checked.
+
 ## v2 Requirements
 
 - **CAT-01**: Promote experimental capabilities to supported, one at a time, with benchmark evidence.
@@ -129,13 +138,19 @@
 | ENC-09 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Partial: CPU part done, GPU and mdbr-leaf-ir columns NOT RUN |
 | ENC-10 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Complete |
 | ENC-11 | Phase 5 - Encoder seam, safe cache key and local GPU spike | Complete |
+| JOB-01 | Phase 6 - Job store hardening for the MindrianOS plugin | Pending |
+| JOB-02 | Phase 6 - Job store hardening for the MindrianOS plugin | Pending |
+| JOB-03 | Phase 6 - Job store hardening for the MindrianOS plugin | Pending |
+| JOB-04 | Phase 6 - Job store hardening for the MindrianOS plugin | Pending |
+| JOB-05 | Phase 6 - Job store hardening for the MindrianOS plugin | Pending |
+| JOB-06 | Phase 6 - Job store hardening for the MindrianOS plugin | Pending |
 
 **Coverage:**
 
-- v1 requirements: 38 total
-- Mapped to phases: 38 (Phase 1: 5, Phase 2: 7, Phase 2.1: 5, Phase 2.3.1: 6, Phase 3: 2, Phase 4: 2, Phase 5: 11)
+- v1 requirements: 44 total
+- Mapped to phases: 44 (Phase 1: 5, Phase 2: 7, Phase 2.1: 5, Phase 2.3.1: 6, Phase 3: 2, Phase 4: 2, Phase 5: 11, Phase 6: 6)
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-10-23*
-*Last updated: 2026-11-08 after adding Phase 5 (Encoder seam, ENC-01 to ENC-11)*
+*Last updated: 2026-11-10 after adding Phase 6 (Job store hardening, JOB-01 to JOB-06)*

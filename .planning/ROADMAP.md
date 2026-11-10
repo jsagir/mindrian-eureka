@@ -291,10 +291,15 @@ Plans:
   4. A cancel sets a flag the worker observes between steps; the job ends as cancelled within one step, and its result says so.
   5. No engine child process survives its job: the job record names the child, and job end (any state) ends the child; a test proves it with a sleeping fake engine.
   6. The plugin's own tests for these behaviours (named by the plugin session) pass against the hardened store; README refreshed.
-**Requirements**: TBD
+**Requirements**: JOB-01, JOB-02, JOB-03, JOB-04, JOB-05, JOB-06
 **Depends on:** Phase 5
-**Plans:** 0 plans
+**Plans:** 6 plans
 
 Plans:
 
-- [ ] TBD (run $gsd-plan-phase 6 to break down)
+- [ ] 06-01: Terminal-state guard with a typed `terminal_state` refusal, plus the shared job test seams (wave 1, JOB-03)
+- [ ] 06-02: Read-only status, no recovery on open, explicit `scout_recover` tool (wave 2, JOB-02)
+- [ ] 06-03: One owner per job record with an OS lock released on terminal state and owner death (wave 3, JOB-01)
+- [ ] 06-04: Cooperative cancel through the persisted flag; the cancelled result names the stage and the reason (wave 4, JOB-04)
+- [ ] 06-05: Child lifetime: `JobManager.close` on host close, proved with a sleeping fake engine inside the real `eureka-mcp` (wave 5, JOB-05)
+- [ ] 06-06: Close-out: the plugin's expectations through its own Node MCP client, the contract note, the docs and the READMEs (wave 6, JOB-06)
