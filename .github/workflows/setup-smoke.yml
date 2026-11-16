@@ -1,0 +1,125 @@
+# Proves that the one-step setup scripts finish on Linux, macOS and Windows for the commit under test.
+# The scripts install uv themselves; this workflow does not preinstall uv, and that install is part of the test.
+# CI runners have no MindrianOS plugin, so "EUREKA_SETUP: OK engine-only" on the last line is the expected success.
+name: setup-smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/setup-mindrianos.*"
+      - "skills/mindrian-eureka-setup/**"
+      - ".github/workflows/setup-smoke.yml"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: setup-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: setup on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    env:
+      MINDRIAN_EUREKA_ROOT: ${{ github.workspace }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          package-manager-cache: false
+
+      - name: record uv state
+        shell: bash
+        run: |
+          if command -v uv >/dev/null 2>&1; then
+            echo "uv preinstalled: $(command -v uv) $(uv --version)"
+          else
+            echo "uv not preinstalled; the script installs it"
+          fi
+
+      - name: run setup (Linux and macOS)
+        id: setup-unix
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set +e
+          bash scripts/setup-mindrianos.sh 2>&1 | tee setup.log
+          code=${PIPESTATUS[0]}
+          last=$(tail -n 1 setup.log | tr -d '\r')
+          echo "exit code: $code"
+          echo "last line: $last"
+          if [ "$code" -ne 0 ]; then
+            echo "::error::setup script exited with code $code"
+            exit 1
+          fi
+          case "$last" in
+            "EUREKA_SETUP: OK"*) ;;
+            *)
+              echo "::error::last line does not start with EUREKA_SETUP: OK: '$last'"
+              exit 1
+              ;;
+          esac
+          case "$last" in
+            "EUREKA_SETUP: OK engine-only"*) ;;
+            *) echo "::notice::setup succeeded, but the last line is not engine-only (a plugin was found): '$last'" ;;
+          esac
+
+      - name: run setup (Windows)
+        id: setup-windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Continue'
+          pwsh -File scripts/setup-mindrianos.ps1 *> setup.log
+          $code = $LASTEXITCODE
+          Get-Content setup.log
+          $last = (Get-Content setup.log | Where-Object { $_.Trim() -ne '' } | Select-Object -Last 1)
+          if ($null -eq $last) { $last = '' }
+          $last = "$last".Trim()
+          Write-Output "exit code: $code"
+          Write-Output "last line: $last"
+          if ($code -ne 0) {
+            Write-Output "::error::setup script exited with code $code"
+            exit 1
+          }
+          if (-not ($last -like 'EUREKA_SETUP: OK*')) {
+            Write-Output "::error::last line does not start with EUREKA_SETUP: OK: '$last'"
+            exit 1
+          }
+          if (-not ($last -like 'EUREKA_SETUP: OK engine-only*')) {
+            Write-Output "::notice::setup succeeded, but the last line is not engine-only (a plugin was found): '$last'"
+          }
+          exit 0
+
+      - name: engine commit
+        if: always()
+        shell: bash
+        run: |
+          engine=$(git -C "$MINDRIAN_EUREKA_ROOT" rev-parse HEAD)
+          echo "engine HEAD: $engine"
+          echo "commit under test: ${{ github.sha }}"
+          if [ "$engine" != "${{ github.sha }}" ]; then
+            echo "::warning::engine HEAD differs from the commit under test (main moved during the run)"
+          fi
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: setup-log-${{ matrix.os }}
+          path: setup.log
+          if-no-files-found: warn
+          retention-days: 14
