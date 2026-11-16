@@ -142,6 +142,7 @@ None yet.
 | 261108-0ur | [Verify the MCP reach table and tests on the locked mcp 2.3.0](quick/261108-0ur-verify-the-mcp-reach-table-and-tests-on-/261108-0ur-SUMMARY.md), implementation 67617cb 7840888 | complete |
 | 261108-37h | [Close the Phase 5 verifier warnings W1 to W4 and the bookkeeping](quick/261108-37h-close-the-phase-5-verifier-warnings-and-/261108-37h-SUMMARY.md), implementation 89b55b5 (RED) 59540a2 (fix) | complete |
 | 261109-stage-camera-sample | [Stage camera test: choose the early sample by time and settle the flight before reading](quick/261109-stage-camera-sample/261109-stage-camera-sample-SUMMARY.md), implementation 3c784d7 (RED) f430472 (early sample by time) 622e22c (settled sample) | complete |
+| 261116-4kv | [One-step setup CI on Linux/macOS/Windows, public-status docs, backfill of ad-hoc commits 7bb6020 748f7cf 6fdd6d8 2405015](quick/261116-4kv-prove-one-step-setup-on-windows-macos-vi/261116-4kv-SUMMARY.md) | complete |
 
 ### Blockers/Concerns
 
