@@ -292,6 +292,23 @@ See [the Holonic Focus and Discovery seed](gsd/mindrianos-holonic-discovery/PROJ
 
 See [Using capabilities](docs/using-capabilities.md) and the relevant capability page for request schemas and examples. Direct CLI use runs only the named computation; it does not establish MindrianOS room scope or approval.
 
+## Set up Eureka for MindrianOS in one step
+
+If you have Claude Code with MindrianOS, add the setup skill once:
+
+```bash
+mkdir -p ~/.claude/skills/mindrian-eureka-setup && curl -fsSL https://raw.githubusercontent.com/jsagir/mindrian-eureka/main/skills/mindrian-eureka-setup/SKILL.md -o ~/.claude/skills/mindrian-eureka-setup/SKILL.md
+```
+
+Then type `/mindrian-eureka-setup` in Claude Code, or say "set up Eureka". It installs the engine, its packages and its meaning model, checks them, and connects the engine to MindrianOS.
+
+Without Claude Code, run the script directly:
+
+- macOS / Linux: `curl -fsSL https://raw.githubusercontent.com/jsagir/mindrian-eureka/main/scripts/setup-mindrianos.sh | bash`
+- Windows (PowerShell): `irm https://raw.githubusercontent.com/jsagir/mindrian-eureka/main/scripts/setup-mindrianos.ps1 | iex`
+
+The last line says `EUREKA_SETUP: OK` when it worked. The one-time download needs internet. After that, Eureka runs offline.
+
 ## How MindrianOS and Eureka work together
 
 ```mermaid
