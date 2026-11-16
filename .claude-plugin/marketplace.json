@@ -1,0 +1,14 @@
+{
+  "name": "mindrian-eureka",
+  "owner": { "name": "Jonathan Sagir" },
+  "metadata": { "description": "Eureka engine add-on for MindrianOS" },
+  "plugins": [
+    {
+      "name": "mindrian-eureka",
+      "source": "./",
+      "description": "One-step setup of the Eureka engine for MindrianOS: installs, checks and connects it.",
+      "version": "0.1.0",
+      "homepage": "https://mindrian-os.com"
+    }
+  ]
+}

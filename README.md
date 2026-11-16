@@ -14,7 +14,20 @@ MindrianOS Eureka helps people explore uncertainty for opportunity. It supports 
 
 **Repository:** `mindrian-eureka` · **Runtime:** Python 3.11+ · **Use:** local CLI or stdio MCP, within the host's scope and approval rules
 
-**Start here:** [Explore the method](#explore-wicked-problems-for-opportunity) · [Find a capability](#what-this-repository-provides) · [Run the CLI](#quick-start) · [Connect MindrianOS](#how-mindrianos-and-eureka-work-together) · [Check readiness](#readiness-at-a-glance) · [Contribute](#development) · [Review policies](#repository-policies)
+**Start here:** [Install for MindrianOS](#install-for-mindrianos-in-claude-code) · [Explore the method](#explore-wicked-problems-for-opportunity) · [Find a capability](#what-this-repository-provides) · [Run the CLI](#quick-start) · [Connect MindrianOS](#how-mindrianos-and-eureka-work-together) · [Check readiness](#readiness-at-a-glance) · [Contribute](#development) · [Review policies](#repository-policies)
+
+## Install for MindrianOS in Claude Code
+
+Already have MindrianOS? Two lines in Claude Code set up Eureka:
+
+```text
+/plugin install mindrian-eureka --marketplace jsagir/mindrian-eureka
+/mindrian-eureka:mindrian-eureka-setup
+```
+
+On an older Claude Code, add the marketplace first: `/plugin marketplace add jsagir/mindrian-eureka`, then `/plugin install mindrian-eureka@mindrian-eureka`.
+
+The setup skill installs the engine, its packages and its meaning model, checks them, and connects the engine to MindrianOS. It ends with `EUREKA_SETUP: OK`. Then try `/mos:eureka` in your room. No Claude Code? See [Set up Eureka for MindrianOS in one step](#set-up-eureka-for-mindrianos-in-one-step).
 
 > **Theo is the outside method thinker; the intelligence agents explore the case.** Together, they help the user inquire into uncertainty: Theo guides method choice, while the agents search the authorized material for patterns, mechanisms, contradictions, and promising questions. The Theo face moves through curiosity, searching, recognition, skepticism, decision, and handover. These are inquiry states, not a claim that a wicked problem has been solved. The host keeps room context, approvals, evidence review, and decisions.
 

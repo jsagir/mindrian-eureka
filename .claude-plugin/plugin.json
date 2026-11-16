@@ -1,0 +1,10 @@
+{
+  "name": "mindrian-eureka",
+  "version": "0.1.0",
+  "description": "One-step setup of the Eureka engine for MindrianOS: installs, checks and connects it.",
+  "author": { "name": "Jonathan Sagir" },
+  "homepage": "https://mindrian-os.com",
+  "repository": "https://github.com/jsagir/mindrian-eureka",
+  "license": "Apache-2.0",
+  "keywords": ["mindrianos", "eureka", "setup"]
+}
