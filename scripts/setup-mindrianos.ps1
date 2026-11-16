@@ -23,7 +23,7 @@ if (Test-Path (Join-Path $Engine ".git")) { git -C $Engine pull --ff-only -q }
 else { git clone -q $Repo $Engine; if ($LASTEXITCODE -ne 0) { Fail "engine" "git clone failed (network?)" } }
 
 Write-Host "`n== 3/6 python packages (network, one time)"
-uv sync -q --project $Engine --extra mcp-server --extra modern-encoder
+uv sync -q --python 3.12 --project $Engine --extra mcp-server --extra modern-encoder
 if ($LASTEXITCODE -ne 0) { Fail "packages" "uv sync failed (network or proxy?)" }
 
 Write-Host "`n== 4/6 meaning model ($ModelId)"

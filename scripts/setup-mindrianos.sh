@@ -33,7 +33,7 @@ fi
 echo "engine commit $(git -C "$ENGINE" rev-parse --short HEAD)"
 
 step "3/6 python packages (network, one time)"
-uv sync -q --project "$ENGINE" --extra mcp-server --extra modern-encoder || fail packages "uv sync failed (network or proxy?)"
+uv sync -q --python 3.12 --project "$ENGINE" --extra mcp-server --extra modern-encoder || fail packages "uv sync failed (network or proxy?)"
 
 step "4/6 meaning model ($MODEL_ID)"
 SNAP=$(uv run -q --project "$ENGINE" --no-sync python -c "from huggingface_hub import snapshot_download as s; print(s('sentence-transformers/all-MiniLM-L6-v2', ignore_patterns=['onnx/*','openvino/*','*.bin','*.h5','*.msgpack','*.ot','tf_model*','rust_model*']))" 2>/dev/null | tail -1)
