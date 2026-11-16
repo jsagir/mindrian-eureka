@@ -101,3 +101,9 @@ To move to go, the owner needs: G1, G2, G3 and G5 closed, and condition C1 done.
 ## 9. Partner-internal distribution ruling (2026-10-29)
 
 PROVEN (the owner's ruling, given in conversation on 2026-10-29): the owner approved partner-internal distribution of the engine package to JHTV on 2026-10-29. The scope is that partner's own machine and its own staff. The package is not public and not redistributable. Public distribution stays no-go, and the fields `decision`, `status` and `reopen_when` above are unchanged. G1, G2, G3 and G5 stay open. This ruling closes no gap. The partner guide is `docs/partner-run-guide.md`. The 4 front-matter keys that start with `partner_internal_` record this ruling, and `tests/test_release_gate_record.py` pins them.
+
+## 10. Public repository (2026-11-16)
+
+PROVEN (the owner's ruling, given in conversation on 2026-11-16): the owner made the repository github.com/jsagir/mindrian-eureka public on 2026-11-16. The owner also added a top-level Apache-2.0 `LICENSE` file (commit 7bb6020). The public repository contains the unusual-pairs engine source and its docs, which is the scope in `decision_scope` above.
+
+The front matter is unchanged. It still records decision no-go and status draft for that scope. The fields `decision`, `status` and `reopen_when` are the owner's, and an agent does not change them. Only the owner can reconcile the front matter with the public repository. G1, G2, G3 and G5 stay open, and G6 stays open. This ruling closes no gap. This record gives no legal opinion on how the `LICENSE` file and the open gaps relate.
