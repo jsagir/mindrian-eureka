@@ -202,7 +202,7 @@ The hub shows the pair command under each pair. The folder layout and the rules 
 
 A guide takes a reader who is not the author from install to ranked pairs on a public example of 36 arXiv abstracts (CC0). The command `uv run eureka check-example <run-folder>` compares your run with the shipped expected hashes. The guide states what is reproducible and what is not. A run made with another encoder profile is compared by ranking overlap and not by bytes; see [Choose an encoder profile](#choose-an-encoder-profile). MATCH shows that the output bytes are the shipped ones. It does not prove that the run was made on this machine. Every result is a candidate, not verified.
 
-Status: internal only. The release record has decision no-go for public distribution of the unusual-pairs engine; see the [release record](docs/rs-release-gate.md).
+Status: the repository is public under the Apache-2.0 [license](LICENSE) since 2026-11-16 (owner decision). The [release record](docs/rs-release-gate.md) is unchanged by that step: it still has decision no-go and status draft for public distribution of the unusual-pairs engine, and its provenance gaps G1, G2, G3 and G5 stay open. Until the owner updates the record, the guide and the example below keep the label internal only.
 
 - [Reproduce the JHTV method](docs/reproduce-the-jhtv-method.md)
 - [Public example](examples/public-example/README.md)
@@ -404,7 +404,7 @@ Eureka's unusual-pairs engine is a reimplementation of a method from research co
 - **Canonical path.** For new runs, use `eureka-pair-scout` with scoring `hybrid_2026`. The owner decided this on 2026-10-23. The [parity record](docs/rs-engine-parity.md) shows the measured comparison.
 - **Same ranking logic, different meaning input.** The repo path ranks with the same logic as the reference script, but it builds the dense (meaning) input by a different rule. The repo path embeds title plus body in chunks and averages the chunks. The reference script embeds the body once and cuts it at the model limit. On the committed test fixtures the repo path shares 74 percent of the pairs with the reference script (rank correlation 0.62). On a 40-file sample of the JHTV collection the share is 42 percent. So the repo path does not reproduce the JHTV ranking at the meaning-signal level.
 - **JHTV run.** The 2026-10-18 JHTV pair file came from an earlier reference script version, not from this package. JHTV candidates keep their provenance to that script by sha256. The exact commands, and their exact reproduction on a scratch copy, are in the [reproduction record](docs/hsi-rs-jhtv-reproduction.md).
-- **Release status.** Rights and release status of this engine are tracked in the [release record](docs/rs-release-gate.md). This README does not state the decision. See the record. This repo has no blanket license.
+- **Release status.** Rights and release status of this engine are tracked in the [release record](docs/rs-release-gate.md). This README does not state the decision. See the record. Since 2026-11-16 the repository has a top-level Apache-2.0 [LICENSE](LICENSE) (owner decision); the record keeps its open provenance gaps.
 - **Results are candidates for human review.** They are candidate, not verified.
 
 ## Development
@@ -441,7 +441,7 @@ See [Using capabilities](docs/using-capabilities.md) for CLI and MCP examples, [
 
 ## Repository policies
 
-[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [M:OS brand application](docs/brand-application.md) · [Licensing and provenance](docs/licensing-and-provenance.md). This repo has no blanket license because some source-derived methods still need rights review.
+[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [M:OS brand application](docs/brand-application.md) · [Licensing and provenance](docs/licensing-and-provenance.md). Since 2026-11-16 the repository has a top-level Apache-2.0 [LICENSE](LICENSE) (owner decision). Some source-derived methods still have open rights gaps; see the [release record](docs/rs-release-gate.md).
 
 ## Theo's role and face
 
